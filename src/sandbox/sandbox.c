@@ -11,7 +11,7 @@
 **  Copyright (C) 2001 The Leaf, http://www.theleaf.be
 **  Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@theleaf.be>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox/Attic/sandbox.c,v 1.2 2002/01/15 12:43:48 gbevin Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox/Attic/sandbox.c,v 1.3 2002/01/18 10:12:51 gbevin Exp $
 */
 
 #define _GNU_SOURCE
@@ -633,9 +633,25 @@ int main(int argc, char** argv)
 				{
 					strcat(sandbox_write_var, "/tmp");
 				}
+				else if (0 == strcmp(sandbox_write_var, "/var/tmp"))
+				{
+					strcat(sandbox_write_var, portage_tmp_dir);
+					strcat(sandbox_write_var, ":");
+					strcat(sandbox_write_var, "/tmp");
+				}
+				else if (0 == strcmp(sandbox_write_var, "/tmp"))
+				{
+					strcat(sandbox_write_var, portage_tmp_dir);
+					strcat(sandbox_write_var, ":");
+					strcat(sandbox_write_var, "/var/tmp");
+				}
 				else
 				{
 					strcat(sandbox_write_var, portage_tmp_dir);
+					strcat(sandbox_write_var, ":");
+					strcat(sandbox_write_var, "/tmp");
+					strcat(sandbox_write_var, ":");
+					strcat(sandbox_write_var, "/var/tmp");
 				}
 				/* */
 				setenv(ENV_SANDBOX_WRITE, sandbox_write_var, 1);
