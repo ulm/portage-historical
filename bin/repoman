@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.105 2004/11/07 13:15:29 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.106 2004/11/07 19:53:10 ferringb Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -594,8 +594,7 @@ else:
 		print green("***")+" the local copy of metadata.dtd needs to be refetched, doing that now"
 		print
 		try:
-			import transports.bundled_lib
-			fetcher=transports.bundled_lib.BundledConnection()
+			fetcher=portage.get_preferred_fetcher()
 
 			val=fetcher.fetch("http://www.gentoo.org/dtd/metadata.dtd",file_name="%s/metadata.dtd" % 
 				portage.CACHE_PATH)
