@@ -1,11 +1,14 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.37 2005/01/02 13:12:49 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.38 2005/01/03 15:59:56 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  04 Dec 2005; Jason Stubbs <jstubbs@gentoo.org> emerge: Added code to
+  "emerge info" to summarise variables that aren't set rather than hide them.
 
   02 Dec 2005; Jason Stubbs <jstubbs@gentoo.org> dolib ebuild.sh preplib:
   Applied eradicator's libdir patch for multilib support. #75420
