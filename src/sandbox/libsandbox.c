@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 Geert Bevin, Uwyn, http://www.uwyn.com
 **	Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@uwyn.com>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox/Attic/libsandbox.c,v 1.7 2002/03/18 12:25:20 gbevin Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox/Attic/libsandbox.c,v 1.8 2002/08/05 05:51:39 drobbins Exp $
 */
 
 #define _GNU_SOURCE
@@ -797,8 +797,18 @@ int check_syscall(sbcontext_t* sbcontext, const char* func, const char* file)
 
 int is_sandbox_on()
 {
+	/* $SANDBOX_ACTIVE is an env variable that should ONLY
+	 * be used internal by sandbox.c and libsanbox.c.  External
+	 * sources should NEVER set it, else the sandbox is enabled
+	 * in some cases when run in parallel with another sandbox,
+	 * but not even in the sandbox shell.
+	 *
+	 * Azarah (3 Aug 2002)
+	 */
 	if (NULL != getenv("SANDBOX_ON") &&
-		0 == strcmp(getenv("SANDBOX_ON"), "1"))
+		0 == strcmp(getenv("SANDBOX_ON"), "1") &&
+		NULL != getenv("SANDBOX_ACTIVE") &&
+		0 == strcmp(getenv("SANDBOX_ACTIVE"), "armedandready"))
 	{
 		return 1;
 	}

@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 Geert Bevin, Uwyn, http://www.uwyn.com
 **	Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@uwyn.com>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox/Attic/sandbox.c,v 1.12 2002/07/11 09:20:16 drobbins Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox/Attic/sandbox.c,v 1.13 2002/08/05 05:51:39 drobbins Exp $
 */
 
 #define _GNU_SOURCE
@@ -744,6 +744,14 @@ int main(int argc, char** argv)
 			signal(SIGINT, &stop);
 			signal(SIGQUIT, &stop);
 			signal(SIGTERM, &stop);
+
+			/* this one should NEVER be set in ebuilds, as it is the one
+			 * private thing libsandbox.so use to test if the sandbox
+			 * should be active for this pid, or not.
+			 *
+			 * azarah (3 Aug 2002)
+			 */
+			setenv("SANDBOX_ACTIVE", "armedandready", 1);
 			
 			/* fork to executing bash */
 			if (argc < 2)
