@@ -1,4 +1,7 @@
 #!/bin/bash 
+# Copyright 1999-2002 Gentoo Technologies, Inc.
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.76 2002/11/09 09:41:43 vapier Exp $
 
 if [ -n "$#" ]
 then
