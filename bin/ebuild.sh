@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.100 2003/02/04 10:07:24 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.101 2003/02/04 22:07:18 carpaski Exp $
 
 cd ${PORT_TMPDIR}
 
@@ -958,7 +958,7 @@ inherit() {
 # code will be eval'd:
 # src_unpack() { base_src_unpack; }
 EXPORT_FUNCTIONS() {
-	if [ -n "$ECLASS" ]; then
+	if [ -z "$ECLASS" ]; then
 		echo "EXPORT_FUNCTIONS without a defined ECLASS" >&2
 		exit 1
 	fi
