@@ -1,6 +1,6 @@
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.sparc,v 1.42.2.3 2005/01/13 01:06:27 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.sparc,v 1.42.2.4 2005/02/13 10:48:30 jstubbs Exp $
 # Contains local system settings for Portage system
 
 # Please review 'man make.conf' for more information.
@@ -110,7 +110,8 @@
 #
 # PORTDIR is the location of the portage tree. This is the repository
 #     for all profile information as well as all ebuilds. This directory
-#     itself can reach 200M. WE DO NOT RECOMMEND that you change this.
+#     itself can reach 200M. If you change this, you must update your
+#     /etc/make.profile symlink accordingly.
 #PORTDIR=/usr/portage
 #
 # DISTDIR is where all of the source code tarballs will be placed for

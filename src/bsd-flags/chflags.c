@@ -1,4 +1,4 @@
-/* $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/bsd-flags/chflags.c,v 1.1.2.1 2005/02/06 12:56:40 carpaski Exp $ */
+/* $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/bsd-flags/chflags.c,v 1.1.2.2 2005/02/13 10:48:31 jstubbs Exp $ */
 
 #include "Python.h"
 
@@ -68,7 +68,7 @@ static PyObject *chflags_lhasproblems(PyObject *self, PyObject *args)
 		return NULL;
 	}
 
-	res = stat(path, &sb);
+	res = lstat(path, &sb);
 
 	PyMem_Free(path);
 		

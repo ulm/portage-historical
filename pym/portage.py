@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.39 2005/02/06 12:56:39 carpaski Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.39 2005/02/06 12:56:39 carpaski Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.40 2005/02/13 10:48:30 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.40 2005/02/13 10:48:30 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.39 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.40 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -1163,21 +1163,20 @@ class config:
 
 		self.regenerate()
 		
-		
 		self.features = portage_util.unique_array(self["FEATURES"].split())
-		self.features.sort()
 
 		#XXX: Should this be temporary? Is it possible at all to have a default?
 		if "gpg" in self.features:
 			if not os.path.exists(self["PORTAGE_GPG_DIR"]) or not os.path.isdir(self["PORTAGE_GPG_DIR"]):
 				writemsg("PORTAGE_GPG_DIR is invalid. Removing gpg from FEATURES.\n")
 				self.features.remove("gpg")
-				self["FEATURES"] = string.join(self.features, " ")
-				self.backup_changes("FEATURES")
 
-		if "maketest" in features:
-			features.append("test")
-			features.sort()
+		if "maketest" in self.features and "test" not in self.features:
+			self.features.append("test")
+
+		self.features.sort()
+		self["FEATURES"] = " ".join(self.features)
+		self.backup_changes("FEATURES")
 
 		if mycpv:
 			self.setcpv(mycpv)
