@@ -419,30 +419,28 @@ when the previous version emerged was injected (see \fBinject\fR for more info)
 or very outdated (so old that \fBSLOT\fR did not exist).  Either way, a newer version
 of Xfree is availabe for your updating delight.
 .TP
-.B [ebuild     U ] sys\-devel/distcc\-2.16 [2.13\-r1] \-gnome \-gtk +ipv6* (\-selinux)
-The \-gtk and \-gnome reflect the status of \fBUSE\fR variables when emerging distcc.  Here
-we see that distcc can use the \fBUSE\fR variables gtk and gnome, but that your current
-settings have gtk and gnome disabled.  This means optional support for gtk and gnome will
-not be enabled in distcc when you emerge it.
-An asterisk shows that the \fBUSE\fR flags have changed since the package was last installed.  
-In this case, ipv6 is enabled but was previously disabled.  A \fBUSE\fR flag in brackets, like 
-(\-selinux), is always disabled and shows that the flag is not available for the current system 
-profile.
-.br 
-\fB*Note:\fR The \fBUSE\fR status is only displayed when you use the \fB\-\-pretend\fR
-and \fB\-\-verbose\fR options.
+.B [ebuild     U ] sys\-devel/distcc\-2.16 [2.13\-r1] \-gtk +ipv6* (\-selinux)
+The \-gtk reflects the status of \fBUSE\fR variables when emerging distcc.  
+Here we see that distcc can use the \fBUSE\fR variable gtk, but that your 
+current settings have gtk disabled.  This means optional support for gtk will
+not be enabled in distcc when you emerge it.  An asterisk shows that the 
+\fBUSE\fR flags have changed since the package was last installed.  In this 
+case, ipv6 is enabled but was previously disabled.  A \fBUSE\fR flag in 
+pparenthesis, like (\-selinux), is always disabled and shows that the flag is 
+not available for the current system profile.
+.br
+\fB*Note:\fR The \fBUSE\fR status is only displayed when you use the 
+\fB\-\-pretend\fR and \fB\-\-verbose\fR options.
 .SH "NOTES"
-You should almost always precede any package install or update
-attempt with a \fB\-\-pretend\fR install or update.  This lets
-you see how much will be done, and shows you any blocking
-packages that you will have to rectify.  This goes doubly so
-for the \fBsystem\fR and \fBworld\fR classes, which can
-update a large number of packages if the portage tree has
-been particularly active.
+You should almost always precede any package install or update attempt with a 
+\fB\-\-pretend\fR install or update.  This lets you see how much will be 
+done, and shows you any blocking packages that you will have to rectify.  
+This goes doubly so for the \fBsystem\fR and \fBworld\fR classes, which can 
+update a large number of packages if the portage tree has been particularly 
+active.
 .LP
-You also want to typically use \fB\-\-update\fR, which ignores
-packages that are already fully updated but upgrades those that
-are not.
+You also want to typically use \fB\-\-update\fR, which ignores packages that 
+are already fully updated but upgrades those that are not.
 .LP
 When you install a package with uninstalled dependencies and do
 not explicitly state those dependencies in the list of parameters,
@@ -571,4 +569,4 @@ Mike Frysinger <vapier@gentoo.org>
 Marius Mauch <genone@gentoo.org>
 .br 
 .SH "CVS HEADER"
-$Id: emerge.1,v 1.70.2.4 2005/01/30 11:33:02 jstubbs Exp $
+$Id: emerge.1,v 1.70.2.5 2005/02/06 19:38:59 vapier Exp $
