@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.441 2004/07/24 04:09:36 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.442 2004/07/24 10:22:51 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -4837,15 +4837,16 @@ class vartree(packagetree):
 	
 	def getslot(self,mycatpkg):
 		"Get a slot for a catpkg; assume it exists."
+		myslot = ""
 		try:
-			myslotfile=open(self.root+VDB_PATH+"/"+mycatpkg+"/SLOT","r")
-			myslotvar=string.split(myslotfile.readline())
-			myslotfile.close()
-			if len(myslotvar):
-				return myslotvar[0]
-		except:
+			myslotvar=string.join(grabfile(self.root+VDB_PATH+"/"+mycatpkg+"/SLOT"))
+			if myslotvar:
+				myuse = grabfile(self.root+VDB_PATH+"/"+mycatpkg+"/USE")
+				myuse = string.split(string.join(myuse))
+				myslot = string.join(portage_dep.use_reduce(portage_dep.paren_reduce(myslotvar), myuse))
+		except Exception, e:
 			pass
-		return ""
+		return myslot
 	
 	def hasnode(self,mykey,use_cache):
 		"""Does the particular node (cat/pkg key) exist?"""
