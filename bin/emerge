@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.331 2004/09/27 01:45:27 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.332 2004/09/27 05:44:05 carpaski Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -1850,7 +1850,7 @@ class depgraph:
 											mynewargv += [arg]
 									elif arg[0] == "-":
 										myarg = "-"
-										for ch in myarg[1:]:
+										for ch in arg[1:]:
 											if ch != "a":
 												myarg += ch
 										mynewargv += [myarg]

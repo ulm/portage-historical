@@ -1,7 +1,7 @@
 # portage: Lock management code
 # Copyright 2004-2004 Gentoo Foundation
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.7 2004/09/27 01:45:27 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.8 2004/09/27 05:44:05 carpaski Exp $
 
 import atexit
 import errno
@@ -69,7 +69,7 @@ def lockfile(mypath,wantnewlockfile=0,unlinkfile=0):
 				try:
 					os.chown(lockfilename,os.getuid(),portage_data.portage_gid)
 				except:
-					portage.writemsg("Cannot chown a lockfile. This could cause inconvenience later.\n");
+					portage_util.writemsg("Cannot chown a lockfile. This could cause inconvenience later.\n");
 			os.umask(old_mask)
 		else:
 			myfd = os.open(lockfilename, os.O_CREAT|os.O_RDWR,0660)
