@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.529 2004/10/24 06:51:17 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.530 2004/10/25 11:20:46 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1052,6 +1052,7 @@ class config:
 
 				#package.keywords
 				pkgdict=grabdict_package(USER_CONFIG_PATH+"/package.keywords")
+				self.pkeywordsdict = {}
 				for key in pkgdict.keys():
 					# default to ~arch if no specific keyword is given
 					if not pkgdict[key]:
@@ -1064,7 +1065,10 @@ class config:
 							if not keyword[0] in "~-":
 								mykeywordlist.append("~"+keyword)
 						pkgdict[key] = mykeywordlist
-				self.pkeywordsdict = pkgdict
+					cp = dep_getkey(key)
+					if not self.pkeywordsdict.has_key(cp):
+						self.pkeywordsdict[cp] = {}
+					self.pkeywordsdict[cp][key] = pkgdict[key]
 
 				#package.unmask
 				pkgunmasklines = grabfile_package(USER_CONFIG_PATH+"/package.unmask")
@@ -3723,9 +3727,11 @@ def getmaskingstatus(mycpv):
 	myarch = settings["ARCH"]
 	pkgdict = settings.pkeywordsdict
 
-	for mykey in pkgdict:
-		if portdb.xmatch("bestmatch-list", mykey, mylist=[mycpv]):
-			pgroups.extend(pkgdict[mykey])
+	cp = dep_getkey(mycpv)
+	if pkgdict.has_key(cp):
+		matches = match_to_list(mycpv, pkgdict[cp].keys())
+		for match in matches:
+			pgroups.extend(pkgdict[cp][match])
 
 	kmask = "missing"
 
@@ -5451,9 +5457,11 @@ class portdbapi(dbapi):
 			mygroups=myaux[0].split()
 			pgroups=groups[:]
 			match=0
-			for mykey in pkgdict:
-				if db["/"]["porttree"].dbapi.xmatch("bestmatch-list", mykey, mylist=[mycpv]):
-					pgroups.extend(pkgdict[mykey])
+			cp = dep_getkey(mycpv)
+			if pkgdict.has_key(cp):
+				matches = match_to_list(mycpv, pkgdict[cp].keys())
+				for match in matches:
+					pgroups.extend(pkgdict[cp][match])
 			for gp in mygroups:
 				if gp=="*":
 					writemsg("--- WARNING: Package '%s' uses '*' keyword.\n" % mycpv)
