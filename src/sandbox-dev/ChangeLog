@@ -1,6 +1,13 @@
 # ChangeLog for Path Sandbox
 # Copyright 2002 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-dev/Attic/ChangeLog,v 1.7 2002/12/16 19:19:27 azarah Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-dev/Attic/ChangeLog,v 1.8 2002/12/16 22:28:05 jrray Exp $
+
+  16 Dec 2002; J Robert Ray <jrray@gentoo.org> Makefile libsandbox.c :
+
+  Instead of parsing the SANDBOX_* env variables on each syscall, save the
+  result in a global sbcontext pointer and cache the value of the env vars
+  to detect later on if they have changed and need to be re-parsed.  Works
+  around bug 233.
 
   16 Dec 2002; Martin Schlemmer <azarah@gentoo.org> create-localdecls :
 
