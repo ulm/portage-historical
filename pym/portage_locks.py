@@ -1,7 +1,7 @@
 # portage: Lock management code
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.9 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.10 2004/10/09 01:03:30 ferringb Exp $
 
 import atexit
 import errno
@@ -82,36 +82,45 @@ def lockfile(mypath,wantnewlockfile=0,unlinkfile=0):
 
 	# try for a non-blocking lock, if it's held, throw a message
 	# we're waiting on lockfile and use a blocking attempt.
-	try:
-		fcntl.lockf(myfd,fcntl.LOCK_EX|fcntl.LOCK_NB)
-	except IOError, e:
-		if "errno" not in dir(e):
-			raise e
-		if e.errno == errno.EAGAIN:
-			# resource temp unavailable; eg, someone beat us to the lock.
-			if type(mypath) == types.IntType:
-				print "waiting for lock on fd %i" % myfd
-			else:
-				print "waiting for lock on %s" % lockfilename
-			# try for the exclusive lock now.
-			fcntl.lockf(myfd,fcntl.LOCK_EX)
-		elif e.errno == errno.ENOLCK:
-			# We're not allowed to lock on this FS.
-			os.close(myfd)
+	for locking_method in (fcntl.flock, fcntl.lockf):
+		try:
 			link_success = False
-			if lockfilename == str(lockfilename):
-				if wantnewlockfile:
-					try:
-						if os.stat(lockfilename)[stat.ST_NLINK] == 1:
-							os.unlink(lockfilename)
-					except Exception, e:
-						pass
-					link_success = hardlink_lockfile(lockfilename)
-			if not link_success:
-				raise
-			myfd = HARDLINK_FD
-		else:
-			raise e
+			locking_method(myfd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+			link_success = True
+			break
+		except IOError, e:
+			if "errno" not in dir(e):
+				raise e
+			if e.errno == errno.EAGAIN:
+				# resource temp unavailable; eg, someone beat us to the lock.
+				if type(mypath) == types.IntType:
+					print "waiting for lock on fd %i" % myfd
+				else:
+					print "waiting for lock on %s" % lockfilename
+				# try for the exclusive lock now.
+				locking_method(myfd,fcntl.LOCK_EX)
+				link_success = True
+				break
+			elif e.errno in (errno.ENOLCK, errno.EINVALID):
+				pass
+			else:
+				raise e
+	
+	if not link_success:
+		# this sucks, badly.
+		# We're not allowed to lock on this FS.
+		os.close(myfd)
+		if lockfilename == str(lockfilename):
+			if wantnewlockfile:
+				try:
+					if os.stat(lockfilename)[stat.ST_NLINK] == 1:
+						os.unlink(lockfilename)
+				except Exception, e:
+					pass
+				link_success = hardlink_lockfile(lockfilename)
+		if not link_success:
+			raise
+		myfd = HARDLINK_FD
 
 	if type(lockfilename) == types.StringType and not os.path.exists(lockfilename):
 		# The file was deleted on us... Keep trying to make one...
