@@ -1,15 +1,30 @@
 # Copyright (C) 2001 Geert Bevin, Uwyn, http://www.uwyn.com
 # Distributed under the terms of the GNU General Public License, v2 or later 
 # Author : Geert Bevin <gbevin@uwyn.com>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox/Attic/Makefile,v 1.2 2002/03/06 09:51:02 gbevin Exp $
-default: sandbox libsandbox.so
+#
+# Modified 15 Apr 2002 Jon Nelson <jnelson@gentoo.org>
+#  Clean up Makefile somewhat, and use make's implicit rules
+#
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox/Attic/Makefile,v 1.3 2002/04/16 01:07:39 jnelson Exp $
 
-sandbox: sandbox.c
-	gcc -Wall -O2 -o sandbox sandbox.c
+.SUFFIXES:
+.SUFFIXES: .c .o .so
+.PRECIOUS: %.o
 
-libsandbox.so: libsandbox.c
-	gcc -Wall -O2 -ldl --shared -o libsandbox.so libsandbox.c
+%.so: LIBS=-ldl
+%.so: LDFLAGS=--shared
+%.so: %.o 
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -o $@ $(LIBS) $(LDFLAGS)
+        
+CC = gcc
+CFLAGS = -Wall -O2
+LIBS =
+LDFLAGS =
+
+TARGETS = sandbox libsandbox.so
+
+all:	$(TARGETS)
 
 clean:
-	rm sandbox
-	rm libsandbox.so
+	rm -f $(TARGETS)
+	rm -f *.o *~
