@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.387 2004/02/06 21:12:34 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.388 2004/02/08 20:32:14 nakano Exp $
 
 VERSION="2.0.50_pre17"
 
@@ -699,20 +699,19 @@ def env_update(makelinks=1):
 		mtimedb["ldpath"]={}
 
 	for x in specials["LDPATH"]+['/usr/lib','/lib']:
-		if os.path.isdir(x):
-			try:
-				newldpathtime=os.stat(x)[ST_MTIME]
-			except:
-				newldpathtime=0
-			if mtimedb["ldpath"].has_key(x):
-				if mtimedb["ldpath"][x]==newldpathtime:
-					pass
-				else:
-					mtimedb["ldpath"][x]=newldpathtime
-					ld_cache_update=True
+		try:
+			newldpathtime=os.stat(x)[ST_MTIME]
+		except:
+			newldpathtime=0
+		if mtimedb["ldpath"].has_key(x):
+			if mtimedb["ldpath"][x]==newldpathtime:
+				pass
 			else:
 				mtimedb["ldpath"][x]=newldpathtime
 				ld_cache_update=True
+		else:
+			mtimedb["ldpath"][x]=newldpathtime
+			ld_cache_update=True
 
 	if (ld_cache_update):
 		# We can't update links if we haven't cleaned other versions first, as
