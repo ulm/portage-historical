@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.739 2004/09/11 01:32:39 carpaski Exp $
+# $Id: ChangeLog,v 1.740 2004/09/11 01:45:18 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -9,17 +9,17 @@
     4. /etc/portage/sets/world is a symlink to /var/lib/portage/world
        It is for convenience. Do not mistake this for the actual file.
 
+  11 Sep 2004; Jason Stubbs <jstubbs@gentoo.org> portage.py: Fixed breakage
+  in cacheddir changes upon stat'ing a broken symlink.
+
+  11 Sep 2004; Jason Stubbs <jstubbs@gentoo.org> portage.py: Fixed missing
+  check in autouse function. Fixed out-of-bounds exception on catpkgsplit
+  tuple access in vardbapi.move_ent. Changed to manual stat calls in cacheddir.
+
 *portage-2.0.51_pre21 (09 Sep 2004): Fixes and stuff.
 
   10 Sep 2004; Nicholas Jones <carpaski@gentoo.org> portage.py: Removed the
 	circular deps of vardbapi and config.
-
-  10 Sep 2004; Jason Stubbs <jstubbs@gentoo.org> portage.py: Fixed missing
-  check in new autouse function. Fixed out-of-bounds exception on catpkgsplit
-  tuple access in vardbapi.move_ent. Changed to manual stat calls in
-  cacheddir.
-
-*portage-2.0.51_pre21 (09 Sep 2004): Fixes and stuff.
 
   09 Sep 2004; Nicholas Jones <carpaski@gentoo.org> portage.py: Possible fix
   for autouse() that will prevent recursion and locks.

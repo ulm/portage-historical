@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.499 2004/09/11 01:29:52 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.500 2004/09/11 01:45:18 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -235,12 +235,15 @@ def cacheddir(my_original_path, ignorecvs, ignorelist, EmptyOnError):
 		list = os.listdir(mypath)
 		ftype = []
 		for x in list:
-			pathstat = os.stat(mypath+"/"+x)
-			if S_ISREG(pathstat[ST_MODE]):
-				ftype.append(0)
-			elif S_ISDIR(pathstat[ST_MODE]):
-				ftype.append(1)
-			else:
+			try:
+				pathstat = os.stat(mypath+"/"+x)
+				if S_ISREG(pathstat[ST_MODE]):
+					ftype.append(0)
+				elif S_ISDIR(pathstat[ST_MODE]):
+					ftype.append(1)
+				else:
+					ftype.append(2)
+			except:
 				ftype.append(2)
 		dircache[mypath] = mtime, list, ftype
 
