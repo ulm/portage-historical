@@ -1,11 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.829 2004/11/05 13:51:09 jstubbs Exp $
+# $Id: ChangeLog,v 1.830 2004/11/06 02:34:24 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  06 Nov 2004; Jason Stubbs <jstubbs@gentoo.org> portage_dep.py emerge:
+  Added a reimplementation of digraph. Still some work to do (including
+  comments) in order to support the differences between *DEPEND. Modified
+  emerge a little to build up both dep graphs for testing purposes.
 
   05 Nov 2004; Jason Stubbs <jstubbs@gentoo.org> doins: Added vapier's fix
   for doins changing existing directory permissions. #69896
