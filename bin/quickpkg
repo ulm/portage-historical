@@ -2,7 +2,7 @@
 # Copyright (C) 2001 - Terry Chan
 # Copyright 2002-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/quickpkg,v 1.9 2003/12/25 03:06:09 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/quickpkg,v 1.10 2004/01/09 22:54:57 carpaski Exp $
 
 # This script tries to quickly create a Gentoo binary package using the
 # /var/db/pkg/category/pkg/*  files
@@ -57,7 +57,7 @@ do_pkg() {
 		cp ${SRCDIR}/* ${MYDIR}/temp/
 
 		# create filelist and a basic tbz2
-		cut -f 2 -d " " ${SRCDIR}/CONTENTS >${MYDIR}/filelist
+		grep -v "^dir" ${SRCDIR}/CONTENTS | cut -f 2 -d " " - >${MYDIR}/filelist
 		tar -vjcf ${MYDIR}/bin.tar.bz2 --files-from=${MYDIR}/filelist --no-recursion
 
 		# join together the basic tbz2 and the pkg info files
