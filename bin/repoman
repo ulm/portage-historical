@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.80 2004/08/05 03:04:02 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.81 2004/08/15 23:14:34 carpaski Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -126,6 +126,7 @@ qawarnings=[
 "IUSE.invalid",
 "ebuild.minorsyn",
 "ebuild.badheader",
+"file.size",
 "metadata.missing",
 "metadata.bad"
 ]

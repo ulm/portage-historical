@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.317 2004/08/15 05:33:57 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.318 2004/08/15 23:14:34 carpaski Exp $
 
 import os,sys,platform
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -312,7 +312,7 @@ if ("--debug" in myopts):
 if "inject" == myaction:
 	print
 	print red("*** --inject has been deprecated.")
-	print red("*** Please add package to /etc/portage/package.provided")
+	print red("*** Please add package to /etc/portage/profile/package.provided")
 	print red("*** using its full name (eg foo/bar-1.0) instead.")
 	print
 
