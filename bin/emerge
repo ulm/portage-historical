@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.15 2005/02/05 14:31:24 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.16 2005/02/11 01:57:33 ferringb Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -960,8 +960,10 @@ class depgraph:
 				edepend["SLOT"]   =mytbz2.getfile("SLOT",mypkgparts[2])
 		elif mytype=="ebuild":
 			try:
-				for x in ["DEPEND","RDEPEND","PDEPEND","CDEPEND"]:
-					edepend[x]=string.join(portage.portdb.aux_get(mykey,[x]), " ")
+				mymeta = ["DEPEND","RDEPEND","PDEPEND","CDEPEND"]
+				myfoo = portage.portdb.aux_get(mykey, mymeta)
+				for index in range(0,len(mymeta)):
+					edepend[mymeta[index]] = myfoo[index]
 			except (KeyError,IOError):
 				print "emerge: create(): aux_get() error on",mykey+"; aborting..."
 				sys.exit(1)
@@ -1323,9 +1325,7 @@ class depgraph:
 					sysdict[x]=worlddict[x]
 				else:
 					print "\n*** Package in world file is not installed: "+x
-			mylist=[]
-			for x in sysdict.keys():
-				mylist.append(sysdict[x])
+			mylist = sysdict.keys()
 
 		for mydep in mylist:
 			myeb=portage.portdb.xmatch("bestmatch-visible",mydep)
