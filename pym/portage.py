@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.458 2004/08/04 13:44:18 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.459 2004/08/04 14:12:18 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -2294,6 +2294,8 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 		if use_locks:
 			unlockfile(file_lock)
 		
+		if listonly:
+			writemsg("\n")
 		if (fetched!=2) and not listonly:
 			writemsg("!!! Couldn't download "+str(myfile)+". Aborting.\n")
 			return 0
@@ -2853,6 +2855,9 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 
 	if not fetch(fetchme, mysettings, listonly, fetchonly):
 		return 1
+
+	if mydo=="fetch" and listonly:
+		return 0
 
 	if "digest" in features:
 		#generate digest if it doesn't exist.
