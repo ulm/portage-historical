@@ -1,13 +1,13 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.27 2005/01/13 18:08:00 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.28 2005/01/15 03:30:28 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
 # ===========================================================================
 
-VERSION="$Revision: 1.524.2.27 $"
+VERSION="$Revision: 1.524.2.28 $"
 
 VDB_PATH                = "var/db/pkg"
 PRIVATE_PATH            = "/var/lib/portage"
@@ -855,9 +855,19 @@ class config:
 		self.virtuals = {}
 		self.v_count  = 0
 
+		# Virtuals obtained from the vartree
+		self.treeVirtuals = {}
+		# Virtuals by user specification. Includes negatives.
+		self.userVirtuals = {}
+		# Virtual negatives from user specifications.
+		self.negVirtuals  = {}
+
+		self.user_profile_dir = None
+
 		if clone:
 			self.incrementals = copy.deepcopy(clone.incrementals)
 			self.profile_path = copy.deepcopy(clone.profile_path)
+			self.user_profile_dir = copy.deepcopy(clone.user_profile_dir)
 
 			self.module_priority = copy.deepcopy(clone.module_priority)
 			self.modules         = copy.deepcopy(clone.modules)
@@ -866,6 +876,10 @@ class config:
 
 			self.packages = copy.deepcopy(clone.packages)
 			self.virtuals = copy.deepcopy(clone.virtuals)
+
+			self.treeVirtuals = copy.deepcopy(clone.treeVirtuals)
+			self.userVirtuals = copy.deepcopy(clone.userVirtuals)
+			self.negVirtuals  = copy.deepcopy(clone.negVirtuals)
 
 			self.use_defs = copy.deepcopy(clone.use_defs)
 			self.usemask  = copy.deepcopy(clone.usemask)
@@ -946,7 +960,8 @@ class config:
 			else:
 				# XXX: This should depend on ROOT?
 				if os.path.exists("/"+CUSTOM_PROFILE_PATH):
-					self.profiles.append("/"+CUSTOM_PROFILE_PATH)
+					self.user_profile_dir = os.path.normpath("/"+"///"+CUSTOM_PROFILE_PATH)
+					self.profiles.append(self.user_profile_dir[:])
 
 			self.packages_list = grab_multiple("packages", self.profiles, grabfile_package)
 			self.packages      = stack_lists(self.packages_list, incremental=1)
@@ -1296,13 +1311,11 @@ class config:
 			virt = dep_getkey(virt)
 			if not self.treeVirtuals.has_key(virt):
 				self.treeVirtuals[virt] = []
+			# XXX: Is this bad? -- It's a permanent modification
 			self.treeVirtuals[virt] = portage_util.unique_array(self.treeVirtuals[virt]+[cp])
-		
-		# Reconstruct the combined virtuals.
-		val = stack_dictlist([self.treeVirtuals]+self.dirVirtuals,incremental=1)
-		for x in val.keys():
-			val[x].reverse()
-		self.virtuals = val
+
+		return self.__getvirtuals_compile()
+
 	
 	def regenerate(self,useonly=0,use_cache=1):
 		global incrementals,usesplit,profiledir
@@ -1396,47 +1409,103 @@ class config:
 		# from. So the only ROOT prefixed dir should be local configs.
 		#myvirtdirs  = prefix_array(self.profiles,myroot+"/")
 		myvirtdirs = copy.deepcopy(self.profiles)
-		
-		self.treeVirtuals = {}
+		while self.user_profile_dir in myvirtdirs:
+			myvirtdirs.remove(self.user_profile_dir)
 
-		# Repoman should ignore these.
-		user_profile_dir = None
-		if os.environ.get("PORTAGE_CALLER","") != "repoman":
-		  user_profile_dir = myroot+USER_CONFIG_PATH
+		
+		# Rules
+		# R1: Collapse profile virtuals
+		# R2: Extract user-negatives.
+		# R3: Collapse user-virtuals.
+		# R4: Apply user negatives to all except user settings.
+
+		# Order of preference:
+		# 1. user-declared that are installed
+		# 3. installed and in profile
+		# 4. installed
+		# 2. user-declared set
+		# 5. profile
+
+		myvirtdirs
 
 		self.dirVirtuals = grab_multiple("virtuals", myvirtdirs, grabdict)
 		self.dirVirtuals.reverse()
-		self.userVirtuals = {}
-		if user_profile_dir and os.path.exists(user_profile_dir+"/virtuals"):
-			self.userVirtuals = grabdict(user_profile_dir+"/virtuals")
 
-		# User settings and profile settings take precedence over tree.
-		profile_virtuals = stack_dictlist([self.userVirtuals]+self.dirVirtuals,incremental=1)
-		for x in profile_virtuals.keys():
-			profile_virtuals[x].reverse()
-		self.userVirtuals = {} # keep this in case something else is using it.
+		if self.user_profile_dir and os.path.exists(self.user_profile_dir+"/virtuals"):
+			self.userVirtuals = grabdict(self.user_profile_dir+"/virtuals")
 
-		# repoman doesn't need local virtuals.
+		# Store all the negatives for later.
+		for x in self.userVirtuals.keys():
+			self.negVirtuals[x] = []
+			for y in self.userVirtuals[x]:
+				if y[0] == '-':
+					self.negVirtuals[x].append(y[:])
+
+		# Collapse the user virtuals so that we don't deal with negatives.
+		self.userVirtuals = stack_dictlist([self.userVirtuals],incremental=1)
+
+		# Collapse all the profile virtuals. Negatives don't apply outside
+		# as negatives in profiles only affect profile virtuals.
+		self.dirVirtuals = stack_dictlist(self.dirVirtuals,incremental=1)
+
+		# Repoman does not use user or tree virtuals.
 		if os.environ.get("PORTAGE_CALLER","") != "repoman":
-			temp_vartree = vartree(myroot,profile_virtuals,categories=self.categories)
-			installed_virtuals = map_dictlist_vals(getCPFromCPV,temp_vartree.get_all_provides())
-			for x in installed_virtuals.keys():
-				installed_virtuals[x] = portage_util.unique_array(installed_virtuals[x])
-				self.treeVirtuals[x] = []
-				if profile_virtuals.has_key(x):
-					for y in profile_virtuals[x]:
-						if y in installed_virtuals[x]:
-							self.treeVirtuals[x].append(y)
-							installed_virtuals[x].remove(y)
-				self.treeVirtuals[x].extend(installed_virtuals[x])
-		
-		self.dirVirtuals = [profile_virtuals] # keep this as a list for compatibility
-		
+			# XXX: vartree does not use virtuals, does user set matter?
+			temp_vartree = vartree(myroot,self.dirVirtuals,categories=self.categories)
+			# Reduce the provides into a list by CP.
+			self.treeVirtuals = map_dictlist_vals(getCPFromCPV,temp_vartree.get_all_provides())
+
+		return self.__getvirtuals_compile()
+
+	def __getvirtuals_compile(self):
+ 		"""Actually generate the virtuals we have collected.
+       The results are reversed so the list order is left to right.
+       Given data is [Best,Better,Good] sets of [Good, Better, Best]
+"""
+		# Virtuals by profile+tree preferences.
+		ptVirtuals   = {}
+		# Virtuals by user+tree preferences.
+		utVirtuals   = {}
+
+		# If a user virtuals is already installed, we preference it.
+		for x in self.userVirtuals.keys():
+			utVirtuals[x] = []
+			if x in self.treeVirtuals.keys():
+				for y in self.userVirtuals[x]:
+					if y in self.treeVirtuals[x]:
+						utVirtuals[x].append(y)
+			#print "F:",utVirtuals
+			#utVirtuals[x].reverse()
+			#print "R:",utVirtuals
+
+		# If a tree virtual is also a profile virtual, we preference it.
+		for x in self.dirVirtuals.keys():
+			ptVirtuals[x] = []
+			if x in self.treeVirtuals.keys():
+				for y in self.dirVirtuals[x]:
+					if y in self.treeVirtuals[x]:
+						ptVirtuals[x].append(y)
+
+		# Apply the negations to all but userVirtuals-spawned virtuals.
+		NptVirtuals   = stack_dictlist([self.negVirtuals,ptVirtuals],incremental=1)
+		NtreeVirtuals = stack_dictlist([self.negVirtuals,self.treeVirtuals],incremental=1)
+		NdirVirtuals  = stack_dictlist([self.negVirtuals,self.dirVirtuals],incremental=1)
+
+		uVirtuals      = copy.deepcopy(self.userVirtuals)
+
+		# UserInstalled, ProfileInstalled, Installed, User, Profile
+		biglist = [utVirtuals, NptVirtuals, NtreeVirtuals,
+		           uVirtuals, NdirVirtuals]
+
+		# We reverse each dictlist so that the order matches everything
+		# else in portage. [-*, a, b] [b, c, d] ==> [b, a]
+		for dictlist in biglist:
+			for key in dictlist:
+				dictlist[key].reverse()
+
 		# User settings and profile settings take precedence over tree.
-		val = stack_dictlist([self.treeVirtuals]+self.dirVirtuals,incremental=1)
+		val = stack_dictlist(biglist,incremental=1)
 		
-		for x in val.keys():
-			val[x].reverse()
 		return val
 	
 	def __delitem__(self,mykey):

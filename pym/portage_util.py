@@ -1,6 +1,6 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.11.2.3 2005/01/02 09:08:11 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.11.2.4 2005/01/15 03:30:28 carpaski Exp $
 
 import sys,string,shlex,os.path
 
@@ -72,16 +72,16 @@ def stack_dictlist(original_dicts, incremental=0, incrementals=[], ignore_none=0
 			if not kill_list.has_key(y):
 				kill_list[y] = []
 			
+			mydict[y].reverse()
 			for thing in mydict[y]:
-				if thing and (thing not in kill_list[y]):
+				if thing and (thing not in kill_list[y]) and ("*" not in kill_list[y]):
 					if (incremental or (y in incrementals)) and thing[0] == '-':
 						if thing[1:] not in kill_list[y]:
 							kill_list[y] += [thing[1:]]
-#						while(thing[1:] in final_dict[y]):
-#							del final_dict[y][final_dict[y].index(thing[1:])]
 					else:
 						if thing not in final_dict[y]:
-							final_dict[y].insert(0,thing[:])
+							final_dict[y].append(thing[:])
+			mydict[y].reverse()
 			if final_dict.has_key(y) and not final_dict[y]:
 				del final_dict[y]
 	return final_dict

@@ -1,17 +1,27 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.50 2005/01/13 18:17:45 carpaski Exp $
+# $Id: ChangeLog,v 1.796.2.51 2005/01/15 03:30:27 carpaski Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
 
+*portage-2.0.51-r13 (15 Jan 2004): Testing for virtuals changes
+
+  15 Jan 2004; Nicholas Jones <carpaski@gentoo.org> portage.py: Adjusted the
+  virtuals handling into an advanced for of what Jason started using promotion
+  instead of blanket settings. Removed the user_profile dir completely when
+  using repoman via a new user_profile_dir variable that is stored on creation.
+  Split the getvirtuals() call into two pieces so that setinst() can also
+  recreate the virtuals properly when modifying the vartree.
+
+  15 Jan 2004; Nicholas Jones <carpaski@gentoo.org> portage_util.py: Modified
+  the stack_dictlist function to handle '-*' and do it in the proper order.
+
   13 Jan 2004; Nicholas Jones <carpaski@gentoo.org> portage.py, emerge:
   Adjusted the version handling for portage so that we can use CVS versions
   and ignore the restarts when using livecvsportage.
-
-*portage-2.0.51-r12 (13 Jan 2004): Cleanup
 
   13 Jan 2004; Nicholas Jones <carpaski@gentoo.org> repoman: Added the
   portage/repoman version used to the commit messages.
