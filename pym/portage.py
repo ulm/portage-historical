@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.465 2004/08/06 02:06:27 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.466 2004/08/07 10:56:24 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -3867,15 +3867,21 @@ def dep_check(depstring,mydbapi,mysettings,use="yes",mode=None,myuse=None,use_ca
 	mysplit = portage_dep.paren_reduce(depstring)
 
 	if mysettings:
-		if use=="all":
-			mymasks=archlist[:]
-		else:
-			mymasks=mysettings.usemask+archlist[:]
+		# XXX: use="all" is only used by repoman. Why would repoman checks want
+		# profile-masked USE flags to be enabled?
+		#if use=="all":
+		#	mymasks=archlist[:]
+		#else:
+		mymasks=mysettings.usemask+archlist[:]
+
 		while mysettings["ARCH"] in mymasks:
 			del mymasks[mymasks.index(mysettings["ARCH"])]
 		mysplit = portage_dep.use_reduce(mysplit,myusesplit,masklist=mymasks,matchall=(use=="all"))
 	else:
 		mysplit = portage_dep.use_reduce(mysplit,myusesplit,matchall=(use=="all"))
+	
+	# Do the || conversions
+	mysplit=portage_dep.dep_opconvert(mysplit)
 	
 	#convert virtual dependencies to normal packages.
 	mysplit=dep_virtual(mysplit)
