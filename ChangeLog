@@ -1,13 +1,17 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.882 2004/11/22 11:38:00 ferringb Exp $
+# $Id: ChangeLog,v 1.883 2004/11/22 12:17:29 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
 
-  20 Nov 2004; Brian Harring <ferringb@gentoo.org> src/filter-env/posix.c:
+  22 Nov 2004; Brian Harring <ferringb@gentoo.org> bin/ebuild-functions.sh:
+  econf now ignores update_confcache's exit_code, and uses configure's.  Should
+  kill off the occasionaly "couldn't update confcache" and killing of compile phase.
+
+  22 Nov 2004; Brian Harring <ferringb@gentoo.org> src/filter-env/posix.c:
   Commited what should be a fix for the "lets randomly drop part of the env"
   issue that's been around lately.   Basically, it looks like it wasn't reading
   all of what was dumped to stdin.  Converted it to fread/fopen based, and used

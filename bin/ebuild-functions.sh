@@ -2,7 +2,7 @@
 # ebuild-functions.sh; ebuild env functions, saved with the ebuild (not specific to the portage version).
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-functions.sh,v 1.2 2004/11/07 14:06:53 ferringb Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-functions.sh,v 1.3 2004/11/22 12:17:29 ferringb Exp $
 
 use() {
 	if useq ${1}; then
@@ -70,6 +70,7 @@ use_enable() {
 }
 
 econf() {
+	local ret
 	if [ -x ./configure ]; then
 		if hasq autoconfig $FEATURES && ! hasq autoconfig $RESTRICT; then
 			if [ -e /usr/share/gnuconfig/ -a -x /bin/basename ]; then
@@ -124,8 +125,11 @@ econf() {
 			--localstatedir=/var/lib \
 			${EXTRA_ECONF} \
 			${EECONF_CACHE} \
-			"$@" || die "econf failed" 
+			"$@" || die "econf failed"
+		# store the returned exit code.  don't rely on update_confcache returning true.
+		ret=$?
 		update_confcache "${T}/local_cache"
+		return $ret
 	else
 		die "no configure script found"
 	fi
