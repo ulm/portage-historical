@@ -1,11 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.944 2005/03/29 00:22:28 ferringb Exp $
+# $Id: ChangeLog,v 1.945 2005/04/03 15:37:19 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  03 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage_dep.py:
+  Added shortcut to circular dep "resolution" as per bug 85130. Removed
+  the traversed cache dict from __traverse_nodes and made the original
+  list into a dict.
 
   27 Mar 2005; Brian Harring <ferringb@gentoo.org> bin/ebuild-functions.sh:
   Pushed ECONF_SOURCE support forward from stable.  Seems kind of fluffish.
