@@ -167,11 +167,6 @@ Do not delete the ${T} directory after the merge process.
 .B keepwork
 Do not delete the ${WORKDIR} directory after the merge process.
 .TP
-.B maketest
-Run package\-specific tests during each merge to help make sure 
-the package compiled properly.  See \fItest\fR in \fBebuild\fR(1) 
-and \fIsrc_test()\fR in \fBebuild\fR(5).
-.TP
 .B mirror
 This will cause \fBFETCHCOMMAND\fR to always be run even if 
 the file already exists in \fBDISTDIR\fR.
@@ -222,6 +217,11 @@ dangerous (like missing or incorrect Manifests).
 .B suidctl
 Before merging packages to the live filesystem, automatically strip setuid 
 bits from any file that is not listed in \fI/etc/portage/suidctl.conf\fR.
+.TP
+.B test
+Run package\-specific tests during each merge to help make sure 
+the package compiled properly.  See \fItest\fR in \fBebuild\fR(1) 
+and \fIsrc_test()\fR in \fBebuild\fR(5).
 .TP
 .B userpriv
 Allow portage to drop root privledges and compile packages as 
@@ -389,4 +389,4 @@ Nicholas Jones <carpaski@gentoo.org>
 .br 
 Mike Frysinger <vapier@gentoo.org>
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/make.conf.5,v 1.44.2.2 2004/12/17 03:55:53 vapier Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/make.conf.5,v 1.44.2.3 2005/01/16 18:29:28 vapier Exp $
