@@ -1,8 +1,8 @@
 # deps.py -- Portage dependency resolution functions
 # Copyright 2003-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.25 2005/03/08 12:04:31 ferringb Exp $
-cvs_id_string="$Id: portage_dep.py,v 1.25 2005/03/08 12:04:31 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.26 2005/03/13 12:14:40 ferringb Exp $
+cvs_id_string="$Id: portage_dep.py,v 1.26 2005/03/13 12:14:40 ferringb Exp $"[5:-2]
 
 # DEPEND SYNTAX:
 #
@@ -462,6 +462,10 @@ class DependencyGraph:
 		if not depth:
 			depth = len(self.graph)
 		traversed = []  # The list of nodes to be returned
+		# constant lookup if a relation is in traversed.
+		# check into if traversed can just be a dict instead.
+		# is dependant on if the returned list is a set, or a sequence.
+		trav_cache_dict = {} 
 
 		# This function _needs_ to be fast, so we use a stack
 		# based implementation rather than recursive calls.
@@ -484,8 +488,9 @@ class DependencyGraph:
 			else:
 				relation = graph[node][path][index]
 				# Add the relation to our list if necessary...
-				if relation not in traversed:
+				if relation not in trav_cache_dict:
 					traversed.append(relation)
+					trav_cache_dict[relation] = None
 					# ...and then check if we can go deeper
 					if depth != 1:
 						# Add state to the stack.
@@ -501,6 +506,7 @@ class DependencyGraph:
 			# Move onto the next relation.
 			index += 1
 
+		trav_cache_dict.clear()
 		# Return our list.
 		return traversed
 
