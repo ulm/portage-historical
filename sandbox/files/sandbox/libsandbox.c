@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 The Leaf, http://www.theleaf.be
 **  Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@theleaf.be>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/files/sandbox/Attic/libsandbox.c,v 1.5 2001/12/10 11:08:21 gbevin Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/files/sandbox/Attic/libsandbox.c,v 1.6 2001/12/11 01:39:52 gbevin Exp $
 */
 
 #define _GNU_SOURCE
@@ -625,6 +625,9 @@ int check_syscall(const char* func, const char* file)
 	char*	tmp_buffer = NULL;
 	char*	log_path = NULL;
 	int 	log_file = 0;
+	char*	debug_log_env = NULL;
+	char*	debug_log_path = NULL;
+	int 	debug_log_file = 0;
 	char 	buffer[512];
 
 	if ('/' == file[0])
@@ -640,8 +643,11 @@ int check_syscall(const char* func, const char* file)
 	}
 	
 	log_path = getenv("SANDBOX_LOG");
+	debug_log_env = getenv("SANDBOX_DEBUG");
+	debug_log_path = getenv("SANDBOX_DEBUG_LOG");
 	
-	if ((NULL == log_path || 0 != strcmp(file, log_path)) &&
+	if ((NULL == log_path || 0 != strcmp(absolute_path, log_path)) &&
+		(NULL == debug_log_env || NULL == debug_log_path || 0 != strcmp(absolute_path, debug_log_path)) &&
 		0 == check_access(func, absolute_path))
 	{
 		if (1 == show_access_violation)
@@ -662,9 +668,25 @@ int check_syscall(const char* func, const char* file)
 
 		return 0;
 	}
-	else if (NULL != getenv("SANDBOX_DEBUG"))
+	else if (NULL != debug_log_env)
 	{
-		fprintf(stderr, "\e[32;01mACCESS ALLOWED\033[0m %s:%*s%s\n", func, (int)(10-strlen(func)), "", absolute_path);
+		if (NULL != debug_log_path)
+		{
+			if (0 != strcmp(absolute_path, debug_log_path))
+			{
+				debug_log_file = open(debug_log_path, O_APPEND|O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+				if(debug_log_file >= 0)
+				{
+					sprintf(buffer, "%s:%*s%s\n", func, (int)(10-strlen(func)), "", absolute_path);
+					write(debug_log_file, buffer, strlen(buffer));
+					close(debug_log_file);
+				}
+			}
+		}
+		else
+		{
+			fprintf(stderr, "\e[32;01mACCESS ALLOWED\033[0m %s:%*s%s\n", func, (int)(10-strlen(func)), "", absolute_path);
+		}
 	}
 	
 	return 1;
