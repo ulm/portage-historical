@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.10 2004/11/29 08:41:28 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.11 2004/11/30 22:20:24 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -6416,6 +6416,7 @@ class dblink:
 		if dircache.has_key(self.dbcatdir):
 			del dircache[self.dbcatdir]
 		print ">>>",self.mycpv,"merged."
+		return 0
 
 	def mergeme(self,srcroot,destroot,outfile,secondhand,stufftomerge,cfgfiledict,thismtime):
 		srcroot=os.path.normpath("///"+srcroot)+"/"

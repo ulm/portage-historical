@@ -1,11 +1,20 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.18 2004/11/29 08:41:27 carpaski Exp $
+# $Id: ChangeLog,v 1.796.2.19 2004/11/30 22:20:24 carpaski Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+*portage-2.0.51-r5 (30 Nov 2004): Cleanup
+
+  29 Nov 2004; Nicholas Jones <carpaski@gentoo.org> portage.py: Added a
+  (backport?) missing return to treewalk.
+
+  29 Nov 2004; Nicholas Jones <carpaski@gentoo.org> cnf/*: Removed the
+  prozilla references. Adjusted the default mirrors to a gentoo round-
+  robin.
 
   29 Nov 2004; Nicholas Jones <carpaski@gentoo.org> portage_exec.py: Modified
   the magic constants to be os.access calls.
