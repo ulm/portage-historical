@@ -1,13 +1,13 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.26 2005/01/13 13:23:27 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.27 2005/01/13 18:08:00 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
 # ===========================================================================
 
-VERSION="20040626"
+VERSION="$Revision: 1.524.2.27 $"
 
 VDB_PATH                = "var/db/pkg"
 PRIVATE_PATH            = "/var/lib/portage"
