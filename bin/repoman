@@ -2,7 +2,7 @@
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
 # Author: Daniel Robbins <drobbins@gentoo.org>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.5.2.1 2003/02/17 05:29:51 alain Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.5.2.2 2003/02/19 15:45:40 alain Exp $
 
 # Next to do: dep syntax checking in ebuilds, mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -170,9 +170,10 @@ elif repolevel==1:
 			if os.path.isdir(startdir+"/"+x+"/"+y):
 				scanlist.append(x+"/"+y)
 elif repolevel==3:
-	if reposplit[-2] not in ctx.categories:
+	catdir = reposplit[-2]
+	if catdir not in ctx.categories:
 		caterror(catdir)
-	scanlist.append(reposplit[-2]+"/"+reposplit[-1])
+	scanlist.append(catdir+"/"+reposplit[-1])
 
 stats={}
 fails={}

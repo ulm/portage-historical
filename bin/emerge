@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.178.2.8 2003/02/17 05:29:51 alain Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.178.2.9 2003/02/19 15:45:40 alain Exp $
 
 import os,sys,portage,emergehelp,xpak,string,re,commands,time,threading,shutil,traceback
 from stat import *
@@ -280,11 +280,12 @@ class search:
 		if re.search("\+\+", self.searchkey):
 			#hack for people who aren't regular expression gurus
 			self.searchkey=re.sub("\+\+","\+\+",self.searchkey)
+		self.searchre=re.compile(self.searchkey.lower(),re.I)
 		for package in ctx.portdb.cp_all():
 			update_spinner()
 			package_parts=package.split("/")
 			masked=0
-			if re.search(self.searchkey.lower(), package_parts[1].lower()):
+			if self.searchre.search(package_parts[1]):
 				if not ctx.portdb.xmatch("match-visible",package):
 					masked=1
 				self.matches["pkg"].append([package,masked])
@@ -302,7 +303,7 @@ class search:
 				except KeyError:
 					print "emerge: search: aux_get() failed, skipping"
 					continue
-				if re.search(self.searchkey.lower(), full_desc.lower()):
+				if self.searchre.search(full_desc):
 					self.matches["desc"].append([full_package,masked])
 		self.mlen=0
 		for mtype in self.matches.keys():
@@ -363,7 +364,7 @@ class search:
 					print "     ", darkgreen("Latest version available:"),myversion
 					print "     ", self.getInstallationStatus(catpack)
 					print "     ", darkgreen("Size of downloaded files:"),mysum[0]
-					print "     ", darkgreen("Homepage:   "),homepage
+					print "     ", darkgreen("Homepage:")+"   ",homepage
 					print "     ", darkgreen("Description:"),desc
 					print
 		
@@ -375,7 +376,7 @@ class search:
 		result = ""
 		version = self.getVersion(installed_package,search.VERSION_RELEASE)
 		if len(version) > 0:
-			result = darkgreen("Latest version installed: ")+version
+			result = darkgreen("Latest version installed:")+" "+version
 		else:
 			result = darkgreen("Latest version installed:")+" [ Not Installed ]"
 		return result
@@ -990,9 +991,10 @@ class depgraph:
 							#we don't have a favorites entry for this package yet; add one
 							myfavdict[myfavkey]=myfavkey
 							print ">>> Recording",myfavkey,"in \"world\" favorites file..."
-			portage.writedict(myfavdict,ctx.getRoot()+"var/cache/edb/world",writekey=0)
+			if not "--fetchonly" in myopts:
+				portage.writedict(myfavdict,ctx.getRoot()+"var/cache/edb/world",writekey=0)
 
-			ctx.mtimedb["resume"]["mergelist"]=mymergelist
+			ctx.mtimedb["resume"]["mergelist"]=mymergelist[:]
 
 		mergecount=0
 		for x in mymergelist:
@@ -1658,17 +1660,18 @@ else:
 		print darkgreen("These are the packages that I would merge, in order:")
 		print
 	if ("--resume" in myopts) and ctx.mtimedb.has_key("resume"):
-		if "--pretend" in myopts:
-			myopts=ctx.mtimedb["resume"]["myopts"]+["--pretend"]
-		else:
-			myopts=ctx.mtimedb["resume"]["myopts"]
+		myresumeopts=ctx.mtimedb["resume"]["myopts"][:]
+		for myopt in myopts:
+			if myopt not in myresumeopts:
+				myresumeopts.append(myopt)
+		myopts=myresumeopts
 		mydepgraph=depgraph("resume",myopts)
 		if "--resume" not in myopts:
 			myopts+=["--resume"]
 	else:
 		if ("--resume" in myopts):
 			del myopts[myopts.index("--resume")]
-			print red("!!! It seems we have nothing to resume.")
+			print darkgreen("emerge: It seems we have nothing to resume...")
 			sys.exit(0)
 
 		mydepgraph=depgraph(myaction,myopts)
@@ -1717,4 +1720,3 @@ else:
 			print ">>> Auto-cleaning packages ..."
 			unmerge("clean", ["world"])
 	post_emerge()
-
