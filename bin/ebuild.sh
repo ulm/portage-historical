@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.147 2003/12/10 06:00:56 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.148 2003/12/10 22:44:07 carpaski Exp $
 
 if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 	if [ -f ${T}/successful ]; then
@@ -418,19 +418,6 @@ pkg_prerm()
 pkg_postrm()
 {
 	return
-}
-
-try() {
-	env "$@"
-	if [ "$?" != "0" ]
-	then
-		echo 
-		echo '!!! '"ERROR: the $1 command did not complete successfully."
-		echo '!!! '"(\"$*\")"
-		echo '!!! '"Since this is a critical task, ebuild will be stopped."
-		echo
-		exit 1
-	fi
 }
 
 # Used to generate the /lib/cpp and /usr/bin/cc wrappers
