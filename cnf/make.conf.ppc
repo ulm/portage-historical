@@ -1,6 +1,6 @@
 # Copyright 2000-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Contains local system settings for Portage system
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.ppc,v 1.44 2003/07/16 12:59:18 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.ppc,v 1.45 2004/01/12 07:34:38 carpaski Exp $
 
 # Please review 'man make.conf' for more information.
 
@@ -97,6 +97,12 @@ CHOST="powerpc-unknown-linux-gnu"
 # includes the unstable, in testing, packages. Users of the 'x86' architecture
 # would add '~x86' to ACCEPT_KEYWORDS to enable unstable/testing packages.
 # '~ppc', '~sparc' are the unstable KEYWORDS for their respective platforms.
+#
+# Please note that this is not for development, alpha, beta, nor cvs release
+# packages. "Broken" packages will not be added to testing and should not be
+# requested to be added. Alternative routes are available to developers
+# for experimental packages, and it is at their discretion to use them.
+#
 # DO NOT PUT ANYTHING BUT YOUR SPECIFIC ~ARCHITECTURE IN THE LIST.
 # IF YOU ARE UNSURE OF YOUR ARCH, OR THE IMPLICATIONS, DO NOT MODIFY THIS.
 #
