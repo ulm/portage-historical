@@ -1,11 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.877 2004/11/18 01:25:43 genone Exp $
+# $Id: ChangeLog,v 1.878 2004/11/20 10:20:52 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  20 Nov 2004; Brian Harring <ferringb@gentoo.org> <collection-of-files>:
+  Portage is now autotool'd, w/ relevant configure.  Needs work, specifically,
+  cnf installation isn't there yet- would prefer to add that when the 101 arch 
+  specific make.conf's are collapsed down to one file.
 
   18 Nov 2004; Marius Mauch <genone@gentoo.org> pym/portage_versions.py:
   Fixing version regexp to allow weird package names.
