@@ -1,13 +1,13 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.28 2005/01/15 03:30:28 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.29 2005/01/15 06:47:18 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
 # ===========================================================================
 
-VERSION="$Revision: 1.524.2.28 $"
+VERSION="$Revision: 1.524.2.29 $"
 
 VDB_PATH                = "var/db/pkg"
 PRIVATE_PATH            = "/var/lib/portage"
@@ -1425,8 +1425,6 @@ class config:
 		# 4. installed
 		# 2. user-declared set
 		# 5. profile
-
-		myvirtdirs
 
 		self.dirVirtuals = grab_multiple("virtuals", myvirtdirs, grabdict)
 		self.dirVirtuals.reverse()
