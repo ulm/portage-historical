@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.20 2004/02/04 22:40:21 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.21 2004/02/12 04:51:03 nakano Exp $
 
 import os,sys
 from output import *
@@ -223,10 +223,10 @@ def help(myaction,myopts,havecolor=1):
 		print "              ebuilds and tbz2s *would* have been installed if --pretend"
 		print "              weren't used.  Using --pretend is strongly recommended before"
 		print "              installing an unfamiliar package.  In the printout, N = new,"
-		print "              U = updating, R = replacing, B = blocked by an already installed"
-		print "              package, D = possible downgrading. --verbose causes affecting"
-		print "              use flags to be printed out accompanied by a '+' for enabled"
-		print "              and a '-' for disabled flags."
+		print "              U = updating, R = replacing, F = fetch  restricted, B = blocked"
+		print "              by an already installed package, D = possible downgrading."
+		print "              --verbose causes affecting use flags to be printed out"
+		print "              accompanied by a '+' for enabled and a '-' for disabled flags."
 		print
 		print "       "+green("--quiet")+" ("+green("-q")+" short option)"
 		print "              Effects vary, but the general outcome is a reduced or condensed"

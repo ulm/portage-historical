@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.390 2004/02/10 01:24:56 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.391 2004/02/12 04:51:03 nakano Exp $
 
 VERSION="2.0.50_pre17"
 
@@ -2210,9 +2210,8 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 				print "*** Adjusting ccache permissions for portage user..."
 				os.chown(mysettings["CCACHE_DIR"],portage_uid,portage_gid)
 				os.chmod(mysettings["CCACHE_DIR"],02770)
-				if mystat[ST_GID]!=portage_gid:
-					spawn("chown -R "+str(portage_uid)+":"+str(portage_gid)+" "+mysettings["CCACHE_DIR"],mysettings, free=1)
-					spawn("chmod -R g+rw "+mysettings["CCACHE_DIR"],mysettings, free=1)
+				spawn("chown -R "+str(portage_uid)+":"+str(portage_gid)+" "+mysettings["CCACHE_DIR"],mysettings, free=1)
+				spawn("chmod -R g+rw "+mysettings["CCACHE_DIR"],mysettings, free=1)
 		except:
 			pass
 			

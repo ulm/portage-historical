@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.265 2004/02/10 01:24:56 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.266 2004/02/12 04:51:03 nakano Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -54,7 +54,7 @@ def userquery(prompt, responses=None, colours=None):
 				if response.upper()==key[:len(response)].upper():
 					return key
 			print "Sorry, response '%s' not understood." % response,
-	except KeyboardInterrupt:
+	except (EOFError, KeyboardInterrupt):
 		print "Interrupted."
 		sys.exit(1)
 
@@ -242,8 +242,8 @@ if ("--upgradeonly" in myopts) and not ("--update" in myopts):
 	print ">>> --upgradeonly implies --update... adding --update to options."
 	myopts.append("--update")
 
-# Also allow -l to apply --pretend/-p
-if ("--changelog" in myopts) and not ("--pretend" in myopts):
+# Also allow -l to apply --pretend/-p, but if already in --ask mode
+if ("--changelog" in myopts) and not (("--pretend" in myopts) or ("--ask" in myopts)):
 	print ">>> --changelog implies --pretend... adding --pretend to options."
 	myopts.append("--pretend")
 
