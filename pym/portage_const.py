@@ -1,7 +1,8 @@
 # portage: Constants
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_const.py,v 1.3 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_const.py,v 1.3.2.1 2005/01/16 02:35:33 carpaski Exp $
+cvs_id_string="$Id: portage_const.py,v 1.3.2.1 2005/01/16 02:35:33 carpaski Exp $"[5:-2]
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -40,3 +41,9 @@ CUSTOM_MIRRORS_FILE     = USER_CONFIG_PATH+"/mirrors"
 SANDBOX_PIDS_FILE       = "/tmp/sandboxpids.tmp"
 CONFIG_MEMORY_FILE      = PRIVATE_PATH + "/config"
 
+INCREMENTALS=["USE","FEATURES","ACCEPT_KEYWORDS","ACCEPT_LICENSE","CONFIG_PROTECT_MASK","CONFIG_PROTECT","PRELINK_PATH","PRELINK_PATH_MASK"]
+STICKIES=["KEYWORDS_ACCEPT","USE","CFLAGS","CXXFLAGS","MAKEOPTS","EXTRA_ECONF","EXTRA_EINSTALL","EXTRA_EMAKE"]
+
+# ===========================================================================
+# END OF CONSTANTS -- END OF CONSTANTS -- END OF CONSTANTS -- END OF CONSTANT
+# ===========================================================================

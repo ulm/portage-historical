@@ -1,7 +1,8 @@
 # portage: Lock management code
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.18.2.1 2004/10/27 14:39:30 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.18.2.2 2005/01/16 02:35:33 carpaski Exp $
+cvs_id_string="$Id: portage_locks.py,v 1.18.2.2 2005/01/16 02:35:33 carpaski Exp $"[5:-2]
 
 import atexit
 import errno

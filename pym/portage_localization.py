@@ -1,8 +1,8 @@
 # portage_localization.py -- Code to manage/help portage localization.
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_localization.py,v 1.2 2004/10/04 14:07:40 vapier Exp $
-
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_localization.py,v 1.2.2.1 2005/01/16 02:35:33 carpaski Exp $
+cvs_id_string="$Id: portage_localization.py,v 1.2.2.1 2005/01/16 02:35:33 carpaski Exp $"[5:-2]
 
 # We define this to make the transition easier for us.
 def _(mystr):

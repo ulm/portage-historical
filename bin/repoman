@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.8 2005/01/13 17:57:15 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.9 2005/01/16 02:35:33 carpaski Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -21,6 +21,8 @@ import portage_checksum
 import cvstree
 import time
 from output import *
+#bold, darkgreen, darkred, green, red, turquoise, yellow
+
 from commands import getstatusoutput
 from fileinput import input
 from grp import getgrnam

@@ -1,6 +1,7 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_flat.py,v 1.13.2.2 2004/12/17 22:25:13 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_flat.py,v 1.13.2.3 2005/01/16 02:35:33 carpaski Exp $
+cvs_id_string="$Id: portage_db_flat.py,v 1.13.2.3 2005/01/16 02:35:33 carpaski Exp $"[5:-2]
 
 import types
 import os

@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.12 2005/01/13 18:17:45 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.13 2005/01/16 02:35:33 carpaski Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2748,6 +2748,13 @@ elif "info"==myaction:
 	if unset_vars:
 		print "Unset:  "+", ".join(unset_vars)
 	print
+
+	if "--debug" in myopts:
+		for x in dir(portage):
+			module = getattr(portage, x)
+			if "cvs_id_string" in dir(module):
+				print "%s: %s" % (str(x), str(module.cvs_id_string))
+
 # SEARCH action
 elif "search"==myaction:
 	if not myfiles:

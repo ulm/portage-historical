@@ -1,63 +1,14 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.29 2005/01/15 06:47:18 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.30 2005/01/16 02:35:33 carpaski Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.30 2005/01/16 02:35:33 carpaski Exp $"[5:-2]
 
-# ===========================================================================
-# START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
-# ===========================================================================
-
-VERSION="$Revision: 1.524.2.29 $"
-
-VDB_PATH                = "var/db/pkg"
-PRIVATE_PATH            = "/var/lib/portage"
-CACHE_PATH              = "/var/cache/edb"
-DEPCACHE_PATH           = CACHE_PATH+"/dep"
-
-USER_CONFIG_PATH        = "/etc/portage"
-MODULES_FILE_PATH       = USER_CONFIG_PATH+"/modules"
-CUSTOM_PROFILE_PATH     = USER_CONFIG_PATH+"/profile"
-
-PORTAGE_BASE_PATH       = "/usr/lib/portage"
-PORTAGE_BIN_PATH        = PORTAGE_BASE_PATH+"/bin"
-PORTAGE_PYM_PATH        = PORTAGE_BASE_PATH+"/pym"
-PROFILE_PATH            = "/etc/make.profile"
-
-EBUILD_SH_BINARY        = PORTAGE_BIN_PATH+"/ebuild.sh"
-SANDBOX_BINARY          = PORTAGE_BIN_PATH+"/sandbox"
-DEPSCAN_SH_BINARY       = "/sbin/depscan.sh"
-BASH_BINARY             = "/bin/bash"
-MOVE_BINARY             = "/bin/mv"
-PRELINK_BINARY          = "/usr/sbin/prelink"
-
-WORLD_FILE              = PRIVATE_PATH+"/world"
-MAKE_CONF_FILE          = "/etc/make.conf"
-MAKE_DEFAULTS_FILE      = PROFILE_PATH + "/make.defaults"
-DEPRECATED_PROFILE_FILE = PROFILE_PATH+"/deprecated"
-USER_VIRTUALS_FILE      = USER_CONFIG_PATH+"/virtuals"
-EBUILD_SH_ENV_FILE      = USER_CONFIG_PATH+"/bashrc"
-INVALID_ENV_FILE        = "/etc/spork/is/not/valid/profile.env"
-CUSTOM_MIRRORS_FILE     = USER_CONFIG_PATH+"/mirrors"
-SANDBOX_PIDS_FILE       = "/tmp/sandboxpids.tmp"
-CONFIG_MEMORY_FILE      = PRIVATE_PATH + "/config"
-
-INCREMENTALS=["USE","FEATURES","ACCEPT_KEYWORDS","ACCEPT_LICENSE","CONFIG_PROTECT_MASK","CONFIG_PROTECT","PRELINK_PATH","PRELINK_PATH_MASK"]
-incrementals=["USE","FEATURES","ACCEPT_KEYWORDS","ACCEPT_LICENSE","CONFIG_PROTECT_MASK","CONFIG_PROTECT","PRELINK_PATH","PRELINK_PATH_MASK"]
-STICKIES=["KEYWORDS_ACCEPT","USE","CFLAGS","CXXFLAGS","MAKEOPTS","EXTRA_ECONF","EXTRA_EINSTALL","EXTRA_EMAKE"]
-stickies=["KEYWORDS_ACCEPT","USE","CFLAGS","CXXFLAGS","MAKEOPTS","EXTRA_ECONF","EXTRA_EINSTALL","EXTRA_EMAKE"]
-
-
-
-# ===========================================================================
-# END OF CONSTANTS -- END OF CONSTANTS -- END OF CONSTANTS -- END OF CONSTANT
-# ===========================================================================
-
-
+VERSION="$Revision: 1.524.2.30 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
 # ===========================================================================
-
 
 try:
 	import sys
@@ -107,8 +58,20 @@ try:
 	import portage_dep
 
 	# XXX: This needs to get cleaned up.
-	# XXX: Output's color handling is mildly broken is a few cases.
-	from output import *
+	import output
+	from output import blue, bold, brown, darkblue, darkgreen, darkred, darkteal, \
+	  darkyellow, fuchsia, fuscia, green, purple, red, teal, turquoise, white, \
+	  xtermTitle, xtermTitleReset, yellow
+
+	import portage_const
+	from portage_const import VDB_PATH, PRIVATE_PATH, CACHE_PATH, DEPCACHE_PATH, \
+	  USER_CONFIG_PATH, MODULES_FILE_PATH, CUSTOM_PROFILE_PATH, PORTAGE_BASE_PATH, \
+	  PORTAGE_BIN_PATH, PORTAGE_PYM_PATH, PROFILE_PATH, LOCALE_DATA_PATH, \
+	  EBUILD_SH_BINARY, SANDBOX_BINARY, DEPSCAN_SH_BINARY, BASH_BINARY, \
+	  MOVE_BINARY, PRELINK_BINARY, WORLD_FILE, MAKE_CONF_FILE, MAKE_DEFAULTS_FILE, \
+	  DEPRECATED_PROFILE_FILE, USER_VIRTUALS_FILE, EBUILD_SH_ENV_FILE, \
+	  INVALID_ENV_FILE, CUSTOM_MIRRORS_FILE, SANDBOX_PIDS_FILE, CONFIG_MEMORY_FILE,\
+	  INCREMENTALS, STICKIES
 
 	from portage_data import ostype, lchown, userland, secpass, uid, wheelgid, \
 	                         portage_uid, portage_gid
@@ -917,9 +880,8 @@ class config:
 				self.profile_path = config_profile_path[:]
 
 			if not config_incrementals:
-				global incrementals
 				writemsg("incrementals not specified to class config\n")
-				self.incrementals = copy.deepcopy(incrementals)
+				self.incrementals = copy.deepcopy(portage_const.INCREMENTALS)
 			else:
 				self.incrementals = copy.deepcopy(config_incrementals)
 			
@@ -987,7 +949,7 @@ class config:
 
 			try:
 				mygcfg_dlists = grab_multiple("make.globals", self.profiles+["/etc"], getconfig)
-				self.mygcfg   = stack_dicts(mygcfg_dlists, incrementals=INCREMENTALS, ignore_none=1)
+				self.mygcfg   = stack_dicts(mygcfg_dlists, incrementals=portage_const.INCREMENTALS, ignore_none=1)
 
 				if self.mygcfg == None:
 					self.mygcfg = {}
@@ -1005,7 +967,7 @@ class config:
 			if self.profiles:
 				try:
 					mygcfg_dlists = grab_multiple("make.defaults", self.profiles, getconfig)
-					self.mygcfg   = stack_dicts(mygcfg_dlists, incrementals=INCREMENTALS, ignore_none=1)
+					self.mygcfg   = stack_dicts(mygcfg_dlists, incrementals=portage_const.INCREMENTALS, ignore_none=1)
 					#self.mygcfg = grab_stacked("make.defaults", self.profiles, getconfig)
 					if self.mygcfg == None:
 						self.mygcfg = {}
@@ -1318,7 +1280,7 @@ class config:
 
 	
 	def regenerate(self,useonly=0,use_cache=1):
-		global incrementals,usesplit,profiledir
+		global usesplit,profiledir
 		
 		if self.already_in_regenerate:
 			# XXX: THIS REALLY NEEDS TO GET FIXED. autouse() loops.
@@ -1330,7 +1292,7 @@ class config:
 		if useonly:
 			myincrementals=["USE"]
 		else:
-			myincrementals=incrementals
+			myincrementals=portage_const.INCREMENTALS
 		for mykey in myincrementals:
 			if mykey=="USE":
 				mydbs=self.uvlist
@@ -6994,7 +6956,7 @@ db={}
 # -----------------------------------------------------------------------------
 # We're going to lock the global config to prevent changes, but we need
 # to ensure the global settings are right.
-settings=config(config_profile_path=PROFILE_PATH,config_incrementals=incrementals)
+settings=config(config_profile_path=PROFILE_PATH,config_incrementals=portage_const.INCREMENTALS)
 
 # useful info
 settings["PORTAGE_MASTER_PID"]=str(os.getpid())

@@ -1,6 +1,7 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.11.2.4 2005/01/15 03:30:28 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.11.2.5 2005/01/16 02:35:33 carpaski Exp $
+cvs_id_string="$Id: portage_util.py,v 1.11.2.5 2005/01/16 02:35:33 carpaski Exp $"[5:-2]
 
 import sys,string,shlex,os.path
 

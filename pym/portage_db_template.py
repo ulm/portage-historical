@@ -1,6 +1,7 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_template.py,v 1.11 2004/10/11 04:12:02 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_template.py,v 1.11.2.1 2005/01/16 02:35:33 carpaski Exp $
+cvs_id_string="$Id: portage_db_template.py,v 1.11.2.1 2005/01/16 02:35:33 carpaski Exp $"[5:-2]
 
 import os.path,string
 from portage_util import getconfig, ReadOnlyConfig
