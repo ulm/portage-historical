@@ -1,10 +1,10 @@
 #!/bin/bash
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepallman,v 1.5 2002/12/24 09:18:45 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepallman,v 1.6 2002/12/24 10:55:07 carpaski Exp $
 
 for x in `find ${D}/opt/*/man/ ${D}/usr/share/man/ ${D}/usr/local/man/ ${D}/usr/X11R6/share/man/ -type d 2>/dev/null` ; do
-	for y in `find ${x} ! -type f -or -type l -maxdepth 1 -mindepth 1 2>/dev/null` ; do
+	for y in `find ${x} -type f -or -type l -maxdepth 1 -mindepth 1 2>/dev/null` ; do
 		if [ -L "${y}" ] ; then
 			#symlink
 			mylink="${y}"

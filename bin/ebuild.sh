@@ -1,12 +1,16 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.88 2002/12/21 12:35:51 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.89 2002/12/24 10:55:07 carpaski Exp $
 
 if [ -n "$#" ]
 then
 	ARGS="${*}"
 fi
+
+# Otherwise people using funny aliases might cause portage to
+# act inappropriately.
+unalias -a
 
 use() {
 	local x
