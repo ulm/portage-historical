@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.186 2003/02/16 14:27:58 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.187 2003/02/16 14:40:02 carpaski Exp $
 
 import os,sys,portage,emergehelp,xpak,string,re,commands,time,threading,shutil,traceback
 from stat import *
@@ -1467,8 +1467,13 @@ if myaction in ["sync","rsync"] and (not "--help" in myopts):
 		sys.stdout.write("\b\b  ...done!\n\n")
 		sys.stdout.flush()
 	mynewpv=portage.portdb.xmatch("bestmatch-visible","sys-apps/portage")
-	myoldpv=portage.db[portage.root]["vartree"].portdb.xmatch("bestmatch-visible","sys-apps/portage")
-	
+	mycurpv=portage.best(portage.db[portage.root]["vartree"].dbapi.match("sys-apps/portage"))
+	if(mycurpv!=mynewpv):
+		print
+		print red(" * ")+bold("An update to portage is available.")+" It is _highly_ recommended"
+		print red(" * ")+"that you update portage now, before any other packages are updated."
+		print red(" * ")+"Please do so and then update "+bold("ALL")+" of your configuration files."
+		print
 elif myaction=="regen":
 	emergelog(" === regen")
 	#regenerate cache entries
