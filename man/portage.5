@@ -139,6 +139,11 @@ list of packages that compose the special \fIsystem\fR class.
 \- one DEPEND atom per line of what to mask OUT
 .br
 \- packages to be added to the system class begin with a *
+.br
+.I Note:
+In a cascading profile setup, you can remove packages in children 
+profiles which were added by parent profiles by prefixing the atom with 
+a '-'
 
 .I Example:
 .br
@@ -533,4 +538,4 @@ Please report bugs via http://bugs.gentoo.org/
 .BR ebuild (5),
 .BR make.conf (5)
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/portage.5,v 1.10 2004/08/02 18:49:30 carpaski Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/portage.5,v 1.11 2004/08/24 22:17:32 vapier Exp $
