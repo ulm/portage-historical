@@ -1,6 +1,10 @@
 # ChangeLog for Path Sandbox
 # Copyright 2002 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/ChangeLog,v 1.16 2003/06/22 20:01:20 azarah Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/ChangeLog,v 1.17 2003/06/29 16:20:19 azarah Exp $
+
+  29 Jun 2003; Martin Schlemmer <azarah@gentoo.org> create-localdecls,
+  libsandbox.c :
+  Make sure SB_PATH_MAX will not wrap.  Fix two possible memory leaks.
 
   22 Jun 2003; Martin Schlemmer <azarah@gentoo.org> libsandbox.c, canonicalize.c
   create-localdecls :
