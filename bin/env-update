@@ -1,4 +1,7 @@
 #!/usr/bin/python2.2
+# Copyright 1999-2002 Gentoo Technologies, Inc.
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/env-update,v 1.4 2002/11/14 17:01:32 vapier Exp $
 
 import portage
 portage.env_update()
