@@ -1,11 +1,9 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.13 2004/11/07 11:58:29 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.14 2004/11/07 12:43:03 ferringb Exp $
 
 import sys,string,shlex,os.path,stat,types
 import shutil
-
-from portage_file import normpath
 
 noiselimit = 0
 def writemsg(mystr,noiselevel=0):
@@ -14,6 +12,13 @@ def writemsg(mystr,noiselevel=0):
 	if noiselevel <= noiselimit:
 		sys.stderr.write(mystr)
 		sys.stderr.flush()
+
+def normalize_path(mypath):
+	newpath = os.path.normpath(mypath)
+	if len(newpath) > 1:
+		if newpath[:2] == "//":
+			newpath = newpath[1:]
+	return newpath
 
 
 def grabfile(myfilename, compat_level=0):
@@ -459,7 +464,7 @@ def movefile(src,dest,newmtime=None,sstat=None,mysettings=None):
 	failure.  Move is atomic."""
 	#print "movefile("+str(src)+","+str(dest)+","+str(newmtime)+","+str(sstat)+")"
 	global lchown
-	from portage import selinux_enabled
+	from portage_exec import selinux_enabled
 	if selinux_enabled:
 		import selinux
 	from portage_data import lchown
