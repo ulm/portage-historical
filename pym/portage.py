@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.565 2004/12/08 05:53:52 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.566 2004/12/09 09:59:48 genone Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -649,7 +649,7 @@ def new_protect_filename(mydest, newmd5=None):
 			continue
 	prot_num = prot_num + 1
 
-	new_pfile = os.path.normpath(real_dirname+"/._cfg"+prot_num.zfill(4)+"_"+real_filename)
+	new_pfile = os.path.normpath(real_dirname+"/._cfg"+str(prot_num).zfill(4)+"_"+real_filename)
 	old_pfile = os.path.normpath(real_dirname+"/"+last_pfile)
 	if last_pfile and newmd5:
 		if portage_checksum.perform_md5(real_dirname+"/"+last_pfile) == newmd5:
