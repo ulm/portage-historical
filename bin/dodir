@@ -1,5 +1,8 @@
 #!/bin/bash
-    for x in "$@"
-    do
-    	install -d ${DIROPTIONS} "${D}${x}"
-    done
+# Copyright 1999-2002 Gentoo Technologies, Inc.
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dodir,v 1.3 2002/11/23 19:21:58 vapier Exp $
+
+for x in "$@" ; do
+	install -d ${DIROPTIONS} "${D}${x}"
+done

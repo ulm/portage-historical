@@ -1,4 +1,8 @@
 #!/usr/bin/python2.2
+# Copyright 1999-2002 Gentoo Technologies, Inc.
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/db-update.py,v 1.2 2002/11/23 19:21:58 vapier Exp $
+
 import os
 import sys
 import portage

@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright 1999-2002 Gentoo Technologies, Inc.
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/queryhost.sh,v 1.4 2002/11/23 19:21:59 vapier Exp $
 
 # Ping a single host and collect the round-trip time.  Unfortunately
 # this measures latency, not bandwidth, but it's better than nothing.
