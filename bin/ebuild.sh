@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.107 2003/02/16 14:27:58 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.108 2003/02/17 11:58:53 carpaski Exp $
 
 cd ${PORT_TMPDIR}
 
@@ -153,7 +153,10 @@ OCXX="$CXX"
 source /etc/profile.env > /dev/null 2>&1
 [ ! -z "$OCC" ] && export CC="$OCC"
 [ ! -z "$OCXX" ] && export CXX="$OCXX"
+
 export PATH="/sbin:/usr/sbin:/usr/lib/portage/bin:/bin:/usr/bin:${ROOTPATH}"
+[ ! -z "$PREROOTPATH" ] && export PATH="${PREROOTPATH%%:}:$PATH"
+
 if [ -e /etc/init.d/functions.sh ]
 then
 	source /etc/init.d/functions.sh > /dev/null 2>&1
@@ -270,8 +273,8 @@ if [ "$*" != "depend" ]; then
 
 	if has ccache ${FEATURES} &>/dev/null; then
 		#We can enable compiler cache support
-		if [ ! -z "${PATH/*ccache*/}" ];then
-			if   [ -d /usr/lib/ccache/bin ]; then
+		if [ ! -z "${PATH/*ccache*/}" ]; then
+			if [ -d /usr/lib/ccache/bin ]; then
 				export PATH="/usr/lib/ccache/bin:${PATH}"
 			elif [ -d /usr/bin/ccache ]; then
 				export PATH="/usr/bin/ccache:${PATH}"
@@ -996,6 +999,7 @@ newdepend() {
 
 # --- functions end, main part begins ---
 export SANDBOX_ON="1"
+S=${WORKDIR}/${P}
 source ${EBUILD} || die "error sourcing ebuild"
 #a reasonable default for $S
 if [ "$S" = "" ]

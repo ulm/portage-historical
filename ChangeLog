@@ -1,6 +1,32 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.419 2003/02/16 14:27:57 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.420 2003/02/17 11:58:53 carpaski Exp $
+
+*portage-2.0.47-r2 (17 Feb 2003): Wicked Fast, BugFree, UserPriv
+
+  17 Feb 2003; Nicholas Jones <carpaski@gentoo.org> portage.py: Fixed the
+  depcache code once again -- ebuild and cache were never set to the same
+  mtimes. Removed last os.system() call.
+
+  17 Feb 2003; Nicholas Jones <carpaski@gentoo.org> repoman: catdir fix.
+  Added 'emerge-webrsync' from gentoolkit so users can use snapshots on
+  initial installs.
+
+  17 Feb 2003; Nicholas Jones <carpaski@gentoo.org> emergehelp.py: Updated
+  it to the current calls and conventions. Added comments about etc-update
+  and emerge-webrsync.
+
+  17 Feb 2003; Nicholas Jones <carpaski@gentoo.org> emerge: Changed the
+  search code around to use compiled re's instead of .lower() searches.
+  Trivial touchups in spacing. Only write worldfile if not --pretend. Fix
+  losing-packages-to-be-merged during merge bug. Allow options to change
+  in a --resume call so that --buildpkg and such may be added.
+	
+  17 Feb 2003; Nicholas Jones <carpaski@gentoo.org> ebuild.sh: Added a
+  PREROOTPATH to allow special paths to be added prior to root and ebuild's
+  required pathes. ${S} is now generated prior to sourcing an ebuild so
+  that it is available in the ebuild at source-time, as opposed to in the
+  phases.
 
 *portage-2.0.47-r1 (16 Feb 2003): Wicked Fast + UserPriv
 
