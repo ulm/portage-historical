@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.452 2004/08/01 10:54:38 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.453 2004/08/02 00:35:36 nakano Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -7103,9 +7103,13 @@ def do_upgrade(mykey):
 			db["/"]["bintree"].move_slot_ent(mysplit,settings["PORTAGE_TMPDIR"]+"/tbz2")
 
 	for x in update_files:
-		cfg_protect_file=new_protect_filename("/etc/portage/"+x)
+		mydblink = dblink('','','/',settings)
+		if mydblink.isprotected("/etc/portage/"+x):
+			updating_file=new_protect_filename("/etc/portage/"+x)[0]
+		else:
+			updating_file="/etc/portage/"+x
 		try:
-			myfile=open(cfg_protect_file[0],"w")
+			myfile=open(updating_file,"w")
 			myfile.writelines(file_contents[x])
 			myfile.close()
 		except IOError:
