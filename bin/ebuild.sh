@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.143 2003/10/13 07:43:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.144 2003/10/22 02:15:36 carpaski Exp $
 
 if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 	if [ -f ${T}/successful ]; then
@@ -47,7 +47,7 @@ fi
 unalias -a
 
 # Unset some variables that break things.
-unset GZIP BZIP BZIP2
+unset GZIP BZIP BZIP2 CDPATH
 
 # We need this next line for "die" and "assert". It expands 
 # It _must_ preceed all the calls to die and assert.
@@ -825,6 +825,7 @@ dyn_install() {
 				make -C ${POLICYDIR} FC=${T}/file_contexts ${T}/file_contexts
 			fi
 
+			addwrite /selinux/context
 			/usr/sbin/setfiles -r ${D} ${T}/file_contexts ${D}
 		fi
 	fi
