@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.176 2003/01/14 19:58:28 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.177 2003/01/15 22:57:42 carpaski Exp $
 
 import os,sys,portage,emergehelp,xpak,string,re,commands,time,threading,shutil,traceback
 from stat import *
@@ -955,25 +955,25 @@ class depgraph:
 						emergelog(" >>> AUTOCLEAN: "+xsplit[0])
 						if not unmerge("clean", [xsplit[0]]):
 							emergelog(" --- AUTOCLEAN: Nothing unmerged.")
-				mysplit=portage.pkgsplit(x[2])
-				if mysplit[0]=="sys-apps/portage":
-					myver=mysplit[1]+"-"+mysplit[2]
-					if myver[-3:]=='-r0':
-						myver=myver[:-3]
-					if myver!=portage.VERSION:
-						if len(mymergelist) > mergecount:
-							myargv=sys.argv
-							myr=0
-							for myra in range(len(myargv)):
-								if myargv[myr][0:len("portage")]=="portage":
-									del myargv[myr]
-									myr-=1
-								if myargv[myr][0:len("sys-apps/portage")]=="sys-apps/portage":
-									del myargv[myr]
-									myr-=1
-								myr+=1
-							emergelog(" *** RESTARTING emerge via exec() after change of portage version.")
-							os.execv("/usr/lib/portage/bin/emerge", myargv)
+					mysplit=portage.pkgsplit(x[2])
+					if mysplit[0]=="sys-apps/portage":
+						myver=mysplit[1]+"-"+mysplit[2]
+						if myver[-3:]=='-r0':
+							myver=myver[:-3]
+						if myver!=portage.VERSION:
+							if len(mymergelist) > mergecount:
+								myargv=sys.argv
+								myr=0
+								for myra in range(len(myargv)):
+									if myargv[myr][0:len("portage")]=="portage":
+										del myargv[myr]
+										myr-=1
+									if myargv[myr][0:len("sys-apps/portage")]=="sys-apps/portage":
+										del myargv[myr]
+										myr-=1
+									myr+=1
+								emergelog(" *** RESTARTING emerge via exec() after change of portage version.")
+								os.execv("/usr/lib/portage/bin/emerge", myargv)
 
 			if ("--pretend" not in myopts) and ("--fetchonly" not in myopts):
 				emergelog(" ::: completed emerge ("+str(mergecount)+" of "+str(len(mymergelist))+") "+x[2]+" to "+x[1])
