@@ -11,7 +11,7 @@
 **    Copyright (C) 2001 Geert Bevin, Uwyn, http://www.uwyn.com
 **    Distributed under the terms of the GNU General Public License, v2 or later 
 **    Author : Geert Bevin <gbevin@uwyn.com>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.c,v 1.11 2003/09/28 08:37:19 azarah Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.c,v 1.12 2003/10/12 22:36:58 carpaski Exp $
 */
 
 #define _GNU_SOURCE
@@ -385,6 +385,8 @@ setenv_sandbox_predict(char *home_dir)
 		strcat(sandbox_predict_var, "/usr/lib/python2.1/");
 		strcat(sandbox_predict_var, ":");
 		strcat(sandbox_predict_var, "/usr/lib/python2.2/");
+		strcat(sandbox_predict_var, ":");
+		strcat(sandbox_predict_var, "/usr/lib/python2.3/");
 		setenv(ENV_SANDBOX_PREDICT, sandbox_predict_var, 1);
 	}
 }
