@@ -1,6 +1,6 @@
 # Copyright 2002-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/extra_functions.sh,v 1.2 2003/03/14 04:42:05 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/extra_functions.sh,v 1.3 2003/04/28 10:19:46 carpaski Exp $
 
 # ============================================================================
 # Extracted from flag-o-matic -- March 10, 2003
@@ -242,7 +242,7 @@ epatch() {
 	fi
 	for x in ${EPATCH_SOURCE}
 	do
-		# New ARCH dependant patch naming scheme...
+		# New ARCH dependent patch naming scheme...
 		#
 		#   ???_arch_foo.patch
 		#

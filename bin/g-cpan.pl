@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.6 2003/03/22 14:24:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.7 2003/04/28 10:19:46 carpaski Exp $
 
 # History: 
 
@@ -45,7 +45,7 @@
 #
 
 # modules to use - these will need to be marked as
-# dependancies, and installable by portage
+# dependencies, and installable by portage
 use strict;
 use File::Spec;
 use File::Path;

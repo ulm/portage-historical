@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.11 2003/02/27 11:31:00 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.12 2003/04/28 10:19:46 carpaski Exp $
 
 import os,sys
 from output import *
@@ -129,7 +129,7 @@ def help(myaction,myopts,havecolor=1):
 		print
 		print "       "+green("--buildpkgonly")+" ("+green("-B")+" short option)"
 		print "              Creates binary a binary package, but does not merge it to the"
-		print "              system. This has the restriction that unsatisfied dependancies"
+		print "              system. This has the restriction that unsatisfied dependencies"
 		print "              must not exist for the desired package as they cannot be used if"
 		print "              they do not exist on the system."
 		print
