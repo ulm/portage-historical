@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.560 2004/11/15 21:42:49 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.561 2004/11/23 01:52:42 genone Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -72,7 +72,7 @@ try:
 	import portage_versions
 	
 	#assign these to portage's namespace to keep the esearch monkeys happy.
-	portage_versions.catpkgsplit = portage_versions.catpkgsplit
+	catpkgsplit = portage_versions.catpkgsplit
 	pkgsplit = portage_versions.pkgsplit
 
 	# XXX: This needs to get cleaned up.
