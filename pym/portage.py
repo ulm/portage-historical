@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.487 2004/08/26 09:16:14 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.488 2004/08/30 05:35:32 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -4538,7 +4538,7 @@ class bindbapi(fakedbapi):
 		mysplit = string.split(mycpv,"/")
 		mylist  = []
 		tbz2name = mysplit[1]+".tbz2"
-		if self.bintree and self.bintree.isremote(mycpv):
+		if self.bintree and not self.bintree.isremote(mycpv):
 			tbz2 = xpak.tbz2(self.bintree.getname(mycpv))
 		for x in wants:
 			if self.bintree and self.bintree.isremote(mycpv):
@@ -4548,10 +4548,11 @@ class bindbapi(fakedbapi):
 				else:
 					mylist.append("")
 			else:
-				try:
-					myval = tbz2.getfile("USE")
-				except:
+				myval = tbz2.getfile(x)
+				if myval is None:
 					myval = ""
+				else:
+					myval = " ".join(myval.split())
 				mylist.append(myval)
 
 		return mylist
