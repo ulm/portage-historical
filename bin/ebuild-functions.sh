@@ -2,7 +2,7 @@
 # ebuild-functions.sh; ebuild env functions, saved with the ebuild (not specific to the portage version).
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-functions.sh,v 1.4 2004/12/09 17:10:27 genone Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-functions.sh,v 1.5 2005/01/20 03:19:32 ferringb Exp $
 
 use() {
 	if useq ${1}; then
@@ -73,12 +73,11 @@ econf() {
 	local ret
 	if [ -x ./configure ]; then
 		if hasq autoconfig $FEATURES && ! hasq autoconfig $RESTRICT; then
-			if [ -e /usr/share/gnuconfig/ -a -x /bin/basename ]; then
-				local x name
+			if [ -e /usr/share/gnuconfig/ ]; then
+				local x
 				for x in $(find ${S} -type f -name config.guess -o -name config.sub); do
-					name="$(/bin/basename ${x})"
-					einfo "econf: updating $x with /usr/share/gnuconfig/$name"
-					cp "/usr/share/gnuconfig/${name}" "${x}"
+					einfo "econf: updating $x with /usr/share/gnuconfig/${x##*/}"
+					cp "/usr/share/gnuconfig/${x##*/}" "${x}"
 				done
 			fi
 		fi
