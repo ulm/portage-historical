@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.128 2003/06/09 17:18:10 drobbins Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.129 2003/06/09 17:25:44 drobbins Exp $
 
 if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 	if [ -f ${T}/successful ]; then
@@ -1097,9 +1097,9 @@ fi # "$*"!="depend" && "$*"!="clean"
 
 export SANDBOX_ON="1"
 export S=${WORKDIR}/${P}
+unset DEPEND RDEPEND E_RDEPEND E_DEPEND
 source ${EBUILD} || die "error sourcing ebuild"
 #a reasonable default for $S
-unset DEPEND RDEPEND E_RDEPEND E_DEPEND
 if [ "$S" = "" ]; then
 	export S=${WORKDIR}/${P}
 fi
@@ -1115,11 +1115,11 @@ if [ "${RDEPEND-unset}" == "unset" ]; then
 	export RDEPEND=${DEPEND}
 	debug-print "RDEPEND: not set... Setting to: ${DEPEND}"
 fi
-set +f
-
 #add in dependency info from eclasses
 RDEPEND="$RDEPEND $E_RDEPEND"
 DEPEND="$DEPEND $E_DEPEND"
+set +f
+
 for myarg in $*
 do
 	case $myarg in
