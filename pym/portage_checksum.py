@@ -1,7 +1,8 @@
 # portage_checksum.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_checksum.py,v 1.11 2004/11/07 11:58:29 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_checksum.py,v 1.12 2005/02/26 06:35:20 jstubbs Exp $
+cvs_id_string="$Id: portage_checksum.py,v 1.12 2005/02/26 06:35:20 jstubbs Exp $"[5:-2]
 
 from portage_const import PRIVATE_PATH,PRELINK_BINARY
 import os

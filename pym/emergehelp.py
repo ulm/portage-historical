@@ -1,9 +1,10 @@
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/emergehelp.py,v 1.9 2004/10/28 14:48:26 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/emergehelp.py,v 1.10 2005/02/26 06:35:20 jstubbs Exp $
+cvs_id_string="$Id: emergehelp.py,v 1.10 2005/02/26 06:35:20 jstubbs Exp $"[5:-2]
 
 import os,sys
-from output import *
+from output import bold, turquoise, green
 
 def shorthelp():
 	print
@@ -168,7 +169,7 @@ def help(myaction,myopts,havecolor=1):
 		print "              used in combination with --pretend all the SRC_URIs will be"
 		print "              displayed multiple mirrors per line, one line per file."
 		print
-		print "       "+green("--fetch-all-uri")
+		print "       "+green("--fetch-all-uri")+" ("+green("-F")+" short option)"
 		print "              Same as --fetchonly except that all package files, including those"
 		print "              not required to build the package, will be processed."
 		print

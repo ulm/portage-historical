@@ -1,7 +1,8 @@
 # getbinpkg.py -- Portage binary-package helper functions
 # Copyright 2003-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/getbinpkg.py,v 1.14 2004/10/29 14:45:35 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/getbinpkg.py,v 1.15 2005/02/26 06:35:20 jstubbs Exp $
+cvs_id_string="$Id: getbinpkg.py,v 1.15 2005/02/26 06:35:20 jstubbs Exp $"[5:-2]
 
 from output import *
 import htmllib,HTMLParser,string,formatter,sys,os,xpak,time,tempfile,cPickle,base64

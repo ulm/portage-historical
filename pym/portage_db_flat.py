@@ -1,12 +1,11 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_flat.py,v 1.17 2005/02/18 04:37:59 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_flat.py,v 1.18 2005/02/26 06:35:20 jstubbs Exp $
+cvs_id_string="$Id: portage_db_flat.py,v 1.18 2005/02/26 06:35:20 jstubbs Exp $"[5:-2]
 
 import types
 import os
 import stat
-from copy import deepcopy
-from string import join
 
 import portage_db_template
 
@@ -57,7 +56,7 @@ class database(portage_db_template.database):
 		# return portage.listdir(self.fullpath,filesonly=1)
 		mykeys = []
 		for x in os.listdir(self.fullpath):
-			if os.path.isfile(self.fullpath+x):
+			if os.path.isfile(self.fullpath+x) and not x.beginswith(".update."):
 				mykeys += [x]
 		return mykeys
 

@@ -1,7 +1,8 @@
 # portage: Lock management code
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.22 2004/11/12 17:04:19 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.23 2005/02/26 06:35:20 jstubbs Exp $
+cvs_id_string="$Id: portage_locks.py,v 1.23 2005/02/26 06:35:20 jstubbs Exp $"[5:-2]
 
 import atexit
 import errno
@@ -71,7 +72,7 @@ def lockfile(mypath,wantnewlockfile=0,unlinkfile=0,verbosity=0):
 			except SystemExit, e:
 				raise
 			except OSError, e:
-				if e[0] == 2: # No such file or directory
+				if e[0] == 2: #XXX: No such file or directory
 					return lockfile(mypath,wantnewlockfile,unlinkfile)
 				else:
 					portage_util.writemsg("Cannot chown a lockfile. This could cause inconvenience later.\n",verbosity)

@@ -1,7 +1,8 @@
 # portage_gpg.py -- core Portage functionality
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_gpg.py,v 1.10 2004/11/15 21:42:50 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_gpg.py,v 1.11 2005/02/26 06:35:20 jstubbs Exp $
+cvs_id_string="$Id: portage_gpg.py,v 1.11 2005/02/26 06:35:20 jstubbs Exp $"[5:-2]
 
 import os
 import copy
