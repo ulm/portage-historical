@@ -2,7 +2,7 @@
 # ebuild.py; Ebuild classes/abstraction of phase processing, and communicating with a ebuild-daemon.sh instance
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.8 2004/11/12 18:23:41 ferringb Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.9 2004/11/12 18:26:57 ferringb Exp $
 
 
 import os,sys,traceback
@@ -46,10 +46,13 @@ inactive_ebp_list = []
 active_ebp_list = []
 
 def request_ebuild_processor(ebuild_daemon_path=portage_const.EBUILD_DAEMON_PATH,userpriv=False, \
-	sandbox=portage_exec.sandbox_capable,fakeroot=False,save_file=None):
+	sandbox=None,fakeroot=False,save_file=None):
 	"""request an ebuild_processor instance from the pool, or create a new one
 	  this walks through the requirements, matching a inactive processor if one exists
 	  note fakerooted processors are never reused, do to the nature of fakeroot"""
+
+	if sandbox == None:
+		sandbox = portage_exec.sandbox_capable
 
 	global inactive_ebp_list, active_ebp_list
 	if not fakeroot:
