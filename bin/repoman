@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.86 2004/08/16 21:51:31 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.87 2004/08/17 07:08:32 ferringb Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -327,12 +327,7 @@ else:
 	except:
 		err("Error grabbing repository information; exiting.")
 
-if myreporootpath and (myreporootpath[-1] != "/"):
-	myreporootpath += "/"
-
-# ensure no leading / for myreporoot, this screws up repolevel detection if a prefixed slash slips by
-if myreporoot[0] == "/":
-	myreporoot = myreporoot[1:]
+myreporootpath=os.path.normpath(myreporootpath)
 
 if not "--pretend" in myoptions and not isCvs:
 	print
@@ -418,7 +413,7 @@ if mymode == "commit" and repolevel not in [1,2,3]:
 	err("Unable to identify level we're commiting from for %s" % string.join(reposplit,'/'))
 
 if not isCvs:
-	repolevel-=(string.count(myreporootpath,"/") - 1)
+	repolevel-=(string.count(myreporootpath,"/"))
 startdir=os.getcwd()
 
 for x in range(0,repolevel-1):
