@@ -1,7 +1,7 @@
 # deps.py -- Portage dependency resolution functions
 # Copyright 2003-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.15 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.16 2004/11/03 12:08:36 ferringb Exp $
 
 # DEPEND SYNTAX:
 #
@@ -35,7 +35,7 @@ def paren_reduce(mystr,tokenize=1):
 			subsec = None
 			tail = ""
 		elif mystr[0] == ")":
-			return mylist,mystr[1:]
+			return [mylist,mystr[1:]]
 		elif ("(" in mystr) and (mystr.index("(") < mystr.index(")")):
 			freesec,subsec = mystr.split("(",1)
 			subsec,tail = paren_reduce(subsec,tokenize)
