@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.505 2004/09/16 14:43:10 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.506 2004/09/16 14:57:11 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -3511,7 +3511,11 @@ def getmaskingstatus(mycpv):
 	revmaskdict=settings.prevmaskdict
 	if revmaskdict.has_key(mycp):
 		for x in revmaskdict[mycp]:
-			if not match_to_list(mycpv, [x]):
+			if x[0]=="*":
+				myatom = x[1:]
+			else:
+				myatom = x
+			if not match_to_list(mycpv, [myatom]):
 				rValue.append("profile")
 				break
 
