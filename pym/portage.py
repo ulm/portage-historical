@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.426 2004/06/10 00:57:08 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.427 2004/06/14 12:22:49 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -5091,6 +5091,7 @@ class portdbapi(dbapi):
 				myret=doebuild(myebuild,"depend","/",self.mysettings,dbkey=mydbkey)
 				if myret:
 					unlockfile(mylock)
+					self.lock_held = 0
 					#depend returned non-zero exit code...
 					writemsg(str(red("\naux_get():")+" (0) Error in "+mycpv+" ebuild. ("+str(myret)+")\n"
          	   "               Check for syntax error or corruption in the ebuild. (--debug)\n\n"))
