@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.327 2003/07/16 12:59:18 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.328 2003/07/16 19:16:04 carpaski Exp $
 
 VERSION="2.0.49"
 
@@ -3965,7 +3965,10 @@ class binarytree(packagetree):
 
 	def isremote(self,pkgname):
 		"Returns true if the package is kept remotely."
-		remote = (not os.path.exists(self.getname(pkgname))) and self.remotepkgs.has_key(pkgname);
+		mysplit=string.split(pkgname,"/")
+		print (not os.path.exists(self.getname(pkgname)))
+		print self.remotepkgs.has_key(mysplit[1]+".tbz2")
+		remote = (not os.path.exists(self.getname(pkgname))) and self.remotepkgs.has_key(mysplit[1]+".tbz2")
 		return remote
 	
 	def gettbz2(self,pkgname):
