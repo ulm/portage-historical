@@ -10,6 +10,7 @@ from select import *
 from output import *
 import string,os,types,sys,shlex,shutil,xpak,fcntl,signal,time,missingos,cPickle,atexit,grp,traceback,commands,pwd
 import portage_config
+import portage_files
 
 #-----------------------------------------------------------------------------
 
@@ -21,11 +22,18 @@ class PortageContext:
 	def init(self):
 		self.setupRoot()
 
+		self.create_tmp_directories()
+		self.create_cache_directories()
+
+		os.umask(022)
+
 		if os.path.exists("/etc/make.profile"):
 			self.profiledir = "/etc/make.profile"
 		else:
 			self.profiledir = None
 			print ">>> Note: /etc/make.profile isn't available; an 'emerge sync' will probably fix this."
+
+		self.mtimedb = portage_files.LastModifiedDB(self)
 
 		self.setupUseDefaults()
 
@@ -172,6 +180,48 @@ class PortageContext:
 				return mykey+"-"+mysplit[1]+"-"+mysplit[2]
 		else:
 			return mykey
+
+	def create_tmp_directories(self):
+		"""Create the <root>tmp and <root>var/tmp directories if they don't exists.  Exit
+		if creating them fails."""
+		os.umask(0)
+		if not os.path.exists(self.getRoot()+"tmp"):
+			print ">>> "+self.getRoot()+"tmp doesn't exist, creating it..."
+			os.mkdir(self.getRoot()+"tmp",01777)
+		if not os.path.exists(self.getRoot()+"var/tmp"):
+			print ">>> "+self.getRoot()+"var/tmp doesn't exist, creating it..."
+			try:
+				os.mkdir(self.getRoot()+"var",0755)
+			except (OSError,IOError):
+				pass
+			try:
+				os.mkdir(self.getRoot()+"var/tmp",01777)
+			except:
+				print "portage: couldn't create /var/tmp; exiting."
+				sys.exit(1)
+
+	def create_cache_directories(self):
+		cachedirs=["/var/cache/edb"]
+		if self.getRoot()!="/":
+			cachedirs.append(self.getRoot()+"var/cache/edb")
+		if not os.environ.has_key("SANDBOX_ACTIVE"):
+			for cachedir in cachedirs:
+				if not os.path.exists(cachedir):
+					os.makedirs(cachedir,0755)
+					print ">>>",cachedir,"doesn't exist, creating it..."
+				if not os.path.exists(cachedir+"/dep"):
+					os.makedirs(cachedir+"/dep",2755)
+					print ">>>",cachedir+"/dep","doesn't exist, creating it..."
+				try:
+					os.chown(cachedir,uid,wheelgid)
+					os.chmod(cachedir,0775)
+				except OSError:
+					pass
+				try:
+					os.chown(cachedir+"/dep",uid,wheelgid)
+					os.chmod(cachedir+"/dep",02775)
+				except OSError:
+					pass
 
 
 #-----------------------------------------------------------------------------
@@ -2590,18 +2640,16 @@ class vartree(packagetree):
 # ----------------------------------------------------------------------------
 def eclass(myeclass=None,mycpv=None,mymtime=None):
 	"""Caches and retrieves information about ebuilds that use eclasses"""
-	global mtimedb
+	global ctx
+
+	if not ctx.mtimedb.has_key("eclass") or type(ctx.mtimedb["eclass"]) is not types.DictType:
+		ctx.mtimedb["eclass"]={}
+		ctx.mtimedb["packages"]=[]
+	if not ctx.mtimedb.has_key("packages") or type(ctx.mtimedb["packages"]) is not types.ListType:
+		ctx.mtimedb["packages"]=[]
 	
-	if not mtimedb:
-		mtimedb={}
-	if not mtimedb.has_key("eclass") or type(mtimedb["eclass"]) is not types.DictType:
-		mtimedb["eclass"]={}
-		mtimedb["packages"]=[]
-	if not mtimedb.has_key("packages") or type(mtimedb["packages"]) is not types.ListType:
-		mtimedb["packages"]=[]
-	
-	if not mtimedb.has_key("starttime") or (mtimedb["starttime"]!=starttime):
-		mtimedb["starttime"]=starttime
+	if not ctx.mtimedb.has_key("starttime") or (ctx.mtimedb["starttime"]!=starttime):
+		ctx.mtimedb["starttime"]=starttime
 		# Update the cache
 		for x in [ctx.config["PORTDIR"]+"/eclass", ctx.config["PORTDIR_OVERLAY"]+"/eclass"]:
 			if x and os.path.exists(x):
@@ -2611,35 +2659,35 @@ def eclass(myeclass=None,mycpv=None,mymtime=None):
 						try:
 							ys=y[:-len(".eclass")]
 							ymtime=os.stat(x+"/"+y)[ST_MTIME]
-							if mtimedb["eclass"].has_key(ys):
-								if ymtime!=mtimedb["eclass"][ys][0]:
+							if ctx.mtimedb["eclass"].has_key(ys):
+								if ymtime!=ctx.mtimedb["eclass"][ys][0]:
 									# The mtime changed on the eclass
-									mtimedb["eclass"][ys]=[ymtime,x+"/"+y,mtimedb["eclass"][ys][2]]
+									ctx.mtimedb["eclass"][ys]=[ymtime,x+"/"+y,ctx.mtimedb["eclass"][ys][2]]
 								else:
 									# nothing changed
 									pass
 							else:
 								# New eclass
-								mtimedb["eclass"][ys]=[ymtime,x+"/"+y, {}]
+								ctx.mtimedb["eclass"][ys]=[ymtime,x+"/"+y, {}]
 						except Exception, e:
 							print "!!! stat exception:",e
 							continue
 	if myeclass != None:
-		if not mtimedb["eclass"].has_key(myeclass):
+		if not ctx.mtimedb["eclass"].has_key(myeclass):
 			# Eclass doesn't exist.
 			print "!!! eclass does not exist:",myeclass
 			return None
 		else:
 			if (mycpv!=None) and (mymtime!=None):
-				if mycpv not in mtimedb["packages"]:
-					mtimedb["packages"].append(mycpv)
-				if mtimedb["eclass"][myeclass][2].has_key(mycpv):
+				if mycpv not in ctx.mtimedb["packages"]:
+					ctx.mtimedb["packages"].append(mycpv)
+				if ctx.mtimedb["eclass"][myeclass][2].has_key(mycpv):
 					# Check if the ebuild mtime changed OR if the mtime for the eclass
 					# has changed since it was last updated.
-					if (mymtime!=mtimedb["eclass"][myeclass][2][mycpv][1]) or (mtimedb["eclass"][myeclass][0]!=mtimedb["eclass"][myeclass][2][mycpv][0]):
+					if (mymtime!=ctx.mtimedb["eclass"][myeclass][2][mycpv][1]) or (ctx.mtimedb["eclass"][myeclass][0]!=ctx.mtimedb["eclass"][myeclass][2][mycpv][0]):
 						# Store the new mtime before we expire the cache so we don't
 						# repeatedly regen this entry.
-						mtimedb["eclass"][myeclass][2][mycpv]=[mtimedb["eclass"][myeclass][0],mymtime]
+						ctx.mtimedb["eclass"][myeclass][2][mycpv]=[ctx.mtimedb["eclass"][myeclass][0],mymtime]
 						# Expire the cache. mtimes don't match.
 						#print " regen"
 						return 0
@@ -2649,7 +2697,7 @@ def eclass(myeclass=None,mycpv=None,mymtime=None):
 						return 1
 				else:
 					# Don't have an entry... Must be new.
-					mtimedb["eclass"][myeclass][2][mycpv]=[mtimedb["eclass"][myeclass][0],mymtime]
+					ctx.mtimedb["eclass"][myeclass][2][mycpv]=[ctx.mtimedb["eclass"][myeclass][0],mymtime]
 					#print "*regen"
 					return 0
 			else:
@@ -2657,10 +2705,10 @@ def eclass(myeclass=None,mycpv=None,mymtime=None):
 				raise KeyError
 	else:
 		# Recurse without explicit eclass. (Recurse all)
-		if mycpv in mtimedb["packages"]:
-			for myeclass in mtimedb["eclass"].keys():
-				if mtimedb["eclass"][myeclass][2].has_key(mycpv):
-					if (mymtime!=mtimedb["eclass"][myeclass][2][mycpv][1]) or (mtimedb["eclass"][myeclass][0]!=mtimedb["eclass"][myeclass][2][mycpv][0]):
+		if mycpv in ctx.mtimedb["packages"]:
+			for myeclass in ctx.mtimedb["eclass"].keys():
+				if ctx.mtimedb["eclass"][myeclass][2].has_key(mycpv):
+					if (mymtime!=ctx.mtimedb["eclass"][myeclass][2][mycpv][1]) or (ctx.mtimedb["eclass"][myeclass][0]!=ctx.mtimedb["eclass"][myeclass][2][mycpv][0]):
 						#mtimes do not match
 						return 0
 		return 1
@@ -3897,83 +3945,12 @@ ctx = PortageContext()
 ctx.init()
 
 
-#create tmp and var/tmp if they don't exist; read config
-os.umask(0)
-if not os.path.exists(ctx.getRoot()+"tmp"):
-	print ">>> "+ctx.getRoot()+"tmp doesn't exist, creating it..."
-	os.mkdir(ctx.getRoot()+"tmp",01777)
-if not os.path.exists(ctx.getRoot()+"var/tmp"):
-	print ">>> "+ctx.getRoot()+"var/tmp doesn't exist, creating it..."
-	try:
-		os.mkdir(ctx.getRoot()+"var",0755)
-	except (OSError,IOError):
-		pass
-	try:
-		os.mkdir(ctx.getRoot()+"var/tmp",01777)
-	except:
-		print "portage: couldn't create /var/tmp; exiting."
-		sys.exit(1)
-
-cachedirs=["/var/cache/edb"]
-if ctx.getRoot()!="/":
-	cachedirs.append(ctx.getRoot()+"var/cache/edb")
-if not os.environ.has_key("SANDBOX_ACTIVE"):
-	for cachedir in cachedirs:
-		if not os.path.exists(cachedir):
-			os.makedirs(cachedir,0755)
-			print ">>>",cachedir,"doesn't exist, creating it..."
-		if not os.path.exists(cachedir+"/dep"):
-			os.makedirs(cachedir+"/dep",2755)
-			print ">>>",cachedir+"/dep","doesn't exist, creating it..."
-		try:
-			os.chown(cachedir,uid,wheelgid)
-			os.chmod(cachedir,0775)
-		except OSError:
-			pass
-		try:
-			os.chown(cachedir+"/dep",uid,wheelgid)
-			os.chmod(cachedir+"/dep",02775)
-		except OSError:
-			pass
-	
-os.umask(022)
-
-
 #### ALAIN: PROFILEDIR WAS SET HERE!
 
 
 
 
-def flushmtimedb(record):
-	if mtimedb:
-		if record in mtimedb.keys():
-			del mtimedb[record]
-			#print "mtimedb["+record+"] is cleared."
-		else:
-			print "Invalid or unset record '"+record+"' in mtimedb."
 
-#grab mtimes for eclasses and upgrades
-mtimedb={}
-mtimedbkeys=["updates","eclass","packages","info","version","starttime"]
-mtimedbfile=ctx.getRoot()+"var/cache/edb/mtimedb"
-try:
-	mtimedb=cPickle.load(open(mtimedbfile))
-	if mtimedb.has_key("old"):
-		mtimedb["updates"]=mtimedb["old"]
-		del mtimedb["old"]
-	if mtimedb.has_key("cur"):
-		del mtimedb["cur"]
-except:
-	#print "!!!",e
-	mtimedb={"updates":{},"eclass":{},"packages":[],"version":"","starttime":0}
-if mtimedb.has_key("version") and mtimedb["version"]!=VERSION:
-	flushmtimedb("packages")
-	flushmtimedb("eclass")
-
-for x in mtimedb.keys():
-	if x not in mtimedbkeys:
-		#print "Deleting invalid mtimedb key: "+str(x)
-		del mtimedb[x]
 
 def do_upgrade(mykey):
 	global ctx
@@ -4012,7 +3989,7 @@ def do_upgrade(mykey):
 	
 	if processed:
 		#update our internal mtime since we processed all our directives.
-		mtimedb["updates"][mykey]=os.stat(mykey)[ST_MTIME]
+		ctx.mtimedb["updates"][mykey]=os.stat(mykey)[ST_MTIME]
 	myworld=open("/var/cache/edb/world","w")
 	for x in worldlist:
 		myworld.write(x+"\n")
@@ -4028,7 +4005,7 @@ if (secpass==2) and (not os.environ.has_key("SANDBOX_ACTIVE")):
 			mykey=updpath+"/"+myfile
 			if not os.path.isfile(mykey):
 				continue
-			if (not mtimedb["updates"].has_key(mykey)) or (mtimedb["updates"][mykey] != os.stat(mykey)[ST_MTIME]):
+			if (not ctx.mtimedb["updates"].has_key(mykey)) or (ctx.mtimedb["updates"][mykey] != os.stat(mykey)[ST_MTIME]):
 				didupdate=1
 				do_upgrade(mykey)
 	except OSError:
@@ -4047,21 +4024,10 @@ if ctx.config["PORTDIR_OVERLAY"]:
 		print "portage: init: PORTDIR_OVERLAY points to",ctx.config["PORTDIR_OVERLAY"],"which isn't a directory. Exiting."
 		sys.exit(1)
 
-def portageexit():
-	global uid,wheelgid
-	if secpass:
-   	# Store mtimedb
-		mymfn=mtimedbfile
-		try:
-			if mtimedb and not os.environ.has_key("SANDBOX_ACTIVE"):
-				mtimedb["version"]=VERSION
-				cPickle.dump(mtimedb,open(mymfn,"w"))
-				os.chown(mymfn,uid,wheelgid)
-				os.chmod(mymfn,0664)
-		except Exception, e:
-			pass
 
-atexit.register(portageexit)
+## ALAIN: This is where portageexit() - the mtimedb write out stuff - was.
+
+
 #continue setting up other trees
 ctx.db["/"]["porttree"]=portagetree("/",ctx.virtualmap)
 ctx.db["/"]["bintree"]=binarytree("/",ctx.virtualmap)
