@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.447 2004/07/28 04:30:21 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.448 2004/07/28 04:51:19 nakano Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -6998,7 +6998,7 @@ def do_upgrade(mykey):
 	writemsg("\n\n")
 	writemsg(green("Performing Global Updates: ")+bold(mykey)+"\n")
 	writemsg("(Could take a couple of minutes if you have a lot of binary packages.)\n")
-	writemsg("  "+bold(".")+"='update pass'  "+bold("*")+"='binary update'  "+bold("@")+"='/var/db move'\n"+"  "+bold("s")+"='/var/db SLOT move' "+bold("S")+"='binary SLOT move'\n")
+	writemsg("  "+bold(".")+"='update pass'  "+bold("*")+"='binary update'  "+bold("@")+"='/var/db move'\n"+"  "+bold("s")+"='/var/db SLOT move' "+bold("S")+"='binary SLOT move' "+bold("p")+"='update /etc/portage/package.*'\n")
 	processed=1
 	#remove stale virtual entries (mappings for packages that no longer exist)
 	
@@ -7061,6 +7061,8 @@ def do_upgrade(mykey):
 					if key==mysplit[1]:
 						file_contents[x][mypos]=string.replace(line,mysplit[1],mysplit[2])
 						update_files[x]=1
+						sys.stdout.write("p")
+						sys.stdout.flush()
 
 		elif mysplit[0]=="slotmove":
 			db["/"]["vartree"].dbapi.move_slot_ent(mysplit)
