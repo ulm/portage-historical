@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98 2004/10/20 14:23:55 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.1 2004/10/27 14:39:29 jstubbs Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -101,13 +101,14 @@ qahelp={
 	"DEPEND.syntax":"Syntax error in DEPEND (usually an extra/missing space/parenthesis)",
 	"RDEPEND.syntax":"Syntax error in RDEPEND (usually an extra/missing space/parenthesis)",
 	"PDEPEND.syntax":"Syntax error in PDEPEND (usually an extra/missing space/parenthesis)",
+	"LICENSE.syntax":"Syntax error in LICENSE (usually an extra/missing space/parenthesis)",
 	"ebuild.syntax":"Error generating cache entry for ebuild; typically caused by ebuild syntax error",
 	"ebuild.output":"A simple sourcing of the ebuild produces output; this breaks ebuild policy.",
 	"ebuild.nesteddie":"Placing 'die' inside ( ) prints an error, but doesn't stop the ebuild.",
 	"variable.readonly":"Assigning a readonly variable",
 	"IUSE.invalid":"This build has a variable in IUSE that is not in the use.desc or use.local.desc file",
 	"LICENSE.invalid":"This ebuild is listing a license that doesnt exist in portages license/ dir.",
-	"KEYWORDS.invalid":"This ebuild contains KEYWORDS that are not listed in profiles/arch.list",
+	"KEYWORDS.invalid":"This ebuild contains KEYWORDS that are not listed in profiles/arch.list or for which no valid profile was found",
 	"ebuild.nostable":"There are no ebuilds that are marked as stable for your ARCH",
 	"ebuild.allmasked":"All ebuilds are masked for this package",
 	"ebuild.majorsyn":"This ebuild has a major syntax error that may cause the ebuild to fail partially or fully",
@@ -523,6 +524,7 @@ elif repolevel==3:
 profiles={}
 descfile=portdir+"/profiles/profiles.desc"
 if os.path.exists(descfile):
+	badarchs=[]
 	for x in portage.grabfile(descfile):
 		if x[0]=="#":
 			continue
@@ -530,19 +532,29 @@ if os.path.exists(descfile):
 		if len(arch)!=3:
 			print "wrong format: \""+red(x)+"\" in "+descfile
 			continue
+		if not os.path.isdir(portdir+"/profiles/"+arch[1]):
+			print "Invalid "+arch[2]+" profile ("+arch[1]+") for arch "+arch[0]
+			if arch[0] not in badarchs:
+				badarchs.append(arch[0])
+			continue
+		if profiles.has_key(arch[0]) and profiles[arch[0]][1] == "stable":
+			continue
+		if arch[0] in badarchs:
+			print "Switching to "+arch[2]+" profile ("+arch[1]+") for arch "+arch[0]
 		profiles[arch[0]]=[arch[1],arch[2]]
 
 	for x in portage.archlist:
 		if x[0]=="~":
 			continue
 		if not profiles.has_key(x):
-			print yellow("\""+x+"\" doesn't exist in profiles.desc")
-			print yellow("You need to do \"cvs update\" in profiles dir.")
+			print yellow("\""+x+"\" doesn't have a valid profile listed in profiles.desc")
+			print yellow("You need to do \"cvs update\" in profiles dir or yell at people.")
 			print
 else:
 	print yellow("profiles.desc does not exist: "+descfile)
 	print yellow("You need to do \"cvs update\" in profiles dir.")
 	print
+
 
 stats={}
 fails={}
@@ -856,6 +868,7 @@ for x in scanlist:
 					arches.append([keyword, keyword, [keyword]])
 
 		baddepsyntax = False
+		badlicsyntax = False
 		catpkg = catdir+"/"+y
 		for mytype in ["DEPEND","RDEPEND","PDEPEND","LICENSE"]:
 			mydepstr = string.join(portage.db["/"]["porttree"].dbapi.aux_get(catpkg, [mytype]))
@@ -864,17 +877,21 @@ for x in scanlist:
 				fails[mytype+".syntax"].append(catpkg+".ebuild "+mytype+": '?' preceded by space")
 				if mytype != "LICENSE":
 					baddepsyntax = True
+				else:
+					badlicsyntax = True
 			try:
 				# Missing closing parenthesis will result in a ValueError
 				mydeplist=portage_dep.paren_reduce(mydepstr)
 				# Missing opening parenthesis will result in a final "" element
-				if "" in mydeplist:
+				if "" in mydeplist or "(" in mydeplist:
 					raise ValueError
 			except ValueError:
 				stats[mytype+".syntax"] += 1
 				fails[mytype+".syntax"].append(catpkg+".ebuild "+mytype+": Mismatched parenthesis")
 				if mytype != "LICENSE":
 					baddepsyntax = True
+				else:
+					badlicsyntax = True
 
 		if not baddepsyntax:
 			for keyword,arch,groups in arches:
@@ -882,12 +899,13 @@ for x in scanlist:
 
 				if (profiles.has_key(arch)):
 					profdir=portdir+"/profiles/"+profiles[arch][0]
+					if (not os.path.exists(profdir)):
+						continue
 				else:
-					profdir=portdir+"/profiles/default-"+arch+"-1.4"
+					continue
+
 				portage.profiledir=profdir
 				os.environ["ACCEPT_KEYWORDS"]="-~"+arch
-				if (not os.path.exists(profdir)):
-					raise IOError, "Profile dir does not exist: "+profdir
 
 				if arch_caches.has_key(arch):
 					dep_settings, portage.portdb = arch_caches[arch]
@@ -967,19 +985,20 @@ for x in scanlist:
 			fails["IUSE.invalid"].append(x+"/"+y+".ebuild: %s" % myuse[mypos])	
 
 		# license checks
-		myuse=portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,["LICENSE"])[0]
-		# Parse the LICENSE variable, remove USE conditions and
-		# flatten it.
-		myuse=portage_dep.use_reduce(portage_dep.paren_reduce(myuse), matchall=1)
-		myuse=portage.flatten(myuse)
-		# Check each entry to ensure that it exists in PORTDIR's
-		# license directory.
-		for mypos in range(0,len(myuse)):
-			# Need to check for "||" manually as no portage
-			# function will remove it without removing values.
-			if myuse[mypos] not in liclist and myuse[mypos] != "||":
-				stats["LICENSE.invalid"]=stats["LICENSE.invalid"]+1
-				fails["LICENSE.invalid"].append(x+"/"+y+".ebuild: %s" % myuse[mypos])
+		if not badlicsyntax:
+			myuse=portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,["LICENSE"])[0]
+			# Parse the LICENSE variable, remove USE conditions and
+			# flatten it.
+			myuse=portage_dep.use_reduce(portage_dep.paren_reduce(myuse), matchall=1)
+			myuse=portage.flatten(myuse)
+			# Check each entry to ensure that it exists in PORTDIR's
+			# license directory.
+			for mypos in range(0,len(myuse)):
+				# Need to check for "||" manually as no portage
+				# function will remove it without removing values.
+				if myuse[mypos] not in liclist and myuse[mypos] != "||":
+					stats["LICENSE.invalid"]=stats["LICENSE.invalid"]+1
+					fails["LICENSE.invalid"].append(x+"/"+y+".ebuild: %s" % myuse[mypos])
 
 		#keyword checks
 		myuse=string.split(portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,["KEYWORDS"])[0])
@@ -989,9 +1008,14 @@ for x in scanlist:
 				myskey=myskey[1:]
 			if myskey[0]=="~":
 				myskey=myskey[1:]
-			if (mykey!="-*") and (myskey not in kwlist):
-				stats["KEYWORDS.invalid"]=stats["KEYWORDS.invalid"]+1
-				fails["KEYWORDS.invalid"].append(x+"/"+y+".ebuild: %s" % mykey)
+			if mykey!="-*":
+				if myskey not in kwlist:
+					stats["KEYWORDS.invalid"] += 1
+					fails["KEYWORDS.invalid"].append(x+"/"+y+".ebuild: %s" % mykey)
+				elif not profiles.has_key(myskey):
+					stats["KEYWORDS.invalid"] += 1
+					fails["KEYWORDS.invalid"].append(x+"/"+y+".ebuild: %s (profile invalid)" % mykey)
+
 		#syntax checks
 		gentoo_copyright = re.compile(r'^# Copyright 1999-' + strftime("%Y", gmtime()) + r' Gentoo Foundation')
 		gentoo_license = re.compile(r'^# Distributed under the terms of the GNU General Public License v2$')

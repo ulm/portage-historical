@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.2 2004/10/22 16:53:30 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.3 2004/10/27 14:39:30 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -114,9 +114,9 @@ try:
 	                         portage_uid, portage_gid
 	
 	import portage_util
-	from portage_util import grab_multiple, grabdict, grabdict_package, grabfile, grabints, map_dictlist_vals, \
-		pickle_read, pickle_write, stack_dictlist, stack_dicts, stack_lists, unique_array, varexpand, \
-		writedict, writeints, writemsg, getconfig
+	from portage_util import grab_multiple, grabdict, grabdict_package, grabfile, grabfile_package, \
+		grabints, map_dictlist_vals, pickle_read, pickle_write, stack_dictlist, stack_dicts, stack_lists, \
+		unique_array, varexpand, writedict, writeints, writemsg, getconfig
 	import portage_exception
 	import portage_gpg
 	import portage_locks
@@ -748,12 +748,26 @@ def new_protect_filename(mydest, newmd5=None):
 	else:
 		return (new_pfile, old_pfile)
 
+#XXX: These two are now implemented in portage_util.py but are needed here
+#XXX: until the isvalidatom() dependency is sorted out.
+
 def grabdict_package(myfilename,juststrings=0):
 	pkgs=grabdict(myfilename, juststrings=juststrings, empty=1)
 	for x in pkgs.keys():
 		if not isvalidatom(x):
 			del(pkgs[x])
 			writemsg("--- Invalid atom in %s: %s\n" % (myfilename, x))
+	return pkgs
+
+def grabfile_package(myfilename,compatlevel=0):
+	pkgs=grabfile(myfilename,compatlevel)
+	for x in range(len(pkgs)-1,-1,-1):
+		pkg = pkgs[x]
+		if pkg[0] == "*":
+			pkg = pkg[1:]
+		if not isvalidatom(pkg):
+			writemsg("--- Invalid atom in %s: %s\n" % (myfilename, pkgs[x]))
+			del(pkgs[x])
 	return pkgs
 
 # returns a tuple.  (version[string], error[string])
@@ -928,7 +942,7 @@ class config:
 				if os.path.exists("/"+CUSTOM_PROFILE_PATH):
 					self.profiles.append("/"+CUSTOM_PROFILE_PATH)
 
-			self.packages_list = grab_multiple("packages", self.profiles, grabfile)
+			self.packages_list = grab_multiple("packages", self.profiles, grabfile_package)
 			self.packages      = stack_lists(self.packages_list, incremental=1)
 			del self.packages_list
 			#self.packages = grab_stacked("packages", self.profiles, grabfile, incremental_lines=1)
@@ -1038,6 +1052,7 @@ class config:
 
 				#package.keywords
 				pkgdict=grabdict_package(USER_CONFIG_PATH+"/package.keywords")
+				self.pkeywordsdict = {}
 				for key in pkgdict.keys():
 					# default to ~arch if no specific keyword is given
 					if not pkgdict[key]:
@@ -1050,10 +1065,13 @@ class config:
 							if not keyword[0] in "~-":
 								mykeywordlist.append("~"+keyword)
 						pkgdict[key] = mykeywordlist
-				self.pkeywordsdict = pkgdict
+					cp = dep_getkey(key)
+					if not self.pkeywordsdict.has_key(cp):
+						self.pkeywordsdict[cp] = {}
+					self.pkeywordsdict[cp][key] = pkgdict[key]
 
 				#package.unmask
-				pkgunmasklines = grabfile(USER_CONFIG_PATH+"/package.unmask")
+				pkgunmasklines = grabfile_package(USER_CONFIG_PATH+"/package.unmask")
 				self.punmaskdict = {}
 				for x in pkgunmasklines:
 					mycatpkg=dep_getkey(x)
@@ -1076,9 +1094,9 @@ class config:
 			# <portage-2.0.51 syntax.
 			if self.profiles and (">=sys-apps/portage-2.0.51" in self.packages \
                                       or "*>=sys-apps/portage-2.0.51" in self.packages):
-				pkgmasklines = grab_multiple("package.mask", self.profiles + locations, grabfile)
+				pkgmasklines = grab_multiple("package.mask", self.profiles + locations, grabfile_package)
 			else:
-				pkgmasklines = grab_multiple("package.mask", locations, grabfile)
+				pkgmasklines = grab_multiple("package.mask", locations, grabfile_package)
 			pkgmasklines = stack_lists(pkgmasklines, incremental=1)
 
 			self.pmaskdict = {}
@@ -1157,6 +1175,7 @@ class config:
 
 		self.regenerate()
 		
+		
 		self.features = portage_util.unique_array(self["FEATURES"].split())
 		self.features.sort()
 
@@ -1167,7 +1186,7 @@ class config:
 				self.features.remove("gpg")
 				self["FEATURES"] = string.join(self.features, " ")
 				self.backup_changes("FEATURES")
-
+		
 		if mycpv:
 			self.setcpv(mycpv)
 
@@ -1696,156 +1715,158 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 					file_lock = portage_locks.lockfile(mysettings["DISTDIR"]+"/"+locks_in_subdir+"/"+myfile,wantnewlockfile=1)
 				else:
 					file_lock = portage_locks.lockfile(mysettings["DISTDIR"]+"/"+myfile,wantnewlockfile=1)
-		for loc in filedict[myfile]:
-			if listonly:
-				writemsg(loc+" ")
-				continue
-			# allow different fetchcommands per protocol
-			protocol = loc[0:loc.find("://")]
-			if mysettings.has_key("FETCHCOMMAND_"+protocol.upper()):
-				fetchcommand=mysettings["FETCHCOMMAND_"+protocol.upper()]
-			else:
-				fetchcommand=mysettings["FETCHCOMMAND"]
-			if mysettings.has_key("RESUMECOMMAND_"+protocol.upper()):
-				resumecommand=mysettings["RESUMECOMMAND_"+protocol.upper()]
-			else:
-				resumecommand=mysettings["RESUMECOMMAND"]
-			
-			fetchcommand=string.replace(fetchcommand,"${DISTDIR}",mysettings["DISTDIR"])
-			resumecommand=string.replace(resumecommand,"${DISTDIR}",mysettings["DISTDIR"])
-
-			try:
-				mystat=os.stat(mysettings["DISTDIR"]+"/"+myfile)
-				if mydigests.has_key(myfile):
-					#if we have the digest file, we know the final size and can resume the download.
-					if mystat[stat.ST_SIZE]<mydigests[myfile]["size"]:
-						fetched=1
-					else:
-						#we already have it downloaded, skip.
-						#if our file is bigger than the recorded size, digestcheck should catch it.
-						if not fetchonly:
-							fetched=2
-						else:
-							# Check md5sum's at each fetch for fetchonly.
-							verified_ok,reason = portage_checksum.verify_all(mysettings["DISTDIR"]+"/"+myfile, mydigests[myfile])
-							if not verified_ok:
-								writemsg("!!! Previously fetched file: "+str(myfile)+"\n!!! Reason: "+reason+"\nRefetching...\n\n")
-								os.unlink(mysettings["DISTDIR"]+"/"+myfile)
-								fetched=0
-							else:
-								for x_key in mydigests[myfile].keys():
-									writemsg(">>> Previously fetched file: "+str(myfile)+" "+x_key+" ;-)\n")
-								fetched=2
-								break #No need to keep looking for this file, we have it!
-				else:
-					#we don't have the digest file, but the file exists.  Assume it is fully downloaded.
-					fetched=2
-			except (OSError,IOError),e:
-				writemsg("An exception was caught(1)...\nFailing the download: %s.\n" % (str(e)),1)
-				fetched=0
-
-			if not can_fetch:
-				if fetched != 2:
-					if fetched == 0:
-						writemsg("!!! File %s isn't fetched but unable to get it.\n" % myfile)
-					else:
-						writemsg("!!! File %s isn't fully fetched, but unable to complete it\n" % myfile)
-					return 0
-				else:
+		try:
+			for loc in filedict[myfile]:
+				if listonly:
+					writemsg(loc+" ")
 					continue
-	
-			# check if we can actually write to the directory/existing file.
-			if fetched!=2 and os.path.exists(mysettings["DISTDIR"]+"/"+myfile) != \
-				os.access(mysettings["DISTDIR"]+"/"+myfile, os.W_OK):
-				writemsg(red("***")+" Lack write access to %s, failing fetch\n" % str(mysettings["DISTDIR"]+"/"+myfile))
-				fetched=0
-				break
-			elif fetched!=2:
-				#we either need to resume or start the download
-				#you can't use "continue" when you're inside a "try" block
-				if fetched==1:
-					#resume mode:
-					writemsg(">>> Resuming download...\n")
-					locfetch=resumecommand
+				# allow different fetchcommands per protocol
+				protocol = loc[0:loc.find("://")]
+				if mysettings.has_key("FETCHCOMMAND_"+protocol.upper()):
+					fetchcommand=mysettings["FETCHCOMMAND_"+protocol.upper()]
 				else:
-					#normal mode:
-					locfetch=fetchcommand
-				writemsg(">>> Downloading "+str(loc)+"\n")
-				myfetch=string.replace(locfetch,"${URI}",loc)
-				myfetch=string.replace(myfetch,"${FILE}",myfile)
+					fetchcommand=mysettings["FETCHCOMMAND"]
+				if mysettings.has_key("RESUMECOMMAND_"+protocol.upper()):
+					resumecommand=mysettings["RESUMECOMMAND_"+protocol.upper()]
+				else:
+					resumecommand=mysettings["RESUMECOMMAND"]
+				
+				fetchcommand=string.replace(fetchcommand,"${DISTDIR}",mysettings["DISTDIR"])
+				resumecommand=string.replace(resumecommand,"${DISTDIR}",mysettings["DISTDIR"])
+	
 				try:
-					if selinux_enabled:
-						con=selinux.getcontext()
-						con=string.replace(con,mysettings["PORTAGE_T"],mysettings["PORTAGE_FETCH_T"])
-						selinux.setexec(con)
-						myret=spawn(myfetch,mysettings,free=1)
-						selinux.setexec(None)
+					mystat=os.stat(mysettings["DISTDIR"]+"/"+myfile)
+					if mydigests.has_key(myfile):
+						#if we have the digest file, we know the final size and can resume the download.
+						if mystat[stat.ST_SIZE]<mydigests[myfile]["size"]:
+							fetched=1
+						else:
+							#we already have it downloaded, skip.
+							#if our file is bigger than the recorded size, digestcheck should catch it.
+							if not fetchonly:
+								fetched=2
+							else:
+								# Check md5sum's at each fetch for fetchonly.
+								verified_ok,reason = portage_checksum.verify_all(mysettings["DISTDIR"]+"/"+myfile, mydigests[myfile])
+								if not verified_ok:
+									writemsg("!!! Previously fetched file: "+str(myfile)+"\n!!! Reason: "+reason+"\nRefetching...\n\n")
+									os.unlink(mysettings["DISTDIR"]+"/"+myfile)
+									fetched=0
+								else:
+									for x_key in mydigests[myfile].keys():
+										writemsg(">>> Previously fetched file: "+str(myfile)+" "+x_key+" ;-)\n")
+									fetched=2
+									break #No need to keep looking for this file, we have it!
 					else:
-						myret=spawn(myfetch,mysettings,free=1)
-				finally:
-					#if root, -always- set the perms.
-					if os.path.exists(mysettings["DISTDIR"]+"/"+myfile) and (fetched != 1 or os.getuid() == 0):
-						if os.stat(mysettings["DISTDIR"]+"/"+myfile).st_gid != portage_gid:
-							try:
-								os.chown(mysettings["DISTDIR"]+"/"+myfile,-1,portage_gid)
-							except SystemExit, e:
-								raise
-							except:
-								portage_util.writemsg("chown failed on distfile: " + str(myfile))
-						os.chmod(mysettings["DISTDIR"]+"/"+myfile,0664)
-
-				if mydigests!=None and mydigests.has_key(myfile):
+						#we don't have the digest file, but the file exists.  Assume it is fully downloaded.
+						fetched=2
+				except (OSError,IOError),e:
+					writemsg("An exception was caught(1)...\nFailing the download: %s.\n" % (str(e)),1)
+					fetched=0
+	
+				if not can_fetch:
+					if fetched != 2:
+						if fetched == 0:
+							writemsg("!!! File %s isn't fetched but unable to get it.\n" % myfile)
+						else:
+							writemsg("!!! File %s isn't fully fetched, but unable to complete it\n" % myfile)
+						return 0
+					else:
+						continue
+		
+				# check if we can actually write to the directory/existing file.
+				if fetched!=2 and os.path.exists(mysettings["DISTDIR"]+"/"+myfile) != \
+					os.access(mysettings["DISTDIR"]+"/"+myfile, os.W_OK):
+					writemsg(red("***")+" Lack write access to %s, failing fetch\n" % str(mysettings["DISTDIR"]+"/"+myfile))
+					fetched=0
+					break
+				elif fetched!=2:
+					#we either need to resume or start the download
+					#you can't use "continue" when you're inside a "try" block
+					if fetched==1:
+						#resume mode:
+						writemsg(">>> Resuming download...\n")
+						locfetch=resumecommand
+					else:
+						#normal mode:
+						locfetch=fetchcommand
+					writemsg(">>> Downloading "+str(loc)+"\n")
+					myfetch=string.replace(locfetch,"${URI}",loc)
+					myfetch=string.replace(myfetch,"${FILE}",myfile)
 					try:
-						mystat=os.stat(mysettings["DISTDIR"]+"/"+myfile)
-						# no exception?  file exists. let digestcheck() report
-						# an appropriately for size or md5 errors
-						if (mystat[stat.ST_SIZE]<mydigests[myfile]["size"]):
-							# Fetch failed... Try the next one... Kill 404 files though.
-							if (mystat[stat.ST_SIZE]<100000) and (len(myfile)>4) and not ((myfile[-5:]==".html") or (myfile[-4:]==".htm")):
-								html404=re.compile("<title>.*(not found|404).*</title>",re.I|re.M)
+						if selinux_enabled:
+							con=selinux.getcontext()
+							con=string.replace(con,mysettings["PORTAGE_T"],mysettings["PORTAGE_FETCH_T"])
+							selinux.setexec(con)
+							myret=spawn(myfetch,mysettings,free=1)
+							selinux.setexec(None)
+						else:
+							myret=spawn(myfetch,mysettings,free=1)
+					finally:
+						#if root, -always- set the perms.
+						if os.path.exists(mysettings["DISTDIR"]+"/"+myfile) and (fetched != 1 or os.getuid() == 0):
+							if os.stat(mysettings["DISTDIR"]+"/"+myfile).st_gid != portage_gid:
 								try:
-									if html404.search(open(mysettings["DISTDIR"]+"/"+myfile).read()):
-										try:
-											os.unlink(mysettings["DISTDIR"]+"/"+myfile)
-											writemsg(">>> Deleting invalid distfile. (Improper 404 redirect from server.)\n")
-										except SystemExit, e:
-											raise
-										except:
-											pass
+									os.chown(mysettings["DISTDIR"]+"/"+myfile,-1,portage_gid)
 								except SystemExit, e:
 									raise
 								except:
-									pass
-							continue
-						if not fetchonly:
-							fetched=2
-							break
-						else:
-							# File is the correct size--check the MD5 sum for the fetched
-							# file NOW, for those users who don't have a stable/continuous
-							# net connection. This way we have a chance to try to download
-							# from another mirror...
-							verified_ok,reason = portage_checksum.verify_all(mysettings["DISTDIR"]+"/"+myfile, mydigests[myfile])
-							if not verified_ok:
-								writemsg("!!! Fetched file: "+str(myfile)+" VERIFY FAILED!\n!!! Reason: "+reason+"\nRemoving corrupt distfile...\n")
-								os.unlink(mysettings["DISTDIR"]+"/"+myfile)
-								fetched=0
-							else:
-								for x_key in mydigests[myfile].keys():
-									writemsg(">>> "+str(myfile)+" "+x_key+" ;-)\n")
+									portage_util.writemsg("chown failed on distfile: " + str(myfile))
+							os.chmod(mysettings["DISTDIR"]+"/"+myfile,0664)
+	
+					if mydigests!=None and mydigests.has_key(myfile):
+						try:
+							mystat=os.stat(mysettings["DISTDIR"]+"/"+myfile)
+							# no exception?  file exists. let digestcheck() report
+							# an appropriately for size or md5 errors
+							if (mystat[stat.ST_SIZE]<mydigests[myfile]["size"]):
+								# Fetch failed... Try the next one... Kill 404 files though.
+								if (mystat[stat.ST_SIZE]<100000) and (len(myfile)>4) and not ((myfile[-5:]==".html") or (myfile[-4:]==".htm")):
+									html404=re.compile("<title>.*(not found|404).*</title>",re.I|re.M)
+									try:
+										if html404.search(open(mysettings["DISTDIR"]+"/"+myfile).read()):
+											try:
+												os.unlink(mysettings["DISTDIR"]+"/"+myfile)
+												writemsg(">>> Deleting invalid distfile. (Improper 404 redirect from server.)\n")
+											except SystemExit, e:
+												raise
+											except:
+												pass
+									except SystemExit, e:
+										raise
+									except:
+										pass
+								continue
+							if not fetchonly:
 								fetched=2
 								break
-					except (OSError,IOError),e:
-						writemsg("An exception was caught(2)...\nFailing the download: %s.\n" % (str(e)),1)
-						fetched=0
-				else:
-					if not myret:
-						fetched=2
-						break
-					elif mydigests!=None:
-						writemsg("No digest file available and download failed.\n\n")
-		if use_locks and file_lock:
-			portage_locks.unlockfile(file_lock)
+							else:
+								# File is the correct size--check the MD5 sum for the fetched
+								# file NOW, for those users who don't have a stable/continuous
+								# net connection. This way we have a chance to try to download
+								# from another mirror...
+								verified_ok,reason = portage_checksum.verify_all(mysettings["DISTDIR"]+"/"+myfile, mydigests[myfile])
+								if not verified_ok:
+									writemsg("!!! Fetched file: "+str(myfile)+" VERIFY FAILED!\n!!! Reason: "+reason+"\nRemoving corrupt distfile...\n")
+									os.unlink(mysettings["DISTDIR"]+"/"+myfile)
+									fetched=0
+								else:
+									for x_key in mydigests[myfile].keys():
+										writemsg(">>> "+str(myfile)+" "+x_key+" ;-)\n")
+									fetched=2
+									break
+						except (OSError,IOError),e:
+							writemsg("An exception was caught(2)...\nFailing the download: %s.\n" % (str(e)),1)
+							fetched=0
+					else:
+						if not myret:
+							fetched=2
+							break
+						elif mydigests!=None:
+							writemsg("No digest file available and download failed.\n\n")
+		finally:
+			if use_locks and file_lock:
+				portage_locks.unlockfile(file_lock)
 		
 		if listonly:
 			writemsg("\n")
@@ -3193,7 +3214,7 @@ def dep_opconvert(mysplit,myuse,mysettings):
 			mypos += 1
 	return newsplit
 
-def dep_virtual(mysplit):
+def dep_virtual(mysplit, mysettings):
 	"Does virtual dependency conversion"
 
 
@@ -3201,19 +3222,19 @@ def dep_virtual(mysplit):
 	newsplit=[]
 	for x in mysplit:
 		if type(x)==types.ListType:
-			newsplit.append(dep_virtual(x))
+			newsplit.append(dep_virtual(x, mysettings))
 		else:
 			mykey=dep_getkey(x)
-			if virts.has_key(mykey):
-				if len(virts[mykey])==1:
-					a=string.replace(x, mykey, virts[mykey][0])
+			if mysettings.virtuals.has_key(mykey):
+				if len(mysettings.virtuals[mykey])==1:
+					a=string.replace(x, mykey, mysettings.virtuals[mykey][0])
 				else:
 					if x[0]=="!":
 						# blocker needs "and" not "or(||)".
 						a=[]
 					else:
 						a=['||']
-					for y in virts[mykey]:
+					for y in mysettings.virtuals[mykey]:
 						a.append(string.replace(x, mykey, y))
 				newsplit.append(a)
 			else:
@@ -3560,7 +3581,7 @@ def dep_check(depstring,mydbapi,mysettings,use="yes",mode=None,myuse=None,use_ca
 	mysplit=portage_dep.dep_opconvert(mysplit)
 	
 	#convert virtual dependencies to normal packages.
-	mysplit=dep_virtual(mysplit)
+	mysplit=dep_virtual(mysplit, mysettings)
 	#if mysplit==None, then we have a parse error (paren mismatch or misplaced ||)
 	#up until here, we haven't needed to look at the database tree
 
@@ -3708,9 +3729,11 @@ def getmaskingstatus(mycpv):
 	myarch = settings["ARCH"]
 	pkgdict = settings.pkeywordsdict
 
-	for mykey in pkgdict:
-		if portdb.xmatch("bestmatch-list", mykey, mylist=[mycpv]):
-			pgroups.extend(pkgdict[mykey])
+	cp = dep_getkey(mycpv)
+	if pkgdict.has_key(cp):
+		matches = match_to_list(mycpv, pkgdict[cp].keys())
+		for match in matches:
+			pgroups.extend(pkgdict[cp][match])
 
 	kmask = "missing"
 
@@ -5233,7 +5256,7 @@ class portdbapi(dbapi):
 		
 		failures = {}
 		for x in myfiles:
-			if x not in mysums:
+			if not mysums or x not in mysums:
 				ok     = False
 				reason = "digest missing"
 			else:
@@ -5436,9 +5459,11 @@ class portdbapi(dbapi):
 			mygroups=myaux[0].split()
 			pgroups=groups[:]
 			match=0
-			for mykey in pkgdict:
-				if db["/"]["porttree"].dbapi.xmatch("bestmatch-list", mykey, mylist=[mycpv]):
-					pgroups.extend(pkgdict[mykey])
+			cp = dep_getkey(mycpv)
+			if pkgdict.has_key(cp):
+				matches = match_to_list(mycpv, pkgdict[cp].keys())
+				for match in matches:
+					pgroups.extend(pkgdict[cp][match])
 			for gp in mygroups:
 				if gp=="*":
 					writemsg("--- WARNING: Package '%s' uses '*' keyword.\n" % mycpv)
@@ -6387,7 +6412,6 @@ class dblink:
 		if dircache.has_key(self.dbcatdir):
 			del dircache[self.dbcatdir]
 		print ">>>",self.mycpv,"merged."
-		return 0
 
 	def mergeme(self,srcroot,destroot,outfile,secondhand,stufftomerge,cfgfiledict,thismtime):
 		srcroot=os.path.normpath("///"+srcroot)+"/"
@@ -6605,7 +6629,7 @@ class dblink:
 					# old package won't yank the file with it. (non-cfgprot related)
 					os.utime(myrealdest,(thismtime,thismtime))
 					zing="---"
-				if self.settings["ARCH"] == "macos" and myrealdest[-2:] == ".a":
+				if self.settings["ARCH"] == "ppc-macos" and myrealdest[-2:] == ".a":
 
 					# XXX kludge, bug #58848; can be killed when portage stops relying on 
 					# md5+mtime, and uses refcounts

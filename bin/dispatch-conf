@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dispatch-conf,v 1.7 2004/10/04 13:56:50 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dispatch-conf,v 1.7.2.1 2004/10/27 14:39:29 jstubbs Exp $
 
 #
 # dispatch-conf -- Integrate modified configs, post-emerge
@@ -13,7 +13,8 @@
 #
 
 from stat import *
-import os, shutil, sys, string, re, commands
+from random import *
+import os, shutil, sys, string, re, commands, atexit
 sys.path = ["/usr/lib/portage/pym"]+sys.path
 
 import portage, dispatch_conf
@@ -24,7 +25,30 @@ DIFF_CVS_INTERP      = 'diff -Nau %s %s | grep "^[+-][^+-]" | grep -v "# .Header
 DIFF_WSCOMMENTS      = 'diff -Nau %s %s | grep "^[+-][^+-]" | grep -v "^[-+]#" | grep -v "^[-+][:space:]*$"'
 MERGE                = 'sdiff --suppress-common-lines --output=%s %s %s'
 
-LOG_CHANGES_TO = '/tmp/dispatch-conf.changes'
+# We need a secure scratch dir and python does silly verbose errors on the use of tempnam
+SCRATCH_DIR = None
+while SCRATCH_DIR is None:
+    try:
+        mydir = "/var/lib/portage/dispatch-conf."
+        for x in range(0,8):
+            if int(random() * 3) == 0:
+                mydir += chr(int(65+random()*26.0))
+            elif int(random() * 2) == 0:
+                mydir += chr(int(97+random()*26.0))
+            else:
+                mydir += chr(int(48+random()*10.0))
+        if os.path.exists(mydir):
+            continue
+        os.mkdir(mydir)
+        SCRATCH_DIR = mydir
+    except OSError, e:
+        if e.errno != 17:
+            raise
+
+# Ensure the scratch dir is deleted
+def cleanup(mydir=SCRATCH_DIR):
+    shutil.rmtree(SCRATCH_DIR)
+atexit.register(cleanup)
 
 MANDATORY_OPTS  = [ 'archive-dir', 'diff', 'pager', 'replace-cvs', 'replace-wscomments' ]
 
@@ -35,10 +59,14 @@ class dispatch:
         confs = []
         count = 0
 
-        if os.path.exists(LOG_CHANGES_TO):
-            shutil.move(LOG_CHANGES_TO, LOG_CHANGES_TO + '.old')
 
         self.options = dispatch_conf.read_config(MANDATORY_OPTS)
+
+        if self.options.has_key("log-file"):
+            if os.path.exists(self.options["log-file"]):
+                shutil.move(self.options["log-file"], self.options["log-file"] + '.old')
+        else:
+            self.options["log-file"] = "/dev/null"
 
         #
         # Build list of extant configs
@@ -154,7 +182,7 @@ class dispatch:
                 elif c == 'n':
                     break
                 elif c == 'm':
-                    merged = '/tmp/dispatch-conf.merged.%i' % (os.getpid (),)
+                    merged = SCRATCH_DIR+"/"+os.path.basename(conf['current'])
                     print
                     os.system (MERGE % (merged, conf ['current'], newconf))
                     shutil.move (merged, mrgconf)
@@ -188,8 +216,8 @@ class dispatch:
 
     def replace (self, newconf, curconf):
         """Replace current config with the new/merged version.  Also logs
-        the diff of what changed into the LOG_CHANGES_TO file."""
-        os.system((DIFF_CONTENTS % (curconf, newconf)) + '>>' + LOG_CHANGES_TO)
+        the diff of what changed into the configured log file."""
+        os.system((DIFF_CONTENTS % (curconf, newconf)) + '>>' + self.config["log-file"])
         try:
             shutil.move(newconf, curconf)
         except (IOError, os.error), why:

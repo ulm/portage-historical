@@ -1,8 +1,7 @@
 #!/usr/bin/python
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dohtml,v 1.14 2004/10/10 10:07:20 carpaski Exp $
-# Author Karl Trygve Kalleberg <karltk@gentoo.org>
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dohtml,v 1.14.2.1 2004/10/27 14:39:29 jstubbs Exp $
 
 #
 # Typical usage:
@@ -31,12 +30,9 @@
 #
 
 import os
+import string
 import sys
 import types
-import optparse
-
-__version__ = "0.1.2"
-__author__ = "Karl Trygve Kalleberg <karltk@gentoo.org>"
 
 def dodir(path):
 	os.system("install -d '%s'" % path)
@@ -68,67 +64,88 @@ def install(basename, dirname, options, prefix=""):
 			if prefix: pfx = prefix + "/" + pfx
 			install(i, dirname, options, pfx)
 
+class OptionsClass:
+	def __init__(self):
+		self.PF = ""
+		self.D = ""
+		self.DOCDESTTREE = ""
+		
+		if os.environ.has_key("PF"):
+			self.PF = os.environ["PF"]
+		if os.environ.has_key("D"):
+			self.D = os.environ["D"]
+		if os.environ.has_key("DOCDESTTREE"):
+			self.DOCDESTTREE = os.environ["DOCDESTTREE"]
+		
+		self.allowed_exts = [ 'png', 'gif', 'html', 'htm', 'jpg', 'css', 'js' ]
+		self.allowed_files = []
+		self.disallowed_dirs = [ 'CVS' ]
+		self.recurse = False
+		self.verbose = False
+		self.doc_prefix = ""
+
+def print_help():
+	opts = OptionsClass()
+
+	print "dohtml [-a .foo,.bar] [-A .foo,.bar] [-f foo,bar] [-x foo,bar]"
+	print "       [-r] [-V] <file> [file ...]"
+	print
+	print " -a   Set the list of allowed to those that are specified."
+	print "      Default:", string.join(opts.allowed_exts, ",")
+	print " -A   Extend the list of allowed file types."
+	print " -f   Set list of allowed extensionless file names."
+	print " -x   Set directories to be excluded from recursion."
+	print "      Default:", string.join(opts.disallowed_dirs, ",")
+	print " -r   Install files and directories recursively."
+	print " -V   Be verbose."
+	print
+
 def parse_args():
-
-	default_allowed_exts = [ 'png', 'gif', 'html', 'htm', 'jpg', 'css', 'js' ]
-	default_disallowed_dirs = [ 'CVS' ]
-
-	parser = optparse.OptionParser(version="%prog " + __version__ + "\nAuthor: " + __author__)
-
-	parser.add_option("-A", "--append-allowed-exts", 
-			dest = "append_allowed_exts",
-			action = "append",
-			metavar = "ALLOWED",
-			default = [],
-			help = "append to allowed file extensions")
-	parser.add_option("-a", "--set-allowed-exts",
-			dest = "allowed_exts", 
-			metavar = "ALLOWED",
-			default = default_allowed_exts,
-			help = "set allowed file extensions")
-	parser.add_option("-f", "--allowed-files",
-			dest = "allowed_files",
-			action = "append",
-			metavar = "ALLOWED",
-			default = [],
-			help = "allowed extenionless files")
-	parser.add_option("-x", "--set-disallowed-dirs",
-			dest = "disallowed_dirs", 
-			metavar = "DISALLOWED",
-			default = default_disallowed_dirs,
-			help = "set disallowed directories")
-	parser.add_option("-r", "--recurse",
-			dest = "recurse", default = False,
-			action = "store_true",
-			help = "recurse into subdirectories")
-	parser.add_option("-V", "--verbose",
-                  	action="count", dest="verbose", default=0,
-                  	help="print status messages to stdout")						
-	parser.add_option("-p", "--doc-prefix",
-			dest = "doc_prefix", 
-			metavar = "DOCPREFIX",
-			default = "",
-			help = "prefix inside the /usr/share/doc/${PF}/html/ directory")
+	options = OptionsClass()
+	args = []
 	
-	return parser.parse_args()
+	x = 1
+	while x < len(sys.argv):
+		arg = sys.argv[x]
+		if arg in ["-h","-r","-V"]:
+			if arg == "-h":
+				print_help()
+				sys.exit(0)
+			elif arg == "-r":
+				options.recurse = True
+			elif arg == "-V":
+				options.verbose = True
+		elif sys.argv[x] in ["-A","-a","-f","-x","-p"]:
+			x += 1
+			if x == len(sys.argv):
+				print_help()
+				sys.exit(0)
+			elif arg == "-p":
+				options.doc_prefix = sys.argv[x]
+			else:
+				values = string.split(sys.argv[x], ",")
+				if arg == "-A":
+					options.allowed_exts.extend(values)
+				elif arg == "-a":
+					options.allowed_exts = values
+				elif arg == "-f":
+					options.allowed_files = values
+				elif arg == "-x":
+					options.disallowed_dirs = values
+		else:
+			args.append(sys.argv[x])
+		x += 1
+	
+	return (options, args)
 
 def main():
 
 	(options, args) = parse_args()
 
-	options.ensure_value("D", os.environ["D"])
-	options.ensure_value("PF", os.environ["PF"])
-	options.ensure_value("DOCDESTTREE", os.environ["DOCDESTTREE"])
-	
 	if type(options.allowed_exts) == types.StringType:
 		options.allowed_exts = options.allowed_exts.split(",")
 
-	exts = []
-	for x in options.allowed_exts + options.append_allowed_exts:
-		exts += x.split(",")
-	options.allowed_exts = exts
-
-	if options.verbose >= 3:
+	if options.verbose:
 		print "Allowed extensions:", options.allowed_exts
 		print "Document prefix : '" + options.doc_prefix	 + "'"
 		print "Allowed files :", options.allowed_files

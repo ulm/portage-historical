@@ -1,29 +1,83 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.3 2004/10/22 18:44:32 ferringb Exp $
+# $Id: ChangeLog,v 1.796.2.4 2004/10/27 14:39:29 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
 
-  22 Oct 2004; Brian Harring <ferringb@gentoo.org> ebuild.sh: Made use/has 
-  quiet.
+  27 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> dispatch-conf: Moved temp file
+  creation from /tmp to /var/lib/portage. Made the log file a configurable option
+  that is disabled by default.
+
+  26 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> portage.py:  Added a check to
+  portdbapi.fetchcheck to account for a missing digest.
+
+  26 Oct 2004; Brian Harring <ferringb@gentoo.org> portage_exec.py, bin/ebuild:
+  bug with the path lookup code (added find_binary func for upcoming additions), 
+  and bin/ebuild was bailing due to a missing portage_util import.
+
+  25 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> portage.py: Wrapped entire
+  lock-holding section of fetch() in a try-finally to ensure that the lock
+  file gets released regardless of exception.
+
+  25 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> etc-update: Added patch
+  from #48218 to continue on to next file when answering "no" to the
+  interactive replace prompt of menu option -3.
+
+  25 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> emerge: Fixed the space/tab
+  usage through the spinner_msgs definition. Removed COMPILER from emerge info
+  output.
+
+  25 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> portage.py: Converted
+  config.pkeywordsdict from {atom:[keyword]} to {cp:{atom:[keyword]}} to
+  prevent a lot of unnecessary calculation.
+
+  24 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> emerge: Added a percentage
+  counter to the cache update phase based on patch from #68694
+
+  24 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> portage.py:
+  s/macos/ppc-macos/ change.
+
+  24 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> portage_locks.py
+  portage_db_flat.py: Fixed a couple of race conditions with regard to
+  stating files.
+
+  23 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> portage.py portage_util.py:
+  Added syntax checking for package.mask, package.unmask and packages files.
+
+  23 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> dohtml: Reimplemented the
+  option processing to remove the dependency on optparse.
+
+  23 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> repoman: Made the invalid
+  profile slightly more intelligable and got rid of the duplicate. Moved
+  the profile KEYWORDS.invalid failure so that it only occurs if the
+  corresponding KEYWORD is valid.
+
+  23 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> portage.py: Added settings
+  parameter to dep_virtual as the virtuals can now change during dep graph
+  creation. #68220
+
+  23 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> repoman: Changed repoman to
+  use the first stable profile found for each arch listed in profiles.desc
+  rather than the last profile listed. Added notification on any invalid
+  profile in profiles.desc. Made exception into a repoman error where a
+  ebuild is using a keyword for which no profile can be found.
+
+  23 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> repoman: Fixed traceback in
+  repoman on invalid LICENSE syntax.
+
+  22 Oct 2004; Brian Harring <ferringb@gentoo.org> ebuild.sh: silencing use/has.
 
   22 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> emerge: Added python version
-  information to "emerge info" output.
+  to "emerge info" output.
 
-*portage-2.0.51-r2 (22 Oct 2004): Everyone loves finding bugs in stable!
+*portage-2.0.51-r2 (20 Oct 2004): Everyone loves finding bugs in stable!
 
   20 Oct 2004; Nicholas Jones <carpaski@gentoo.org> emerge: Fixed the result
   checking when ebuilds are called -- this removes the continuing-after failure
   big discovered by AMD64 today.
-
-  20 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> emerge: Fixed a bug where
-  users were warned against emerging by path when a file/dir exists of the
-  same name of the package to be merged. #68372  Added an warning with delay
-  when emerging an ebuild that is masked.  Added a check on PORTAGE_GPG_DIR
-  which removes "gpg" from FEATURES on an invalid settings. #68387
 
   20 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> emerge: Fixed a bug where
   users were warned against emerging by path when a file/dir exists of the
