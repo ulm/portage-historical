@@ -1,5 +1,5 @@
 # TODO list for Portage; the Gentoo Linux package system 
-# $Id: TODO,v 1.6 2003/08/26 17:15:16 carpaski Exp $
+# $Id: TODO,v 1.7 2003/09/22 15:28:01 carpaski Exp $
 
 #
 # Add your name to the top of any item you are working actively on
@@ -9,6 +9,12 @@
 Legend:
  '*' Just do it.        '#' Tricky
  '!' Difficult          '@' Restricted in some way
+
+# Repoman needs to ignore all user-set info in /etc/portage
+# It's not relevant to deployed users and will probably be a general gotcha.
+
+# Multiple rsync repos.
+  bug 28796 -- Enable metadata caches for them. 
 
 # STICKIES and related enhancements:
   bug 9379, bug 13616, Aether's config code
