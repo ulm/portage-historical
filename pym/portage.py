@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.536 2004/11/02 15:01:45 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.537 2004/11/02 15:24:47 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -821,11 +821,11 @@ def ExtractKernelVersion(base_dir):
 
 	# Append the contents of each to the version string, stripping ALL whitespace
 	for lv in localversions:
-		version += string.join(string.split(string.join(grabfile(lv))), "")
+		version += string.join(string.split(string.join(grabfile(base_dir+"/"+lv))), "")
 
 	# Check the .config for a CONFIG_LOCALVERSION and append that too, also stripping whitespace
 	kernelconfig = getconfig(base_dir+"/.config")
-	if kernelconfig.has_key("CONFIG_LOCALVERSION"):
+	if kernelconfig and kernelconfig.has_key("CONFIG_LOCALVERSION"):
 		version += string.join(string.split(kernelconfig["CONFIG_LOCALVERSION"]), "")
 
 	return (version,None)
