@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.162 2004/04/25 09:03:22 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.163 2004/04/25 20:00:23 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -1139,11 +1139,10 @@ inherit() {
 		export ECLASS="$1"
 
 		if [ "$EBUILD_PHASE" != "depend" ]; then
-			if ! hasq $ECLASS $INHERITIED; then
+			if ! hasq $ECLASS $INHERITED; then
 				echo
 				echo "QA Notice: ECLASS '$ECLASS' inherited illegally in $CATEGORY/$PF" >&2
 				echo
-				sleep 5
 			fi
 		fi
 
