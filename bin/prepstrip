@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepstrip,v 1.19 2004/05/17 04:21:21 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepstrip,v 1.20 2004/07/10 04:32:32 carpaski Exp $
 
 if [ "${FEATURES//*nostrip*/true}" == "true" ] || [ "${RESTRICT//*nostrip*/true}" == "true" ] ; then
 	echo "nostrip"
@@ -18,7 +18,7 @@ echo "strip: "
 for x in "$@"; do # "$@" quotes each element... Plays nice with spaces.
 	if [ -d "${x}" ]; then
 		# We only want files. So make a pass for each directory and call again.
-		find "${x}" -type f \( -perm +0111 -or -regex '\.so$|\.so\.' \) -print0 |
+		find "${x}" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 -or -name '*.so' -or -name '*.so.*' \) -print0 |
 				$XARGS -0 -n500 prepstrip
 	else
 		f=$(file "${x}")

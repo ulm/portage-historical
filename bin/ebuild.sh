@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.174 2004/06/22 13:07:47 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.175 2004/07/10 04:32:32 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -42,6 +42,8 @@ fi
 if [ -n "$#" ]; then
 	ARGS="${*}"
 fi
+
+declare -rx EBUILD_PHASE="$*"
 
 # Prevent aliases from causing portage to act inappropriately.
 # Make sure it's before everything so we don't mess aliases that follow.
@@ -1461,10 +1463,8 @@ fi # "$*"!="depend" && "$*"!="clean"
 export SANDBOX_ON="1"
 export S=${WORKDIR}/${P}
 
-unset   IUSE   DEPEND   RDEPEND   CDEPEND   PDEPEND
 unset E_IUSE E_DEPEND E_RDEPEND E_CDEPEND E_PDEPEND
 
-declare -rx EBUILD_PHASE="$*"
 declare -r T P PN PV PVR PR A D EBUILD EMERGE_FROM O PPID FILESDIR
 declare -r PORTAGE_TMPDIR
 
