@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.377 2004/01/18 12:52:58 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.378 2004/01/18 17:05:03 nakano Exp $
 
 VERSION="2.0.50_pre15"
 
@@ -3873,7 +3873,7 @@ class vardbapi(dbapi):
 		if not self.matchcache[mycat].has_key(mydep):
 			mymatch=match_from_list(mydep,self.cp_list(mykey))
 			self.matchcache[mycat][mydep]=mymatch
-		return self.matchcache[mycat][mydep]
+		return self.matchcache[mycat][mydep][:]
 	
 	def aux_get(self, mycpv, wants):
 		global auxdbkeys
