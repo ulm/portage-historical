@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 Geert Bevin, Uwyn, http://www.uwyn.com
 **	Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@uwyn.com>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/sandbox.c,v 1.2 2002/08/19 18:08:19 azarah Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/sandbox.c,v 1.3 2002/08/20 08:03:55 azarah Exp $
 */
 
 #define _GNU_SOURCE
@@ -411,27 +411,29 @@ int spawn_shell(char *argv_bash[])
   printf("%s\n", sh);
   ret=system(sh);
   if (sh) free(sh); sh = NULL;
-  if (ret == -1) return(0);
-  return(1);
+  if (ret == -1) return 0;
+  return 1;
 #else
-
-#ifndef NO_FORK
+# ifndef NO_FORK
   int pid;
+  int status=0;
+  int ret=0;
 
   pid=fork();
 
   /* Child's process */
   if (pid == 0) {
-#endif
+# endif
     execv(argv_bash[0], argv_bash);
-#ifndef NO_FORK
-    exit(0);
+# ifndef NO_FORK
+    return 0;
   } else if (pid < 0) {
-    return(0);
+    return 0;
   }
-  waitpid(pid, NULL, 0);
-#endif
-  return(1);
+  ret=waitpid(pid, &status, 0);
+  if ((ret == -1) || (status > 0)) return 0;
+# endif
+  return 1;
 #endif
 }
 
@@ -766,15 +768,17 @@ int main(int argc, char** argv)
         success=0;
       }
 
+#if 0
       if (!success) {
         exit(1);
       }
+#endif
       sandbox_log_file = -1;
     } else if (print_debug) {
       printf("--------------------------------------------------------------------------------\n");
     }
 
-    if (sandbox_log_presence) {
+    if ((sandbox_log_presence) || (!success)) {
       return(1);
     } else {
       return(0);

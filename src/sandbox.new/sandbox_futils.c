@@ -1,3 +1,7 @@
+/*
+ * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/sandbox_futils.c,v 1.3 2002/08/20 08:03:55 azarah Exp $
+ */
+
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
@@ -14,8 +18,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "sandbox.h"
 
+#include "sandbox.h"
 		
 
 char *get_sandbox_path(char *argv0)

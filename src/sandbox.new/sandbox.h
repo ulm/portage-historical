@@ -1,3 +1,7 @@
+/*
+ * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/sandbox.h,v 1.3 2002/08/20 08:03:55 azarah Exp $
+ */
+
 #ifndef __SANDBOX_H__
 #define __SANDBOX_H__
 
