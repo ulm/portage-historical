@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.301 2003/02/27 11:36:42 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.302 2003/02/28 06:48:54 carpaski Exp $
 
 VERSION="2.0.47-r6"
 
@@ -1331,6 +1331,15 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 			os.makedirs(settings["T"])
 		os.chown(settings["T"],portage_uid,portage_gid)
 		os.chmod(settings["T"],06770)
+
+		if not os.path.exists(settings["DISTDIR"]):
+			os.makedirs(settings["DISTDIR"])
+		if not os.path.exists(settings["DISTDIR"]+"/cvs-src"):
+			os.makedirs(settings["DISTDIR"]+"/cvs-src")
+		os.chown(settings["DISTDIR"]+"/cvs-src",0,portage_gid)
+		os.chmod(settings["DISTDIR"]+"/cvs-src",06770)
+		spawn("chgrp -R "+str(portage_gid)+" "+settings["DISTDIR"]+"/cvs-src", free=1)
+		spawn("chmod -R g+rw "+settings["DISTDIR"]+"/cvs-src", free=1)
 
 		if ("userpriv" in features) and ("ccache" in features):
 			if (not settings.has_key("CCACHE_DIR")) or (settings["CCACHE_DIR"]==""):
