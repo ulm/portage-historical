@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.549 2004/11/09 19:11:41 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.550 2004/11/09 19:16:33 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1852,9 +1852,8 @@ def digestCreate(myfiles,basedir,oldDigest={}):
 
 	return mydigests
 
-def digestCreateLines(filelist, mydict):
+def digestCreateLines(filelist, mydigests):
 	mylines = []
-	mydigests = copy.deepcopy(mydict)
 	for myarchive in filelist:
 		mysize = mydigests[myarchive]["size"]
 		if len(mydigests[myarchive]) == 0:
