@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.682 2004/08/09 23:24:36 ferringb Exp $
+# $Id: ChangeLog,v 1.683 2004/08/10 18:41:05 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -8,6 +8,14 @@
     3. /etc/portage/profile/virtuals is _USER_ configs only.
     4. /etc/portage/sets/world is a symlink to /var/lib/portage/world
        It is for convenience. Do not mistake this for the actual file.
+
+  08 Aug 2004; Brian Harring <ferringb@gentoo.org> pym/portage.py
+  bin/ebuild.sh: Add check to ensure that install phase has been 
+  ran prior to qmerge phase being attempted.  This can happen 
+  when the user is using ebuild to step through the phases.
+  Corrected bug in listdir where it would return None, rather then 
+  []- all callee's expect a returned list, not None.  Same for ftype,
+  cause's a tb if you just haphazardly rely on cachedir's return.
 
   08 Aug 2004; Brian Harring <ferringb@gentoo.org> pym/portage.py: 
   Leave /var/tmp w/out it's own permissions, chowning/chmoding just 

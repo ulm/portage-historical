@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.183 2004/08/09 15:54:55 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.184 2004/08/10 18:41:05 ferringb Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -633,6 +633,7 @@ dyn_clean() {
 	if ! hasq keepwork $FEATURES; then
 		rm -rf "${BUILDDIR}/.compiled"
 		rm -rf "${BUILDDIR}/.unpacked"
+		rm -rf "${BUILDDIR}/.installed"
 		rm -rf "${BUILDDIR}/build-info"
 		rm -rf "${WORKDIR}"
 	fi
@@ -950,6 +951,7 @@ dyn_install() {
 		find "${D}/" -group portage -print0 | $XARGS -0 -n100 chgrp root
 	fi
 
+	touch "${BUILDDIR}/.installed"
 	echo ">>> Completed installing into ${D}"
 	echo
 	cd ${BUILDDIR}

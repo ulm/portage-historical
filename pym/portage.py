@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.470 2004/08/09 23:24:36 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.471 2004/08/10 18:41:05 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -427,6 +427,11 @@ def listdir (mypath,
 			 EmptyOnError=False):
 
 	list, ftype = cacheddir(mypath, ignorecvs, ignorelist, EmptyOnError)
+
+	if list is None:
+		list=[]
+	if ftype is None:
+		ftype=[]
 
 	if not filesonly and not recursive:
 		return list
@@ -2911,6 +2916,10 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 		# REBUILD CODE FOR TBZ2 --- XXXX
 		return spawnebuild(mydo,actionmap,mysettings,debug)
 	elif mydo=="qmerge": 
+		#check to ensure install was run.  this *only* pops up when users forget it and are using ebuild
+		if not os.path.exists(mysettings["BUILDDIR"]+"/.installed"):
+			print "!!! mydo=qmerge, but install phase hasn't been ran"
+			sys.exit(1)
 		#qmerge is specifically not supposed to do a runtime dep check
 		return merge(mysettings["CATEGORY"],mysettings["PF"],mysettings["D"],mysettings["BUILDDIR"]+"/build-info",myroot,mysettings)
 	elif mydo=="merge":
