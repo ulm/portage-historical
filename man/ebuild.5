@@ -13,7 +13,7 @@ Here's a simple example ebuild:
 .br
 # Distributed under the terms of the GNU General Public License v2
 .br
-#\ $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.5,v 1.31 2003/02/11 18:00:13 vapier Exp $
+#\ $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.5,v 1.32 2003/02/11 20:46:01 vapier Exp $
 .br
 
 S=${WORKDIR}/${P}
@@ -66,7 +66,11 @@ src_install() {
 .br
 }
 .SH "VARIABLES"
-*Note: PORTAGE* and PORTDIR* variables may be found in \fBmake.conf\fR(5).
+.TP
+.B MISC USAGE NOTES
+- PORTAGE* and PORTDIR* variables may be found in \fBmake.conf\fR(5).
+.br
+- When assigning values to variables in ebuilds, you cannot have a space between the variable name and the equal sign.
 .TP
 \fBP\fR
 This variable contains the package name without the ebuild revision. This variable should NEVER be modified.
