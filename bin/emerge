@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.263 2004/02/06 21:12:33 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.264 2004/02/08 21:24:15 nakano Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -598,9 +598,9 @@ class search:
 
 					mysum = [0,0]
 					mycat = match.split("/")[0]
-					mypkg = match.split("/")[1] + "-" + myversion
+					mypkg = match.split("/")[1]
 
-					mydigest = portage.db["/"]["porttree"].dbapi.finddigest(mycat+"/"+mypkg)
+					mydigest = portage.db["/"]["porttree"].dbapi.finddigest(mycat+"/"+mypkg + "-" + myversion)
 					
 					try:
 						myfile = open(mydigest,"r")
@@ -620,7 +620,7 @@ class search:
 						
 					if "--quiet" not in myopts:
 						print "     ", darkgreen("Latest version available:"),myversion
-						print "     ", self.getInstallationStatus(catpack)
+						print "     ", self.getInstallationStatus(mycat+'/'+mypkg)
 						print "     ", darkgreen("Size of downloaded files:"),mysum[0]
 						print "     ", darkgreen("Homepage:")+"   ",homepage
 						print "     ", darkgreen("Description:"),desc
