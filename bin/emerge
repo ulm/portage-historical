@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.268 2004/02/12 10:25:33 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.269 2004/02/22 09:36:15 nakano Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -974,18 +974,17 @@ class depgraph:
 							print "\n!!! "+red("all ebuilds that could satisfy ")+green(xinfo)+red(" have been masked.")
 							print "!!! "+red("possible candidates are:")
 							for p in alleb:
-								try:
-									mreasons = portage.getmaskingstatus(p)
-									print "- "+p+" (masked by: "+string.join(mreasons, ", ")+")"
-								except:
-									pass
+								mreasons = portage.getmaskingstatus(p)
+								print "- "+p+" (masked by: "+string.join(mreasons, ", ")+")"
 							if myparent:
 								print     "!!!    "+red(xfrom)
+							print
 						else:
 							print "\n!!! "+red("There are no packages available to satisfy: ")+green(xinfo)
 							print "!!! Either add a suitable binary package or compile from an ebuild."
 					else:
-						print "\nemerge: there are no masked or unmasked ebuilds to satisfy "+xinfo+"."
+						print "\nemerge: there are no ebuilds to satisfy "+xinfo+"."
+						print
 					return 0
 
 				if "--debug" in myopts:
@@ -2537,7 +2536,6 @@ else:
 			print "Calculating dependencies  ",
 			retval,favorites=mydepgraph.select_files(myfiles)
 			if not retval:
-				print "\n!!! Error calculating dependencies. Please correct."
 				sys.exit(1)
 			print "\b\b ...done!"
 

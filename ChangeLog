@@ -1,6 +1,10 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.551 2004/02/19 12:23:21 nakano Exp $
+# $Id: ChangeLog,v 1.552 2004/02/22 09:36:15 nakano Exp $
+
+  22 Feb 2004; Masatomo Nakano <nakano@gentoo.org> emerge, portage.py: speedup
+  when /etc/portage/package.keywords is defined. Moved loading
+  /etc/portage/package.* processs to config class. This should fix #41520.
 
   19 Feb 2004; Masatomo Nakano <nakano@gentoo.org> portage.py:
   Fixed CATEGORY value after preinst phase. This should close #6414. Fixed
