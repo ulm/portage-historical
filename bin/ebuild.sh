@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.97 2003/01/29 03:51:12 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.98 2003/02/01 20:26:32 carpaski Exp $
 
 cd ${PORT_TMPDIR}
 
@@ -401,7 +401,7 @@ pkg_postrm()
 
 try() {
 	env "$@"
-	if [ $? -ne 0 ]
+	if [ "$?" != "0" ]
 	then
 		echo 
 		echo '!!! '"ERROR: the $1 command did not complete successfully."
