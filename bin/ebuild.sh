@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.83 2002/12/03 17:46:45 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.84 2002/12/11 15:22:52 carpaski Exp $
 
 if [ -n "$#" ]
 then
@@ -70,12 +70,17 @@ use_with() {
 	if [ -z "$1" ]; then
 		die "use_with() called without parameter."
 	fi
+
+	local UWORD="$2"
+	if [ -z "${UWORD}" ]; then
+		UWORD="$1"
+	fi
 	
 	if use $1; then
-		echo "--with-$2"
+		echo "--with-${UWORD}"
 		return 0
 	else
-		echo "--without-$2"
+		echo "--without-${UWORD}"
 		return 1
 	fi
 }
@@ -84,12 +89,17 @@ use_enable() {
 	if [ -z "$1" ]; then
 		die "use_with() called without parameter."
 	fi
+
+	local UWORD="$2"
+	if [ -z "${UWORD}" ]; then
+		UWORD="$1"
+	fi
 	
 	if use $1; then
-		echo "--enable-$2"
+		echo "--enable-${UWORD}"
 		return 0
 	else
-		echo "--disable-$2"
+		echo "--disable-${UWORD}"
 		return 1
 	fi
 }
@@ -213,6 +223,7 @@ unpack() {
 	local x
 	local y
 	local myfail
+	
 	for x in $@
 	do
 		myfail="failure unpacking ${x}"
@@ -957,6 +968,9 @@ do
 		fi
 		echo `echo "$DEPEND"` > $dbkey
 		echo `echo "$RDEPEND"` >> $dbkey
+		echo `echo "$CDEPEND"` >> $dbkey
+		echo `echo "$PDEPEND"` >> $dbkey
+		echo `echo "$REBUILD"` >> $dbkey
 		echo `echo "$SLOT"` >> $dbkey
 		echo `echo "$SRC_URI"` >> $dbkey
 		echo `echo "$RESTRICT"` >> $dbkey
