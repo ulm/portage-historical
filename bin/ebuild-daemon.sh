@@ -2,7 +2,7 @@
 # ebuild-daemon.sh; core ebuild processor handling code
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-daemon.sh,v 1.5 2004/11/10 14:17:43 ferringb Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-daemon.sh,v 1.6 2004/11/10 21:38:29 ferringb Exp $
  
 source /usr/lib/portage/bin/ebuild.sh daemonize
 
@@ -223,7 +223,8 @@ while [ "$alive" == "1" ]; do
 					# simple.  this allows the actual exit code to be used, rather then just stating no .success == 1 || 0
 					# note this was
 					# execute_phases ${e] &> >(umask 0002; tee -i -a $PORTAGE_LOGFILE)
-					# less then bash v3 however hates it.  And I hate it.
+					# less then bash v3 however hates it.  And I hate less then v3.
+					# circle of hate you see.
 					execute_phases ${e} 2>&1 | {
 						umask 0002
 						tee -i -a $PORTAGE_LOGFILE
