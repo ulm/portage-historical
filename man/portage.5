@@ -45,8 +45,6 @@ package.use
 mirrors
 .br
 categories
-.br
-use.mask
 .TP
 .BR /usr/portage/profiles/
 arch.list
@@ -60,6 +58,8 @@ thirdpartymirrors
 use.desc
 .br
 use.local.desc
+.br
+use.mask
 .TP
 .BR /var/cache/edb/
 virtuals
@@ -350,10 +350,6 @@ categories to be created.
 app-hackers
 .br
 media-other
-.TP
-.BR use.mask
-Just like the \fBuse.mask\fR found in \fB/etc/make.profile/\fR.  See 
-above for more information.
 .RE
 .TP
 .BR /usr/portage/profiles/
@@ -475,6 +471,10 @@ dev-games/clanlib:clanJavaScript - Enables javascript support
 dev-libs/DirectFB:fusion - add Multi Application support
 .br
 games-emulation/xmess:net - Add network support
+.TP
+.BR use.mask
+Just like the \fBuse.mask\fR found in \fB/etc/make.profile/\fR.  See 
+above for more information.
 .RE
 .TP
 .BR /var/cache/edb/
@@ -533,4 +533,4 @@ Please report bugs via http://bugs.gentoo.org/
 .BR ebuild (5),
 .BR make.conf (5)
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/portage.5,v 1.7 2004/06/03 18:36:52 genone Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/portage.5,v 1.8 2004/07/10 13:06:20 jstubbs Exp $
