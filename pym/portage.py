@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.382 2004/01/22 07:00:06 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.383 2004/01/23 03:30:30 nakano Exp $
 
 VERSION="2.0.50_pre17"
 
@@ -1392,9 +1392,9 @@ class config:
 		if os.environ.has_key("PORTAGE_CALLER") and os.environ["PORTAGE_CALLER"] == "repoman":
 			pass
 		else:
-			myvirtfiles.append(myroot+"/var/cache/edb/virtuals")
+			myvirtdirs.append(myroot+"/var/cache/edb")
 
-		return grab_stacked("/virtuals",myvirtdirs,grabdict)
+		return grab_stacked("virtuals",myvirtdirs,grabdict)
 	
 	def __getitem__(self,mykey):
 		if mykey=="CONFIG_PROTECT_MASK":

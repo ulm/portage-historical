@@ -1,6 +1,10 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.532 2004/01/22 07:00:06 carpaski Exp $
+# $Id: ChangeLog,v 1.533 2004/01/23 03:30:29 nakano Exp $
+
+  23 Jan 2004; <nakano@gentoo.org> emerge, portage.py: Fixed 2 bugs. 
+  Portage doesn't read local virtuals file, which happens on only cvs
+  version. package is blocked by itself.
 
   21 Jan 2004; Nicholas Jones <carpaski@gentoo.org> portage.py, emerge:
 	Fix from genone for emerge's direct reading of packages and his patch

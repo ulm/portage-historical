@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.257 2004/01/22 07:00:06 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.258 2004/01/23 03:30:30 nakano Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -887,7 +887,10 @@ class depgraph:
 			myk=None
 			binpkguseflags=None
 			if x[0]=="!":
-				#add our blocker; it will be ignored later if necessary (if we are remerging the same pkg, for example)
+				# if this package is myself, don't append it to block list.
+				if (myparent):
+					if myparent.split()[2] in portage.portdb.xmatch("match-all", x[1:]):
+						continue
 				myk=["blocks",myroot,x[1:]]
 			else:
 				#We are not processing a blocker but a normal dependency
