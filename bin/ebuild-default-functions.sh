@@ -2,7 +2,7 @@
 # ebuild-default-functions.sh; default functions for ebuild env that aren't saved- specific to the portage instance.
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.8 2004/11/10 20:16:34 ferringb Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.9 2004/11/11 00:03:55 ferringb Exp $
 
 has_version() {
 	# if there is a predefined portageq call, use it.
@@ -448,7 +448,7 @@ dyn_install() {
 
 	local file s
 
-	find "${D}/" -user  portage -print0 | while read file; do
+	find "${D}/" -user  portage -print | while read file; do
 		ewarn "file $file was installed with user portage!"
 		s=$(stat_perms $file)
 		chown root "$file"
@@ -456,14 +456,14 @@ dyn_install() {
 	done
 
 	if [ "$USERLAND" == "BSD" ]; then
-		find "${D}/" -group portage -print0 | while read file; do
+		find "${D}/" -group portage -print | while read file; do
 			ewarn "file $file was installed with group portage!"
 			s=$(stat_perms "$file")
 			chgrp wheel "$file"
 			chmod "%s" "$file"
 		done
 	else
-		find "${D}/" -group portage -print0 | while read file; do
+		find "${D}/" -group portage -print | while read file; do
 			ewarn "file $file was installed with group portage!"
 			s=$(stat_perms "$file")
 			chgrp root "$file"
