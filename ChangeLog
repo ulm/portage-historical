@@ -1,11 +1,23 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.860 2004/11/09 12:59:17 ferringb Exp $
+# $Id: ChangeLog,v 1.861 2004/11/09 23:20:47 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  09 Nov 2004; Brian Harring <ferringb@gentoo.org> pym/dcache.py, 
+  pym/orig_dict_cache.py, portage.py:  Removed listdir optional arg
+  EmptyOnError- wasn't abided by for non-recursive calls, for recursive calls
+  it only returned None when recursing.  Optional arg wasn't used, so it's gone.
+  Moved followSymlink logic into listdir, so that orig_dict_cache is strictly
+  a caching mechanism.  Added dcache, a symlink aware list based cache class.
+  dcache needs work, but reduces listdir($IMAGE_OF_XORG,recursive=1) from 
+  spending hours to return (on my machine), to around a minute.
+  Made dcache active *only* for treewalk currently, since that's the 
+  instance where the original cache implementation's lack of symlink-awareness
+  made things bad.
 
   09 Nov 2004; Brian Harring <ferringb@gentoo.org> pym/ebuild.py: make
   prelink + confcache play nice (calc_prelink=1).
