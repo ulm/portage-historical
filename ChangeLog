@@ -1,6 +1,9 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.507 2003/12/31 10:25:38 carpaski Exp $
+# $Id: ChangeLog,v 1.508 2003/12/31 23:44:00 nakano Exp $
+
+  31 Dec 2003; Masatomo Nakano <nakano@gentoo.org> emerge:
+  Fixed 'emerge sync' issue which continuously connects to same host.
 
 *portage-2.0.50_pre10 (31 Dec 2003): API change + enhancements
 
