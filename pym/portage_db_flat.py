@@ -1,13 +1,11 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_flat.py,v 1.13.2.4 2005/01/28 07:55:58 ferringb Exp $
-cvs_id_string="$Id: portage_db_flat.py,v 1.13.2.4 2005/01/28 07:55:58 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_flat.py,v 1.13.2.5 2005/01/28 08:01:21 ferringb Exp $
+cvs_id_string="$Id: portage_db_flat.py,v 1.13.2.5 2005/01/28 08:01:21 ferringb Exp $"[5:-2]
 
 import types
 import os
 import stat
-from copy import deepcopy
-from string import join
 
 import portage_db_template
 
