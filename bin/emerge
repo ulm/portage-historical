@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.274 2004/03/01 14:51:24 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.275 2004/03/05 01:27:41 genone Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -326,7 +326,7 @@ def countdown(secs=5, doing="Starting"):
 
 # formats a size given in bytes nicely
 def format_size(mysize):
-	if type(mysize) != types.IntType:
+	if type(mysize) not in [types.IntType,types.LongType]:
 		return mysize
 	mystr=str(mysize/1024)
 	mycount=len(mystr)
