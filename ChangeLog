@@ -1,6 +1,8 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.422 2003/02/22 16:59:08 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.423 2003/02/23 08:22:29 carpaski Exp $
+
+*portage-2.0.47-r3 (17 Feb 2003): Wicked Fast, BugFree v2, UserPriv
 
   22 Feb 2003; Nicholas Jones <carpaski@gentoo.org> bin/: added dispatch-conf
 	and db-fix.pl to the bins. Looking at dispatch-conf to replace etc-update
