@@ -1,6 +1,7 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.499 2003/12/22 18:40:23 carpaski Exp $
+# $Id: ChangeLog,v 1.500 2003/12/24 07:58:57 carpaski Exp $
+
 
 *portage-2.0.50_pre7 (22 Dec 2003): API change + enhancements
 
