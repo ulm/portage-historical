@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.21 2005/01/02 13:12:49 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.22 2005/01/04 02:16:39 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -892,7 +892,6 @@ class config:
 			self.uvlist     = copy.deepcopy(clone.uvlist)
 			self.dirVirtuals = copy.deepcopy(clone.dirVirtuals)
 			self.treeVirtuals = copy.deepcopy(clone.treeVirtuals)
-			self.userVirtuals = copy.deepcopy(clone.userVirtuals)
 		else:
 			self.depcachedir = DEPCACHE_PATH
 			
@@ -1294,8 +1293,9 @@ class config:
 			if not self.treeVirtuals.has_key(virt):
 				self.treeVirtuals[virt] = []
 			self.treeVirtuals[virt] = portage_util.unique_array(self.treeVirtuals[virt]+[cp])
+		
 		# Reconstruct the combined virtuals.
-		val = stack_dictlist([self.userVirtuals]+[self.treeVirtuals]+self.dirVirtuals,incremental=1)
+		val = stack_dictlist([self.treeVirtuals]+self.dirVirtuals,incremental=1)
 		for x in val.keys():
 			val[x].reverse()
 		self.virtuals = val
@@ -1408,16 +1408,26 @@ class config:
 
 		# User settings and profile settings take precedence over tree.
 		profile_virtuals = stack_dictlist([self.userVirtuals]+self.dirVirtuals,incremental=1)
+		self.userVirtuals = {} # keep this in case something else is using it.
 
 		# repoman doesn't need local virtuals.
 		if os.environ.get("PORTAGE_CALLER","") != "repoman":
 			temp_vartree = vartree(myroot,profile_virtuals,categories=self.categories)
-			self.treeVirtuals = map_dictlist_vals(getCPFromCPV,temp_vartree.get_all_provides())
-			for x in self.treeVirtuals.keys():
-				self.treeVirtuals[x] = portage_util.unique_array(self.treeVirtuals[x])
+			installed_virtuals = map_dictlist_vals(getCPFromCPV,temp_vartree.get_all_provides())
+			for x in installed_virtuals.keys():
+				installed_virtuals[x] = portage_util.unique_array(installed_virtuals[x])
+				self.treeVirtuals[x] = []
+				if profile_virtuals.has_key(x):
+					for y in profile_virtuals[x]:
+						if y in installed_virtuals[x]:
+							self.treeVirtuals[x].append(y)
+							installed_virtuals[x].remove(y)
+				self.treeVirtuals[x].extend(installed_virtuals[x])
+		
+		self.dirVirtuals = [profile_virtuals] # keep this as a list for compatibility
 		
 		# User settings and profile settings take precedence over tree.
-		val = stack_dictlist([self.userVirtuals]+[self.treeVirtuals]+self.dirVirtuals,incremental=1)
+		val = stack_dictlist([self.treeVirtuals]+self.dirVirtuals,incremental=1)
 		
 		for x in val.keys():
 			val[x].reverse()
@@ -6865,6 +6875,10 @@ if not os.path.exists(root+"var/tmp"):
 		writemsg("portage: couldn't create /var/tmp; exiting.\n")
 		sys.exit(1)
 
+
+#####################################
+# Deprecation Checks
+
 os.umask(022)
 profiledir=None
 if os.path.isdir(PROFILE_PATH):
@@ -6882,6 +6896,14 @@ if os.path.isdir(PROFILE_PATH):
 			for myline in dcontent[1:]:
 				writemsg(myline)
 			writemsg("\n\n")
+
+if os.path.exists(USER_VIRTUALS_FILE):
+	writemsg(red("\n!!! /etc/portage/virtuals is deprecated in favor of\n"))
+	writemsg(red("!!! /etc/portage/profile/virtuals. Please move it to\n"))
+	writemsg(red("!!! this new location.\n\n"))
+
+#
+#####################################
 
 db={}
 
