@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.328 2003/07/16 19:16:04 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.329 2003/07/17 04:46:52 carpaski Exp $
 
 VERSION="2.0.49"
 
@@ -975,7 +975,16 @@ class config:
 		for x in string.split(self.configlist[-1]["USE"]):
 			if x not in self.usemask:
 				usesplit.append(x)
-		
+
+		if self.configlist[-1].has_key("USE_EXPAND"):
+			for var in string.split(self.configlist[-1]["USE_EXPAND"]):
+				if self.configlist[-1].has_key(var):
+					for x in string.split(self.configlist[-1][var]):
+						mystr = string.lower(var)+"_"+x
+						if mystr not in usesplit:
+							usesplit.append(mystr)
+							self.configlist[-1]["USE"] += " "+mystr
+
 		# Pre-Pend ARCH variable to USE settings so '-*' in env doesn't kill arch.
 		if profiledir:
 			if self.configdict["defaults"].has_key("ARCH"):
@@ -3912,9 +3921,11 @@ class binarytree(packagetree):
 				if chunk_size < 8:
 					chunk_size = 8
 			except:
-				chunk_size = 8
+				chunk_size = 3000
 
+			sys.stderr.write(green("Fetching binary packages info...\n"))
 			self.remotepkgs = getbinpkg.dir_get_metadata(settings["PORTAGE_BINHOST"], chunk_size=chunk_size)
+			sys.stderr.write(green("  -- DONE!\n\n"))
 
 			for mypkg in self.remotepkgs.keys():
 				if not self.remotepkgs[mypkg].has_key("CATEGORY"):
@@ -3966,8 +3977,6 @@ class binarytree(packagetree):
 	def isremote(self,pkgname):
 		"Returns true if the package is kept remotely."
 		mysplit=string.split(pkgname,"/")
-		print (not os.path.exists(self.getname(pkgname)))
-		print self.remotepkgs.has_key(mysplit[1]+".tbz2")
 		remote = (not os.path.exists(self.getname(pkgname))) and self.remotepkgs.has_key(mysplit[1]+".tbz2")
 		return remote
 	
