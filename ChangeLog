@@ -1,6 +1,9 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.488 2003/12/07 05:08:06 nakano Exp $
+# $Id: ChangeLog,v 1.489 2003/12/08 21:26:46 nakano Exp $
+
+  08 Dec 2003; Masatomo Nakano <nakano@gentoo.org> repoman:
+	Added all arch dependency check. This closes bug #24160.
 
   07 Dec 2003; Masatomo Nakano <nakano@gentoo.org> emerge,portage.py:
 	Fixed bugs. 1.--debug doesn't work 2.Portage breaks files
