@@ -1,6 +1,7 @@
-/* $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/tbz2tool.c,v 1.3 2004/08/02 18:49:31 carpaski Exp $ */
+/* $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/tbz2tool.c,v 1.4 2004/11/05 13:51:09 jstubbs Exp $ */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
