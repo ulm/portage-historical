@@ -1,4 +1,4 @@
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_flat.py,v 1.9 2004/09/25 13:09:02 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_flat.py,v 1.10 2004/09/25 14:40:54 carpaski Exp $
 
 import types
 import os
@@ -45,11 +45,13 @@ class database(portage_db_template.database):
 			raise KeyError, "key is not set to a valid value"
 
 		if self.has_key(key):
+			print "BLAHLBAHL"
 			mylock = portage_locks.lockfile(self.fullpath+key, wantnewlockfile=1)
 			mtime = os.stat(self.fullpath+key)[stat.ST_MTIME]
+			print "FOFOASFDOAFD"
 			myf = open(self.fullpath+key)
 			myl = myf.readlines()
-			close(myf)
+			myf.close()
 			portage_locks.unlockfile(mylock)
 
 			dict = {"_mtime_":mtime}
