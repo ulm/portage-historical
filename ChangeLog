@@ -1,11 +1,14 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.64 2005/01/31 21:16:12 ferringb Exp $
+# $Id: ChangeLog,v 1.796.2.65 2005/02/03 17:38:41 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  03 Feb 2005; Brian Harring <ferringb@gentoo.org> pym/portage.py: bug 80506,
+  fixed RESTRICT="(no|)userpriv".
 
   31 Jan 2005; Brian Harring <ferringb@gentoo.org> pym/portage.py: Spanky pointed
   a bug assuming the intermediate directories for WORLD_FILE existed already.

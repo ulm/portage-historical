@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.36 2005/01/31 21:16:13 ferringb Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.36 2005/01/31 21:16:13 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.37 2005/02/03 17:38:41 ferringb Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.37 2005/02/03 17:38:41 ferringb Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.36 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.37 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -1553,9 +1553,9 @@ def spawn(mystring,mysettings,debug=0,free=0,droppriv=0,fd_pipes=None,**keywords
 		keywords["opt_name"]="[%s]" % mysettings["PF"]
 
 	# XXX: Negative RESTRICT word
-	droppriv=(droppriv and ("userpriv" in features) and \
-		(("nouserpriv" not in string.split(mysettings["RESTRICT"])) or \
-		 ("userpriv" not in string.split(mysettings["RESTRICT"]))))
+	droppriv=(droppriv and ("userpriv" in features) and not \
+		(("nouserpriv" in string.split(mysettings["RESTRICT"])) or \
+		 ("userpriv" in string.split(mysettings["RESTRICT"]))))
 
 
 	if ("sandbox" in features) and (not free):
@@ -2418,8 +2418,8 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 		os.chmod(mysettings["T"],02770)
 
 		try: # XXX: negative RESTRICT
-			if ("nouserpriv" not in string.split(mysettings["RESTRICT"])) or \
-			   ("userpriv" not in string.split(mysettings["RESTRICT"])):
+			if not (("nouserpriv" in string.split(mysettings["RESTRICT"])) or \
+			   ("userpriv" in string.split(mysettings["RESTRICT"]))):
 				if ("userpriv" in features) and (portage_uid and portage_gid):
 					if (secpass==2):
 						if os.path.exists(mysettings["HOME"]):
