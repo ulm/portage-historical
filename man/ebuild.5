@@ -216,9 +216,9 @@ examples you may find in the portage tree:
 
 \fI!\fR means block packages from being installed at the same time.
 .br
-\fI*\fR means match any version of the package so long as the specified 
-base is matched.  So with a version of '2*', we can match '2.1', '2.2', 
-\'2.2.1', etc... and not match version '1.0', '3.0', '4.1', etc...
+\fI*\fR means match any version of the package so long as the specified base 
+is matched.  So with a version of '2*', we can match '2.1', '2.2', '2.2.1', 
+etc... and not match version '1.0', '3.0', '4.1', etc...
 .br
 \fI~\fR means match any revision of the base version specified.  So in the 
 above example, we would match versions '1.0.2a', '1.0.2a-r1', '1.0.2a-r2', 
@@ -520,9 +520,8 @@ writers.  If you wish to pass more options to configure, just pass the
 extra arguements to \fBeconf\fR.
 .TP
 \fBemake\fR \fI[make options]\fR
-This is used as a replacement for make.  Performs
-\'make ${MAKEOPTS} \fImake options\fR' (as set in /etc/make.globals),
-default is MAKEOPTS="\-j2".
+This is used as a replacement for make.  Performs 'make ${MAKEOPTS} 
+\fImake options\fR' (as set in /etc/make.globals), default is MAKEOPTS="\-j2".
 
 \fB***warning***\fR
 .br
@@ -822,4 +821,4 @@ Nicholas Jones <carpaski@gentoo.org>
 Mike Frysinger <vapier@gentoo.org>
 .fi
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.5,v 1.73.2.2 2005/01/14 14:13:19 vapier Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.5,v 1.73.2.3 2005/01/15 02:00:46 vapier Exp $
