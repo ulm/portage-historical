@@ -1,7 +1,7 @@
 #!/usr/bin/python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.21 2003/04/09 12:08:41 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.22 2003/04/09 14:36:59 carpaski Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -726,6 +726,8 @@ else:
 			elif repolevel==2: # In a category dir
 				for x in myheaders:
 					xs=string.split(x,"/")
+					if xs[0]==".":
+						xs=xs[1:]
 					if xs[0] in mydone:
 						continue
 					mydone.append(xs[0])
@@ -735,6 +737,8 @@ else:
 				print green("RepoMan sez:"), "\"You're rather crazy... doing the entire repository.\"\n"
 				for x in myheaders:
 					xs=string.split(x,"/")
+					if xs[0]==".":
+						xs=xs[1:]
 					if string.join(xs[:2],"/") in mydone:
 						continue
 					mydone.append(string.join(xs[:2],"/"))

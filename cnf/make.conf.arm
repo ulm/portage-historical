@@ -1,6 +1,6 @@
 # Copyright 2000-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Contains local system settings for Portage system
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.arm,v 1.9 2003/03/22 15:26:27 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.arm,v 1.10 2003/04/09 14:36:59 carpaski Exp $
 
 # Please review 'man make.conf' for more information.
 
@@ -161,6 +161,11 @@ CHOST="armv4l-unknown-linux-gnu"
 #     the number of parallel makes (-j) to perform. The suggested number
 #     for parallel makes is CPUs+1.
 #MAKEOPTS="-j2"
+#
+# PORTAGE_NICENESS provides a default increment to emerge's niceness level.
+#     Note: This is an increment. Running emerge in a niced environment will
+#     reduce it further. Default is unset.
+#PORTAGE_NICENESS=3
 #
 # AUTOCLEAN enables portage to automatically clean out older or overlapping
 #     packages from the system after every successful merge. This is the

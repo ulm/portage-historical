@@ -1,6 +1,20 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.447 2003/04/09 12:18:59 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.448 2003/04/09 14:36:59 carpaski Exp $
+
+*portage-2.0.47-r15 (09 Mar 2003): New digests/manifests, touchups.
+
+  09 Apr 2003; Nicholas Jones <carpaski@gentoo.org> bin/*: Fixes for Cross-
+  compiling.
+  
+  09 Apr 2003; Nicholas Jones <carpaski@gentoo.org> repoman: Quick touchups
+  in the category- and repository-level manifest calls.
+  
+  09 Apr 2003; Nicholas Jones <carpaski@gentoo.org> cnf/*: Added/sync'd
+  PORTAGE_NICENESS.
+
+  09 Apr 2003; Nicholas Jones <carpaski@gentoo.org> portage.py: Fixed hole
+  in the listdir code that occured on cache expiration in the -r14 changes.
 
 *portage-2.0.47-r14 (09 Mar 2003): 
 

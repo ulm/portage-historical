@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.122 2003/04/09 12:08:41 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.123 2003/04/09 14:36:59 carpaski Exp $
 
 if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 	if [ -f ${T}/successful ]; then
@@ -290,9 +290,6 @@ econf() {
 	if [ -x ./configure ] ; then
 		if [ ! -z "${CBUILD}" ]; then
 			EXTRA_ECONF="--build=${CBUILD} ${EXTRA_ECONF}"
-		fi
-		if [ ! -z "${CCHOST}" ]; then
-			EXTRA_ECONF="--target=${CCHOST} ${EXTRA_ECONF}"
 		fi
 		./configure \
 		    --prefix=/usr \
