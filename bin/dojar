@@ -1,9 +1,9 @@
 #! /bin/sh
 
-# Copyright 1999-2001 Gentoo Technologies, Inc.                                 
+# Copyright 1999-2002 Gentoo Technologies, Inc.                                 
 # Distributed under the terms of the GNU General Public License, v2 or later    
 # Author Karl Trygve Kalleberg <karltk@gentoo.org>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dojar,v 1.1 2002/01/20 21:45:24 karltk Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dojar,v 1.2 2002/01/24 17:49:24 karltk Exp $
 #
 # Typical usage:
 #  dojar foo.jar bar.jar
@@ -31,7 +31,7 @@ if [ -z "$JARDESTTREE" ] ; then
 fi
 
 jarroot="${DESTTREE}/share/${PN}/"
-jardest="${DESTTREE}/share/${PN}/${JARDESTTREE}/
+jardest="${DESTTREE}/share/${PN}/${JARDESTTREE}/"
 
 dodir ${jardest}
 
@@ -41,7 +41,7 @@ for i in $* ; do
 	if [ ! -f ${D}${jarroot}/classpath.env ] ; then
 		echo -n "${jardest}/${bn}" > ${D}${jarroot}/classpath.env
 	else
-		echo -n ":${jardest}/${bn}" >> ${D}${jarroot}/classpath.env
+		echo -n ":${jardest}${bn}" >> ${D}${jarroot}/classpath.env
 	fi
 	
 	cp $i ${D}${jardest}/
