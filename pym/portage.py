@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.520 2004/10/11 04:12:02 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.521 2004/10/11 04:18:13 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1864,7 +1864,7 @@ def digestCreateLines(filelist, mydict):
 		for sumName in mydigests[myarchive].keys():
 			mysum = mydigests[myarchive][sumName]
 			myline = sumName+" "+mysum+" "+myarchive+" "+str(mysize)
-			if False and sumName != "MD5":
+			if sumName != "MD5":
 				# XXXXXXXXXXXXXXXX This cannot be used!
 				# Older portage make very dumb assumptions about the formats.
 				# We need a lead-in period before we break everything.
