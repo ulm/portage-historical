@@ -313,8 +313,10 @@ Sed 4.0.5 has already been emerged, but if you run the command, then
 portage will Re-emerge the specified package (sed in this case).
 .TP
 .B [ebuild    F  ] media-video/realplayer-8-r6
-Realplayer sources were not found on your harddrive so if you continue 
-with the previous command, they must be Fetched first.
+The realplayer package requires that you download the sources manually.  
+When you attempt to emerge the package, if the sources are not found, 
+then portage will halt and you will be provided with instructions on how 
+to download the required files.
 .TP
 .B [ebuild     U ] net-fs/samba-2.2.8_pre1 [2.2.7a]
 Samba 2.2.7a has already been emerged and can be Updated to version 
@@ -487,4 +489,4 @@ Phil Bordelon <sunflare@gentoo.org>
 .br
 Mike Frysinger <vapier@gentoo.org>
 .SH "CVS HEADER"
-$Id: emerge.1,v 1.40 2003/07/28 13:27:25 vapier Exp $
+$Id: emerge.1,v 1.41 2003/07/29 00:46:22 vapier Exp $
