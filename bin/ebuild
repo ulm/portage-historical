@@ -1,7 +1,7 @@
 #!/usr/bin/python2.2
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild,v 1.8 2002/11/23 19:21:58 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild,v 1.8.2.1 2003/02/17 16:15:52 alain Exp $
 
 import os
 import sys
@@ -25,6 +25,8 @@ if len(sys.argv)<=2:
 import portage
 import getopt
 
+ctx = portage.PortageContext()
+
 debug=0
 	
 opts,pargs=getopt.getopt(sys.argv[1:],'',['debug'])
@@ -34,7 +36,7 @@ for opt in opts:
 
 for x in pargs[1:]:
 	try:
-		a=portage.doebuild(pargs[0],x,getroot(),debug=debug)
+		a=portage.doebuild(ctx, pargs[0],x,getroot(),debug=debug)
 	except KeyboardInterrupt:
 		print "(interrupted by user -- ctrl-C?)"
 		a=1
