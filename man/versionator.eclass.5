@@ -29,10 +29,18 @@ of components, or a range such as 2- for that component and everything after it.
 Retrieves everything after the major version and its separator (if present).
 .TP
 .B replace_version_separator \fI[ N ] [ SEP ] < PV >\fR
-Replaces the Nth separator of PV with separator, SEP.
+Replaces the Nth separator of PV with separator, SEP.  If N is a character
+literal (eg. '-'), the first separator of this kind is replaced.
 .TP
 .B replace_all_version_separators \fI[ SEP ] < PV >\fR
 Replaces all version separators in PV with separator, SEP.
+.TP
+.B delete_version_separator \fI[ N ] < PV >\fR
+Deletes the Nth separator of PV.  If N is a character literal (eg. '-'), the first
+separator of this kind is deleted.
+.TP
+.B delete_all_version_separators \fI<PV>\fR
+Deletes all version separators in PV.
 .SH REPORTING BUGS
 Please report bugs via http://bugs.gentoo.org/
 .SH SEE ALSO
