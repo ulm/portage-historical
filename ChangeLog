@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.809 2004/10/25 11:20:46 jstubbs Exp $
+# $Id: ChangeLog,v 1.810 2004/10/25 13:42:36 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  25 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> emerge: Fixed the space/tab
+  usage through the spinner_msgs definition. Removed COMPILER from emerge info
+  output.
 
   25 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> portage.py: Converted
   config.pkeywordsdict from {atom:[keyword]} to {cp:{atom:[keyword]}} to
