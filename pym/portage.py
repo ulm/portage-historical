@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.504 2004/09/15 06:40:34 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.505 2004/09/16 14:43:10 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -3508,18 +3508,13 @@ def getmaskingstatus(mycpv):
 	rValue = []
 
 	# profile checking
-	if profiledir:
-		syslist = []
-		for l in grabfile(profiledir+"/packages"):
-			if l[0] == "*":
-				syslist.append(l[1:])
-			else:
-				syslist.append(l)
-		for pkg in syslist:
-			if pkg.find(mysplit[0]+"/"+mysplit[1]) >= 0 and not match_to_list(mycpv, [pkg]):
+	revmaskdict=settings.prevmaskdict
+	if revmaskdict.has_key(mycp):
+		for x in revmaskdict[mycp]:
+			if not match_to_list(mycpv, [x]):
 				rValue.append("profile")
 				break
-	
+
 	# package.mask checking
 	maskdict=settings.pmaskdict
 	unmaskdict=settings.punmaskdict
