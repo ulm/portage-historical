@@ -1,6 +1,9 @@
 # ChangeLog for Path Sandbox
 # Copyright 2002 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/ChangeLog,v 1.10 2003/01/10 05:55:25 jrray Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/ChangeLog,v 1.11 2003/02/17 09:20:01 carpaski Exp $
+
+  17 Feb 2003; Nicholas Jones <carpaski@gentoo.org> create-localdecls: Added
+	parisc to BROKEN_RTLD_ARCHLIST to see if it we can fix the relocation probs.
 
   09 Jan 2003; J Robert Ray <jrray@gentoo.org> sandbox.c : Don't segfault if
   $HOME isn't set, set $HOME to "/" instead.  Fixes bug 10868.
