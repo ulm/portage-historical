@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.332 2004/09/27 05:44:05 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.333 2004/09/30 03:04:34 carpaski Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -1002,7 +1002,7 @@ class depgraph:
 				elif not "--oneshot" in myopts:
 					myfavorites.append(mykey)
 			else:
-				try: 
+				try:
 					mykey=portage.dep_expand(x,portage.portdb)
 				except ValueError, errpkgs:
 					print "\n\n!!! The short ebuild name \"" + x + "\" is ambiguous.  Please specify"
@@ -2259,9 +2259,9 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 			"--delete-after", # Delete only after everything else is done
 			"--stats",        # Show final statistics about what was transfered
       "--timeout="+str(mytimeout), # IO timeout if not done in X seconds
-			"--exclude='distfiles/*'",   # Exclude distfiles from consideration
-			"--exclude='local/*'",       # Exclude local     from consideration
-			"--exclude='packages/*'",    # Exclude packages  from consideration
+			"--exclude='/distfiles'",   # Exclude distfiles from consideration
+			"--exclude='/local'",       # Exclude local     from consideration
+			"--exclude='/packages'",    # Exclude packages  from consideration
 		]
 
 		if "--quiet" in myopts:

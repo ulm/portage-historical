@@ -1,4 +1,4 @@
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_template.py,v 1.8 2004/09/25 13:07:55 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_template.py,v 1.9 2004/09/30 03:04:35 carpaski Exp $
 
 import os.path,string
 from portage_util import getconfig, ReadOnlyConfig
@@ -69,7 +69,7 @@ class database:
 				self.__addCache(key,values)
 				return values
 			except Exception, e:
-				raise CorruptionError("Corruption detected when reading key '%s'" % (key))
+				raise CorruptionError("Corruption detected when reading key '%s': %s" % (key,str(e)))
 		raise KeyError("Key not in db: '%s'" % (key))
 	
 	def __setitem__(self,key,values):
