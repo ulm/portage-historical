@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.6 2005/01/11 03:40:57 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.7 2005/01/12 04:47:52 carpaski Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -22,7 +22,6 @@ import cvstree
 import time
 from output import *
 from commands import getstatusoutput
-from time import *
 from fileinput import input
 from grp import getgrnam
 from stat import *
@@ -575,7 +574,7 @@ else:
 		# if it's been over a week since fetching (or the system clock is fscked), grab an updated copy of metadata.dtd 
 		# clock is fscked or it's been a week. time to grab a new one.
 		ct=os.stat(portage.CACHE_PATH + '/metadata.dtd')[ST_CTIME]
-		if abs(time() - ct) > (60*60*24*7):
+		if abs(time.time() - ct) > (60*60*24*7):
 			# don't trap the exception, we're watching for errno 2 (file not found), anything else is a bug.
 			backup_exists=1
 		else:

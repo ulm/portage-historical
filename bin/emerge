@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.10 2005/01/11 03:40:57 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.11 2005/01/12 04:47:52 carpaski Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2601,7 +2601,7 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 		pcntstr=""
 		pcntcount=len(mynodes)/100.0
 		nextupdate=pcntcount
-		current=0
+		current=1
 		for x in mynodes:
 			current += 1
 			if current >= nextupdate:
