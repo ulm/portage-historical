@@ -1,6 +1,6 @@
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/output.py,v 1.13 2003/03/22 15:26:27 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/output.py,v 1.14 2003/03/23 00:13:27 carpaski Exp $
 
 import os
 
@@ -33,7 +33,7 @@ def xtermTitle(mystr):
 	if havecolor and dotitles:
 		myt=os.environ["TERM"]
 		if myt in ["xterm","Eterm","aterm"]:
-			print "\x1b]1;\x07\x1b]2;"+str(mystr)+"\x07"
+			print "\x1b]1;\x07\x1b]2;"+str(mystr)+"\x07",
 
 def notitles():
 	"turn off title setting"
