@@ -1,6 +1,6 @@
 # Copyright 2000-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Contains local system settings for Portage system
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.arm,v 1.22 2004/07/13 20:34:04 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.arm,v 1.23 2004/07/13 20:36:28 genone Exp $
 
 # Please review 'man make.conf' for more information.
 
@@ -158,7 +158,7 @@ CHOST="armv4l-unknown-linux-gnu"
 # the list so that portage will fall back to it if the files cannot be found
 # on your specified mirror. We _HIGHLY_ recommend that you change this setting
 # to a nearby mirror by merging and using the 'mirrorselect' tool.
-#GENTOO_MIRRORS="<your_mirror_here> http://gentoo.osuosl.edu http://www.ibiblio.org/pub/Linux/distributions/gentoo"
+#GENTOO_MIRRORS="<your_mirror_here> http://gentoo.osuosl.org http://www.ibiblio.org/pub/Linux/distributions/gentoo"
 #
 # Portage uses PORTAGE_BINHOST to specify mirrors for prebuilt-binary packages.
 # The list is a single extry specifying the full address of the directory
