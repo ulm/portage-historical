@@ -1,11 +1,12 @@
 # portage_checksum.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_checksum.py,v 1.6 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_checksum.py,v 1.7 2004/10/05 07:11:26 carpaski Exp $
 
 from portage_const import PRIVATE_PATH,PRELINK_BINARY
 import os
 import shutil
+import stat
 import portage_exec
 import portage_util
 import portage_locks
@@ -24,6 +25,43 @@ def perform_md5(x, calc_prelink=0):
 
 def perform_sha1(x, calc_prelink=0):
 	return perform_checksum(x, sha1hash, calc_prelink)[0]
+
+def perform_all(x, calc_prelink=0):
+	mydict = {}
+	mydict["SHA1"] = perform_sha1(x, calc_prelink)
+	mydict["MD5"] = perform_md5(x, calc_prelink)
+	return mydict
+
+def get_valid_checksum_keys():
+	return ["SHA1", "MD5"]
+
+def verify_all(filename, mydict, calc_prelink=0, strict=0):
+	# Dict relates to single file only.
+	# returns: (passed,reason)
+	file_is_ok = True
+	reason     = "Reason unknown"
+	if mydict["size"] != os.stat(filename)[stat.ST_SIZE]:
+		return False,"Filesize does not match recorded size"
+	for x in mydict.keys():
+		if   x == "size":
+			continue
+		elif x == "SHA1":
+			if mydict[x] != perform_sha1(filename, calc_prelink=calc_prelink):
+				if strict:
+					raise portage_exception.DigestException, "Failed to verify '$(file)s' on checksum type '%(type)s'" % {"file":filename, "type":x}
+				else:
+					file_is_ok = False
+					reason     = "Failed on %s verification" % (x,)
+					break
+		elif x == "MD5":
+			if mydict[x] != perform_md5(filename, calc_prelink=calc_prelink):
+				if strict:
+					raise portage_exception.DigestException, "Failed to verify '$(file)s' on checksum type '%(type)s'" % {"file":filename, "type":x}
+				else:
+					file_is_ok = False
+					reason     = "Failed on %s verification" % (x,)
+					break
+	return file_is_ok,reason
 
 # We _try_ to load this module. If it fails we do the slow fallback.
 try:

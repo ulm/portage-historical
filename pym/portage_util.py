@@ -1,6 +1,6 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.8 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.9 2004/10/05 07:11:26 carpaski Exp $
 
 import sys,string,shlex,os.path
 
@@ -12,7 +12,7 @@ def writemsg(mystr,noiselevel=0):
 		sys.stderr.write(mystr)
 		sys.stderr.flush()
 
-def grabfile(myfilename):
+def grabfile(myfilename, compat_level=0):
 	"""This function grabs the lines in a file, normalizes whitespace and returns lines in a list; if a line
 	begins with a #, it is ignored, as are empty lines"""
 
@@ -30,7 +30,19 @@ def grabfile(myfilename):
 		if not len(myline):
 			continue
 		if myline[0]=="#":
-			continue
+			# Check if we have a compat-level string. BC-integration data.
+			# '##COMPAT==>N<==' 'some string attached to it'
+			mylinetest = string.split(myline, "<==", 1)
+			if len(mylinetest) == 2:
+				myline_potential = mylinetest[1]
+				mylinetest = string.split(mylinetest[0],"##COMPAT==>")
+				if len(mylinetest) == 2:
+					if compat_level >= int(mylinetest[1]):
+						# It's a compat line, and the key matches.
+						newlines.append(myline_potential)
+				continue
+			else:
+				continue
 		newlines.append(myline)
 	return newlines
 

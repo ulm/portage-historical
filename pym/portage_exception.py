@@ -1,6 +1,6 @@
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exception.py,v 1.6 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exception.py,v 1.7 2004/10/05 07:11:26 carpaski Exp $
 
 class PortageException(Exception):
 	"""General superclass for portage exceptions"""
@@ -106,6 +106,13 @@ class CommandNotFound(PortageException):
 
 class SignatureException(PortageException):
 	"""Signature was not present in the checked file"""
+	def __init__(self,value):
+		self.value = value[:]
+	def __str__(self):
+		return repr(self.value)
+
+class DigestException(SignatureException):
+	"""A problem exists in the digest"""
 	def __init__(self,value):
 		self.value = value[:]
 	def __str__(self):

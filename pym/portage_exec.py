@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.7 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.8 2004/10/05 07:11:26 carpaski Exp $
 
 import os,types
 import signal
@@ -48,7 +48,7 @@ def spawn(mycommand,env={},opt_name=None,fd_pipes=None,returnpid=False,uid=None,
 		mycommand=mycommand.split()
 	if not os.path.exists(mycommand[0]):
 		# this sucks. badly.
-		return -13
+		return None
 	mypid=[]
 	if logfile:
 		pr,pw=os.pipe()
@@ -72,7 +72,7 @@ def spawn(mycommand,env={},opt_name=None,fd_pipes=None,returnpid=False,uid=None,
 	myargs.extend(mycommand[1:])
 	mypid.append(os.fork())
 	if mypid[-1] == 0:
-		# this may look ugly, but basically it moves file descriptors around to ensure no 
+		# this may look ugly, but basically it moves file descriptors around to ensure no
 		# handles that are needed are accidentally closed during the final dup2 calls.
 		trg_fd=[]
 		if type(fd_pipes)==types.DictType:
