@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.304 2004/07/31 09:00:48 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.305 2004/08/01 10:54:38 ferringb Exp $
 
 import os,sys,platform
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -314,14 +314,21 @@ def emergelog(mystr):
 	if "notitles" not in portage.features:
 		xtermTitle(mystr)
 	try:
+		#seems odd opening a file each write...
 		if not os.path.exists("/var/log/emerge.log"):
 			mylogfile=open("/var/log/emerge.log", "w")
 			os.chmod("/var/log/emerge.log", S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP)
 			os.chown("/var/log/emerge.log", portage.portage_uid, portage.portage_gid)
 		else:
 			mylogfile=open("/var/log/emerge.log", "a")
+
+		l=portage.lockfile(mylogfile)
+		# seek because we may have gotten held up by the lock.
+		# if so, we may not be positioned at the end of the file.
+		mylogfile.seek(0,2)
 		mylogfile.write(str(time.time())[:10]+": "+mystr+"\n")
 		mylogfile.flush()
+		portage.unlockfile(l)
 		mylogfile.close()
 	except Exception, e:
 		if edebug:
@@ -459,7 +466,7 @@ def help():
 	emergehelp.help(myaction,myopts,havecolor)
 
 # check if root user is the current user for the actions where emerge needs this
-if ("--pretend" in myopts) or (myaction=="search"):
+if ("--pretend" in myopts) or ("--fetchonly" in myopts) or (myaction=="search"):
 	if not portage.secpass:
 		if portage.wheelgid==portage.portage_gid:
 			print "emerge: wheel group membership required for \"--pretend\" and search."
