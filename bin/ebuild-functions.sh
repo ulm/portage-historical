@@ -2,7 +2,7 @@
 # ebuild-functions.sh; ebuild env functions, saved with the ebuild (not specific to the portage version).
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-functions.sh,v 1.7 2005/03/21 08:24:53 genone Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-functions.sh,v 1.8 2005/03/29 00:22:28 ferringb Exp $
 
 use() {
 	if useq ${1}; then
@@ -71,7 +71,8 @@ use_enable() {
 
 econf() {
 	local ret
-	if [ -x ./configure ]; then
+	ECONF_SOURCE="${ECONF_SOURCE:-.}"
+	if [ -x "${ECONF_SOURCE}/configure" ]; then
 		if hasq autoconfig $FEATURES && ! hasq autoconfig $RESTRICT; then
 			if [ -e /usr/share/gnuconfig/ ]; then
 				local x
@@ -121,7 +122,7 @@ econf() {
 		if request_confcache "${T}/local_cache"; then
 			EECONF_CACHE="--cache-file=${T}/local_cache"
 		fi
-		echo ./configure \
+		echo "${ECONF_SOURCE}/configure" \
 			--prefix=/usr \
 			--host=${CHOST} \
 			--mandir=/usr/share/man \
@@ -133,8 +134,7 @@ econf() {
 			${EECONF_CACHE} \
 			"$@"
 
-		#XXX: This is "${ECONF_SOURCE}/configure" in stable
-		if ! ./configure \
+		if ! "${ECONF_SOURCE}/configure" \
 			--prefix=/usr \
 			--host=${CHOST} \
 			--mandir=/usr/share/man \
