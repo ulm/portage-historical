@@ -11,7 +11,7 @@
 **    Copyright (C) 2001 Geert Bevin, Uwyn, http://www.uwyn.com
 **    Distributed under the terms of the GNU General Public License, v2 or later 
 **    Author : Geert Bevin <gbevin@uwyn.com>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.c,v 1.16 2004/04/04 20:37:21 carpaski Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.c,v 1.17 2004/04/11 10:18:05 carpaski Exp $
 */
 
 /* #define _GNU_SOURCE */
@@ -798,7 +798,6 @@ main(int argc, char **argv)
 
 		/* Load our PID into PIDs file */
 		success = 1;
-		errno = 0;
 		if (file_exist(sandbox_pids_file, 1) < 0) {
 			success = 0;
 			fprintf(stderr, ">>> %s is not a regular file\n", sandbox_pids_file);
