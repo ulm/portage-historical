@@ -1,11 +1,14 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.915 2005/02/26 07:21:14 jstubbs Exp $
+# $Id: ChangeLog,v 1.916 2005/02/27 01:48:53 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  27 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> bin/emerge pym/ebuild.py:
+  Fixed a couple of syntax errors.
 
   26 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> src/chflags/*: Added
   spb's bsd chflags support.

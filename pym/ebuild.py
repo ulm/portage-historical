@@ -2,7 +2,7 @@
 # ebuild.py; Ebuild classes/abstraction of phase processing, and communicating with a ebuild-daemon.sh instance
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.11 2005/02/26 06:35:20 jstubbs Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.12 2005/02/27 01:48:53 jstubbs Exp $
 
 
 import os,sys,traceback
@@ -800,7 +800,7 @@ class ebuild_handler:
 				if ("userpriv" in mysettings.features) and (portage_uid and portage_gid):
 					if (secpass==2):
 						if os.path.exists(mysettings["HOME"]):
-+							# XXX: Potentially bad, but held down by HOME replacement above.
+							# XXX: Potentially bad, but held down by HOME replacement above.
 							portage_exec.spawn("rm -Rf "+mysettings["HOME"])
 						if not os.path.exists(mysettings["HOME"]):
 							os.makedirs(mysettings["HOME"])
