@@ -6,6 +6,10 @@ The current portage code uses many different configuration files, most of which
 are unknown to users and normal developers.  Here we will try to collect all 
 the odds and ends so as to help users more effectively utilize portage.  This 
 is a reference only for files which do not already have a man page.
+
+All files in the make.profile directory may be tweaked via parent profiles 
+when using cascading profiles.  For more info, please see 
+http://www.gentoo.org/proj/en/releng/docs/cascading-profiles.xml
 .IP Note:
 If you are looking for information on how to emerge something, please see 
 .BR emerge (1).
@@ -24,6 +28,7 @@ make.defaults
 packages
 packages.build
 package.provided
+parent
 use.defaults
 use.mask
 virtuals
@@ -202,6 +207,12 @@ sys-kernel/development-sources-2.6.7
 # you installed your own special copy of QT
 x11-libs/qt-3.3.0
 .fi
+.TP
+.BR parent
+This contains a path to the parent profile.  It may be either relative or 
+absolute.  The paths will be relative to the location of the profile.  Most 
+commonly this file contains '..' to indicate the directory above.  Utilized 
+only in cascading profiles.
 .TP
 .BR use.defaults
 Here we DO NOT define the default USE flags, but the so\-called auto\-USE 
@@ -559,4 +570,4 @@ Please report bugs via http://bugs.gentoo.org/
 .BR ebuild (5),
 .BR make.conf (5)
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/portage.5,v 1.17.2.1 2004/10/27 14:39:30 jstubbs Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/portage.5,v 1.17.2.2 2004/12/26 06:39:41 vapier Exp $
