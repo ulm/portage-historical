@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.101 2003/02/04 22:07:18 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.102 2003/02/05 06:03:47 carpaski Exp $
 
 cd ${PORT_TMPDIR}
 
@@ -157,8 +157,8 @@ shopt -s expand_aliases
 OCC="$CC"
 OCXX="$CXX"
 source /etc/profile.env > /dev/null 2>&1
-export CC="$OCC"
-export CXX="$OCXX"
+[ ! -z "$OCC" ] && export CC="$OCC"
+[ ! -z "$OCXX" ] && export CXX="$OCXX"
 export PATH="/sbin:/usr/sbin:/usr/lib/portage/bin:/bin:/usr/bin:${ROOTPATH}"
 if [ -e /etc/init.d/functions.sh ]
 then
