@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.307 2003/03/22 14:24:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.308 2003/03/22 15:26:27 carpaski Exp $
 
 VERSION="2.0.47-r11"
 
@@ -4611,6 +4611,8 @@ thirdpartymirrors=grabdict(settings["PORTDIR"]+"/profiles/thirdpartymirrors")
 
 #,"porttree":portagetree(root,virts),"bintree":binarytree(root,virts)}
 features=settings["FEATURES"].split()
+if "notitles" in features:
+	notitles()
 
 # Defaults set at the top of perform_checksum.
 if spawn("/usr/sbin/prelink --version > /dev/null 2>&1",free=1) == 0:
