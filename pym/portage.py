@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.342 2003/10/22 02:15:36 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.343 2003/10/31 06:07:33 drobbins Exp $
 
 VERSION="2.0.49-r13-2"
 
@@ -1837,11 +1837,14 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0,fetchonly=0):
 		print red("doebuild():")+" aux_get() error; aborting."
 		sys.exit(1)
 
-	newuris=flatten(evaluate(tokenize(myuris),string.split(settings["USE"])))	
+	myurilist=myuris.split()
+	myurilist=dep_parenreduce(myurilist)
+	myurilist=dep_opconvert(myurilist,string.split(settings["USE"]))
+	newuris=flatten(myurilist)
 	alluris=flatten(evaluate(tokenize(myuris),[],1))	
 	alist=[]
 	aalist=[]
-	#uri processing list
+	#uri processing list; create list with duplicates removed:
 	upl=[[newuris,alist],[alluris,aalist]]
 	for myl in upl:
 		for x in myl[0]:
