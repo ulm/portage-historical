@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.432 2004/06/22 13:06:13 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.433 2004/06/26 04:01:03 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -4619,7 +4619,8 @@ class vardbapi(dbapi):
 		returnme=[]
 		for x in settings.categories:
 			for y in listdir(self.root+VDB_PATH+"/"+x,EmptyOnError=1):
-				returnme += [x+"/"+y]
+				if pkgsplit(y) is not None:
+					returnme += [x+"/"+y]
 		return returnme
 
 	def cp_all(self,use_cache=1):
