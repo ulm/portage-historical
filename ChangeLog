@@ -1,11 +1,14 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.820 2004/10/29 14:45:35 jstubbs Exp $
+# $Id: ChangeLog,v 1.821 2004/10/29 14:56:56 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  29 Oct 2004; Brian Harring <ferringb@gentoo.org> emerge: Close stdin after 
+  the spawn fork for rsync, not in global scope.  #68946
 
   29 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> emerge: Fixed issue where
   emerge adds package to world when --onlydeps is specified. #69260

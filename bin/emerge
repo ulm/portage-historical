@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.352 2004/10/29 14:45:35 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.353 2004/10/29 14:56:56 ferringb Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2293,13 +2293,6 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 		print "emerge: \"sync\" actions do not support \"--pretend.\""
 		sys.exit(1)
 
-	try:
-		os.close(sys.stdin.fileno())
-	except SystemExit, e:
-		raise # Needed else can't exit
-	except:
-		pass
-
 	emergelog(" === "+str(myaction))
 	myportdir=portage.settings["PORTDIR"]
 	if myportdir[-1]=="/":
@@ -2443,7 +2436,7 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 
 			print ">>> checking server timestamp ..."
 			mycommand=rsynccommand+" "+dosyncuri+"/metadata/timestamp.chk "+tmpservertimestampdir
-			exitcode=portage.spawn(mycommand,portage.settings,free=1)
+			exitcode=portage.spawn(mycommand,portage.settings,free=1,fd_pipes={1:1,2:2})
 			if (exitcode==0):
 				try:
 					servertimestamp = time.mktime(time.strptime(portage.grabfile(tmpservertimestampfile)[0], "%a, %d %b %Y %H:%M:%S +0000"))
@@ -2471,7 +2464,7 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 				elif (servertimestamp == 0) or (servertimestamp > mytimestamp):
 					# actual sync
 					mycommand=rsynccommand+" "+dosyncuri+"/ "+myportdir
-					exitcode=portage.spawn(mycommand,portage.settings,free=1)
+					exitcode=portage.spawn(mycommand,portage.settings,free=1,fd_pipes={1:1,2:2})
 					if exitcode in [0,1,2,3,4,11,14,20,21]:
 						break
 			elif exitcode in [0,1,2,3,4,11,14,20,21]:
