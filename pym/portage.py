@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.35 2005/01/30 11:33:02 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.35 2005/01/30 11:33:02 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.36 2005/01/31 21:16:13 ferringb Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.36 2005/01/31 21:16:13 ferringb Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.35 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.36 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -6217,6 +6217,17 @@ class dblink:
 				else:
 					#this doesn't match the package we're unmerging; keep it.
 					newworldlist.append(x)
+
+			# if the base dir doesn't exist, create it.
+			# (spanky noticed bug)
+			# XXX: dumb question, but abstracting the root uid might be wise/useful for
+			# 2nd pkg manager installation setups.
+			if not os.path.exists(os.path.dirname(self.myroot+WORLD_FILE)):
+				pdir = os.path.dirname(self.myroot + WORLD_FILE)
+				os.makedirs(pdir, mode=0755)
+				os.chown(pdir, 0, portage_gid)
+				os.chmod(pdir, 02770)
+
 			myworld=open(self.myroot+WORLD_FILE,"w")
 			for x in newworldlist:
 				myworld.write(x+"\n")
