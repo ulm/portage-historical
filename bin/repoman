@@ -1,8 +1,8 @@
 #!/usr/bin/python2.2
-# Copyright 1999-2002 Gentoo Technologies, Inc.
+# Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
 # Author: Daniel Robbins <drobbins@gentoo.org>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.8 2003/02/17 11:58:53 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.9 2003/02/22 16:59:08 carpaski Exp $
 
 # Next to do: dep syntax checking in ebuilds, mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -73,7 +73,7 @@ def help():
 	print
 	print green(exename+" "+version)
 	print " \"Quality is job zero.\""
-	print " Copyright 1999-2002 Gentoo Technologies, Inc."
+	print " Copyright 1999-2003 Gentoo Technologies, Inc."
 	print " Distributed under the terms of the GNU General Public License v2"
 	print
 	print bold(" Usage:"),turquoise(exename),"[",green("option"),"] [",green("mode"),"]"
