@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.335 2003/08/21 01:01:26 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.336 2003/08/21 01:30:33 carpaski Exp $
 
 VERSION="2.0.49"
 
@@ -5035,6 +5035,7 @@ for x in mtimedb.keys():
 
 #,"porttree":portagetree(root,virts),"bintree":binarytree(root,virts)}
 features=settings["FEATURES"].split()
+portdb=portdbapi()
 
 
 do_upgrade_packagesmessage=0
@@ -5096,9 +5097,8 @@ def do_upgrade(mykey):
 	writedict(myvirts,"/var/cache/edb/virtuals")
 	print ""
 
-
 def portageexit():
-	global uid,portage_gid
+	global uid,portage_gid,portdb
 	if secpass and not os.environ.has_key("SANDBOX_ACTIVE"):
 		portdb.saveauxcache()
 
@@ -5148,8 +5148,6 @@ if (secpass==2) and (not os.environ.has_key("SANDBOX_ACTIVE")):
 		
 
 
-#the new standardized db names:
-portdb=portdbapi()
 overlays = string.split(settings["PORTDIR_OVERLAY"])
 if overlays:
 	portdb.overlays = overlays[:]
