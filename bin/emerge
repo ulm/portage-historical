@@ -1,11 +1,6 @@
 #!/usr/bin/env spython
 import os
 import sys
-
-if os.getuid()!=0:
-	print "!!! emerge must be run by root."
-	sys.exit(1)
-
 import portage
 import xpak
 import string
@@ -236,6 +231,9 @@ def post_emerge(retval=0):
 		print "    /usr/bin/install-info doesn't exist; skipping info regeneration."
 	else:
 		print " \x1b[32;01m*\x1b[0m Regenerating GNU info directory index..."
+		# pick up root privs
+		olduid = os.geteuid()
+		os.seteuid(0)
 		if os.path.exists(root+"usr/share/info/dir"):
 			os.rename(root+"usr/share/info/dir",root+"usr/share/info/dir.old")
 		icount=0
@@ -261,6 +259,8 @@ def post_emerge(retval=0):
 
 		else:
 			print " \x1b[32;01m*\x1b[0m Processed",icount,"info files."
+		# back to old user
+		os.seteuid(olduid)
 	if portage.settings["CONFIG_PROTECT"]:
 		#number of directories with some protect files in them
 		procount=0
@@ -281,7 +281,7 @@ def post_emerge(retval=0):
 
 #number of ebuilds merged
 merged=0
-opts=["--help","--pretend","--buildpkg","--usepkg","--autoclean","--clean","--debug","--fetchonly","--noreplace","--onlydeps","--verbose"]
+opts=["--help","--pretend","--buildpkg","--usepkg","--autoclean","--clean","--debug","--fetchonly","--noreplace","--onlydeps","--verbose","--stayroot"]
 modes=["rsync","system","update","config"]
 myopts=[]
 mymode=[]
@@ -379,6 +379,9 @@ if "--help" in myopts:
 		print "              installing an unfamiliar package.  In the printout, N = new,"
 		print "              U = upgrading, R = replacing"
 		print
+		print "       \x1b[32;01m--stayroot\x1b[0m"
+		print "              this option turns off the automatic dropping of root privs."
+		print
 	elif "rsync" in mymode:
 		print
 		print "       \x1b[36;01memerge rsync"
@@ -448,7 +451,10 @@ CONFIG_PROTECT_MASK="/etc/wget /etc/rc.d"
 """
 		print outstuff
 	sys.exit(1)
-		
+
+# apply --stayroot option
+portage.privs.stayroot("--stayroot" in myopts)
+
 if "--pretend" in myopts:
 		print
 		print "These are the packages that I would merge, in order."
