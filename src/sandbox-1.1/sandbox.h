@@ -4,7 +4,7 @@
  * Distributed under the terms of the GNU General Public License, v2 or later 
  * Author: Brad House <brad@mainstreetsoftworks.com>
  *    
- * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.h,v 1.4 2003/07/27 12:31:06 azarah Exp $
+ * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.h,v 1.5 2003/09/28 08:37:19 azarah Exp $
  */
 
 #ifndef __SANDBOX_H__
@@ -48,6 +48,7 @@
 
 char *get_sandbox_path(char *argv0);
 char *get_sandbox_lib(char *sb_path);
+char *get_sandbox_pids_file(void);
 char *get_sandbox_rc(char *sb_path);
 char *get_sandbox_log();
 char *sb_dirname(const char *path);

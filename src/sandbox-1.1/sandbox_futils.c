@@ -3,7 +3,7 @@
  * Distributed under the terms of the GNU General Public License, v2 or later 
  * Author: Brad House <brad@mainstreetsoftworks.com>
  *
- * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox_futils.c,v 1.4 2003/07/27 12:31:06 azarah Exp $
+ * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox_futils.c,v 1.5 2003/09/28 08:37:19 azarah Exp $
  * 
  */
 
@@ -62,6 +62,15 @@ get_sandbox_lib(char *sb_path)
 		snprintf(path, 254, "%s%s", sb_path, LIB_NAME);
 	}
 	return (strdup(path));
+}
+
+char *
+get_sandbox_pids_file(void)
+{
+	if (0 < getenv("SANDBOX_PIDS_FILE")) {
+		return (strdup(getenv("SANDBOX_PIDS_FILE")));
+	}
+	return (strdup(PIDS_FILE));
 }
 
 char *
