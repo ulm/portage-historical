@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.17 2003/10/06 14:09:43 caleb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.18 2003/12/10 06:00:56 carpaski Exp $
 
 import os,sys
 from output import *
@@ -203,9 +203,9 @@ def help(myaction,myopts,havecolor=1):
 		print "              Disables the spinner regardless of terminal type."
 		print
 		print "       "+green("--oneshot")
-		print "              Emerge as normal, but don't add packages to the world profile for"
-		print "              later updating. This prevents consideration of this package"
-		print "              unless this package is depended upon by another package."
+		print "              Emerge as normal, but don't add packages to the world profile."
+		print "              This package is will only be updated if it is depend on by"
+		print "              another package."
 		print
 		print "       "+green("--onlydeps")+" ("+green("-o")+" short option)"
 		print "              Only merge (or pretend to merge) the dependencies of the"

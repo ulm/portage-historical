@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.146 2003/11/28 13:27:16 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.147 2003/12/10 06:00:56 carpaski Exp $
 
 if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 	if [ -f ${T}/successful ]; then
@@ -238,9 +238,14 @@ keepdir()
 {
 	dodir "$@"
 	local x
-	for x in "$@"; do
-		touch ${D}/${x}/.keep || die "Failed to create .keep in ${D}/${x}"
-	done
+	if [ "$1" == "-R" ] || [ "$1" == "-r" ]; then
+		shift
+		find "$@" -type d -printf "${D}/%p/.keep\n" | tr "\n" "\0" | $XARGS -0 -n100 touch || die "Failed to recursive create .keep files"
+	else
+		for x in "$@"; do
+			touch ${D}/${x}/.keep || die "Failed to create .keep in ${D}/${x}"
+		done
+	fi
 }
 
 # the sandbox is disabled by default except when overridden in the relevant stages
@@ -1217,6 +1222,12 @@ if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 		[ -z "${CCACHE_SIZE}" ] && export CCACHE_SIZE="2G"
 		ccache -M ${CCACHE_SIZE} &> /dev/null
 	fi
+
+	# XXX: Load up the helper functions.
+#	for X in /usr/lib/portage/bin/functions/*.sh; do
+#		source ${X} || die "Failed to source ${X}"
+#	done
+	
 else
 
 killparent() {

@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.10 2003/05/24 05:40:37 jrray Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.11 2003/12/10 06:00:56 carpaski Exp $
 
 # History: 
 
@@ -83,6 +83,8 @@ my @ebuild_list;
 my $TMP_DEV_PERL_DIR = '/var/tmp/db/dev-perl';
 my $MAKECONF         = '/etc/make.conf';
 my ( $OVERLAY_DIR, $PORTAGE_DIR, $PORTAGE_DEV_PERL, $PORTAGE_DISTDIR ) = get_globals();
+
+my $arches = join( ' ', map { chomp; $_ } `cat $PORTAGE_DIR/profiles/arch.list` );
 
 #this should never find the dir, but just to be safe
 unless ( -d $tmp_overlay_dir ) {
@@ -189,7 +191,7 @@ HOMEPAGE="http://www.cpan.org/modules/by-authors/id/$modpath/\${P}.readme"
 
 SLOT="0"
 LICENSE="Artistic | GPL-2"
-KEYWORDS="alpha arm hppa mips ppc sparc x86"
+KEYWORDS="$arches"
 
 HERE
 
