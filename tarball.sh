@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.177 2003/12/21 08:03:26 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.178 2004/01/12 21:11:46 carpaski Exp $
 
 if [ -z "$1" ]; then
 	echo
@@ -25,7 +25,7 @@ fi
 rm -rf ${DEST}
 install -d -m0755 ${DEST}
 #get any binaries out of the way
-cd src/sandbox
+cd src/sandbox-1.1
 make clean
 cd ../..
 for x in bin cnf man pym src 

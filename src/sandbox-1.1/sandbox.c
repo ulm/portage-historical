@@ -11,7 +11,7 @@
 **    Copyright (C) 2001 Geert Bevin, Uwyn, http://www.uwyn.com
 **    Distributed under the terms of the GNU General Public License, v2 or later 
 **    Author : Geert Bevin <gbevin@uwyn.com>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.c,v 1.12 2003/10/12 22:36:58 carpaski Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.c,v 1.13 2004/01/12 21:11:46 carpaski Exp $
 */
 
 #define _GNU_SOURCE
@@ -193,7 +193,7 @@ cleanup()
 			return;
 		}
 
-		pids_file = file_open(sandbox_pids_file, "r+", 0);
+		pids_file = file_open(sandbox_pids_file, "r+", 1, 0664);
 		if (-1 == pids_file) {
 			success = 0;
 			/* Nothing more to do here */
@@ -213,7 +213,7 @@ cleanup()
 			if (print_debug)
 				printf("Cleaning up /etc/ld.so.preload.\n");
 
-			preload_file = file_open("/etc/ld.so.preload", "r+", 0);
+			preload_file = file_open("/etc/ld.so.preload", "r+", 1, 0664);
 			if (-1 != preload_file) {
 				/* Load all the preload libraries into an array */
 				num_of_preloads = load_preload_libs(preload_file, &preload_array);
@@ -400,7 +400,7 @@ print_sandbox_log(char *sandbox_log)
 	long len = 0;
 	char *buffer = NULL;
 
-	sandbox_log_file = file_open(sandbox_log, "r", 0);
+	sandbox_log_file = file_open(sandbox_log, "r", 1, 0664);
 	if (-1 == sandbox_log_file)
 		return 0;
 
@@ -607,7 +607,7 @@ main(int argc, char **argv)
 
 		if (getuid() == 0) {
 			/* Our r+ also will create the file if it doesn't exist */
-			preload_file = file_open("/etc/ld.so.preload", "r+", 1, 0644);
+			preload_file = file_open("/etc/ld.so.preload", "r+", 1, 0664);
 			if (-1 == preload_file) {
 				preload_adaptable = 0;
 /*      exit(1);*/
@@ -799,7 +799,7 @@ main(int argc, char **argv)
 			success = 0;
 			fprintf(stderr, ">>> %s is not a regular file", sandbox_pids_file);
 		} else {
-			pids_file = file_open(sandbox_pids_file, "r+", 1, 0644);
+			pids_file = file_open(sandbox_pids_file, "r+", 1, 0664);
 			if (-1 == pids_file)
 				success = 0;
 		}

@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.371 2004/01/12 07:34:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.372 2004/01/12 21:11:46 carpaski Exp $
 
 VERSION="2.0.50_pre10"
 
@@ -1318,6 +1318,11 @@ def spawn(mystring,mysettings,debug=0,free=0,droppriv=0,fd_pipes=None):
 				os.setgroups([portage_gid])
 				os.setuid(portage_uid)
 				os.umask(002)
+				try:
+					os.chown("/tmp/sandboxpids.tmp",uid,portage_gid)
+					os.chmod("/tmp/sandboxpids.tmp",0664)
+				except:
+					pass
 			else:
 				writemsg("portage: Unable to drop root for "+str(mystring)+"\n")
 
@@ -3292,7 +3297,11 @@ def match_from_list(mydep,candidate_list):
 
 	elif operator in [">", ">=", "<", "<="]:
 		for x in candidate_list:
-			result = pkgcmp(pkgsplit(x), [cat+"/"+pkg,ver,rev])
+			try:
+				result = pkgcmp(pkgsplit(x), [cat+"/"+pkg,ver,rev])
+			except:
+				writemsg("\nInvalid package name: %s\n" % x)
+				sys.exit(73)
 			if result == None:
 				continue
 			elif operator == ">":

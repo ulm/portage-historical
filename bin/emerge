@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.247 2004/01/09 22:54:56 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.248 2004/01/12 21:11:46 carpaski Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -173,7 +173,7 @@ if ("buildpkg" in portage.features) or ("--buildpkgonly" in myopts):
 
 # Also allow -S to invoke search action (-sS)
 if ("--searchdesc" in myopts):
-	if myaction != "search":
+	if myaction and myaction != "search":
 		myfiles.append(myaction)
 	if "--search" not in myopts:
 		myopts.append("--search")
