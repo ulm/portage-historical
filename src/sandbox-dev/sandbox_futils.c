@@ -3,7 +3,7 @@
  * Distributed under the terms of the GNU General Public License, v2 or later 
  * Author: Brad House <brad@mainstreetsoftworks.com>
  *
- * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-dev/Attic/sandbox_futils.c,v 1.1 2002/08/25 06:09:06 azarah Exp $
+ * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-dev/Attic/sandbox_futils.c,v 1.2 2002/08/26 03:28:30 azarah Exp $
  * 
  */
 
@@ -25,7 +25,7 @@
 #include <fcntl.h>
 
 #include "sandbox.h"
-		
+
 
 char *get_sandbox_path(char *argv0)
 {
@@ -131,18 +131,17 @@ char *dirname(const char *path)
 /*
 char* dirname(const char* path)
 {
-  char*			base = NULL;
-  unsigned int	length = 0;
+  char* base = NULL;
+  unsigned int length = 0;
 
   base = strrchr(path, '/');
   if (NULL == base)
   {
-	  return strdup(".");
+    return strdup(".");
   }
-  while (base > path &&
-		 *base == '/')
+  while (base > path && *base == '/')
   {
-	  base--;
+    base--;
   }
   length = (unsigned int) 1 + base - path;
 
