@@ -1,6 +1,6 @@
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.ppc,v 1.58 2004/11/14 05:45:57 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.ppc,v 1.59 2004/12/04 21:20:17 solar Exp $
 # Contains local system settings for Portage system
 
 # Please review 'man make.conf' for more information.
@@ -177,8 +177,6 @@ CHOST="powerpc-unknown-linux-gnu"
 #FETCHCOMMAND="/usr/bin/lukemftp -s -a -o \${DISTDIR}/\${FILE} \${URI}"
 #RESUMECOMMAND="/usr/bin/lukemftp -s -a -R -o \${DISTDIR}/\${FILE} \${URI}"
 #
-# Prozilla (turbo downloader)
-#FETCHCOMMAND='/usr/bin/proz --no-getch -s ${URI} -P ${DISTDIR}'
 #
 # Portage uses GENTOO_MIRRORS to specify mirrors to use for source retrieval.
 # The list is a space separated list which is read left to right. If you use
