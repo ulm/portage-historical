@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.435 2004/06/27 04:17:40 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.436 2004/07/01 12:53:35 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -62,7 +62,7 @@ try:
 	import sys
 except:
 	print "Failed to import sys! Something is _VERY_ wrong with python."
-	exit(127)
+	raise SystemExit, 127
 
 try:
 	import os,string,types,atexit,signal,fcntl
@@ -85,7 +85,7 @@ except Exception, e:
 	sys.stderr.write("!!! gone wrong. Here is the information we got for this exception:\n")
 	
 	sys.stderr.write("    "+str(e)+"\n\n");
-	exit(127)
+	sys.exit(127)
 except:
 	sys.stderr.write("\n\n")
 	sys.stderr.write("!!! Failed to complete python imports. There are internal modules for\n")
@@ -94,8 +94,7 @@ except:
 
 	sys.stderr.write("!!! You might consider starting python with verbose flags to see what has\n")
 	sys.stderr.write("!!! gone wrong. The exception was non-standard and we were unable to catch it.\n\n")
-	exit(127)
-		
+	sys.exit(127)
 
 try:
 	import cvstree
@@ -113,7 +112,7 @@ except Exception, e:
 	sys.stderr.write("!!! a recovery of portage.\n")
 	
 	sys.stderr.write("    "+str(e)+"\n\n")
-	exit(127)
+	sys.exit(127)
 
 
 # ===========================================================================
