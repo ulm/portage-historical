@@ -1,11 +1,17 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.833 2004/11/07 11:58:29 ferringb Exp $
+# $Id: ChangeLog,v 1.834 2004/11/07 12:03:07 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  07 Nov 2004; Brian Harring <ferringb@gentoo.org> orig_dict_cache.py:
+  Transfer of the cacheddir func out of portage.py, and into it's own module.
+  Current implementation isn't symlink aware, and has other issues (follow_symlinks
+  fex).  This shift of it is intended so replacing it just involves creation and 
+  importation of an alternative caching module.
 
   07 Nov 2004; Brian Harring <ferringb@gentoo.org> portage_exec.py, 
   portage_checksums.py, portage_gpg.py, portage_const.py, portage_util.py,
