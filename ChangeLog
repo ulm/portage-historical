@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.581 2004/04/30 21:07:50 genone Exp $
+# $Id: ChangeLog,v 1.582 2004/05/09 09:15:23 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -8,6 +8,9 @@
     3. /etc/portage/virtuals is _USER_ configs only. Do not copy the old file.
     4. /etc/portage/sets/world is a symlink to /var/lib/portage/world
        It is for convenience. Do not mistake this for the actual file.
+
+  09 May 2004; Jason Stubbs <jstubbs@gentoo.org> pym/portage_dep.py:
+  fixed bug in use_reduce that caused returned list to be flattened.
 
   30 Apr 2004; Marius Mauch <genone@gentoo.org> bin/ebuild.sh:
   modified ebuild.sh error message on seemants and roger55s request.
