@@ -1,10 +1,10 @@
 #!/bin/bash
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.162 2003/03/02 20:06:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.163 2003/03/18 11:14:09 carpaski Exp $
 
 if [ -z "$1" ]; then
 	echo
 	echo "You need to have the version specified."
-	echo "e.g.: $0 2.0.39"
+	echo "e.g.: $0 2.0.39-r37"
 	echo
 	exit 0
 fi
@@ -13,7 +13,7 @@ export PKG="portage"
 export TMP="/tmp"
 export V="$1"
 export DEST="${TMP}/${PKG}-${V}"
-export PREVEB="2.0.47-r7"
+export PREVEB="2.0.47-r9"
 rm -rf ${DEST}
 install -d -m0755 ${DEST}
 #get any binaries out of the way
