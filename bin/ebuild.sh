@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.116 2003/03/02 20:06:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.117 2003/03/02 21:11:03 carpaski Exp $
 
 if [ -n "$#" ]
 then
@@ -1060,7 +1060,7 @@ do
 		;;
 	prerm|postrm|preinst|postinst|config)
 		export SANDBOX_ON="0"
-		if [ "$PORTAGE_DEBUG" = "0" ]
+		if [ "$PORTAGE_DEBUG" != "1" ]
 		then
 			pkg_${myarg}
 			#Allow non-zero return codes since they can be caused by &&
@@ -1078,7 +1078,7 @@ do
 		else
 			export SANDBOX_ON="0"
 		fi
-		if [ "$PORTAGE_DEBUG" = "0" ]
+		if [ "$PORTAGE_DEBUG" != "1" ]
 		then
 			dyn_${myarg}
 			#Allow non-zero return codes since they can be caused by &&
@@ -1095,7 +1095,7 @@ do
 		#for example, awking and piping a file in /tmp requires a temp file to be created
 		#in /etc.  If pkg_setup is in the sandbox, both our lilo and apache ebuilds break.
 		export SANDBOX_ON="0"
-		if [ "$PORTAGE_DEBUG" = "0" ]; then
+		if [ "$PORTAGE_DEBUG" != "1" ]; then
 			dyn_${myarg}
 		else
 			set -x
@@ -1105,7 +1105,7 @@ do
 		;;
 	package|rpm)
 		export SANDBOX_ON="0"
-		if [ "$PORTAGE_DEBUG" = "0" ]
+		if [ "$PORTAGE_DEBUG" != "1" ]
 		then
 			dyn_${myarg}
 		else
