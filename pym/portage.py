@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.461 2004/08/05 03:57:53 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.462 2004/08/05 05:26:59 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -5603,7 +5603,7 @@ class portdbapi(dbapi):
 			try:
 				myaux=db["/"]["porttree"].dbapi.aux_get(mycpv, ["KEYWORDS"])
 			except (KeyError,IOError,TypeError):
-				return []
+				continue
 			if not myaux[0]:
 				# KEYWORDS=""
 				#print "!!! No KEYWORDS for "+str(mycpv)+" -- Untested Status"
