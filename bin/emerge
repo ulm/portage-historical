@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.284 2004/06/02 23:28:05 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.285 2004/06/08 23:41:43 genone Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -425,21 +425,21 @@ def getportageversion():
 		profilever=os.path.basename(os.path.normpath(os.readlink("/etc/make.profile")))
 	except:
 		profilever="unavailable"
-	glibcver=[]
-	for x in portage.vardbapi(portage.root).match("glibc"):
-		xs=portage.pkgsplit(x)
-		if glibcver:
-			glibcver+=","+xs[1]+"-"+xs[2]
+	libcver=[]
+	for x in portage.vardbapi(portage.root).match("virtual/glibc"):
+		xs=portage.catpkgsplit(x)
+		if libcver:
+			libcver+=","+string.join(xs[1:], "-")
 		else:
-			glibcver=xs[1]+"-"+xs[2]
-	if glibcver==[]:
-		glibcver="unavailable"
+			libcver=string.join(xs[1:], "-")
+	if libcver==[]:
+		libcver="unavailable"
 
 	gccver = getgccversion()
 
 	unameout=os.uname()[2]
 
-	return "Portage " + portage.VERSION +" ("+profilever+", "+gccver+", glibc-"+glibcver+", "+unameout+")"
+	return "Portage " + portage.VERSION +" ("+profilever+", "+gccver+", "+libcver+", "+unameout+")"
 
 def help():
 	# Move all the help stuff out of this file.
