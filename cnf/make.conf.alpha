@@ -1,6 +1,6 @@
 # Copyright 2000-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Contains local system settings for Portage system
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.alpha,v 1.12 2003/02/22 17:04:13 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.alpha,v 1.13 2003/02/22 19:20:54 carpaski Exp $
 
 # Please review 'man make.conf' for more information.
 
@@ -20,7 +20,7 @@
 # useflags for you. 'emerge app-admin/ufed'
 #
 # Example:
-#USE="X gtk gnome alpha gnome -alsa"
+#USE="X gtk gnome -alsa"
 
 # Host Setting
 # ============
