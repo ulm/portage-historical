@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.17 2005/02/15 23:27:44 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.18 2005/03/01 15:00:41 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -1976,7 +1976,13 @@ def unmerge(unmerge_action, unmerge_files):
 	candidate_catpkgs=[]
 	global_unmerge=0
 	
-	syslist = getlist("system")
+	realsyslist = getlist("system")
+	syslist = []
+	for x in realsyslist:
+		mycp = portage.dep_getkey(x)
+		if mycp in portage.settings.virtuals:
+			syslist.extend(portage.settings.virtuals[mycp])
+		syslist.append(mycp)
 	
 	global myopts	
 	mysettings = portage.config(clone=portage.settings)
