@@ -6,12 +6,6 @@ The \fBperl-module\fR eclass is used for the compilation, testing, and
 installation of perl modules within the portage system, following 
 vanilla procedure for modules using either \fBExtUtils::MakeMaker\fR(3pm)
 or \fBModule::Builder\fR(3pm).
-.SH "VARIABLES"
-.TP
-.B "style" = \fI"[builder|makemaker]"\fR
-This variable allows you to choose which package to use as the default
-for building the module.  If you do not specify a \fIstyle\fR, then
-the default \fBExtUtils::MakeMaker\fR(3pm) will be used.
 .SH "FUNCTIONS"
 .TP
 .B perl-module_src_prep
@@ -44,6 +38,10 @@ Calls \fBupdatepod\fR.
 .B perl-module_pkg_postrm
 Calls \fBupdatepod\fR.
 .TP
+.B fixlocalpod
+Handles the building of the perllocal.pod files to avoid collisions with
+an existing perllocal.pod.
+.TP
 .B perlinfo
 Updates the gentoo-pods documentation.
 .TP
@@ -63,4 +61,4 @@ Michael Cummings <mcummings@gentoo.org>
 .br
 Mike Frysinger <vapier@gentoo.org>
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/perl-module.eclass.5,v 1.4 2005/02/10 01:37:36 vapier Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/perl-module.eclass.5,v 1.5 2005/03/14 19:24:26 mcummings Exp $
