@@ -85,7 +85,8 @@ class config:
 		for x in usevaluelist:
 			if self.configdict.has_key(x):
 				#prepend db to list to get correct order
-				self.uvlist[0:0]=[self.configdict[x]]		
+				self.uvlist[0:0]=[self.configdict[x]]
+		self.configdict["env"]["PORTAGE_GID"]=str(self.ctx.get_portage_gid())
 		self.regenerate()
 	
 	def regenerate(self,useonly=0):

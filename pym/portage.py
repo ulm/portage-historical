@@ -1,9 +1,9 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.269.2.16 2003/02/24 20:34:58 alain Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.269.2.17 2003/02/25 16:31:39 alain Exp $
 
-VERSION="2.1.0_alpha1"
+VERSION="2.1.0_alpha4"
 
 from stat import *
 from commands import *
@@ -82,7 +82,6 @@ class PortageContext:
 		# Create our tmp and cache directories
 		#
 		self.create_tmp_directories()
-		self.create_cache_directories()
 
 		os.umask(022)
 
@@ -90,22 +89,12 @@ class PortageContext:
 		#
 		# Setup our profiledir
 		#
-		if os.path.exists("/etc/make.profile"):
+		if os.path.exists("/etc/make.profile/make.defaults"):
 			self.profiledir = "/etc/make.profile"
 		else:
 			self.profiledir = None
-			print ">>> Note: /etc/make.profile isn't available; an 'emerge sync' will probably fix this."
-			self.logger.info("/etc/make.profile isn't available; an 'emerge sync' will probably fix this.")
-
-		#
-		# Load the LastModified DB
-		#
-		self.mtimedb = portage_files.LastModifiedDB(self)
-
-		#
-		# Load and initialize default USE values
-		#
-		self.setupUseDefaults()
+			print ">>> Note: /etc/make.profile/make.defaults isn't available; an 'emerge sync' will probably fix this."
+			self.logger.info("/etc/make.profile/make.defaults isn't available; an 'emerge sync' will probably fix this.")
 
 		#
 		# We need to create the vartree first, then load our settings, and then set up our other trees
@@ -114,9 +103,24 @@ class PortageContext:
 		self.do_vartree()
 
 		#
+		# Load and initialize default USE values
+		#
+		self.setupUseDefaults()
+
+		#
 		# Set up our configuration
 		#
 		self.settings = portage_config.config(self)
+
+		#
+		# Intialize our cache directories
+		#
+		self.create_cache_directories()
+
+		#
+		# Load the LastModified DB
+		#
+		self.mtimedb = portage_files.LastModifiedDB(self)
 
 		#
 		# Apply update files if there's new ones.
@@ -367,6 +371,9 @@ class PortageContext:
 				try:
 					os.chown(cachedir+"/dep",self.uid,self.portage_gid)
 					os.chmod(cachedir+"/dep",02775)
+					if mystat[ST_GID]!=self.portage_gid:
+						spawn("chown -R "+str(self.uid)+":"+str(self.portage_gid)+" "+cachedir+"/dep",free=1)
+						spawn("chmod -R u+rw,g+rw "+cachedir+"/dep",free=1)
 				except OSError:
 					pass
 
@@ -600,14 +607,17 @@ class PortageContext:
 			if (self.secpass == USER_NORMAL) and (self.wheelgid in os.getgroups()):
 				self.secpass=USER_WHEEL
 		except KeyError:
-			print "portage initialization: your system doesn't have a \"wheel\" group."
-			print "Please fix this so that Portage can operate correctly (It's normally GID 10)"
+			print "portage initialization: your system doesn't have a 'wheel' group."
+			print "Please fix this as it is a normal system requirement. 'wheel' is GID 10"
+			print "'emerge baselayout' and an 'etc-update' should remedy this problem."
 			pass
 
 		#Discover the uid and gid of the portage user/group
 		try:
 			self.portage_uid=pwd.getpwnam("portage")[2]
 			self.portage_gid=grp.getgrnam("portage")[2]
+			if (secpass==USER_NORMAL):
+				secpass=USER_WHEEL
 		except KeyError:
 			self.portage_uid=0
 			self.portage_gid=self.wheelgid
@@ -1311,7 +1321,7 @@ def fetch(ctx, myuris, listonly=0):
 						mystat=os.stat(ctx.settings["DISTDIR"]+"/"+myfile)
 						# no exception?  file exists. let digestcheck() report
 						# an appropriately for size or md5 errors
-						if myret and (mystat[ST_SIZE]<mydigests[myfile]["size"]):
+						if (mystat[ST_SIZE]<mydigests[myfile]["size"]):
 							# Fetch failed... Try the next one... Kill 404 files though.
 							if (mystat[ST_SIZE]<100000) and (len(myfile)>4) and not ((myfile[-5:]==".html") or (myfile[-4:]==".htm")):
 								html404=re.compile("<title>.*(not found|404).*</title>",re.I|re.M)
@@ -1510,10 +1520,11 @@ def doebuild(ctx, myebuild,mydo,myroot,debug=0,listonly=0):
 	try:
 		if ctx.has_feature("userpriv") and ctx.get_portage_uid() and ctx.get_portage_gid():
 			ctx.settings["HOME"]=ctx.settings["BUILD_PREFIX"]+"/homedir"
-			if os.path.exists(ctx.settings["HOME"]):
-				spawn(ctx, "rm -Rf "+ctx.settings["HOME"], free=1)
-			if not os.path.exists(ctx.settings["HOME"]):
-				os.makedirs(ctx.settings["HOME"])
+			if (secpass==USER_ROOT):
+				if os.path.exists(ctx.settings["HOME"]):
+					spawn(ctx, "rm -Rf "+ctx.settings["HOME"], free=1)
+				if not os.path.exists(ctx.settings["HOME"]):
+					os.makedirs(ctx.settings["HOME"])
 		elif ctx.has_feature("userpriv"):
 			del ctx.features[ctx.features.index("userpriv")]
 	except Exception, e:
