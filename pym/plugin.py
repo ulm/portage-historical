@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-Plug-In Framework - version 1.2
+Plug-In Framework - version 1.3
 Copyright 2003 - Alain Penders  (alain@rexorient.com or alain@gentoo.org)
 
 This framework enables an application to easily load plugins.  Each plugin
@@ -25,6 +25,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 import string,sys,types,os.path
+
+
+#-----------------------------------------------------------------------------
+
+# Determine our version, and setup True/False accordingly.
+
+myversion = sys.version
+myversion = string.split(myversion, ' ')[0]
+myversion = string.split(myversion, '.')
+myversion = (int(myversion[0])*10000)+(int(myversion[1])*100)+int(myversion[2])
+
+if (myversion < 20201):
+	True = 1
+	False = 0
 
 
 #-----------------------------------------------------------------------------
@@ -84,13 +98,13 @@ class Plugin:
 	For any class to match, it *must* have loadable defined in its global data:
 
 	   class myloadable:
-	      loadable = True
+	      loadable = 1
 	      
 	      def __init__(self):
 	         print "hello world"
 
 	The above is a valid loadable class.  Note that the type or value of loadable doesn't
-	matter, so changing loadable to "False" will not prevent it from being loaded.
+	matter, so changing loadable to "False" or 0 will not prevent it from being loaded.
 
 
 	2. Working with plugins
@@ -123,7 +137,7 @@ class Plugin:
 	   import plugin
 
 	   class myplugin:
-	      loadable = True
+	      loadable = 1
 
 	      def __init__(self, hdlr):
 	         print "Initializing plug-in ..."
@@ -192,7 +206,7 @@ class Plugin:
 	   import plugin
 
 	   class subject_filter:
-	      loadable = True
+	      loadable = 1
 
 	      def __init__(self, hdlr):
 	         hdlr.add_callback("mailbox", 100, self.sort_mailbox)
@@ -213,7 +227,7 @@ class Plugin:
 	            raise CallbackException("spam")
 		
 	   class from_filter:
-	      loadable = True
+	      loadable = 1
 
 	      def __init__(self, hdlr):
 	         hdlr.add_callback("mailbox", 80, self.sort_mailbox)
@@ -311,17 +325,39 @@ class Plugin:
 
 	#------------------------------------------------------------------------------
 
-	def __init__(self, paths):
+	def __init__(self, paths, debug_callback=None):
 		"""Constructor.
 		
 		<paths> can be a single path or a list of paths in which we'll look for plug-in
 		modules.
+		
+		If "debug_callback" is provided, it must be a debug callback as defined in the
+		set_debug_callback() method.
 		"""
 		self.paths = paths
 		self.plugins={}
 		self.hooks={}
 		self.ourname=None
 		self.loader_globals=None
+		self.debug_callback = debug_callback
+		self.debug("Plugin Framework initialized")
+
+
+	def set_debug_callback(self, debug_callback):
+		"""Install a debug callback.
+		
+		This can be a function or a method which takes 1 parameter, the debug message.
+		If you log the message together with other messages, you should make sure you
+		can tell they came from the plugin framework.
+		"""
+		self.debug_callback = debug_callback
+		self.debug("New debug_callback set")
+
+
+	def debug(self, message):
+		"""-*-(Private)-*-  Print a debug message if a debug callback is installed."""
+		if (self.debug_callback != None):
+			self.debug_callback(message)
 
 
 	def load_class(self, name):
@@ -346,6 +382,8 @@ class Plugin:
 		parsed the rest of the module, and hence won't know that the class exists in it!
 		To prevent this, always place your "main" program at the end of the module!
 		"""
+
+		self.debug("Loading class '"+name+"' ...")
 
 		# Some initialization code -- find our name and the globals for the python file
 		# this app started with.
@@ -391,9 +429,8 @@ class Plugin:
 			except:
 				pass
 			if daclass:
-#				print "Found",name,"in globals()!"
+				self.debug("Found '"+name+"' in initial module!")
 				return daclass
-
 
 			for modname in sys.modules:
 				try:
@@ -409,10 +446,11 @@ class Plugin:
 				except:
 					continue
 				if daclass:
-#					print "Found",name,"in module",modname
+					self.debug("Found '"+name+"' in module "+modname)
 					return daclass
 
-			raise PluginException("Unable to find class",name,"in currently loading modules!")
+			self.debug("Unable to find class '"+name+"' in currently loaded modules!")
+			raise PluginException("Unable to find class",name,"in currently loaded modules!")
 		else:
 			# Get the module, lastmodule, and classname.
 			module = string.join(sp[:-1], '.')
@@ -431,16 +469,19 @@ class Plugin:
 				try:
 					daclass = self.loader_globals[classname]
 					if type(daclass) is not types.ClassType:
-						raise PluginException("Class '"+classname+"' exists in initial module, but is not a class!")
+						self.debug("'"+classname+"' exists in initial module ("+lastmodule+"), but is not a class!")
+						raise PluginException("'"+classname+"' exists in initial module ("+lastmodule+"), but is not a class!")
 					else:
 						try:
 							daclass.__dict__["loadable"]
 						except:
-							raise PluginException("Class '"+classname+"' in initial module does not implement 'loadable'!")
+							self.debug("Class '"+classname+"' in initial module ("+lastmodule+") is not 'loadable'!")
+							raise PluginException("Class '"+classname+"' in initial module ("+lastmodule+") is not 'loadable'!")
 				except KeyError:
-					raise PluginException("The initial module does not contain class '"+classname+"'!")
+					self.debug("The initial module ("+lastmodule+") does not contain class '"+classname+"'!")
+					raise PluginException("The initial module ("+lastmodule+") does not contain class '"+classname+"'!")
 				if daclass:
-#					print "Found",name,"in globals()!"
+					self.debug("Found '"+name+"' in initial module ("+lastmodule+")!")
 					return daclass
 
 			# Get the module, import it if it doesn't exist yet.
@@ -448,9 +489,10 @@ class Plugin:
 				mod = sys.modules[module]
 			except:
 				try:
+					self.debug("Importing module '"+module+"' ...")
 					mod = __import__(module, globals(), locals(), self.paths)
-#					print "Imported module",module,"..."
 				except:
+					self.debug("Unable to find or load module '"+module+"'!")
 					raise PluginException("Unable to find or load module '"+module+"'!")
 
 			# Find the top-level component
@@ -462,16 +504,20 @@ class Plugin:
 			try:
 				daclass = mod.__dict__[classname]
 			except:
+				self.debug("Module '"+module+"' does not have a class called '"+classname+"'!")
 				raise PluginException("Module '"+module+"' does not have a class called '"+classname+"'!")
 
 			if type(daclass) is not types.ClassType:
-				raise PluginException("Class '"+classname+"' exists in '"+module+"', but is not a class!")
+				self.debug("'"+classname+"' exists in '"+module+"', but is not a class!")
+				raise PluginException("'"+classname+"' exists in '"+module+"', but is not a class!")
 
 			try:
 				daclass.__dict__["loadable"]
 			except:
-				raise PluginException("Class '"+classname+"' in module '"+module+"' does not implement 'loadable'!")
+				self.debug("Class '"+classname+"' in module '"+module+"' is not 'loadable'!")
+				raise PluginException("Class '"+classname+"' in module '"+module+"' is not 'loadable'!")
 
+			self.debug("Found '"+name+"' in module '"+module+"'!")
 			return daclass
 
 
@@ -493,6 +539,8 @@ class Plugin:
 		# Initialize it
 		instance = daclass()
 
+		self.debug("Loaded module '"+name+"'.")
+
 		return instance
 
 
@@ -513,7 +561,7 @@ class Plugin:
 		Example of a plug-on class:
 		
 		   class myplugin:
-		      loadable = True
+		      loadable = 1
 
 		      def __init__(self, hdlr):
 		         print "Initializing plug-in ..."
@@ -543,6 +591,8 @@ class Plugin:
 		# Keep track of it
 		self.plugins[name] = instance
 
+		self.debug("Loaded plugin '"+name+"'.")
+
 
 	def unload_plugin(self, name):
 		"""Unload a plugin.
@@ -565,9 +615,12 @@ class Plugin:
 			instance = self.plugins[name]
 			instance.unload(self)
 			del self.plugins[name]
+			self.debug("Unloaded plugin '"+name+"' ...")
 		except KeyError:
+			self.debug("Can't unload plugin '"+name+"', it wasn't loaded!")
 			raise PluginException("Can't unload plugin '"+name+"', it wasn't loaded!")
 		except AttributeError:
+			self.debug("Plugin '"+name+"' doesn't support unloading!  It must have an unload() method!")
 			raise PluginException("Plugin '"+name+"' doesn't support unloading!  It must have an unload() method!")
 
 
@@ -584,15 +637,18 @@ class Plugin:
 		count is not zero.
 		"""
 		failures = 0
-		for name in self.plugins:
+		for name in self.plugins.keys():
 			instance = self.plugins[name]
 			try:
 				instance.unload(self)
 			except AttributeError:
-				failures += 1
+				failures = failures + 1
 			del self.plugins[name]
 		if failures:
+			self.debug("Unload all plugins: "+failures+" plugins did not support unloading!")
 			raise PluginException(failures+" plugins did not support unloading!")
+		else:
+			self.debug("All plugins unloaded.")
 
 
 	def add_callback(self, name, priority, function):
@@ -625,8 +681,10 @@ class Plugin:
 		hk = self.get_hook(name, False)
 		try:
 			hk.add(priority, function)
+			self.debug("Added callback for event '"+name+"' with priority '"+str(priority)+"'")
 		except:
-			raise PluginException(sys.exc_value)
+			self.debug("Adding callback for event '"+name+"' with priority '"+str(priority)+"' failed: "+str(sys.exc_info()[1]))
+			raise PluginException(sys.exc_info()[1])
 
 	def remove_callback(self, name, priority, function):
 		"""Remove a named callback.
@@ -636,11 +694,14 @@ class Plugin:
 		"""
 		hk = self.get_hook(name, True)
 		if (hk == None):
-			raise PluginException("Can't remove a callback that hasn't been added!")
+			self.debug("Can't remove a callback ("+name+") that hasn't been added!")
+			raise PluginException("Can't remove a callback ("+name+") that hasn't been added!")
 		try:
 			hk.remove(priority, function)
+			self.debug("Removed callback for event '"+name+"' with priority '"+str(priority)+"'")
 		except:
-			raise PluginException(sys.exc_value)
+			self.debug("Removing callback for event '"+name+"' with priority '"+str(priority)+"' failed: "+str(sys.exc_info()[1]))
+			raise PluginException(sys.exc_info()[1])
 
 
 	def get_hook(self, name, optional):
@@ -708,7 +769,7 @@ class Hook:
 			while(self.calls[key]):
 				if (self.calls[key] == function):
 					raise HookException("Don't add a callback twice!")
-				key += 1
+				key = key + 1
 		except:
 			self.calls[key] = function
 
@@ -725,7 +786,7 @@ class Hook:
 				if (self.calls[key] == function):
 					del self.calls[key]
 					return
-				key += 1
+				key = key + 1
 		except:
 			raise HookException("Can't remove a callback that wasn't added!")
 			self.calls[key] = function
