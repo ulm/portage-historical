@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.501 2004/09/11 06:13:41 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.502 2004/09/13 04:21:39 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -4346,7 +4346,7 @@ class vardbapi(dbapi):
 		basepath = self.root+VDB_PATH+"/"
 		
 		mycats = self.categories
-		if not mycats:
+		if mycats == None:
 			# XXX: CIRCULAR DEP! This helps backwards compat. --NJ (10 Sept 2004)
 			mycats = settings.categories
 		
