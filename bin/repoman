@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.102 2004/10/23 09:07:41 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.103 2004/10/27 14:47:26 jstubbs Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -899,12 +899,13 @@ for x in scanlist:
 
 				if (profiles.has_key(arch)):
 					profdir=portdir+"/profiles/"+profiles[arch][0]
+					if (not os.path.exists(profdir)):
+						continue
 				else:
-					profdir=portdir+"/profiles/default-"+arch+"-2004.0"
+					continue
+
 				portage.profiledir=profdir
 				os.environ["ACCEPT_KEYWORDS"]="-~"+arch
-				if (not os.path.exists(profdir)):
-					continue
 
 				if arch_caches.has_key(arch):
 					dep_settings, portage.portdb = arch_caches[arch]

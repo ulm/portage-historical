@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.532 2004/10/26 15:19:51 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.533 2004/10/27 14:47:26 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -114,9 +114,9 @@ try:
 	                         portage_uid, portage_gid
 	
 	import portage_util
-	from portage_util import grab_multiple, grabdict, grabdict_package, grabfile, grabints, map_dictlist_vals, \
-		pickle_read, pickle_write, stack_dictlist, stack_dicts, stack_lists, unique_array, varexpand, \
-		writedict, writeints, writemsg, getconfig
+	from portage_util import grab_multiple, grabdict, grabdict_package, grabfile, grabfile_package, \
+		grabints, map_dictlist_vals, pickle_read, pickle_write, stack_dictlist, stack_dicts, stack_lists, \
+		unique_array, varexpand, writedict, writeints, writemsg, getconfig
 	import portage_exception
 	import portage_gpg
 	import portage_locks
