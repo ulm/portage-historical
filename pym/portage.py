@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.318 2003/04/28 10:19:46 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.319 2003/04/28 10:55:04 carpaski Exp $
 
 VERSION="2.0.48_pre4"
 
@@ -112,7 +112,7 @@ def listdir(mypath,recursive=0,filesonly=0,ignorecvs=0,ignorelist=[],EmptyOnErro
 		x=0
 		while x<len(ftype):
 			if ftype[x]==1 and not (ignorecvs and (len(list[x])>=3) and (("/"+list[x][-3:])=="/CVS")):
-				ignored=listdir(mypath+"/"+list[x],recursive,filesonly,ignorecvs,EmptyOnError)
+				ignored=listdir(mypath+"/"+list[x],recursive,filesonly,ignorecvs,ignorelist,EmptyOnError)
 				m,l,f = dircache[mypath+"/"+list[x]]
 				l=l[:]
 				for y in range(0,len(l)):
