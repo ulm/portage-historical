@@ -25,7 +25,7 @@
  *  as some of the InstallWatch code was used.
  *
  *
- *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.24 2004/11/07 15:05:08 ferringb Exp $
+ *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.25 2004/11/15 06:27:02 ferringb Exp $
  *
  */
 
@@ -114,7 +114,8 @@
 }
 
 static char sandbox_lib[255];
-static char sandbox_pids_file[255];
+//static char sandbox_pids_file[255];
+static char *sandbox_pids_file;
 
 typedef struct {
 	int show_access_violation;
@@ -247,6 +248,12 @@ init_wrappers(void)
 }
 
 void
+_fini(void)
+{
+    free(sandbox_pids_file);
+}
+
+void
 _init(void)
 {
 	int old_errno = errno;
@@ -266,11 +273,7 @@ _init(void)
 	tmp_string = NULL;
 
 	/* Generate sandbox pids-file path */
-	tmp_string = get_sandbox_pids_file();
-	strncpy(sandbox_pids_file, tmp_string, sizeof(sandbox_pids_file)-1);
-	if (tmp_string)
-		free(tmp_string);
-	tmp_string = NULL;
+	sandbox_pids_file = get_sandbox_pids_file();
 
 	errno = old_errno;
 }

@@ -1,6 +1,9 @@
 # ChangeLog for Path Sandbox
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/ChangeLog,v 1.39 2004/11/07 15:05:07 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/ChangeLog,v 1.40 2004/11/15 06:27:02 ferringb Exp $
+
+  14 Nov 2004; Brian Harring <ferringb@gentoo.org> libsandbox.c, sandbox.c:
+  closing out bug #70225, potential overflow of the sandbox_pids_file var.
 
   07 Nov 2004; Brian Harring <ferringb@gentoo.org> libsandbox.c: c99 standard, 
   (think it was at least) allows intermixing of code and data segments.  bug #70351
