@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.93 2003/01/07 13:31:23 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.94 2003/01/07 13:42:37 carpaski Exp $
 
 # Hurray for per-ebuild logging.
 if [ ! -z "${PORT_LOGDIR}" ] && [ "$*" != "depend" ]; then
@@ -32,8 +32,7 @@ fi
 
 # Fix the temp dirs so we don't have booboos.
 for DIR in $(find ${BUILD_PREFIX} -type d -name temp -maxdepth 2 -mindepth 2 -print); do
-	echo "fixing: $DIR"
-	chown -R portage $DIR
+	chown -R portage $DIR &>/dev/null
 done
 
 if [ -f "${WORKDIR}/environment" ]; then
