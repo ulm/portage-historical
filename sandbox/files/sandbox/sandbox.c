@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 The Leaf, http://www.theleaf.be
 **  Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@theleaf.be>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/files/sandbox/Attic/sandbox.c,v 1.7 2001/12/11 01:39:52 gbevin Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/files/sandbox/Attic/sandbox.c,v 1.8 2001/12/11 19:02:13 gbevin Exp $
 */
 
 #define _GNU_SOURCE
@@ -30,6 +30,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#define LD_PRELOAD_FILE			"/etc/ld.so.preload"
 #define LIB_NAME				"libsandbox.so"
 #define BASHRC_NAME				"sandbox.bashrc"
 #define PIDS_FILE				"/tmp/sandboxpids.tmp"
@@ -600,7 +601,7 @@ int main(int argc, char** argv)
 			setenv("LD_PRELOAD", sandbox_lib, 1);
 			if (NULL == getenv(ENV_SANDBOX_DENY))
 			{
-				setenv(ENV_SANDBOX_DENY, "", 1);
+				setenv(ENV_SANDBOX_DENY, LD_PRELOAD_FILE, 1);
 			}
 			if (NULL == getenv(ENV_SANDBOX_READ))
 			{
@@ -774,7 +775,7 @@ int main(int argc, char** argv)
 				printf("\e[31;01m--------------------------- ACCESS VIOLATION SUMMARY ---------------------------\033[0m\n");
 				printf("\e[31;01mLOG FILE = \"%s\"\033[0m\n", sandbox_log);
 				printf("\n");
-				while ((length = read(sandbox_log_file, buffer, sizeof(buffer))) > 0)
+				while ((length = read(sandbox_log_file, buffer, sizeof(buffer)-1)) > 0)
 				{
 					if (length < sizeof(buffer))
 					{
