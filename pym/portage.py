@@ -1,9 +1,9 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.295 2003/02/25 09:32:08 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.296 2003/02/25 10:43:31 carpaski Exp $
 
-VERSION="2.0.47-r3"
+VERSION="2.0.47-r4"
 
 from stat import *
 from commands import *
@@ -1098,7 +1098,7 @@ def fetch(myuris, listonly=0):
 						mystat=os.stat(settings["DISTDIR"]+"/"+myfile)
 						# no exception?  file exists. let digestcheck() report
 						# an appropriately for size or md5 errors
-						if myret and (mystat[ST_SIZE]<mydigests[myfile]["size"]):
+						if (mystat[ST_SIZE]<mydigests[myfile]["size"]):
 							# Fetch failed... Try the next one... Kill 404 files though.
 							if (mystat[ST_SIZE]<100000) and (len(myfile)>4) and not ((myfile[-5:]==".html") or (myfile[-4:]==".htm")):
 								html404=re.compile("<title>.*(not found|404).*</title>",re.I|re.M)
