@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.289 2004/06/22 13:06:13 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.290 2004/06/26 13:53:15 nakano Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -1029,8 +1029,8 @@ class depgraph:
 					alleb=portage.portdb.xmatch("match-all",x)
 					if alleb:
 						if "--usepkgonly" not in myopts:
-							print "\n!!! "+red("all ebuilds that could satisfy ")+green(xinfo)+red(" have been masked.")
-							print "!!! "+red("possible candidates are:")
+							print "\n!!! "+red("All ebuilds that could satisfy ")+green(xinfo)+red(" have been masked.")
+							print "!!! One of the following masked packages is required to complete your request:"
 							oldcomment = ""
 							for p in alleb:
 								mreasons = portage.getmaskingstatus(p)
@@ -1039,6 +1039,9 @@ class depgraph:
 								if comment and comment != oldcomment:
 									print comment
 									oldcomment = comment
+							print
+							print "For more information, see MASKED PACKAGES section in the emerge man page or "
+							print "section 2.2 \"Software Availability\" in the Gentoo Handbook."
 							if myparent:
 								print     "!!!    "+red(xfrom)
 							print
