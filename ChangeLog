@@ -1,6 +1,12 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.466 2003/07/30 13:28:24 carpaski Exp $
+# $Id: ChangeLog,v 1.467 2003/08/16 00:01:38 carpaski Exp $
+
+  15 Aug 2003; Nicholas Jones <carpaski@gentoo.org> *: Fix to emerge -V
+  and related output. Typo fixes. Parent thread no longer drops root in
+  userpriv. 'autoaddcvs' feature now determines if portage will auto-add
+  files to cvs. Virtuals fix for an empty key line. Added user categories
+  file as /etc/portage/categories.
 
 *portage-2.0.49_pre17 (30 Jul 2003): Resuming/wget GRP, Sandbox updates
 
