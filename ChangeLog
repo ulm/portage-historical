@@ -1,6 +1,9 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.417 2003/02/16 10:21:28 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.418 2003/02/16 13:58:46 carpaski Exp $
+
+  16 Feb 2003; Nicholas Jones <carpaski@gentoo.org> cnf/*: added comments
+  on FEATURES=noclean,noauto,userpriv,usersandbox
 
   15 Feb 2003; Nicholas Jones <carpaski@gentoo.org> emerge: Alain changed
   the .config() call in the search class to a .settings[] -- Speedup.
