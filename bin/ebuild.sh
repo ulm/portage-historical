@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.164 2004/04/26 05:50:17 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.165 2004/04/30 21:07:50 genone Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -277,6 +277,7 @@ diefunc() {
 	echo "!!! ERROR: $CATEGORY/$PF failed." >&2
 	echo "!!! Function $funcname, Line $lineno, Exitcode $exitcode" >&2
 	echo "!!! ${*:-(no error message)}" >&2
+	echo "!!! If you need support, post the topmost build error, NOT this status message." >&2
 	echo >&2
 	exit 1
 }
