@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.13 2005/02/26 11:22:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.14 2005/04/03 07:00:30 jstubbs Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -52,7 +52,7 @@ modeshelp={
 "last"	:"Remember report from last run",
 "lfull"	:"Remember report from last run (full listing)"
 }
-options=["--pretend","--help","--commitmsg","--commitmsgfile","--verbose","--xmlparse","--ignore-other-arches"]
+options=["--pretend","--help","--commitmsg","--commitmsgfile","--verbose","--xmlparse","--ignore-other-arches","--include-masked"]
 shortoptions={"-m":"--commitmsg","-M":"--commitmsgfile","-p":"--pretend","-v":"--verbose","-x":"--xmlparse","-I":"--ignore-other-arches"}
 optionshelp={
 "--pretend":"Don't actually perform commit or fix steps; just show what would be done (always enabled when not started in a CVS tree).",
@@ -61,7 +61,8 @@ optionshelp={
 "--commitmsgfile":"Adds a commit message from a file given on the command line.",
 "--ignore-other-arches": "Instructs repoman to ignore arches that are not relevent to the committing arch. REPORT/FIX issues you work around.",
 "--verbose":"Displays every package name while checking",
-"--xmlparse":"Forces the metadata.xml parse check to be carried out"
+"--xmlparse":"Forces the metadata.xml parse check to be carried out",
+"--include-masked":"Includes masked packages in scans at category or tree level"
 }
 
 qahelp={
@@ -303,7 +304,8 @@ if mymode=="help" or ("--help" in myoptions):
 	help()
 if mymode=="last" or (mymode=="lfull"):
 	last()
-
+if mymode=="commit" and "--include-masked" not in myoptions:
+	myoptions.append("--include-masked")
 
 isCvs=False
 myreporoot=None
@@ -450,6 +452,9 @@ if mymode == "commit" and repolevel not in [1,2,3]:
 	print red("***")
 	err("Unable to identify level we're commiting from for %s" % string.join(reposplit,'/'))
 
+if repolevel == 3 and "--include-masked" not in myoptions:
+	myoptions.append("--include-masked")
+
 startdir=os.getcwd()
 
 for x in range(0,repolevel-1):
@@ -548,11 +553,12 @@ if os.path.exists(descfile):
 			print "Invalid "+arch[2]+" profile ("+arch[1]+") for arch "+arch[0]
 			continue
 		if profiles.has_key(arch[0]):
-			print "Ignoring "+profiles[arch[0]][1]+" profile ("+profiles[arch[0]][0]+") for arch "+arch[0]
-		profiles[arch[0]]=[arch[1],arch[2]]
+			profiles[arch[0]]+= [[arch[1], arch[2]]]
+		else:
+			profiles[arch[0]] = [[arch[1], arch[2]]]
 
 	for x in portage.archlist:
-		if x[0]=="~":
+		if x[0] == "~":
 			continue
 		if not profiles.has_key(x):
 			print red("\""+x+"\" doesn't have a valid profile listed in profiles.desc.")
@@ -794,7 +800,7 @@ for x in scanlist:
 	else:
 		#Only carry out if in package directory or check forced
 		if xmllint_capable:
-			st=getstatusoutput("xmllint --noout --valid --dtdvalid %s/metadata.dtd %s/metadata.xml" % (portage.CACHE_PATH, checkdir))
+			st=getstatusoutput("xmllint --nonet --noout --dtdvalid %s/metadata.dtd %s/metadata.xml" % (portage.CACHE_PATH, checkdir))
 			if st[0] != 0:
 				for z in st[1].split("\n"):
 					print red("!!! ")+z
@@ -903,73 +909,77 @@ for x in scanlist:
 			for keyword,arch,groups in arches:
 				portage.groups=groups
 
-				if (profiles.has_key(arch)):
-					profdir=portdir+"/profiles/"+profiles[arch][0]
-				else:
+				if not profiles.has_key(arch):
 					# A missing profile will create an error further down
 					# during the KEYWORDS verification.
 					continue
+				
+				for prof in profiles[arch]:
+					
+					profdir = portdir+"/profiles/"+prof[0]
+	
+					portage.profiledir=profdir
+					os.environ["ACCEPT_KEYWORDS"]="-~"+arch
+	
+					if arch_caches.has_key(prof[0]):
+						dep_settings, portage.portdb = arch_caches[prof[0]]
+						#portage.do_vartree(dep_settings)
+						#dep_settings.regenerate()
+					else:
+						dep_settings=portage.config(config_profile_path=profdir, config_incrementals=portage_const.INCREMENTALS)
+						#dep_settings["ARCH"]=arch
+						#portage.do_vartree(dep_settings)
+						#dep_settings.regenerate()
+						portage.portdb=portage.portdbapi(portdir, dep_settings)
+						arch_caches[prof[0]]=[dep_settings, portage.portdb]
+	
+					portage.db["/"]["porttree"]=portage.portagetree("/",dep_settings.getvirtuals("/"))
 
-				portage.profiledir=profdir
-				os.environ["ACCEPT_KEYWORDS"]="-~"+arch
-
-				if arch_caches.has_key(arch):
-					dep_settings, portage.portdb = arch_caches[arch]
-					portage.do_vartree(dep_settings)
-					dep_settings.regenerate()
-				else:
-					dep_settings=portage.config(config_profile_path=profdir, config_incrementals=portage_const.INCREMENTALS)
-					if isCvs:
-						dep_settings["PORTDIR_OVERLAY"]=""
-					dep_settings["ARCH"]=arch
-					portage.do_vartree(dep_settings)
-					dep_settings.regenerate()
-					portage.portdb=portage.portdbapi(portdir, dep_settings)
-					arch_caches[arch]=[dep_settings, portage.portdb]
-
-				portage.db["/"]["porttree"]=portage.portagetree("/",dep_settings.getvirtuals("/"))
-
-				for mytype,mypos in [["DEPEND",len(missingvars)],["RDEPEND",len(missingvars)+1],["PDEPEND",len(missingvars)+2]]:
-					if not catdir+"/"+y in portage.db["/"]["porttree"].dbapi.xmatch("list-visible",x):
+					ismasked = (catdir+"/"+y not in portage.db["/"]["porttree"].dbapi.xmatch("list-visible",x))
+					if ismasked:
+						if "--include-masked" not in myoptions:
+							continue
 						#we are testing deps for a masked package; give it some lee-way
 						suffix="masked"
 						matchmode="match-all"
 					else:
 						suffix=""
 						matchmode="match-visible"
-
-					if profiles.has_key(arch) and profiles[arch][1]=="dev":
+	
+					if prof[1] == "dev":
 						suffix=suffix+"indev"
-
-					mykey=mytype+".bad"+suffix
-					myvalue=string.join(portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,[ mytype ]))
-					if not myvalue:
-						continue
-					try:
-						mydep=portage.dep_check(myvalue,portage.db["/"]["porttree"].dbapi,dep_settings,use="all",mode=matchmode)
-					except KeyError, e:
-						stats[mykey]=stats[mykey]+1
-						fails[mykey].append(x+"/"+y+".ebuild: "+keyword+" "+repr(e[0]))
-						continue
-
-					if mydep[0]==1:
-						if mydep[1]!=[]:
-							#we have some unsolvable deps
-							#remove ! deps, which always show up as unsatisfiable
-							d=0
-							while d<len(mydep[1]):
-								if mydep[1][d][0]=="!":
-									del mydep[1][d]
-								else:
-									d += 1
-							#if we emptied out our list, continue:
-							if not mydep[1]:
-								continue
+					
+					for mytype,mypos in [["DEPEND",len(missingvars)],["RDEPEND",len(missingvars)+1],["PDEPEND",len(missingvars)+2]]:
+						
+						mykey=mytype+".bad"+suffix
+						myvalue=string.join(portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,[ mytype ]))
+						if not myvalue:
+							continue
+						try:
+							mydep=portage.dep_check(myvalue,portage.db["/"]["porttree"].dbapi,dep_settings,use="all",mode=matchmode)
+						except KeyError, e:
 							stats[mykey]=stats[mykey]+1
-							fails[mykey].append(x+"/"+y+".ebuild: "+keyword+" "+repr(mydep[1]))
-					else:
-						stats[mykey]=stats[mykey]+1
-						fails[mykey].append(x+"/"+y+".ebuild: "+keyword+" "+repr(mydep[1]))
+							fails[mykey].append(x+"/"+y+".ebuild: "+keyword+"("+prof[0]+") "+repr(e[0]))
+							continue
+	
+						if mydep[0]==1:
+							if mydep[1]!=[]:
+								#we have some unsolvable deps
+								#remove ! deps, which always show up as unsatisfiable
+								d=0
+								while d<len(mydep[1]):
+									if mydep[1][d][0]=="!":
+										del mydep[1][d]
+									else:
+										d += 1
+								#if we emptied out our list, continue:
+								if not mydep[1]:
+									continue
+								stats[mykey]=stats[mykey]+1
+								fails[mykey].append(x+"/"+y+".ebuild: "+keyword+"("+prof[0]+") "+repr(mydep[1]))
+						else:
+							stats[mykey]=stats[mykey]+1
+							fails[mykey].append(x+"/"+y+".ebuild: "+keyword+"("+prof[0]+") "+repr(mydep[1]))
 
 		# this check needs work, it won't catch (\ndie)
 		if not os.system("egrep '^[^#]*\([^)]*\<die\>' "+checkdir+"/"+y+".ebuild >/dev/null 2>&1"):

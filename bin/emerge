@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.19 2005/03/06 11:01:37 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.20 2005/04/03 07:00:30 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -890,7 +890,7 @@ class depgraph:
 			if mytype=="blocks":
 				# we've encountered a "blocks" node.  We will totally ignore this
 				# node and not add it to our digraph if it doesn't apply to us.
-				if myparent and (self.mydbapi[myroot].match(mykey) or vardbapi.match(mykey)):
+				if "--buildpkgonly" not in myopts and myparent and (self.mydbapi[myroot].match(mykey) or vardbapi.match(mykey)):
 					mybigkey.append(myparent.split()[2])
 					self.digraph.addnode(string.join(mybigkey),myparent)
 				return 1
