@@ -18,6 +18,7 @@ class PortageContext:
 		self.incrementals=["USE","FEATURES","ACCEPT_KEYWORDS","ACCEPT_LICENSE","CONFIG_PROTECT_MASK","CONFIG_PROTECT","PRELINK_PATH","PRELINK_PATH_MASK"]
 		self.db = {}
 
+	def init(self):
 		self.setupRoot()
 
 		if os.path.exists("/etc/make.profile"):
@@ -46,24 +47,23 @@ class PortageContext:
 		return self.config.getUseSplit()
 
 	def do_vartree(self):
-		global virts,virts_p
-		virts=self.getvirtuals("/")
-		virts_p={}
+		self.virtualmap=self.getvirtuals("/")
+		self.virtualpkgmap={}
 
-		if virts:
-			myvkeys=virts.keys()
+		if self.virtualmap:
+			myvkeys=self.virtualmap.keys()
 			for x in myvkeys:
 				vkeysplit=x.split("/")
-				if not virts_p.has_key(vkeysplit[1]):
-					virts_p[vkeysplit[1]]=virts[x]
+				if not self.virtualpkgmap.has_key(vkeysplit[1]):
+					self.virtualpkgmap[vkeysplit[1]]=self.virtualmap[x]
 		try:
 			del x
 		except:
 			pass
-		self.db["/"]={"virtuals":virts,"vartree":vartree("/",virts)}
+		self.db["/"]={"virtuals":self.virtualmap,"vartree":vartree("/",self.virtualmap)}
 		if self.root!="/":
-			virts=self.getvirtuals(self.root)
-			self.db[self.root]={"virtuals":virts,"vartree":vartree(self.root,virts)}
+			self.virtualmap=self.getvirtuals(self.root)
+			self.db[self.root]={"virtuals":self.virtualmap,"vartree":vartree(self.root,self.virtualmap)}
 
 	def getvirtuals(self, myroot):
 		"""gets virtual package settings"""
@@ -117,6 +117,61 @@ class PortageContext:
 
 	def getUseDefaults(self):
 		return self.usedefaults
+
+	def key_expand(self, mykey,mydb=None):
+		mysplit=mykey.split("/")
+		if len(mysplit)==1:
+			if mydb and type(mydb)==types.InstanceType:
+				for x in categories:
+					if mydb.cp_list(x+"/"+mykey):
+						return x+"/"+mykey
+				if self.virtualpkgmap.has_key(mykey):
+					return(self.virtualpkgmap[mykey])
+			return "null/"+mykey
+		elif mydb:
+			if type(mydb)==types.InstanceType:
+				if (not mydb.cp_list(mykey)) and self.virtualmap and self.virtualmap.has_key(mykey):
+					return self.virtualmap[mykey]
+			return mykey
+
+	def cpv_expand(self, mycpv,mydb=None):
+		myslash=mycpv.split("/")
+		mysplit=pkgsplit(myslash[-1])
+		if len(myslash)==2:
+			if mysplit:
+				mykey=myslash[0]+"/"+mysplit[0]
+			else:
+				mykey=mycpv
+			if mydb:
+				if type(mydb)==types.InstanceType:
+					if (not mydb.cp_list(mykey)) and self.virtualmap and self.virtualmap.has_key(mykey):
+						mykey=self.virtualmap[mykey]
+				#we only perform virtual expansion if we are passed a dbapi
+		else:
+			#specific cpv, no category, ie. "foo-1.0"
+			if mysplit:
+				myp=mysplit[0]
+			else:
+				# "foo" ?
+				myp=mycpv
+			mykey=None
+			if mydb:
+				for x in categories:
+					if mydb.cp_list(x+"/"+myp):
+						mykey=x+"/"+myp
+			if not mykey and type(mydb)!=types.ListType:
+				if virtualpkgmap.has_key(myp):
+					mykey=virtualpkgmap[myp]
+				#again, we only perform virtual expansion if we have a dbapi (not a list)				
+			if not mykey:
+				mykey="null/"+myp
+		if mysplit:
+			if mysplit[2]=="r0":
+				return mykey+"-"+mysplit[1]
+			else:
+				return mykey+"-"+mysplit[1]+"-"+mysplit[2]
+		else:
+			return mykey
 
 
 #-----------------------------------------------------------------------------
@@ -1855,61 +1910,6 @@ def cpv_getkey(mycpv):
 	else:
 		return mysplit
 
-def key_expand(mykey,mydb=None):
-	mysplit=mykey.split("/")
-	if len(mysplit)==1:
-		if mydb and type(mydb)==types.InstanceType:
-			for x in categories:
-				if mydb.cp_list(x+"/"+mykey):
-					return x+"/"+mykey
-			if virts_p.has_key(mykey):
-				return(virts_p[mykey])
-		return "null/"+mykey
-	elif mydb:
-		if type(mydb)==types.InstanceType:
-			if (not mydb.cp_list(mykey)) and virts and virts.has_key(mykey):
-				return virts[mykey]
-		return mykey
-
-def cpv_expand(mycpv,mydb=None):
-	myslash=mycpv.split("/")
-	mysplit=pkgsplit(myslash[-1])
-	if len(myslash)==2:
-		if mysplit:
-			mykey=myslash[0]+"/"+mysplit[0]
-		else:
-			mykey=mycpv
-		if mydb:
-			if type(mydb)==types.InstanceType:
-				if (not mydb.cp_list(mykey)) and virts and virts.has_key(mykey):
-					mykey=virts[mykey]
-			#we only perform virtual expansion if we are passed a dbapi
-	else:
-		#specific cpv, no category, ie. "foo-1.0"
-		if mysplit:
-			myp=mysplit[0]
-		else:
-			# "foo" ?
-			myp=mycpv
-		mykey=None
-		if mydb:
-			for x in categories:
-				if mydb.cp_list(x+"/"+myp):
-					mykey=x+"/"+myp
-		if not mykey and type(mydb)!=types.ListType:
-			if virts_p.has_key(myp):
-				mykey=virts_p[myp]
-			#again, we only perform virtual expansion if we have a dbapi (not a list)				
-		if not mykey:
-			mykey="null/"+myp
-	if mysplit:
-		if mysplit[2]=="r0":
-			return mykey+"-"+mysplit[1]
-		else:
-			return mykey+"-"+mysplit[1]+"-"+mysplit[2]
-	else:
-		return mykey
-
 def dep_transform(mydep,oldkey,newkey):
 	origdep=mydep
 	if not len(mydep):
@@ -1933,6 +1933,7 @@ def dep_transform(mydep,oldkey,newkey):
 		return origdep
 
 def dep_expand(mydep,mydb=None):
+	global ctx
 	if not len(mydep):
 		return mydep
 	if mydep[0]=="*":
@@ -1948,7 +1949,7 @@ def dep_expand(mydep,mydb=None):
 	elif mydep[:1] in "=<>~!":
 		prefix=mydep[:1]
 		mydep=mydep[1:]
-	return prefix+cpv_expand(mydep,mydb)+postfix
+	return prefix+ctx.cpv_expand(mydep,mydb)+postfix
 
 def dep_check(depstring,mydbapi,use="yes",mode=None):
 	"""Takes a depend string and parses the condition."""
@@ -2026,7 +2027,8 @@ class packagetree:
 			self.dbapi=None
 		
 	def resolve_key(self,mykey):
-		return key_expand(mykey,self.dbapi)
+		global ctx
+		return ctx.key_expand(mykey,self.dbapi)
 	
 	def dep_nomatch(self,mypkgdep):
 		mykey=dep_getkey(mypkgdep)
@@ -2107,10 +2109,11 @@ class portagetree:
 		return self.portroot+"/"+mysplit[0]+"/"+psplit[0]+"/"+mysplit[1]+".ebuild"
 
 	def resolve_specific(self,myspec):
+		global ctx
 		cps=catpkgsplit(myspec)
 		if not cps:
 			return None
-		mykey=key_expand(cps[0]+"/"+cps[1],self.dbapi)
+		mykey=ctx.key_expand(cps[0]+"/"+cps[1],self.dbapi)
 		mykey=mykey+"-"+cps[2]
 		if cps[3]!="r0":
 			mykey=mykey+"-"+cps[3]
@@ -2507,7 +2510,8 @@ class vartree(packagetree):
 		return self.dbapi.cp_all()
 
 	def exists_specific_cat(self,cpv):
-		cpv=key_expand(cpv,self.dbapi)
+		global ctx
+		cpv=ctx.key_expand(cpv,self.dbapi)
 		a=catpkgsplit(cpv)
 		if not a:
 			return 0
@@ -2529,7 +2533,8 @@ class vartree(packagetree):
 		return self.root+"var/db/pkg/"+fullpackage+"/"+package+".ebuild"
 
 	def getnode(self,mykey):
-		mykey=key_expand(mykey,self.dbapi)
+		global ctx
+		mykey=ctx.key_expand(mykey,self.dbapi)
 		if not mykey:
 			return []
 		mysplit=mykey.split("/")
@@ -2562,8 +2567,9 @@ class vartree(packagetree):
 		return ""
 	
 	def hasnode(self,mykey):
+		global ctx
 		"""Does the particular node (cat/pkg key) exist?"""
-		mykey=key_expand(mykey,self.dbapi)
+		mykey=ctx.key_expand(mykey,self.dbapi)
 		mysplit=mykey.split("/")
 		try:
 			mydirlist=listdir(self.root+"var/db/pkg/"+mysplit[0])
@@ -3884,8 +3890,11 @@ def pkgmerge(mytbz2,myroot):
 ##
 ## Eventually (after all global stuff is gone), this should be setup by main() and passed
 ## in parameters instead of being a global.
+## Once this is achieved, the init() call won't be needed anymore as the context will be
+## passed along, and will be available to everyone before its initialization is complete.
 ##
 ctx = PortageContext()
+ctx.init()
 
 
 #create tmp and var/tmp if they don't exist; read config
@@ -4054,14 +4063,14 @@ def portageexit():
 
 atexit.register(portageexit)
 #continue setting up other trees
-ctx.db["/"]["porttree"]=portagetree("/",virts)
-ctx.db["/"]["bintree"]=binarytree("/",virts)
+ctx.db["/"]["porttree"]=portagetree("/",ctx.virtualmap)
+ctx.db["/"]["bintree"]=binarytree("/",ctx.virtualmap)
 if ctx.getRoot()!="/":
-	ctx.db[ctx.getRoot()]["porttree"]=portagetree(ctx.getRoot(),virts)
-	ctx.db[ctx.getRoot()]["bintree"]=binarytree(ctx.getRoot(),virts)
+	ctx.db[ctx.getRoot()]["porttree"]=portagetree(ctx.getRoot(),ctx.virtualmap)
+	ctx.db[ctx.getRoot()]["bintree"]=binarytree(ctx.getRoot(),ctx.virtualmap)
 thirdpartymirrors=grabdict(ctx.config["PORTDIR"]+"/profiles/thirdpartymirrors")
 
-#,"porttree":portagetree(ctx.getRoot(),virts),"bintree":binarytree(ctx.getRoot(),virts)}
+#,"porttree":portagetree(ctx.getRoot(),ctx.virtualmap),"bintree":binarytree(ctx.getRoot(),ctx.virtualmap)}
 features=ctx.config["FEATURES"].split()
 
 # Defaults set at the top of perform_checksum.
