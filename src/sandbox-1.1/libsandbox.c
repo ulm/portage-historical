@@ -25,7 +25,7 @@
  *  as some of the InstallWatch code was used.
  *
  *
- *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.15 2004/02/28 21:52:56 azarah Exp $
+ *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.16 2004/03/22 01:40:58 carpaski Exp $
  *
  */
 
@@ -474,8 +474,7 @@ mkdir(const char *pathname, mode_t mode)
 	canonicalize_int(pathname, canonic);
 
 	/* Check if the directory exist, return EEXIST rather than failing */
-	lstat(canonic, &st);
-	if (0 == errno) {
+	if (0 == lstat(canonic, &st)) {
 		errno = EEXIST;
 		return errno;
 	}

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepstrip,v 1.17 2004/02/04 22:40:21 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepstrip,v 1.18 2004/03/22 01:40:55 carpaski Exp $
 
 if [ "${FEATURES//*nostrip*/true}" == "true" ] || [ "${RESTRICT//*nostrip*/true}" == "true" ] ; then
 	echo "nostrip"
@@ -30,13 +30,18 @@ for x in "$@"; do # "$@" quotes each element... Plays nice with spaces.
 			echo "   ${x:${#D}:${#x}}"
 			${STRIP} --strip-unneeded "${x}"
 
-			# etdyn binaries are shared objects, but not really. Non-relocatable.
-			if [ -x /usr/bin/isetdyn ]; then
-				if /usr/bin/isetdyn "${x}" >/dev/null; then
-					${STRIP} "${x}"
+			if [ -x /usr/bin/readelf ] ; then
+				/usr/bin/readelf -d "${x}" | grep TEXTREL > /dev/null
+				if [ $? = 0 ]; then
+					echo "	${x:${#D}:${#x}} will contain runtime text relocations"
+					if [ "${FEATURES//*strict*/true}" == "true" ] ; then
+						echo "  Text relocations require a lot of extra work to be preformed by the dynamic linker which will cause serious performance impact on IA-32"
+						echo "	and might not even function properly on other architectures hppa for example"
+						echo "	If you are a programmer please take a closer look at this package and consider writing a patch which addresses this problem"
+						exit 1
+					fi
 				fi
 			fi
-
 		fi
 	fi
 done

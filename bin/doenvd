@@ -1,0 +1,15 @@
+#!/bin/bash
+# Copyright 1999-2004 Gentoo Technologies, Inc.
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/doenvd,v 1.1 2004/03/22 01:40:55 carpaski Exp $
+
+if [ ${#} -lt 1 ] ; then
+	echo "doinfo: at least one argument needed"
+	exit 1 	
+fi
+
+tmp_INSDESTTREE="${INSDESTTREE}"
+INSDESTTREE=/etc/env.d/
+doins "$@"
+INSDESTTREE="${tmp_INSDESTTREE}"
+unset tmp_INSDESTTREE

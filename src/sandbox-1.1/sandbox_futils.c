@@ -3,7 +3,7 @@
  * Distributed under the terms of the GNU General Public License, v2 or later 
  * Author: Brad House <brad@mainstreetsoftworks.com>
  *
- * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox_futils.c,v 1.7 2004/02/29 13:52:20 azarah Exp $
+ * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox_futils.c,v 1.8 2004/03/22 01:40:58 carpaski Exp $
  * 
  */
 
@@ -58,10 +58,14 @@ get_sandbox_lib(char *sb_path)
 {
 	char path[255];
 
+#ifdef SB_HAVE_64BIT_ARCH
+        snprintf(path, 254, "%s", LIB_NAME);
+#else
 	snprintf(path, 254, "/lib/%s", LIB_NAME);
 	if (file_exist(path, 0) <= 0) {
 		snprintf(path, 254, "%s%s", sb_path, LIB_NAME);
 	}
+#endif
 	return (strdup(path));
 }
 

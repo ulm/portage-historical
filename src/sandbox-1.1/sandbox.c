@@ -11,10 +11,10 @@
 **    Copyright (C) 2001 Geert Bevin, Uwyn, http://www.uwyn.com
 **    Distributed under the terms of the GNU General Public License, v2 or later 
 **    Author : Geert Bevin <gbevin@uwyn.com>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.c,v 1.14 2004/02/29 13:52:20 azarah Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.c,v 1.15 2004/03/22 01:40:58 carpaski Exp $
 */
 
-#define _GNU_SOURCE
+/* #define _GNU_SOURCE */
 
 #include <errno.h>
 #include <fcntl.h>
@@ -585,11 +585,14 @@ main(int argc, char **argv)
 		if (print_debug)
 			printf("Verification of the required files.\n");
 
+#ifndef SB_HAVE_64BIT_ARCH
 		if (file_exist(sandbox_lib, 0) <= 0) {
 			fprintf(stderr, "Could not open the sandbox library at '%s'.\n",
 							sandbox_lib);
 			return -1;
-		} else if (file_exist(sandbox_rc, 0) <= 0) {
+		} 
+#endif
+		if (file_exist(sandbox_rc, 0) <= 0) {
 			fprintf(stderr, "Could not open the sandbox rc file at '%s'.\n",
 							sandbox_rc);
 			return -1;

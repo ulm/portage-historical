@@ -1,11 +1,11 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.157 2004/03/17 20:29:05 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.158 2004/03/22 01:40:55 carpaski Exp $
 
-SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym"
-SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
-SANDBOX_READ="${SANDBOX_READ}:/dev/shm:${PORTAGE_TMPDIR}"
+export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
+export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
+export SANDBOX_READ="${SANDBOX_READ}:/dev/shm:${PORTAGE_TMPDIR}"
 
 
 if [ "$*" != "depend" ] && [ "$*" != "clean" ] && [ "$*" != "nofetch" ]; then
@@ -1221,12 +1221,6 @@ do_newdepend() {
 	done
 }
 
-# === === === === === === === === === === === === === === === === === ===
-# === === === === === functions end, main part begins === === === === ===
-# === === === === === functions end, main part begins === === === === ===
-# === === === === === functions end, main part begins === === === === ===
-# === === === === === === === === === === === === === === === === === ===
-
 # this is a function for removing any directory matching a passed in pattern from 
 # PATH
 function remove_path_entry() {
@@ -1250,6 +1244,12 @@ function remove_path_entry() {
 	fi
 	PATH="${stripped_path}"
 }
+
+# === === === === === === === === === === === === === === === === === ===
+# === === === === === functions end, main part begins === === === === ===
+# === === === === === functions end, main part begins === === === === ===
+# === === === === === functions end, main part begins === === === === ===
+# === === === === === === === === === === === === === === === === === ===
 
 if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 	cd ${PORTAGE_TMPDIR} &> /dev/null
