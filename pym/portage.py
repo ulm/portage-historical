@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.562 2004/11/23 09:26:49 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.563 2004/12/05 10:23:41 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -4368,7 +4368,7 @@ class portdbapi(dbapi):
 		if not cps:
 			#invalid cat/pkg-v
 			return 0
-		if self.findname2(cps[0]+"/"+cps2[1]):
+		if self.findname(cps[0]+"/"+cps2[1]):
 			return 1
 		else:
 			return 0

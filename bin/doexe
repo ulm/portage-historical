@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/doexe,v 1.10 2004/10/04 13:56:50 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/doexe,v 1.11 2004/12/05 10:23:41 carpaski Exp $
 
 mynum=${#}
 if [ ${mynum} -lt 1 ] ; then
@@ -12,19 +12,7 @@ if [ ! -d "${D}${EXEDESTTREE}" ] ; then
 	install -d "${D}${EXEDESTTREE}"
 fi
 
-if [ ! -z "${CBUILD}" ] && [ "${CBUILD}" != "${CHOST}" ]; then
-	STRIP=${CHOST}-strip
-else
-	STRIP=strip
-fi
-
 for x in "$@" ; do
-	if [ "${FEATURES//*nostrip*/true}" != "true" ] && [ "${RESTRICT//*nostrip*/true}" != "true" ] ; then
-		MYVAL=`file "${x}" | grep "ELF"` 
-		if [ -n "$MYVAL" ] ; then
-			${STRIP} "${x}"
-		fi
-	fi
 	if [ -L "${x}" ] ; then
 		cp "${x}" "${T}"
 		mysrc="${T}"/`/usr/bin/basename "${x}"`

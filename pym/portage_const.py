@@ -1,7 +1,7 @@
 # portage: Constants
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_const.py,v 1.5 2004/11/20 10:48:16 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_const.py,v 1.6 2004/12/05 10:23:41 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -23,7 +23,7 @@ PROFILE_PATH            = "/etc/make.profile"
 LOCALE_DATA_PATH        = PORTAGE_BASE_PATH+"/locale"
 
 EBUILD_SH_BINARY        = PORTAGE_BIN_PATH+"/ebuild.sh"
-EBUILD_DAEMON_PATH	= PORTAGE_BIN_PATH+"/ebuild-daemon.sh"
+EBUILD_DAEMON_PATH      = PORTAGE_BIN_PATH+"/ebuild-daemon.sh"
 
 SANDBOX_BINARY          = "/usr/bin/sandbox"
 # XXX compatibility hack.  this shouldn't ever hit a stable release.
@@ -48,13 +48,13 @@ CUSTOM_MIRRORS_FILE     = USER_CONFIG_PATH+"/mirrors"
 SANDBOX_PIDS_FILE       = "/tmp/sandboxpids.tmp"
 CONFIG_MEMORY_FILE      = PRIVATE_PATH + "/config"
 
-CONFCACHE_FILE		= CACHE_PATH+"/confcache"
-CONFCACHE_LIST		= CACHE_PATH+"/confcache_files.anydbm"
+CONFCACHE_FILE          = CACHE_PATH+"/confcache"
+CONFCACHE_LIST          = CACHE_PATH+"/confcache_files.anydbm"
 
-LIBFAKEROOT_PATH	= "/usr/lib/libfakeroot.so"
-FAKEROOT_PATH		= "/usr/bin/fakeroot"
+LIBFAKEROOT_PATH        = "/usr/lib/libfakeroot.so"
+FAKEROOT_PATH           = "/usr/bin/fakeroot"
 
-RSYNC_BIN		= "/usr/bin/rsync"
-RSYNC_HOST		= "rsync.gentoo.org/gentoo-portage"
+RSYNC_BIN               = "/usr/bin/rsync"
+RSYNC_HOST              = "rsync.gentoo.org/gentoo-portage"
 
-CVS_BIN			= "/usr/bin/cvs"
+CVS_BIN                 = "/usr/bin/cvs"
