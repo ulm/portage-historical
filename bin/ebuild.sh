@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.82 2002/12/03 09:14:42 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.83 2002/12/03 17:46:45 vapier Exp $
 
 if [ -n "$#" ]
 then
@@ -302,7 +302,7 @@ pkg_nofetch()
 src_unpack() { 
 	if [ "${A}" != "" ]
 	then
-		unpack ${A} || die "unpack failed"
+		unpack ${A}
 	fi	
 }
 
