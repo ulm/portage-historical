@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201 2004/10/19 04:58:42 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.1 2004/10/22 18:44:32 ferringb Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -106,7 +106,6 @@ esyslog() {
 
 use() {
 	if useq ${1}; then
-		echo "${1}"
 		return 0
 	fi
 	return 1
@@ -152,7 +151,6 @@ useq() {
 
 has() {
 	if hasq "$@"; then
-		echo "${1}"
 		return 0
 	fi
 	return 1
