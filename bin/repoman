@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.61 2004/06/01 20:20:24 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.62 2004/06/20 21:07:54 nakano Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -665,6 +665,10 @@ for x in scanlist:
 			continue
 		for pos in range(0,len(missingvars)):
 			if portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y, [ missingvars[pos] ] )[0]=="":
+				if missingvars[pos]=="IUSE":
+					# We should rewrite here later. See #21544
+					if not os.system("egrep '^IUSE=' "+repodir+"/"+x+"/"+y+".ebuild > /dev/null 2>&1"):
+						continue
 				myqakey=missingvars[pos]+".missing"
 				stats[myqakey]=stats[myqakey]+1
 				fails[myqakey].append(x+"/"+y+".ebuild")
