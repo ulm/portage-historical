@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.71 2005/02/15 23:27:44 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.72 2005/02/22 02:39:56 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  21 Feb 2005; Brian Harring <ferringb@gentoo.org> pym/portage.py: So yeah.
+  Don't fool with the eclass_cache.porttree ordering unless you understand that
+  it -must- match bash's inherit order (where overlays override portdir).
 
   15 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> emerge: Disabled the cache
   update output when using --quiet.  #81678

@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.41 2005/02/18 07:50:20 ferringb Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.41 2005/02/18 07:50:20 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.42 2005/02/22 02:39:55 ferringb Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.42 2005/02/22 02:39:55 ferringb Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.41 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.42 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -4891,7 +4891,10 @@ class eclass_cache:
 		self.packages = {} # {"PV": {"eclass1": ["location", "_mtime_"]}}
 		self.eclasses = {} # {"Name": ["location","_mtime_"]}
 		
-		self.porttrees=self.settings["PORTDIR_OVERLAY"].split()+[self.porttree_root]
+		# don't fool with porttree ordering unless you *ensure* that ebuild.sh's inherit
+		# ordering is *exactly* the same
+		self.porttrees=[self.porttree_root]
+		self.porttrees.extend(self.settings["PORTDIR_OVERLAY"].split())
 		self.update_eclasses()
 
 	def close_caches(self):
