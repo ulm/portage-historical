@@ -25,7 +25,7 @@ S *  Path sandbox for the gentoo linux portage package system, initially
  *  as some of the InstallWatch code was used.
  *
  *
- *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.3 2002/12/04 00:51:30 azarah Exp $
+ *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.4 2003/04/06 09:06:48 azarah Exp $
  *
  */
 
@@ -1176,7 +1176,7 @@ static int before_syscall_open_int(const char* func, const char* file, int flags
 
 static int before_syscall_open_char(const char* func, const char* file, const char* mode)
 {
-  if ((strcmp(mode, "r") == 0) || (strcmp(mode, "rb") == 0)) {
+  if ((strcmp(mode, "r") == 0) || (strcmp(mode, "rb") == 0) || (strcmp(mode, "rm") == 0)) {
     return before_syscall("open_rd", file);
   } else {
     return before_syscall("open_wr", file);
