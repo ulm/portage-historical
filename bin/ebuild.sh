@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.133 2003/07/02 03:23:36 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.134 2003/07/16 12:59:18 carpaski Exp $
 
 if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 	if [ -f ${T}/successful ]; then
@@ -645,7 +645,13 @@ abort_install() {
 
 dyn_compile() {
 	trap "abort_compile" SIGINT SIGQUIT
-	export CFLAGS CXXFLAGS LIBCFLAGS LIBCXXFLAGS
+	[ "${CFLAGS-unset}"      != "unset" ] && export CFLAGS
+	[ "${CXXFLAGS-unset}"    != "unset" ] && export CXXFLAGS
+	[ "${LIBCFLAGS-unset}"   != "unset" ] && export LIBCFLAGS
+	[ "${LIBCXXFLAGS-unset}" != "unset" ] && export LIBCXXFLAGS
+	[ "${LDFLAGS-unset}"     != "unset" ] && export LDFLAGS
+	[ "${ASFLAGS-unset}"     != "unset" ] && export ASFLAGS
+
 	if has noauto $FEATURES &>/dev/null && [ ! -f ${BUILDDIR}/.unpacked ]; then
 		echo
 		echo "!!! We apparently haven't unpacked... This is probably not what you"
@@ -708,7 +714,7 @@ dyn_compile() {
 	echo "$RDEPEND"  > RDEPEND
 	echo "$SLOT"     > SLOT
 	echo "$USE"      > USE
-	set | bzip2 -9 - > environment.bzip2
+	set | bzip2 -9 - > environment.bz2
 	cp ${EBUILD} ${PF}.ebuild
 	if has nostrip $FEATURES $RESTRICT; then
 		touch DEBUGBUILD

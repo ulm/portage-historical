@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.171 2003/05/29 08:34:55 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.172 2003/07/16 12:59:18 carpaski Exp $
 
 if [ -z "$1" ]; then
 	echo
@@ -13,7 +13,7 @@ export PKG="portage"
 export TMP="/tmp"
 export V="$1"
 export DEST="${TMP}/${PKG}-${V}"
-export PREVEB="2.0.48"
+export PREVEB="2.0.49_pre2"
 rm -rf ${DEST}
 install -d -m0755 ${DEST}
 #get any binaries out of the way
