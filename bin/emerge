@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.167 2002/12/15 14:19:21 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.168 2002/12/15 22:30:35 carpaski Exp $
 
 import os,sys,portage,xpak,string,re,commands,time,threading,shutil,traceback
 from stat import *
@@ -1319,6 +1319,12 @@ def post_emerge(retval=0):
 	print
 	if "--pretend" in myopts:
 		sys.exit(retval)
+
+	if portage.prelink_enabled:
+		print ">>> Updating prelinks..."
+		emergelog(" >>> Updating prelinks...")
+		os.system("/usr/sbin/prelink -af 2>/tmp/prelink_err.log")
+
 	emergelog(" *** exiting successfully.")
 	root=portage.root
 
@@ -1711,4 +1717,7 @@ else:
 		if portage.settings["AUTOCLEAN"] and "yes"==portage.settings["AUTOCLEAN"]:
 			print ">>> Auto-cleaning packages ..."
 			unmerge("clean", ["world"])
+		if portage.prelink_enabled:
+			print ">>> Updating prelinks..."
+			os.system("/usr/sbin/prelink -af")
 	post_emerge()
