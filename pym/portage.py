@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.556 2004/11/12 17:46:18 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.557 2004/11/12 18:18:48 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -6506,6 +6506,9 @@ for group in groups:
 
 # Clear the cache
 dircache={}
+
+if not "sandbox" in features or not "usersandbox" in features:
+	portage_exec.sandbox_capable = False
 
 fetcher=None
 def get_preferred_fetcher():
