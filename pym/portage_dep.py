@@ -1,7 +1,7 @@
 # deps.py -- Portage dependency resolution functions
 # Copyright 2003-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.21 2004/11/10 03:10:56 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.22 2004/12/07 15:06:41 jstubbs Exp $
 
 # DEPEND SYNTAX:
 #
@@ -49,7 +49,7 @@ def get_operator(mydep):
 	return operator
 
 def isjustname(mypkg):
-	myparts=string.split(mypkg,'-')
+	myparts=mypkg.split('-')
 	for x in myparts:
 		if portage_versions.ververify(x):
 			return 0
@@ -69,7 +69,7 @@ def isvalidatom(atom):
 	if mycpv_cps:
 		# cat/pkg-1.0
 		return 0
-	if (len(atom.split('/'))==2):
+	if len(atom.split('/'))==2:
 		# cat/pkg
 		return 1
 	else:
@@ -469,6 +469,8 @@ class DependencyGraph:
 		index = 0       # Progress through the node's relations
 		length = len(self.graph[node][path])
 
+		graph = self.graph   # Faster access via local scope
+
 		# Repeat while the stack is not empty or there are more
 		# relations to be processed for the current node.
 		while stack or length != index:
@@ -479,7 +481,7 @@ class DependencyGraph:
 
 			# Otherwise, process the next relation.
 			else:
-				relation = self.graph[node][path][index]
+				relation = graph[node][path][index]
 				# Add the relation to our list if necessary...
 				if relation not in traversed:
 					traversed.append(relation)
@@ -491,7 +493,7 @@ class DependencyGraph:
 						depth -= 1
 						node = relation
 						index = 0
-						length = len(self.graph[node][path])
+						length = len(graph[node][path])
 						# Restart the loop.
 						continue
 

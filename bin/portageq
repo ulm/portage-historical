@@ -1,12 +1,12 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/portageq,v 1.14 2004/11/07 20:59:29 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/portageq,v 1.15 2004/12/07 15:06:41 jstubbs Exp $
 
 import sys
 sys.path = ["/usr/lib/portage/pym"]+sys.path
 
-import portage,types,string, portageq
+import portage,types, portageq
 
 
 #-----------------------------------------------------------------------------
@@ -15,8 +15,8 @@ import portage,types,string, portageq
 #
 
 def usage():
-	rev="$Revision: 1.14 $"
-	ver=string.split(rev, ' ')[1]
+	rev="$Revision: 1.15 $"
+	ver=rev.split(' ')[1]
 	print ">>> Portage information query tool -- version "+ver
 	print ">>> Usage: portageq <command> [<option> ...]"
 	print ""
@@ -43,10 +43,10 @@ def usage():
 			print ""
 			continue
 
-		lines = string.split(doc, '\n')
-		print "   "+name+" "+string.strip(lines[0])
+		lines = doc.split('\n')
+		print "   "+name+" "+lines[0].strip()
 		for line in lines[1:]:
-			print "      "+string.strip(line)
+			print "      "+line.strip()
 
 
 def main():

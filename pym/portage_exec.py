@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.18 2004/11/08 05:58:32 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.19 2004/12/07 15:06:41 jstubbs Exp $
 
 import os,types,string,sys
 import signal
@@ -30,7 +30,7 @@ spawned_pids = []
 def cleanup(pids,block_exceptions=True):
 	"""function to go through and reap the list of pids passed to it"""
 	global spawned_pids
-	if type(pids) == types.IntType:
+	if type(pids) == int:
 		pids = [pids]
 	for x in pids:
 		try:
