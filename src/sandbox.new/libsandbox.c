@@ -25,7 +25,7 @@
 **  as some of the InstallWatch code was used.
 **
 **
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/libsandbox.c,v 1.2 2002/08/18 22:40:05 azarah Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/libsandbox.c,v 1.3 2002/08/18 23:56:14 azarah Exp $
 */
 
 #define open   xxx_open
@@ -208,6 +208,7 @@ static void canonicalize(const char *path, char *resolved_path)
     getcwd(resolved_path, MAXPATHLEN - 2);
     strcat(resolved_path, "/");
     strncat(resolved_path, path, MAXPATHLEN - 1);
+	erealpath(resolved_path, resolved_path);
   }
 #else
   /* temp solution until I can figure out what
