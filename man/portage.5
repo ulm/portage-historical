@@ -283,7 +283,7 @@ Whenever portage encounters a mirror:// style URL it will look up the actual
 hosts here.  If the mirror set is not found here, it will check the global 
 mirrors file at /usr/portage/profiles/thirdpartymirrors.  You may also set a 
 special mirrortype called 'local'.  This list of mirrors will be checked before 
-GENTOO_MIRRORS and be used even if the package has RESTRICT="fetch".
+GENTOO_MIRRORS and be used even if the package has RESTRICT="nomirror".
 
 Format:
 .br
@@ -498,4 +498,4 @@ Please report bugs via http://bugs.gentoo.org/
 .BR ebuild (5),
 .BR make.conf (5)
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/portage.5,v 1.1 2004/01/05 23:29:30 vapier Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/portage.5,v 1.2 2004/01/06 05:48:39 genone Exp $
