@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.567 2004/12/13 22:19:59 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.568 2004/12/14 12:56:29 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -4525,12 +4525,12 @@ class portdbapi(dbapi):
 				continue
 			mygroups=myaux[0].split()
 			pgroups=groups[:]
-			match=0
 			cp = dep_getkey(mycpv)
 			if cp in pkgdict:
 				matches = match_to_list(mycpv, pkgdict[cp].keys())
 				for match in matches:
 					pgroups.extend(pkgdict[cp][match])
+			match=0
 			for gp in mygroups:
 				if gp=="*":
 					writemsg("--- WARNING: Package '%s' uses '*' keyword.\n" % mycpv)

@@ -1,11 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.903 2004/12/11 01:54:29 jstubbs Exp $
+# $Id: ChangeLog,v 1.904 2004/12/14 12:56:29 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  14 Dec 2004; Jason Stubbs <jstubbs@gentoo.org> bin/emerge pym/portage.py:
+  Fixed emerge so that the "emerge by path" message is only shown when the
+  "path" ends in .ebuild or .tbz2. Fixed the package.keywords bug that caused
+  all packages to become unmasked.
 
   11 Dec 2004; Jason Stubbs <jstubbs@gentoo.org> pym/portage_syntax.py:
   Modified atom.match() to reflect the change of cpv becoming an attribute of
