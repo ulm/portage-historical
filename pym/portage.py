@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.444 2004/07/25 08:32:26 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.445 2004/07/26 13:43:44 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -4289,6 +4289,17 @@ class portagetree:
 	def depcheck(self,mycheck,use="yes",myusesplit=None):
 		return dep_check(mycheck,self.dbapi,use=use,myusesplit=myusesplit)
 
+	def getslot(self,mycatpkg,uselist):
+		"Get a slot for a catpkg; assume it exists."
+		myslot = ""
+		try:
+			myslotvar=self.dbapi.aux_get(mycatpkg,["SLOT"])[0]
+			if myslotvar:
+				myslot = string.join(portage_dep.use_reduce(portage_dep.paren_reduce(myslotvar), uselist))
+		except Exception, e:
+			pass
+		return myslot
+
 
 class dbapi:
 	def __init__(self):
@@ -4855,7 +4866,7 @@ class vartree(packagetree):
 		return returnme
 
 	
-	def getslot(self,mycatpkg):
+	def getslot(self,mycatpkg,uselist=None):
 		"Get a slot for a catpkg; assume it exists."
 		myslot = ""
 		try:
@@ -5755,6 +5766,17 @@ class binarytree(packagetree):
 			pass
 		getbinpkg.file_get(settings["PORTAGE_BINHOST"]+"/"+tbz2name, mydest, fcmd=settings["RESUMECOMMAND"])
 		return
+
+	def getslot(self,mycatpkg,uselist=None):
+		"Get a slot for a catpkg; assume it exists."
+		myslot = ""
+		try:
+			[myslotvar,uselist]=self.dbapi.aux_get(mycatpkg,["SLOT","USE"])[0]
+			if myslotvar:
+				myslot = string.join(portage_dep.use_reduce(portage_dep.paren_reduce(myslotvar), uselist.split()))
+		except Exception, e:
+			pass
+		return myslot
 
 class dblink:
 	"this class provides an interface to the standard text package database"
