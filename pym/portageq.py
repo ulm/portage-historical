@@ -1,14 +1,11 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portageq.py,v 1.1 2004/11/07 12:54:40 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portageq.py,v 1.2 2004/12/05 13:35:59 ferringb Exp $
 
 # this is the core portageq functionality, stuck in a module so ebuild_daemon can use it.
 # bin/portageq doesn't currently use this, but should for the sake of reduction of code
 # duplication.
-
-import sys
-sys.path = ["/usr/lib/portage/pym"]+sys.path
 
 import portage,types,string
 
@@ -64,7 +61,6 @@ def best_version(argv):
 		return 0, portage.best(mylist)
 	except KeyError:
 		return 1, ""
-		sys.exit(1)
 
 
 def mass_best_version(argv):
