@@ -218,7 +218,7 @@ examples you may find in the portage tree:
 .br
 \fI*\fR means match any version of the package so long as the specified 
 base is matched.  So with a version of '2*', we can match '2.1', '2.2', 
-'2.2.1', etc... and not match version '1.0', '3.0', '4.1', etc...
+\'2.2.1', etc... and not match version '1.0', '3.0', '4.1', etc...
 .br
 \fI~\fR means match any revision of the base version specified.  So in the 
 above example, we would match versions '1.0.2a', '1.0.2a-r1', '1.0.2a-r2', 
@@ -521,7 +521,7 @@ extra arguements to \fBeconf\fR.
 .TP
 \fBemake\fR \fI[make options]\fR
 This is used as a replacement for make.  Performs
-'make ${MAKEOPTS} \fImake options\fR' (as set in /etc/make.globals),
+\'make ${MAKEOPTS} \fImake options\fR' (as set in /etc/make.globals),
 default is MAKEOPTS="\-j2".
 
 \fB***warning***\fR
@@ -542,11 +542,12 @@ make \\
 	mandir=${D}/usr/share/man \\
 	sysconfdir=${D}/etc \\
 	\fI${EXTRA_EINSTALL}\fR \\
-	\fImake options\fR install
+	\fImake options\fR \\
+	install
 .fi
-Please do not use this in place of 'make install DESTDIR=${D}'.  That
-is the preferred way of installing make-based packages.  Also, do not 
-utilize the \fIEXTRA_EINSTALL\fR variable since it is for users.
+Please do \fBnot\fR use this in place of 'make install DESTDIR=${D}'.  
+That is the preferred way of installing make-based packages.  Also, do 
+not utilize the \fIEXTRA_EINSTALL\fR variable since it is for users.
 
 .PD 0
 .TP
@@ -821,4 +822,4 @@ Nicholas Jones <carpaski@gentoo.org>
 Mike Frysinger <vapier@gentoo.org>
 .fi
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.5,v 1.73.2.1 2004/11/23 01:20:25 vapier Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.5,v 1.73.2.2 2005/01/14 14:13:19 vapier Exp $
