@@ -2,7 +2,7 @@
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
 # Author: Daniel Robbins <drobbins@gentoo.org>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.4 2002/07/15 20:54:24 drobbins Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.5 2002/07/27 19:13:59 drobbins Exp $
 
 # Next to do: dep syntax checking in ebuilds, mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -296,7 +296,6 @@ for x in scanlist:
 			if mydep[0]==1:
 				if mydep[1]!=[]:
 					#we have some unsolvable deps
-					
 					#remove ! deps, which always show up as unsatisfiable
 					d=0
 					while d<len(mydep[1]):
