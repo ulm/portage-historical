@@ -2,10 +2,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.574 2005/02/26 06:35:20 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.574 2005/02/26 06:35:20 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.575 2005/03/02 00:16:30 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.575 2005/03/02 00:16:30 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.574 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.575 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -1160,7 +1160,7 @@ class config:
 			self.features.append("test")
 
 		self.features.sort()
-		self["FEATURES"] = " ".join(self.features)
+		self["FEATURES"] = " ".join(["-*"]+self.features)
 		self.backup_changes("FEATURES")
 
 		if mycpv:
