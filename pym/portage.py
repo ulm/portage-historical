@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.269.2.15 2003/02/22 23:14:59 alain Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.269.2.16 2003/02/24 20:34:58 alain Exp $
 
 VERSION="2.1.0_alpha1"
 
@@ -3602,6 +3602,7 @@ class dblink:
 	"this class provides an interface to the standard text package database"
 	def __init__(self, ctx, cat,pkg,myroot):
 		"create a dblink object for cat/pkg.  This dblink entry may or may not exist"
+		self.logger = ctx.get_logger(self)
 		self.ctx = ctx
 		self.cat=cat
 		self.pkg=pkg
@@ -3643,6 +3644,7 @@ class dblink:
 			os.unlink(self.dbdir+"/CONTENTS")
 	
 	def getcontents(self):
+		self.logger.debug("Getting CONTENTS for "+self.dbdir)
 		if not os.path.exists(self.dbdir+"/CONTENTS"):
 			return None
 		pkgfiles={}
@@ -3651,6 +3653,7 @@ class dblink:
 		myc.close()
 		pos=1
 		for line in mylines:
+			self.logger.debug("read line: "+line)
 			mydat=string.split(line)
 			# we do this so we can remove from non-root filesystems
 			# (use the ROOT var to allow maintenance on other partitions)
@@ -3659,9 +3662,11 @@ class dblink:
 				if mydat[0]=="obj":
 					#format: type, mtime, md5sum
 					pkgfiles[string.join(mydat[1:-2]," ")]=[mydat[0], mydat[-1], mydat[-2]]
+					self.logger.debug("(obj) pkgfiles['"+string.join(mydat[1:-2]," ")+"'] = ["+mydat[0]+","+mydat[-1]+","+mydat[2]+"]")
 				elif mydat[0]=="dir":
 					#format: type
 					pkgfiles[string.join(mydat[1:])]=[mydat[0] ]
+					self.logger.debug("(dir) pkgfiles['"+string.join(mydat[1:])+"'] = ["+mydat[0]+"]")
 				elif mydat[0]=="sym":
 					#format: type, mtime, dest
 					x=len(mydat)-1
@@ -3672,17 +3677,23 @@ class dblink:
 							break
 						x=x-1
 					if splitter==-1:
+						self.logger.error("can't find -> in sym entry, returning None")
 						return None
 					pkgfiles[string.join(mydat[1:splitter]," ")]=[mydat[0], mydat[-1], string.join(mydat[(splitter+1):-1]," ")]
+					self.logger.debug("(obj) pkgfiles['"+string.join(mydat[1:splitter]," ")+"'] = ["+mydat[0]+","+mydat[-1]+","+string.join(mydat[(splitter+1):-1]," ")+"]")
 				elif mydat[0]=="dev":
 					#format: type
 					pkgfiles[string.join(mydat[1:]," ")]=[mydat[0] ]
+					self.logger.debug("(dev) pkgfiles['"+string.join(mydat[1:]," ")+"'] = ["+mydat[0]+"]")
 				elif mydat[0]=="fif":
 					#format: type
 					pkgfiles[string.join(mydat[1:]," ")]=[mydat[0]]
+					self.logger.debug("(dev) pkgfiles['"+string.join(mydat[1:]," ")+"'] = ["+mydat[0]+"]")
 				else:
+					self.logger.error("found unknown entry type ("+mydat[0]+"), returning None")
 					return None
 			except (KeyError,IndexError):
+				self.logger.error("exception was thrown while handling line '"+line+"', file positon:",pos)
 				print "portage: CONTENTS line",pos,"corrupt!"
 			pos += 1
 		return pkgfiles
