@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.105 2003/02/13 17:13:53 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.106 2003/02/14 01:18:01 carpaski Exp $
 
 cd ${PORT_TMPDIR}
 
@@ -264,7 +264,7 @@ if [ "$*" != "depend" ]; then
 	if has distcc ${FEATURES} &>/dev/null; then
 		if [ -d /usr/lib/distcc/bin ]; then
 			#We can enable distributed compile support
-			export PATH="/usr/lib/distcc/bin:${PATH}"
+			[ ! -z "${PATH/*distcc*/}" ] && export PATH="/usr/lib/distcc/bin:${PATH}"
 			[ -z "${DISTCC_HOSTS}" ] && DISTCC_HOSTS="localhost"
 			[ ! -z "${DISTCC_LOG}" ] && addwrite "$(dirname ${DISTCC_LOG})"
 			export DISTCC_HOSTS
@@ -276,10 +276,12 @@ if [ "$*" != "depend" ]; then
 
 	if has ccache ${FEATURES} &>/dev/null; then
 		#We can enable compiler cache support
-		if   [ -d /usr/lib/ccache/bin ]; then
-			export PATH="/usr/lib/ccache/bin:${PATH}"
-		elif [ -d /usr/bin/ccache ]; then
-			export PATH="/usr/bin/ccache:${PATH}"
+		if [ ! -z "${PATH/*ccache*/}" ];then
+			if   [ -d /usr/lib/ccache/bin ]; then
+				export PATH="/usr/lib/ccache/bin:${PATH}"
+			elif [ -d /usr/bin/ccache ]; then
+				export PATH="/usr/bin/ccache:${PATH}"
+			fi
 		fi
 		[ -z "${CCACHE_DIR}" ] && export CCACHE_DIR=/root/.ccache
 		addread ${CCACHE_DIR}
