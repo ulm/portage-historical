@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.360 2004/11/14 05:45:57 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.361 2004/11/15 21:42:49 carpaski Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2586,6 +2586,7 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 
 		if (os.path.exists(cachedir) and os.path.exists(cachedir+"/app-portage")):
 			# removed old style cache.
+			# XXX: Compat Code, and Potentially bad.
 			portage.spawn("rm -Rf "+cachedir+"/*",portage.settings,free=1)
 
 		# save timestamp.chk for next timestamp check.

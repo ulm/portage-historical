@@ -1,6 +1,6 @@
 # Copyright 2001-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/xpak.py,v 1.13 2004/10/11 04:12:02 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/xpak.py,v 1.14 2004/11/15 21:42:50 carpaski Exp $
 
 # The format for a tbz2/xpak:
 #
@@ -239,6 +239,7 @@ class tbz2:
 		if not self.scan():
 			raise IOError
 		if cleanup and os.path.exists(datadir):
+			# XXX: Potentially bad
 			os.system("rm -Rf "+datadir+"/*")
 		if not os.path.exists(datadir):
 			os.makedirs(datadir)
@@ -261,6 +262,7 @@ class tbz2:
 		myfile.flush()
 		myfile.close()
 		if cleanup:
+			# XXX: Potentially bad
 			os.system("rm -Rf "+datadir)
 		return 1
 
