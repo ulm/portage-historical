@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.344 2003/10/31 06:12:31 drobbins Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.345 2003/11/01 06:37:07 drobbins Exp $
 
 VERSION="2.0.49-r13-2"
 
@@ -4506,7 +4506,7 @@ class dblink:
 	def unmerge(self,pkgfiles=None,trimworld=1):
 		global dircache
 		dircache={}
-		
+	
 		mydbdir_lock = lockdir(self.dbdir)
 
 		if not pkgfiles:
@@ -4536,6 +4536,7 @@ class dblink:
 		#process symlinks second-to-last, directories last.
 		mydirs=[]
 		mysyms=[]
+		modprotect="/lib/modules/"
 		for obj in mykeys:
 			obj=os.path.normpath(obj)
 			if obj[:2]=="//":
@@ -4547,7 +4548,11 @@ class dblink:
 					#link target rather than the link itself.
 					print "--- !found "+str(pkgfiles[obj][0]), obj
 					continue
-			if self.isprotected(obj):
+			#next line includes a tweak to protect modules from being unmerged, but we don't protect modules
+			#from being overwritten if they are upgraded. We effectively only want one half of the config
+			#protection functionality for /lib/modules/. For portage-ng, both capabilities should be able
+			#to be independently specified.
+			if self.isprotected(obj) or ((len(obj) > len(modprotect)) and (obj[0:len(modprotect)]==modprotect)):
 				print "--- cfgpro "+str(pkgfiles[obj][0]), obj
 				continue
 
