@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.189 2004/08/16 20:06:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.190 2004/08/22 04:23:27 ferringb Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -431,8 +431,17 @@ econf() {
 		fi
 		
 		# if the profile defines a location to install libs to aside from default, pass it on.
-		if [ ! -z "${CONF_LIBDIR}" ]; then
-			EXTRA_ECONF="--libdir=/usr/${CONF_LIBDIR} ${EXTRA_ECONF}"
+		# if the ebuild passes in --libdir, they're responsible for the conf_libdir fun.
+		if [ ! -z "${CONF_LIBDIR}" ] && [ "${*/--libdir}" == "$*" ]; then
+			if [ "${*/--prefix}" == "${EXTRA_ECONF}" ]; then
+				CONF_PREFIX="/usr"
+			else
+				local args="$(echo $@)"
+				local -a pref=($(echo ${args/*--prefix[= ]}))
+				CONF_PREFIX=${pref}
+			fi
+			export CONF_PREFIX
+			EXTRA_ECONF="--libdir=/${CONF_PREFIX}/${CONF_LIBDIR} ${EXTRA_ECONF}"
 		fi
 		
 		echo ./configure \
@@ -462,8 +471,9 @@ econf() {
 }
 
 einstall() {
-	if [ ! -z "${CONF_LIBDIR}" ]; then
-		EXTRA_EINSTALL="libdir=${D}/usr/${CONF_LIBDIR} ${EXTRA_EINSTALL}"
+	# CONF_PREFIX is only set if they didn't pass in libdir above.
+	if [ ! -z "${CONF_LIBDIR}" ] && [ "${CONF_PREFIX:-unset}" != "unset" ]; then
+		EXTRA_EINSTALL="libdir=${D}/${CONF_PREFIX}/${CONF_LIBDIR} ${EXTRA_EINSTALL}"
 	fi
 	if [ -f ./[mM]akefile -o -f ./GNUmakefile ] ; then
 		if [ ! -z "${PORTAGE_DEBUG}" ]; then
