@@ -1,7 +1,8 @@
+
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.571 2005/02/21 12:45:49 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.572 2005/02/24 23:30:31 solar Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -2166,11 +2167,18 @@ def digestcheck(myfiles, mysettings, strict=0,verbosity=0):
 				writemsg("!!! File: %s\n" % mymfiles[x],verbosity)
 				if strict:
 					return 0
+
 		if manifest_files and strict:
-			writemsg(red("!!! Files listed in the manifest do not exist!")+"\n",verbosity)
-			for x in manifest_files:
-				writemsg(x+"\n",verbosity)
-			return 0
+			for x in grabfile(USER_CONFIG_PATH+"/manifest_excludes"):
+				if x in manifest_files:
+					#writemsg(yellow(">>>")+" md5-ignore: "+x,verbosity)
+					manifest_files.remove(x)
+
+			if manifest_files:
+				writemsg(red("!!! Files listed in the manifest do not exist!")+"\n",verbosity)
+				for x in manifest_files:
+					writemsg(x+"\n",verbosity)
+				return 0
 
 		if not digestCheckFiles(mymfiles, mymdigests, pbasedir, note="files  ", strict=strict, verbosity=verbosity):
 			if strict:
