@@ -1,12 +1,12 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dolib,v 1.8.2.1 2005/01/02 09:36:02 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dolib,v 1.8.2.2 2005/01/12 02:07:15 carpaski Exp $
 
 LIBDIR_VAR="LIBDIR_${ABI}"
 if [ -n "${ABI}" -a -n "${!LIBDIR_VAR}" ]; then
 	CONF_LIBDIR="${!LIBDIR_VAR}"
-fi        
+fi
 unset LIBDIR_VAR
 
 if [ -z "${CONF_LIBDIR}" ]; then
@@ -14,6 +14,11 @@ if [ -z "${CONF_LIBDIR}" ]; then
 	CONF_LIBDIR="lib"
 fi
 libdir="${D}${DESTTREE}/${CONF_LIBDIR}"
+for X in 1 2 3; do
+	# The escaping is weird. It will break if you escape the last one.
+	libdir="${libdir//\/\///}"
+done
+
 
 if [ ${#} -lt 1 ] ; then
 	echo "${0}: at least one argument needed"

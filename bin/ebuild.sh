@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.16 2005/01/11 22:04:56 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.17 2005/01/12 02:07:15 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -389,6 +389,14 @@ unpack() {
 	done
 }
 
+strip_duplicate_slashes () { 
+	if [ -n "${1}" ]; then
+		local removed="${1/\/\///}"
+		[ "${removed}" != "${removed/\/\///}" ] && removed=$(strip_duplicate_slashes "${removed}")
+		echo ${removed}
+	fi
+}
+
 econf() {
 	if [ -z "${ECONF_SOURCE}" ]; then
 		ECONF_SOURCE="."
@@ -420,13 +428,18 @@ econf() {
 		fi
 		unset LIBDIR_VAR
 		if [ -n "${CONF_LIBDIR}" ] && [ "${*/--libdir}" == "$*" ]; then
-			if [ "${*/--prefix}" == "$*" ]; then
-				CONF_PREFIX="/usr"
-			else
+			if [ "${*/--exec-prefix}" != "$*" ]; then
+				local args="$(echo $*)"
+				local -a pref=($(echo ${args/*--exec-prefix[= ]}))
+				CONF_PREFIX=${pref}
+				[ "${CONF_PREFIX:0:1}" != "/" ] && CONF_PREFIX="/${CONF_PREFIX}"
+			elif [ "${*/--prefix}" != "$*" ]; then
 				local args="$(echo $*)"
 				local -a pref=($(echo ${args/*--prefix[= ]}))
 				CONF_PREFIX=${pref}
 				[ "${CONF_PREFIX:0:1}" != "/" ] && CONF_PREFIX="/${CONF_PREFIX}"
+			else
+				CONF_PREFIX="/usr"
 			fi
 			export CONF_PREFIX
 			[ "${CONF_LIBDIR:0:1}" != "/" ] && CONF_LIBDIR="/${CONF_LIBDIR}"
@@ -482,13 +495,10 @@ einstall() {
 	fi
 	unset LIBDIR_VAR
 	if [ -n "${CONF_LIBDIR}" ] && [ "${CONF_PREFIX:-unset}" != "unset" ]; then
-		EXTRA_EINSTALL_LIBDIR="libdir=${D}/${CONF_PREFIX}/${CONF_LIBDIR}"
-		for X in 1 2 3; do
-			# The escaping is weird. It will break if you escape the last one.
-			EXTRA_EINSTALL_LIBDIR="${EXTRA_EINSTALL_LIBDIR//\/\///}"
-		done
-
-		EXTRA_EINSTALL="${EXTRA_EINSTALL_LIBDIR} ${EXTRA_EINSTALL}"
+		EI_DESTLIBDIR="${D}/${CONF_PREFIX}/${CONF_LIBDIR}"
+		EI_DESTLIBDIR="$(strip_duplicate_slashes ${EI_DESTLIBDIR})"
+		EXTRA_EINSTALL="libdir=${EI_DESTLIBDIR} ${EXTRA_EINSTALL}"
+		unset EI_DESTLIBDIR
 	fi
 
 	if [ -f ./[mM]akefile -o -f ./GNUmakefile ] ; then
