@@ -1,9 +1,8 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_metadata.py,v 1.1 2004/11/07 13:31:43 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_metadata.py,v 1.2 2004/11/07 21:34:51 ferringb Exp $
 
-import string 
 from xml.sax import saxutils, make_parser, handler
 from xml.sax.handler import feature_namespaces
 
