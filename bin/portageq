@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/portageq,v 1.2 2003/03/02 07:01:05 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/portageq,v 1.3 2003/03/03 21:22:51 alain Exp $
 
 import sys,portage,types,string
 
@@ -114,6 +114,13 @@ def pkgdir(argv):
 	print portage.settings["PKGDIR"]
 
 
+def distdir(argv):
+	"""
+	Returns the DISTDIR path as defined in the portage configuration.
+	"""
+	print portage.settings["DISTDIR"]
+
+
 def envvar(argv):
 	"""<variable>
 	Returns a specific environment variable as exists prior to ebuild.sh.
@@ -128,7 +135,7 @@ def envvar(argv):
 #
 
 def usage():
-	print ">>> Portage information query tool -- version $version$"
+	print ">>> Portage information query tool -- version $Version$"
 	print ">>> Usage: portageq <command> [<option> ...]"
 	print ""
 	print "Available commands:"
