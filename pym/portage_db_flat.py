@@ -1,6 +1,6 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_flat.py,v 1.13.2.1 2004/10/27 14:39:30 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_flat.py,v 1.13.2.2 2004/12/17 22:25:13 carpaski Exp $
 
 import types
 import os
@@ -48,7 +48,12 @@ class database(portage_db_template.database):
 		if not key:
 			raise KeyError, "key is not set to a valid value"
 
-		mylock = portage_locks.lockfile(self.fullpath+key, wantnewlockfile=1)
+		mylock = None
+		if os.access(self.fullpath+key, os.W_OK):
+			# We cannot lock unless we can write. We do not need
+			# to update from a read call, so don't fail by trying.
+			mylock = portage_locks.lockfile(self.fullpath+key, wantnewlockfile=1)
+
 		if self.has_key(key):
 			mtime = os.stat(self.fullpath+key)[stat.ST_MTIME]
 			myf = open(self.fullpath+key)
@@ -68,7 +73,8 @@ class database(portage_db_template.database):
 				
 			return dict
 		else:
-			portage_locks.unlockfile(mylock)
+			if mylock:
+				portage_locks.unlockfile(mylock)
 		return None
 	
 	def set_values(self,key,val):
@@ -81,6 +87,7 @@ class database(portage_db_template.database):
 		for x in self.dbkeys:
 			data += val[x]+"\n"
 
+		# We will fail here if we cannot write. It only makes sense.
 		mylock = portage_locks.lockfile(self.fullpath+key, wantnewlockfile=1)
 		if os.path.exists(self.fullpath+key):
 			os.unlink(self.fullpath+key)

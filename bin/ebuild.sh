@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.7 2004/12/09 05:52:10 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.8 2004/12/17 22:25:13 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -638,6 +638,11 @@ dyn_unpack() {
 }
 
 dyn_clean() {
+	if [ "$USERLAND" == "BSD" ] && type -p chflags &>/dev/null; then
+		chflags -R noschg,nouchg,nosappnd,nouappnd,nosunlnk,nouunlnk \
+			"${BUILDDIR}"
+	fi
+
 	rm -rf "${BUILDDIR}/image"
 
 	if ! hasq keeptemp $FEATURES; then
@@ -997,9 +1002,28 @@ dyn_install() {
 	
 	function stat_perms() {
 		local f
-		f=$(stat -c '%f' "$1")
-		f=$(printf %o 0x$f)
-		f="${f:${#f}-4}"
+		if ! type -p stat &>/dev/null; then
+			do_stat() {
+				# Generic version -- Octal result
+				python -c "import os,stat; print '%o' % os.stat('$1')[stat.ST_MODE]"
+			}
+		else
+			if [ "${USERLAND}" == "BSD" ]; then
+				do_stat() {
+					# BSD version -- Octal result
+					$(type -p stat) -f '%p' "$1"
+				}
+			else
+				do_stat() {
+					# Linux version -- Hex result converted to Octal
+					f=$($(type -p stat) -c '%f' "$1") || return $?
+					printf '%o' "0x$f"
+				}
+			fi
+		fi
+
+		f=$(do_stat "$@") || die "Failed to perform stat operation on file: $1"
+		f="${f:2:4}"
 		echo $f
 	}
 

@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.14 2004/12/06 03:01:43 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.15 2004/12/17 22:25:13 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1533,9 +1533,16 @@ def spawn(mystring,mysettings,debug=0,free=0,droppriv=0,fd_pipes=None,**keywords
 
 def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",use_locks=1, try_mirrors=1):
 	"fetch files.  Will use digest file if available."
-	if ("mirror" in features) and ("nomirror" in mysettings["RESTRICT"].split()):
-		print ">>> \"mirror\" mode and \"nomirror\" restriction enabled; skipping fetch."
-		return 1
+
+	# 'nomirror' is bad/negative logic. You Restrict mirroring, not no-mirroring.
+	if ("mirror" in mysettings["RESTRICT"].split()) or \
+	   ("nomirror" in mysettings["RESTRICT"].split()):
+		if ("mirror" in features) and ("lmirror" not in features):
+			# lmirror should allow you to bypass mirror restrictions.
+			# XXX: This is not a good thing, and is temporary at best.
+			print ">>> \"mirror\" mode desired and \"mirror\" restriction found; skipping fetch."
+			return 1
+
 	global thirdpartymirrors
 	
 	check_config_instance(mysettings)
@@ -1613,6 +1620,7 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 		return 1
 	locations=mymirrors[:]
 	filedict={}
+	primaryuri_index = 0
 	for myuri in myuris:
 		myfile=os.path.basename(myuri)
 		if not filedict.has_key(myfile):
@@ -1644,17 +1652,21 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 						writemsg(    "!!! prior to 3.2.3. Please merge the latest gcc or rebuid python with either\n")
 						writemsg(    "!!! -march=pentium3 or set -mno-sse2 in your cflags.\n\n\n")
 						time.sleep(10)
-						
+
 					for locmirr in thirdpartymirrors[mirrorname]:
 						filedict[myfile].append(locmirr+"/"+myuri[eidx+1:])
-      
-        
+
 				if not filedict[myfile]:
 					writemsg("No known mirror by the name: %s\n" % (mirrorname))
 			else:
 				writemsg("Invalid mirror definition in SRC_URI:\n")
 				writemsg("  %s\n" % (myuri))
 		else:
+			if "primaryuri" in mysettings["RESTRICT"].split():
+				# Use the source site first.
+				filedict[myfile].insert(primaryuri_index, myuri)
+				primaryuri_index += 1
+			else:
 				filedict[myfile].append(myuri)
 
 	missingSourceHost = False

@@ -1,11 +1,29 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.26 2004/12/09 05:52:10 genone Exp $
+# $Id: ChangeLog,v 1.796.2.27 2004/12/17 22:25:13 carpaski Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  14 Dec 2004; Nicholas Jones <carpaski@gentoo.org> doins: Fix and notices
+  for $D handling.
+
+  14 Dec 2004; Nicholas Jones <carpaski@gentoo.org> ebuild.sh: spb's chflags
+  adjustment for dyn_clean. stat_perms() overhaul for bsd and ppc.
+
+  14 Dec 2004; Nicholas Jones <carpaski@gentoo.org> webrsync: TMPDIR is
+  used properly and a tar-failure fix.
+
+  14 Dec 2004; Nicholas Jones <carpaski@gentoo.org> portage.py: RESTRICT
+  changes -- nomirror and mirror are now the same (use 'mirror') -- lmirror
+  is a temporary way to sidestep mirror restrictions -- primaryuri makes
+  portage attempt to retrieve from the source mirror before falling back to
+  other mirrors (corrects behavior some impose for 'mirror').
+
+  14 Dec 2004; Nicholas Jones <carpaski@gentoo.org> portage_db_flat.py: Do
+  not fail when we're on a readonly FS and we're only reading (lockfiles).
 
   09 Dec 2004; Marius Mauch <genone@gentoo.org> bin/ebuild.sh:
   change LDFLAGS to CFLAGS for the setXid check.
