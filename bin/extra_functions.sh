@@ -1,6 +1,6 @@
 # Copyright 2002-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/extra_functions.sh,v 1.1 2003/03/11 11:33:07 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/extra_functions.sh,v 1.2 2003/03/14 04:42:05 carpaski Exp $
 
 # ============================================================================
 # Extracted from flag-o-matic -- March 10, 2003
@@ -129,6 +129,11 @@ EPATCH_OPTS=""
 EPATCH_EXCLUDE=""
 # Change the printed message for a single patch.
 EPATCH_SINGLE_MSG=""
+# Force applying bulk patches even if not following the style:
+#
+#   ??_${ARCH}_foo.${EPATCH_SUFFIX}
+#
+EPATCH_FORCE="no"
 
 # This function is for bulk patching, or in theory for just one
 # or two patches.
@@ -186,7 +191,13 @@ epatch() {
 		
 	elif [ -n "$1" -a -d "$1" ]
 	then
-		local EPATCH_SOURCE="$1/*.${EPATCH_SUFFIX}"
+		# Allow no extension if EPATCH_FORCE=yes ... used by vim for example ...
+		if [ "${EPATCH_FORCE}" = "yes" ] && [ -z "${EPATCH_SUFFIX}" ]
+		then
+			local EPATCH_SOURCE="$1/*"
+		else
+			local EPATCH_SOURCE="$1/*.${EPATCH_SUFFIX}"
+		fi
 	else
 		if [ ! -d ${EPATCH_SOURCE} ]
 		then
@@ -236,7 +247,8 @@ epatch() {
 		#   ???_arch_foo.patch
 		#
 		if [ -f ${x} ] && \
-		   [ "${SINGLE_PATCH}" = "yes" -o "${x/_all_}" != "${x}" -o "`eval echo \$\{x/_${ARCH}_\}`" != "${x}" ]
+		   ([ "${SINGLE_PATCH}" = "yes" -o "${x/_all_}" != "${x}" -o "`eval echo \$\{x/_${ARCH}_\}`" != "${x}" ] || \
+		    [ "${EPATCH_FORCE}" = "yes" ])
 		then
 			local count=0
 			local popts="${EPATCH_OPTS}"
