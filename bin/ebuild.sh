@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.109 2003/02/22 16:59:08 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.110 2003/02/23 23:10:02 alain Exp $
 
 cd ${PORTAGE_TMPDIR}
 
@@ -84,14 +84,7 @@ has() {
 has_version() {
 	# return shell-true/shell-false if exists.
 	# Takes single depend-type atoms.
-	# XXX DO NOT ALIGN THIS -- PYTHON WILL NOT BE HAPPY XXX #
-	if python -c "import portage,sys
-mylist=portage.db[\"${ROOT}\"][\"vartree\"].dbapi.match(\"$1\")
-if mylist:
-	sys.exit(0)
-else:
-	sys.exit(1)
-"; then
+	if $(/usr/lib/portage/bin/portageq has_version ${ROOT} $1); then
 		return 0
 	else
 		return 1
@@ -101,11 +94,7 @@ else:
 best_version() {
 	# returns the best/most-current match.
 	# Takes single depend-type atoms.
-	# XXX DO NOT ALIGN THIS -- PYTHON WILL NOT BE HAPPY XXX #
-	echo $(python -c "import portage
-mylist=portage.db[\"${ROOT}\"][\"vartree\"].dbapi.match(\"$1\")
-print portage.best(mylist)
-")
+	echo $(/usr/lib/portage/bin/portageq best_version ${ROOT} $1)
 }
 
 use_with() {

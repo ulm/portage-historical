@@ -8,7 +8,7 @@
 # Leo Lipelis <aeoo@gentoo.org>
 # Karl Trygve Kalleberg <karltk@gentoo.org>
 #
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.4 2003/02/03 13:13:43 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.5 2003/02/23 23:10:03 alain Exp $
 
 function get_config() {
 	item=$1
@@ -296,8 +296,8 @@ rm -rf ${TMP} 2> /dev/null
 mkdir ${TMP} || die "failed mkdir command!" 1
 
 # I need the CONFIG_PROTECT value
-CONFIG_PROTECT="$(python -c 'import portage;print portage.settings["CONFIG_PROTECT"]')"
-CONFIG_PROTECT_MASK="$(python -c 'import portage;print portage.settings["CONFIG_PROTECT_MASK"]')"
+CONFIG_PROTECT=$(/usr/lib/portage/bin/portageq config_protect)
+CONFIG_PROTECT_MASK=$(/usr/lib/portage/bin/portageq config_protect_mask)
 
 # load etc-config's configuration
 EU_AUTOMERGE=`get_config eu_automerge`

@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/quickpkg,v 1.4 2003/02/16 03:03:41 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/quickpkg,v 1.5 2003/02/23 23:10:03 alain Exp $
 # This script tries to quickly create a gentoo binary package using the
 #
 #   /var/db/pkg/class-app/app/*  files
@@ -11,7 +11,7 @@
 # Comments or questions to tchan@enteract.com
 # Copyright (C) 2001 - Terry Chan.  GNU GPL
 #
-export PKGDIR="`python2.2 -c 'import portage; print portage.settings["PKGDIR"];'`"
+export PKGDIR="$(/usr/lib/portage/bin/portageq pkgdir)"
 
 if [ -z $1 ]; then
   echo "QUICKPKG ver 1.1"

@@ -1,6 +1,13 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.423 2003/02/23 08:22:29 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.424 2003/02/23 23:12:26 alain Exp $
+
+  23 Feb 2003; Alain Penders <alain@gentoo.org>: Added bin/portageq tool to
+        provide access to portage internal information without using APIs that
+	are changing.  All tools that currently access portage information by
+	importing portage.py and poking around in it should switch to using
+	this tool instead.
+	Changed some tools in bin/ to use it, so those won't break either.
 
 *portage-2.0.47-r3 (17 Feb 2003): Wicked Fast, BugFree v2, UserPriv
 
