@@ -1,11 +1,14 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.873 2004/11/14 05:45:57 genone Exp $
+# $Id: ChangeLog,v 1.874 2004/11/15 02:21:19 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  14 Nov 2004; Brian Harring <ferringb@gentoo.org> spec/emerge.syntax:
+  Bye bye emerge.syntax, we hardly knew ye.
 
   14 Nov 2004; Marius Mauch <genone@gentoo.org> bin/emerge, man/make.conf.5,
   spec/emerge.syntax, cnf/make.conf.*, cnf/make.globals*:
