@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.301 2004/07/26 13:43:44 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.302 2004/07/26 18:30:27 ferringb Exp $
 
 import os,sys,platform
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2429,7 +2429,7 @@ elif "config"==myaction:
 	print
 # INFO action
 elif "info"==myaction:
-	unameout=commands.getstatusoutput("/bin/uname -mrp")[1]
+	unameout=commands.getstatusoutput("`which uname` -mrp")[1]
 	print getportageversion()
 	print "================================================================="
 	print "System uname: "+unameout
