@@ -1,7 +1,7 @@
 # portage: Lock management code
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.12 2004/10/17 05:06:16 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.13 2004/10/17 05:38:40 ferringb Exp $
 
 import atexit
 import errno
@@ -102,7 +102,7 @@ def lockfile(mypath,wantnewlockfile=0,unlinkfile=0):
 				# try for the exclusive lock now.
 				lock(myfd,fcntl.LOCK_EX)
 				link_success = True
-			elif e.errno in (errno.ENOLCK, errno.EINVALID):
+			elif e.errno == errno.ENOLCK:
 				continue
 			else:
 				raise e
@@ -142,7 +142,14 @@ def lockfile(mypath,wantnewlockfile=0,unlinkfile=0):
 def unlockfile(mytuple):
 	import fcntl
 
-	lockfilename,myfd,unlinkfile,locking_method = mytuple
+	#XXX: Compatability hack.
+	if len(mytuple) == 3:
+		lockfilename,myfd,unlinkfile = mytuple
+		locking_method = fcntl.flock
+	elif len(mytuple) == 4:
+		lockfilename,myfd,unlinkfile,locking_method = mytuple
+	else:
+		raise
 
 	if(myfd == HARDLINK_FD):
 		unhardlink_lockfile(lockfilename)
