@@ -1,7 +1,7 @@
 # portage: Constants
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_const.py,v 1.4 2004/11/07 11:58:29 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_const.py,v 1.5 2004/11/20 10:48:16 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -24,7 +24,14 @@ LOCALE_DATA_PATH        = PORTAGE_BASE_PATH+"/locale"
 
 EBUILD_SH_BINARY        = PORTAGE_BIN_PATH+"/ebuild.sh"
 EBUILD_DAEMON_PATH	= PORTAGE_BIN_PATH+"/ebuild-daemon.sh"
-SANDBOX_BINARY          = PORTAGE_BIN_PATH+"/sandbox"
+
+SANDBOX_BINARY          = "/usr/bin/sandbox"
+# XXX compatibility hack.  this shouldn't ever hit a stable release.
+import os
+if not os.path.exists(SANDBOX_BINARY):
+	if os.path.exists(PORTAGE_BIN_PATH+"/sandbox"):
+		SANDBOX_BINARY=PORTAGE_BIN_PATH+"/sandbox"
+
 DEPSCAN_SH_BINARY       = "/sbin/depscan.sh"
 BASH_BINARY             = "/bin/bash"
 MOVE_BINARY             = "/bin/mv"
