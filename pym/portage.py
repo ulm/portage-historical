@@ -12,11 +12,21 @@ import string,os,re,types,sys,shlex,shutil,xpak,fcntl,signal,time,missingos,cPic
 import portage_config
 import portage_files
 
+
+#
+# Definitions for access rights.
+#
+USER_NORMAL	= 0
+USER_WHEEL	= 1
+USER_ROOT	= 2
+
+
 #-----------------------------------------------------------------------------
 
 class PortageContext:
 	def __init__(self):
 		self.incrementals=["USE","FEATURES","ACCEPT_KEYWORDS","ACCEPT_LICENSE","CONFIG_PROTECT_MASK","CONFIG_PROTECT","PRELINK_PATH","PRELINK_PATH_MASK"]
+		self.stickies=["KEYWORDS_ACCEPT","USE","CFLAGS","CXXFLAGS","MAKEOPTS","EXTRA_ECONF","EXTRA_EMAKE"]
 		self.db = {}
 
 	def init(self):
@@ -37,13 +47,51 @@ class PortageContext:
 
 		self.setupUseDefaults()
 
-		#We need to create the vartree first, then load our settings, and then set up our other trees
+		#
+		# We need to create the vartree first, then load our settings, and then set up our other trees
+		# This method creates virtualmap and virtualpkgmap
+		#
 		self.do_vartree()
 
 		#
 		# Set up our configuration
 		#
 		self.settings = portage_config.config(self)
+
+		#
+		# Apply update files if there's new ones.
+		#
+		self.handle_updates()
+
+		#
+		# Load the portage db
+		#
+		self.portdb = self.initialize_portdb()
+
+		#
+		# Set up other trees
+		#
+		self.db["/"]["porttree"]=portagetree("/",self.virtualmap)
+		self.db["/"]["bintree"]=binarytree("/",self.virtualmap)
+		if self.getRoot()!="/":
+			self.db[self.getRoot()]["porttree"]=portagetree(self.getRoot(),self.virtualmap)
+			self.db[self.getRoot()]["bintree"]=binarytree(self.getRoot(),self.virtualmap)
+
+		#
+		# Initialize list of mirrors.
+		#
+		self.initialize_mirrors()
+
+		#
+		# Initialize feature set
+		#
+		self.initialize_features()
+		
+		#
+		# Initialize prelink support
+		#
+		self.initialize_prelink()
+		
 
 	def getIncrementals(self):
 		return self.incrementals
@@ -223,6 +271,120 @@ class PortageContext:
 				except OSError:
 					pass
 
+	def do_update(self, updatefile):
+		"""This method takes an update file (e.g. /usr/portage/profiles/updates/4Q-2002),
+		and updates the installed packaged in world and virtuals.  This allows packaged
+		to be renamed or moved into a different category without Portage losing track
+		of them."""
+
+		# Load the world and virtuals files, as well as the file containing the changes
+		# to be made.
+		myvirts=grabdict("/var/cache/edb/virtuals")
+		worldlist=grabfile("/var/cache/edb/world")
+		myupd=grabfile(updatefile)
+
+		processed=1
+
+		for myline in myupd:
+			mysplit=myline.split()
+			if not len(mysplit):
+				continue
+			if mysplit[0]!="move":
+				print "portage: Update type \""+mysplit[0]+"\" not recognized."
+				processed=0
+				continue
+			if len(mysplit)!=3:
+				print "portage: Update command \""+myline+"\" invalid; skipping."
+				processed=0
+				continue
+			self.db["/"]["vartree"].dbapi.move_ent(mysplit)
+
+			#update world entries:
+			for x in range(0,len(worldlist)):
+				#update world entries, if any.
+				worldlist[x]=dep_transform(worldlist[x],mysplit[1],mysplit[2])
+		
+			#update virtuals:
+			for myvirt in myvirts.keys():
+				for mypos in range(0,len(myvirts[myvirt])):
+					if myvirts[myvirt][mypos]==mysplit[1]:
+						#update virtual to new name
+						myvirts[myvirt][mypos]=mysplit[2]
+	
+		# If we processed the file correctly, update the LastModifiedDB, so that we won't
+		# try to update it again.
+		if processed:
+			#update our internal mtime since we processed all our directives.
+			self.mtimedb["updates"][updatefile]=os.stat(updatefile)[ST_MTIME]
+
+		# Write out the modified world and virtuals files.
+		myworld=open("/var/cache/edb/world","w")
+		for x in worldlist:
+			myworld.write(x+"\n")
+		myworld.close()
+		writedict(myvirts,"/var/cache/edb/virtuals")
+
+
+	def handle_updates(self):
+		global secpass
+		if (secpass==USER_ROOT) and (not os.environ.has_key("SANDBOX_ACTIVE")):
+			#only do this if we're root
+			updpath=os.path.normpath(self.settings["PORTDIR"]+"/profiles/updates")
+			didupdate=0
+			try:
+				for filename in listdir(updpath):
+					myfile=updpath+"/"+filename
+					if not os.path.isfile(myfile):
+						continue
+					if (not self.mtimedb["updates"].has_key(myfile)) or (self.mtimedb["updates"][myfile] != os.stat(myfile)[ST_MTIME]):
+						didupdate=1
+						self.do_update(myfile)
+			except OSError:
+				#directory doesn't exist
+				pass
+			if didupdate:
+				#make sure our internal databases are consistent; recreate our virts and vartree
+				self.do_vartree()
+
+
+	def initialize_portdb(self):
+		"""Load up the portage DB, and add PORTDIR_OVERLAY path to it if it's set and valid."""
+		portdb=portdbapi()
+		if self.settings["PORTDIR_OVERLAY"]:
+			if os.path.isdir(self.settings["PORTDIR_OVERLAY"]):
+				portdb.oroot=self.settings["PORTDIR_OVERLAY"]
+			else:
+				print "portage: init: PORTDIR_OVERLAY points to",self.settings["PORTDIR_OVERLAY"],"which isn't a directory. Exiting."
+				sys.exit(1)
+		return portdb
+
+
+	def initialize_mirrors(self):
+		"""Load and initialize out list of 3rd party mirrors."""
+		self.thirdpartymirrors=grabdict(self.settings["PORTDIR"]+"/profiles/thirdpartymirrors")
+
+	def getMirrorList(self):
+		"""Get our mirror list."""
+		return self.thirdpartymirrors
+
+	def initialize_features(self):
+		"""Initialize the feature set we're using."""
+		self.features=self.settings["FEATURES"].split()
+
+	def has_feature(self, name):
+		"""Is the named feature enabled?"""
+		return (name in self.features)
+
+	def initialize_prelink(self):
+		"""Initialize prelink handling.  This checks whether or not this system supports prelinking."""
+		self.prelink_capable=0
+		if os.system("/usr/sbin/prelink --version > /dev/null 2>&1") == 0:
+			self.prelink_capable=1
+
+	def has_prelink(self):
+		"""Does this system support prelinking?  Returns true if it does."""
+		return self.prelink_capable
+
 
 #-----------------------------------------------------------------------------
 
@@ -258,7 +420,6 @@ except KeyError:
 	
 	print
 
-stickies=["KEYWORDS_ACCEPT","USE","CFLAGS","CXXFLAGS","MAKEOPTS","EXTRA_ECONF","EXTRA_EMAKE"]
 
 def getcwd():
 	"this fixes situations where the current directory doesn't exist"
@@ -291,11 +452,11 @@ def listdir(path):
 		dircache[path] = mtime, list
 	return list
 
-prelink_capable=0
 try:
 	import fchksum
-	def perform_checksum(filename, calc_prelink=prelink_capable):
-		if calc_prelink and prelink_capable:
+	def perform_checksum(filename, calc_prelink=0):
+		global ctx
+		if calc_prelink and ctx.has_prelink():
 			# Create non-prelinked temporary file to md5sum.
 			prelink_tmpfile="/tmp/portage-prelink.tmp"
 			try:
@@ -312,10 +473,11 @@ try:
 			return fchksum.fmd5t(filename)
 except ImportError:
 	import md5
-	def perform_checksum(filename, calc_prelink=prelink_capable):
+	def perform_checksum(filename, calc_prelink=0):
+		global ctx
 		prelink_tmpfile="/tmp/portage-prelink.tmp"
 		myfilename=filename
-		if calc_prelink and prelink_capable:
+		if calc_prelink and ctx.has_prelink():
 			# Create non-prelinked temporary file to md5sum.
 			# Raw data is returned on stdout, errors on stderr.
 			# Non-prelinks are just returned.
@@ -339,17 +501,18 @@ except ImportError:
 			data = f.read(blocksize)
 		f.close()
 
-		if calc_prelink and prelink_capable:
+		if calc_prelink and ctx.has_prelink():
 			os.unlink(prelink_tmpfile)
 		return (sum.hexdigest(),size)
 		#return (md5_to_hex(sum.digest()),size)
 
 starttime=long(time.time())
-features=[]
+#ALAIN: Can't do this anymore...
+#features=[]
 
 def exithandler(foo,bar):
 	"""Handles ^C interupts in a sane manner"""
-	global features,secpass
+	global ctx,secpass
 	#remove temp sandbox files
 #	if (secpass==2) and ("sandbox" in features):
 #		mypid=os.fork()
@@ -365,8 +528,9 @@ def exithandler(foo,bar):
 #		if retval==0:
 #			if os.path.exists("/tmp/sandboxpids.tmp"):
 #				os.unlink("/tmp/sandboxpids.tmp")
+	if ctx:
+		ctx.mtimedb.store_db()
 	# 0=send to *everybody* in process group
-	portageexit()
 	os.kill(0,signal.SIGKILL)
 	sys.exit(1)
 
@@ -610,7 +774,7 @@ def env_update(makelinks=1):
 		newld.close()
 
 	# Update prelink.conf if we are prelink-enabled
-	if prelink_capable:
+	if ctx.has_prelink():
 		newprelink=open(ctx.getRoot()+"etc/prelink.conf","w")
 		newprelink.write("# prelink.conf autogenerated by env-update; make all changes to\n")
 		newprelink.write("# contents of /etc/env.d directory\n")
@@ -827,6 +991,8 @@ def spawn(mystring,debug=0,free=0,droppriv=0):
 	signal handling.  Using spawn allows our Portage signal handler
 	to work."""
 
+	global ctx
+
 	# usefull if an ebuild or so needs to get the pid of our python process
 	ctx.settings["PORTAGE_MASTER_PID"]=str(os.getpid())
 	
@@ -840,14 +1006,14 @@ def spawn(mystring,debug=0,free=0,droppriv=0):
 		else:
 			if droppriv:
 				print "portage: Unable to drop root for",mystring
-				if free and ("sandbox" in features):
+				if free and ctx.has_feature("sandbox"):
 					# DropPriv is a normally SandBox'd condition.
 					print "portage: Enabling sandbox."
 					free=0
 		ctx.settings["HOME"]=ctx.settings["BUILD_PREFIX"]
 		ctx.settings["BASH_ENV"]=ctx.settings["HOME"]+"/.bashrc"
 
-		if ("sandbox" in features) and (not free):
+		if ctx.has_feature("sandbox") and (not free):
 			mycommand="/usr/lib/portage/bin/sandbox"
 			myargs=["["+ctx.settings["PF"]+"] sandbox",mystring]
 		else:
@@ -873,10 +1039,10 @@ def spawn(mystring,debug=0,free=0,droppriv=0):
 
 def fetch(myuris, listonly=0):
 	"fetch files.  Will use digest file if available."
-	if ("mirror" in features) and ("nomirror" in ctx.settings["RESTRICT"].split()):
+	global ctx
+	if ctx.has_feature("mirror") and ("nomirror" in ctx.settings["RESTRICT"].split()):
 		print ">>> \"mirror\" mode and \"nomirror\" restriction enabled; skipping fetch."
 		return 1
-	global thirdpartymirrors
 	mymirrors=ctx.settings["GENTOO_MIRRORS"].split()
 	fetchcommand=ctx.settings["FETCHCOMMAND"]
 	resumecommand=ctx.settings["RESUMECOMMAND"]
@@ -931,8 +1097,8 @@ def fetch(myuris, listonly=0):
 			eidx = myuri.find("/", 9)
 			if eidx != -1:
 				mirrorname = myuri[9:eidx]
-				if thirdpartymirrors.has_key(mirrorname):
-					for locmirr in thirdpartymirrors[mirrorname]:
+				if ctx.getMirrorList().has_key(mirrorname):
+					for locmirr in ctx.getMirrorList()[mirrorname]:
 						filedict[myfile].append(locmirr+"/"+myuri[eidx+1:])		
 		else:
 				filedict[myfile].append(myuri)
@@ -1008,9 +1174,10 @@ def fetch(myuris, listonly=0):
 def digestgen(myarchives,overwrite=1):
 	"""generates digest file if missing.  Assumes all files are available.	If
 	overwrite=0, the digest will only be created if it doesn't already exist."""
+	global ctx
 	if not os.path.isdir(ctx.settings["FILESDIR"]):
 		os.makedirs(ctx.settings["FILESDIR"])
-		if "cvs" in features:
+		if ctx.has_feature("cvs"):
 			print ">>> Auto-adding files/ dir to CVS..."
 			spawn("cd "+ctx.settings["O"]+"; cvs add files",free=1)
 	myoutfn=ctx.settings["FILESDIR"]+"/.digest-"+ctx.settings["PF"]
@@ -1036,19 +1203,20 @@ def digestgen(myarchives,overwrite=1):
 	if not movefile(myoutfn,myoutfn2):
 		print "!!! Failed to move digest."
 		sys.exit(1)
-	if "cvs" in features:
+	if ctx.has_feature("cvs"):
 		print ">>> Auto-adding digest file to CVS..."
 		spawn("cd "+ctx.settings["FILESDIR"]+"; cvs add digest-"+ctx.settings["PF"],free=1)
 	print ">>> Computed message digests."
 	
 def digestcheck(myarchives):
 	"Checks md5sums.  Assumes all files have been downloaded."
+	global ctx
 	if not myarchives:
 		#No archives required; don't expect a digest
 		return 1
 	digestfn=ctx.settings["FILESDIR"]+"/digest-"+ctx.settings["PF"]
 	if not os.path.exists(digestfn):
-		if "digest" in features:
+		if ctx.has_feature("digest"):
 			print ">>> No message digest file found:",digestfn
 			print ">>> \"digest\" mode enabled; auto-generating new digest..."
 			digestgen(myarchives)
@@ -1068,7 +1236,7 @@ def digestcheck(myarchives):
 		mydigests[myline[2]]=[myline[1],myline[3]]
 	for x in myarchives:
 		if not mydigests.has_key(x):
-			if "digest" in features:
+			if ctx.has_feature("digest"):
 				print ">>> No message digest entry found for archive \""+x+".\""
 				print ">>> \"digest\" mode enabled; auto-generating new digest..."
 				digestgen(myarchives)
@@ -1096,7 +1264,7 @@ def digestcheck(myarchives):
 
 # parse actionmap to spawn ebuild with the appropriate args
 def spawnebuild(mydo,actionmap,debug,alwaysdep=0):
-	if alwaysdep or ("noauto" not in features):
+	if alwaysdep or (not ctx.has_feature("noauto")):
 		# process dependency first
 		if "dep" in actionmap[mydo].keys():
 			retval=spawnebuild(actionmap[mydo]["dep"],actionmap,debug,alwaysdep)
@@ -1237,7 +1405,7 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 				myl[1].append(mya)
 	ctx.settings["A"]=string.join(alist," ")
 	ctx.settings["AA"]=string.join(aalist," ")
-	if ("cvs" in features) or ("mirror" in features):
+	if ctx.has_feature("cvs") or ctx.has_feature("mirror"):
 		fetchme=alluris
 		checkme=aalist
 	else:
@@ -1250,7 +1418,7 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 	if mydo=="fetch":
 		return 0
 
-	if "digest" in features:
+	if ctx.has_feature("digest"):
 		#generate digest if it doesn't exist.
 		if mydo=="digest":
 			digestgen(checkme,overwrite=1)
@@ -1267,7 +1435,7 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 	
 	#initial dep checks complete; time to process main commands
 
-	nosandbox=("sandboxuser" not in features)
+	nosandbox=(not ctx.has_feature("sandboxuser"))
 	actionmap={
 			  "setup": {                 "args":(1,0)},  # no sandbox, as root
 			 "unpack": {"dep":"setup",   "args":(0,1)},  # w/ sandbox, as portage
@@ -2147,7 +2315,7 @@ def best(mymatches):
 
 class portagetree:
 	def __init__(self,root="/",virtual=None,clone=None):
-		global portdb
+		global ctx
 		if clone:
 			self.root=clone.root
 			self.portroot=clone.portroot
@@ -2156,7 +2324,7 @@ class portagetree:
 			self.root=root
 			self.portroot=ctx.settings["PORTDIR"]
 			self.virtual=virtual
-			self.dbapi=portdb
+			self.dbapi=ctx.portdb
 
 	def dep_bestmatch(self,mydep):
 		"compatibility method"
@@ -4039,101 +4207,10 @@ ctx.init()
 
 #### ALAIN: PROFILEDIR WAS SET HERE!
 
-
-
-
-
-
-def do_upgrade(mykey):
-	global ctx
-	#now, let's process this file...
-	processed=1
-	#remove stale virtual entries (mappings for packages that no longer exist)
-	myvirts=grabdict("/var/cache/edb/virtuals")
-	
-	worldlist=grabfile("/var/cache/edb/world")
-	myupd=grabfile(mykey)
-	for myline in myupd:
-		mysplit=myline.split()
-		if not len(mysplit):
-			continue
-		if mysplit[0]!="move":
-			print "portage: Update type \""+mysplit[0]+"\" not recognized."
-			processed=0
-			continue
-		if len(mysplit)!=3:
-			print "portage: Update command \""+myline+"\" invalid; skipping."
-			processed=0
-			continue
-		ctx.db["/"]["vartree"].dbapi.move_ent(mysplit)
-		
-		#update world entries:
-		for x in range(0,len(worldlist)):
-			#update world entries, if any.
-			worldlist[x]=dep_transform(worldlist[x],mysplit[1],mysplit[2])
-		
-		#update virtuals:
-		for myvirt in myvirts.keys():
-			for mypos in range(0,len(myvirts[myvirt])):
-				if myvirts[myvirt][mypos]==mysplit[1]:
-					#update virtual to new name
-					myvirts[myvirt][mypos]=mysplit[2]
-	
-	if processed:
-		#update our internal mtime since we processed all our directives.
-		ctx.mtimedb["updates"][mykey]=os.stat(mykey)[ST_MTIME]
-	myworld=open("/var/cache/edb/world","w")
-	for x in worldlist:
-		myworld.write(x+"\n")
-	myworld.close()
-	writedict(myvirts,"/var/cache/edb/virtuals")
-
-if (secpass==2) and (not os.environ.has_key("SANDBOX_ACTIVE")):
-	#only do this if we're root
-	updpath=os.path.normpath(ctx.settings["PORTDIR"]+"/profiles/updates")
-	didupdate=0
-	try:
-		for myfile in listdir(updpath):
-			mykey=updpath+"/"+myfile
-			if not os.path.isfile(mykey):
-				continue
-			if (not ctx.mtimedb["updates"].has_key(mykey)) or (ctx.mtimedb["updates"][mykey] != os.stat(mykey)[ST_MTIME]):
-				didupdate=1
-				do_upgrade(mykey)
-	except OSError:
-		#directory doesn't exist
-		pass
-	if didupdate:
-		#make sure our internal databases are consistent; recreate our virts and vartree
-		ctx.do_vartree()
-
-#the new standardized db names:
-portdb=portdbapi()
-if ctx.settings["PORTDIR_OVERLAY"]:
-	if os.path.isdir(ctx.settings["PORTDIR_OVERLAY"]):
-		portdb.oroot=ctx.settings["PORTDIR_OVERLAY"]
-	else:
-		print "portage: init: PORTDIR_OVERLAY points to",ctx.settings["PORTDIR_OVERLAY"],"which isn't a directory. Exiting."
-		sys.exit(1)
-
-
 ## ALAIN: This is where portageexit() - the mtimedb write out stuff - was.
 
 
-#continue setting up other trees
-ctx.db["/"]["porttree"]=portagetree("/",ctx.virtualmap)
-ctx.db["/"]["bintree"]=binarytree("/",ctx.virtualmap)
-if ctx.getRoot()!="/":
-	ctx.db[ctx.getRoot()]["porttree"]=portagetree(ctx.getRoot(),ctx.virtualmap)
-	ctx.db[ctx.getRoot()]["bintree"]=binarytree(ctx.getRoot(),ctx.virtualmap)
-thirdpartymirrors=grabdict(ctx.settings["PORTDIR"]+"/profiles/thirdpartymirrors")
 
-#,"porttree":portagetree(ctx.getRoot(),ctx.virtualmap),"bintree":binarytree(ctx.getRoot(),ctx.virtualmap)}
-features=ctx.settings["FEATURES"].split()
-
-# Defaults set at the top of perform_checksum.
-if os.system("/usr/sbin/prelink --version > /dev/null 2>&1") == 0:
-	prelink_capable=1
 
 dbcachedir=ctx.settings["PORTAGE_CACHEDIR"]
 if not dbcachedir:
