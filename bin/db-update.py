@@ -1,10 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/db-update.py,v 1.4 2003/10/13 07:43:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/db-update.py,v 1.5 2003/11/10 08:30:55 carpaski Exp $
 
 import os,sys,string
-sys.path += ["/usr/lib/portage/pym"]
+sys.path = ["/usr/lib/portage/pym"]+sys.path
 
 import portage
 

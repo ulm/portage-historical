@@ -1,7 +1,7 @@
 # cvstree.py -- cvs tree utilities
 # Copyright 1998-2003 Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/cvstree.py,v 1.5 2003/08/16 07:28:22 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/cvstree.py,v 1.6 2003/11/10 08:30:55 carpaski Exp $
 
 import string,os,time,sys,re
 from stat import *
@@ -48,7 +48,7 @@ def isadded(entries, path):
 	mylines=myfile.readlines()
 	myfile.close()
 
-	rep=re.compile("^\/"+filename+"\/");
+	rep=re.compile("^\/"+re.escape(filename)+"\/");
 	for x in mylines:
 		if rep.search(x):
 			return 1

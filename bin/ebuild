@@ -1,17 +1,19 @@
-#!/usr/bin/python
+#!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild,v 1.12 2003/10/13 07:43:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild,v 1.13 2003/11/10 08:30:55 carpaski Exp $
 
 import os,sys
-sys.path += ["/usr/lib/portage/pym"]
+sys.path = ["/usr/lib/portage/pym"]+sys.path
 
 def getroot():
 	try:
 		a=os.environ["ROOT"]
+		if a == '/':
+			return '/'
 	except:
-		return "/"
-	return os.path.normpath(a+"/")
+		return '/'
+	return os.path.normpath(a+'/')
 
 os.environ["PORTAGE_CALLER"]="ebuild"
 		

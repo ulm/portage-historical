@@ -1,8 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python -O
 # pdb -- tool to update and query local and remote portage package databases
 # Copyright (C) Sept 2001, Chris Houser <chouser@bluweb.com>
 # Distributed under the GNU General Public License
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/pdb,v 1.5 2003/10/13 07:43:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/pdb,v 1.6 2003/11/10 08:30:55 carpaski Exp $
 
 # config -- begin
 dbfile = '/home/c/proj/pkgdb/gentoo'
