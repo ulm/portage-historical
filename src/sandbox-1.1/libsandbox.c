@@ -25,7 +25,7 @@
  *  as some of the InstallWatch code was used.
  *
  *
- *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.8 2003/07/27 14:31:50 azarah Exp $
+ *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.9 2003/07/27 15:05:49 azarah Exp $
  *
  */
 
@@ -284,8 +284,8 @@ canonicalize(const char *path, char *resolved_path)
 
 	/* Do not try to resolve an empty path */
 	if ('\0' == path[0]) {
-		errno = EINVAL;
-		return -1;
+		errno = old_errno;
+		return 0;
 	}
 
 	retval = erealpath(path, resolved_path);
