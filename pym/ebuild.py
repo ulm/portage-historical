@@ -2,7 +2,7 @@
 # ebuild.py; Ebuild classes/abstraction of phase processing, and communicating with a ebuild-daemon.sh instance
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.7 2004/11/11 01:17:46 ferringb Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.8 2004/11/12 18:23:41 ferringb Exp $
 
 
 import os,sys,traceback
@@ -144,7 +144,7 @@ class ebuild_processor:
 			spawn_func = portage_exec.spawn_fakeroot
 			args.append(save_file)
 		else:
-			spawn_func = portage_exec.spawn_exec
+			spawn_func = portage_exec.spawn
 
 		self.pid = spawn_func(self.ebd+" daemonize", fd_pipes={0:0, 1:1, 2:2, 3:cread, 4:dwrite},
 			returnpid=True,env=env, *args, **spawn_opts)[0]
