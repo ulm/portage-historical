@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/regenworld,v 1.8 2004/06/05 17:47:45 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/regenworld,v 1.9 2004/06/26 14:13:00 nakano Exp $
 
 import sys
 sys.path.insert(0, "/usr/lib/portage/pym")
@@ -36,7 +36,7 @@ def isunwanted(pkgline):
 		return True
 
 # show a little description if we have arguments
-if sys.argv[1] in ["-h", "--help"]:
+if len(sys.argv) >= 2 and sys.argv[1] in ["-h", "--help"]:
 	print "This script regenerates the portage world file by checking the portage"
 	print "logfile for all actions that you've done in the past. It ignores any"
 	print "arguments except --help. It is recommended that you make a backup of"
