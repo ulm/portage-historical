@@ -1,7 +1,7 @@
 # portage_gpg.py -- core Portage functionality
 # Copyright 2004-2004 Gentoo Foundation
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_gpg.py,v 1.3 2004/08/16 08:19:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_gpg.py,v 1.4 2004/08/16 20:06:38 carpaski Exp $
 
 import os
 import copy
@@ -11,6 +11,7 @@ import portage_exception
 import portage_md5
 
 GPG_BINARY       = "/usr/bin/gpg"
+GPG_OPTIONS      = " --lock-never --no-random-seed-file --no-greeting --no-sig-cache "
 GPG_VERIFY_FLAGS = " --verify "
 GPG_KEYDIR       = " --homedir '%s' "
 GPG_KEYRING      = " --keyring '%s' "
@@ -43,6 +44,7 @@ class FileChecker:
 				raise portage_exception.InvalidDataType, "keydir argument: %s" % keydir
 			if not os.path.isdir(keydir):
 				raise portage_exception.DirectoryNotFound, "keydir: %s" % keydir
+			self.keydir = copy.deepcopy(keydir)
 
 		if (keyring != None):
 			# Verify that the keyring is a valid filename and exists.
@@ -70,7 +72,6 @@ class FileChecker:
 		else:
 			self.keyringIsTrusted = True
 		
-		self.keydir       = copy.deepcopy(keydir)
 		self.keyring      = copy.deepcopy(keyring)
 		self.keyringPath  = self.keydir+"/"+self.keyring
 		self.minimumTrust = minimumTrust
@@ -101,7 +102,7 @@ class FileChecker:
 		if not os.path.isfile(filename):
 			raise portage_exception.CommandNotFound, filename
 
-		command = GPG_BINARY + GPG_VERIFY_FLAGS
+		command = GPG_BINARY + GPG_VERIFY_FLAGS + GPG_OPTIONS
 		if self.keydir:
 			command += GPG_KEYDIR % (self.keydir)
 		if self.keyring:

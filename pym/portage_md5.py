@@ -1,12 +1,13 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_md5.py,v 1.1 2004/08/15 05:33:57 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_md5.py,v 1.2 2004/08/16 20:06:38 carpaski Exp $
 
 from portage_const import PRIVATE_PATH,PRELINK_BINARY
 import os
 import shutil
 import portage_util
+import portage_locks
 import commands
 
 prelink_capable = False
@@ -23,7 +24,7 @@ try:
 		prelink_tmpfile = PRIVATE_PATH+"/prelink-checksum.tmp"
 		if calc_prelink and prelink_capable:
 			# Create non-prelinked temporary file to md5sum.
-			mylock = lockfile(prelink_tmpfile, wantnewlockfile=1)
+			mylock = portage_locks.lockfile(prelink_tmpfile, wantnewlockfile=1)
 			try:
 				shutil.copy2(filename,prelink_tmpfile)
 			except Exception,e:
@@ -33,7 +34,7 @@ try:
 			spawn(PRELINK_BINARY+" --undo "+prelink_tmpfile+" &>/dev/null", settings, free=1)
 			retval = fchksum.fmd5t(prelink_tmpfile)
 			os.unlink(prelink_tmpfile)
-			unlockfile(mylock)
+			portage_locks.unlockfile(mylock)
 			return retval
 		else:
 			return fchksum.fmd5t(filename)
@@ -41,7 +42,7 @@ except ImportError:
 	import md5
 	def perform_checksum(filename, calc_prelink=prelink_capable):
 		prelink_tmpfile = PRIVATE_PATH+"/prelink-checksum.tmp"
-		mylock = lockfile(prelink_tmpfile, wantnewlockfile=1)
+		mylock = portage_locks.lockfile(prelink_tmpfile, wantnewlockfile=1)
 		myfilename=filename
 		if calc_prelink and prelink_capable:
 			# Create non-prelinked temporary file to md5sum.
@@ -69,5 +70,5 @@ except ImportError:
 
 		if calc_prelink and prelink_capable:
 			os.unlink(prelink_tmpfile)
-		unlockfile(mylock)
+		portage_locks.unlockfile(mylock)
 		return (sum.hexdigest(),size)
