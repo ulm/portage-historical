@@ -1,7 +1,7 @@
 # deps.py -- Portage dependency resolution functions
 # Copyright 2003 Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Id: portage_dep.py,v 1.4 2004/08/02 18:49:31 carpaski Exp $
+# $Id: portage_dep.py,v 1.5 2004/08/02 20:59:08 carpaski Exp $
 
 # DEPEND SYNTAX:
 #
@@ -102,7 +102,8 @@ def use_reduce(deparray, uselist=[], masklist=[], matchall=0):
 					if (head[:-1] in masklist):
 						maskedMatch = True
 
-				if matchall or (matchonMatch and not maskedMatch):
+				if (matchall and (head[:-1] not in masklist)) or \
+				   (matchonMatch and not maskedMatch):
 					# It is set, keep it.
 					if newdeparray: # Error check: if nothing more, then error.
 						rlist += use_reduce(newdeparray, uselist, masklist, matchall)
