@@ -2,7 +2,7 @@
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
 # Author: Daniel Robbins <drobbins@gentoo.org>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.13 2003/03/03 18:23:34 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.14 2003/03/11 11:33:07 carpaski Exp $
 
 # Next to do: dep syntax checking in ebuilds, mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -129,6 +129,8 @@ except:
 
 try: # Determine if we're in PORTDIR... If not tell portage to accomodate.
 	mydir=os.getcwd()
+	if portage.settings["PORTDIR"][-1]!="/":
+		portage.settings["PORTDIR"]=portage.settings["PORTDIR"]+"/"
 	if portage.settings["PORTDIR"]!=mydir[:len(portage.settings["PORTDIR"])]:
 		# We're not in the PORTDIR
 		print

@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.304 2003/03/10 18:20:52 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.305 2003/03/11 11:33:07 carpaski Exp $
 
 VERSION="2.0.47-r8"
 
@@ -1402,6 +1402,7 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 				os.chown(settings["BUILD_PREFIX"],portage_uid,portage_gid)
 				os.chmod(settings["PORT_LOGDIR"],06770)
 				if not settings.has_key("LOG_PF") or (settings["LOG_PF"] != settings["PF"]):
+					settings["LOG_PF"]=settings["PF"]
 					settings["LOG_COUNTER"]=str(counter_tick_core("/"))
 			except Exception, e:
 				settings["PORT_LOGDIR"]=""
