@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.392 2004/02/12 10:25:33 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.393 2004/02/12 10:36:41 nakano Exp $
 
 VERSION="2.0.50_pre17"
 
@@ -3999,7 +3999,7 @@ class vardbapi(dbapi):
 	def cpv_inject(self,mycpv):
 		"injects a real package into our on-disk database; assumes mycpv is valid and doesn't already exist"
 		os.makedirs(self.root+VDB_PATH+"/"+mycpv)	
-		counter=db[self.root]["vartree"].dbapi.counter_tick(self.root)
+		counter=db[self.root]["vartree"].dbapi.counter_tick(self.root,mycpv)
 		# write local package counter so that emerge clean does the right thing
 		lcfile=open(self.root+VDB_PATH+"/"+mycpv+"/COUNTER","w")
 		lcfile.write(str(counter))

@@ -1,12 +1,11 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.548 2004/02/12 10:25:33 nakano Exp $
+# $Id: ChangeLog,v 1.549 2004/02/12 10:36:41 nakano Exp $
 
   12 Feb 2004; Masatomo Nakano <nakano@gentoo.org> emerge, pym/portage.py:
   TGL's patch for correction package size when emerge -v. -- Fixed
   use.default bug. It occurs when package in use.default exists in system
-  and it's virtual package. This should close #40831. -- Fixed trivial
-  --inject bug. This should close #41062.
+  and it's virtual package. This should close #40831. 
 
   12 Feb 2004; Masatomo Nakano <nakano@gentoo.org> emerge: Fixed 
   --ask bugs. It breaks with "--clean". It also breaks when blocker
