@@ -139,6 +139,9 @@ can take a lot of time.
 Force emerges to always try to fetch files from the \fIPORTAGE_BINHOST\fR.  See 
 \fBmake.conf\fR(5) for more information.
 .TP
+.B gpg
+Check the signatures of Manifests and make sure they are correct.
+.TP
 .B keeptemp
 Do not delete the ${T} directory after the merge process.
 .TP
@@ -177,6 +180,10 @@ Disables xterm titlebar updates (which contains status info).
 .TP
 .B sandbox
 Enable sandbox\-ing when running \fBemerge\fR(1) and \fBebuild(1)\fR.
+.TP
+.B severe
+When checking Manifests, only accept ones that have been signed by a
+key which you trust.
 .TP
 .B sfperms
 Stands for Smart Filesystem Permissions.  Before merging packages to the 
@@ -368,4 +375,4 @@ Nicholas Jones <carpaski@gentoo.org>
 .br 
 Mike Frysinger <vapier@gentoo.org>
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/make.conf.5,v 1.40 2004/09/17 00:17:10 vapier Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/make.conf.5,v 1.41 2004/09/19 23:57:18 vapier Exp $
