@@ -8,7 +8,7 @@
 # Leo Lipelis <aeoo@gentoo.org>
 # Karl Trygve Kalleberg <karltk@gentoo.org>
 #
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.11 2003/05/20 09:16:00 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.12 2003/06/30 06:43:38 carpaski Exp $
 
 export PORTAGE_CALLER="etc-update"
 
@@ -235,6 +235,14 @@ function do_cfg() {
 			else
 				echo "Showing differences between ${ofile} and ${file}"
 				${showdiffcmd}
+			fi
+			if [ -L "${file}" ]; then
+				echo
+				echo "-------------------------------------------------------------"
+				echo "NOTE: File is a symlink to another file. REPLACE recommended."
+				echo "      The original file may simply have moved. Please review."
+				echo "-------------------------------------------------------------"
+				echo
 			fi
 			echo -n "1) Replace original with update
 2) Delete update, keeping original as is

@@ -1,6 +1,6 @@
 # Copyright 2002-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/extra_functions.sh,v 1.5 2003/05/20 09:16:00 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/extra_functions.sh,v 1.6 2003/06/30 06:43:38 carpaski Exp $
 
 # ============================================================================
 # Extracted from flag-o-matic -- March 10, 2003
@@ -397,7 +397,7 @@ enewuser() {
 	fi
 
 	# see if user already exists
-	if [ ! -z "${realuser}"]; then
+	if [ ! -z "${realuser}" ]; then
 		if [ "${euser}" == "${realuser}" ]; then
 			einfo "${euser} already exists on your system :)"
 			return 0
