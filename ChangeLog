@@ -1,11 +1,19 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.871 2004/11/12 17:04:19 ferringb Exp $
+# $Id: ChangeLog,v 1.872 2004/11/13 21:24:48 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  10 Nov 2004; Brian Harring <ferringb@gentoo.org> pym/dcache.py:
+  Updated to make it more memory efficient- slots based, uses weakref
+  to handle symlink'd dirs.  Still a bit slower, but it's also stat'ing
+  all directories upto the target directory.  That can probably be removed.
+  Note, there is a bug in it currently- invalidate isn't a valid node method.
+  Nobody should hit this though, since dcache is only used in treewalk.
+  I'll correct it in a few days.
 
   10 Nov 2004; Brian Harring <ferringb@gentoo.org> pym/portage_locks.py:
   Reversion of lock choice strategy to what I stuck in originally, and 
