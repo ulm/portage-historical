@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.12 2005/01/04 09:34:40 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.13 2005/01/06 14:30:09 jstubbs Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -1074,6 +1074,16 @@ dyn_install() {
 	# Portage regenerates this on the installed system.
 	if [ -f "${D}/usr/share/info/dir.gz" ]; then
 		rm -f "${D}/usr/share/info/dir.gz"
+	fi
+
+	if hasq multilib-strict ${FEATURES} && [ -x /usr/bin/file -a -x /usr/bin/find -a \
+	     -n "${MULTILIB_STRICT_DIRS}" -a -n "${MULTILIB_STRICT_DENY}" ]; then
+		for dir in ${MULTILIB_STRICT_DIRS}; do
+			[ -d "${D}/${dir}" ] || continue
+			for file in $(find ${D}/${dir} -type f); do
+				file ${file} | egrep -q "${MULTILIB_STRICT_DENY}" && die "File ${file} matches a file type that is not allowed in ${dir}"
+			done
+		done
 	fi
 
 	touch "${BUILDDIR}/.installed"
