@@ -1,26 +1,21 @@
 #!/bin/bash
-# Copyright 1999-2005 Gentoo Foundation
+# Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dodoc,v 1.8 2005/05/04 23:50:33 vapier Exp $
-
-if [ $# -lt 1 ] ; then
-	echo "$0: at least one argument needed" 1>&2
-	exit 1 	
-fi
-
-dir="${D}usr/share/doc/${PF}/${DOCDESTTREE}"
-if [ ! -d "${dir}" ] ; then
-	install -d "${dir}"
-fi
-
-PORTAGE_COMPRESS=${PORTAGE_COMPRESS:-gzip}
-PORTAGE_COMPRESS_FLAGS=${PORTAGE_COMPRESS_FLAGS:--9}
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dodoc,v 1.3 2002/11/23 19:21:58 vapier Exp $
 
 for x in "$@" ; do
-	if [ -s "${x}" ] ; then
-		install -m0644 "${x}" "${dir}"
-		"${PORTAGE_COMPRESS}" ${PORTAGE_COMPRESS_FLAGS} -f "${dir}/${x##*/}"
-	elif [ ! -e "${x}" ] ; then
-		echo "dodoc: ${x} does not exist" 1>&2
+	if [ -e "${x}" ] ; then
+		if [ ! -d "${D}usr/share/doc/${PF}" ] ; then
+			install -d "${D}usr/share/doc/${PF}"
+		fi
+		if [ -z "${DOCDESTTREE}" ] ; then
+			install -m0644 "${x}" "${D}usr/share/doc/${PF}"
+			gzip -f -9 "${D}usr/share/doc/${PF}/${x##*/}"
+		else
+			install -m0644 "${x}" "${D}usr/share/doc/${PF}/${DOCDESTTREE}"
+			gzip -f -9 "${D}usr/share/doc/${PF}/${DOCDESTTREE}/${x##*/}"
+		fi
+	else
+		echo "${0}: ${x} does not exist."
 	fi
 done

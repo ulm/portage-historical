@@ -1,22 +1,15 @@
 #!/bin/bash
-# Copyright 1999-2005 Gentoo Foundation
+# Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/fperms,v 1.7 2005/05/04 22:49:14 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/fperms,v 1.4 2002/12/15 14:19:21 carpaski Exp $
 
-if [ $# -lt 2 ] ; then
-	echo "${0}: at least two arguments needed" 1>&2
+if [ ${#} -lt 2 ] ; then
+	echo "${0}: at least two arguments needed"
 	exit 1
 fi
 
-OPTS=""
-while [ "${1:0:1}" = "-" ] ; do
-	OPTS="${OPTS} $1"
-	shift
-done
-
-PERM=$1
+PERM="${1}"
 shift
-
-for FILE in "$@" ; do
-	chmod ${OPTS} "${PERM}" "${D}${FILE}"
+for FILE in $*; do
+	chmod "${PERM}" "${D}${FILE}"
 done

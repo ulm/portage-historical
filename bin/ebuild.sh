@@ -1,731 +1,1134 @@
-#!/bin/bash
-# ebuild.sh; ebuild phase processing, env handling
-# Copyright 2005 Gentoo Foundation
+#!/bin/bash 
+# Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.212 2005/05/04 01:07:04 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.102 2003/02/05 06:03:47 carpaski Exp $
 
-# general phase execution path-
-# execute_phases is called, which sets EBUILD_PHASE, and then depending on the phase, 
-# loads or initializes.  Env is init'd for non src based stages if the env isn't found- otherwise
-# it loads the environ via load_environ call.  In cases where env isn't found for phases setup -> merge,
-# it bails (theres no way the env should be missing- exemption is setup phase).
-# 
-# for env filtering for restoration and reloading, note the updates to DONT_EXPORT_(VARS|FUNCS).
-# those vars are basically used to track what shouldn't be saved/restored.  Whitespace seperated,
-# those vars can support posix (think egrep) regex.  They should hold all vars/funcs that are internal
-# ebuild.sh vars.  Basically, filter all vars/funcs that are specific to ebuild.sh, not the ebuild.
-# 
-# after loading the env, user defined pre hooks are executed, dyn_${EBUILD_PHASE} is executed, 
-# and the post hooks are executed.  If the env needs to be flushed to disk, MUST_EXPORT_ENV is set to 
-# "yes", and execute_phases will dump it to ${T}/environment.
-#
-# few notes on general env stuff- if it's not ebuild specific or a user option, it's typically marked
-# readonly.  This limits users, but also helps to ensure that reloaded envs from older portages don't
-# overwrite an internal ebd.sh function that has since changed.
+cd ${PORT_TMPDIR}
 
-ORIG_VARS=`declare | egrep '^[^[:space:]{}()]+=' | cut -s -d '=' -f 1`
-ORIG_FUNCS=`declare -F | cut -s -d ' ' -f 3`
-DONT_EXPORT_FUNCS='portageq speak'
-DONT_EXPORT_VARS="ORIG_VARS GROUPS ORIG_FUNCS FUNCNAME DAEMONIZED CCACHE.* DISTCC.* AUTOCLEAN CLEAN_DELAY SYNC
-COMPLETED_EBUILD_PHASES (TMP|)DIR FEATURES CONFIG_PROTECT.* (P|)WORKDIR (FETCH|RESUME) COMMAND RSYNC_.* GENTOO_MIRRORS 
-(DIST|FILES|RPM|ECLASS)DIR HOME MUST_EXPORT_ENV QA_CONTROLLED_EXTERNALLY COLORTERM COLS ROWS HOSTNAME
-ROOTPATH myarg SANDBOX_.* BASH.* EUID PPID SHELLOPTS UID ACCEPT_(KEYWORDS|LICENSE) BUILD(_PREFIX|DIR) T DIRSTACK
-DISPLAY (EBUILD|)_PHASE PORTAGE_.* RC_.* SUDO_.* IFS PATH LD_PRELOAD ret line phases D EMERGE_FROM
-PORT(_LOGDIR|DIR(|_OVERLAY)) ROOT TERM _ done e ENDCOLS PROFILE_.* BRACKET BAD WARN GOOD NORMAL"
-# flip this on to enable extra noisy output for debugging.
-#DEBUGGING="yes"
+if [ "$*" != "depend" ]; then
+	if [ -f ${T}/successful ]; then
+		rm -f ${T}/successful
+	fi
 
-# knock the sandbox vars back to the defaults.
-reset_sandbox() {
-	export SANDBOX_ON="1"
-	export SANDBOX_PREDICT="${SANDBOX_PREDICT:+${SANDBOX_PREDICT}:}/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
-	export SANDBOX_WRITE="${SANDBOX_WRITE:+${SANDBOX_WRITE}:}/dev/shm:${PORTAGE_TMPDIR}"
-	export SANDBOX_READ="${SANDBOX_READ:+${SANDBOX_READ}:}/dev/shm:${PORTAGE_TMPDIR}"
-}
+	# Hurray for per-ebuild logging.
+	if [ ! -z "${PORT_LOGDIR}" ]; then
+		if [ -z "${PORT_LOGGING}" ]; then
+			export PORT_LOGGING=1
+			export SANDBOX_WRITE="$SANDBOX_WRITE:${PORT_LOGDIR}"
+			install -d ${PORT_LOGDIR} &>/dev/null
+			chown root:portage ${PORT_LOGDIR} &>/dev/null
+			chmod g+rwxs ${PORT_LOGDIR} &> /dev/null
+			touch "${PORT_LOGDIR}/$(date +%y%m%d)-${PF}.log" &> /dev/null
+			chmod g+w "${PORT_LOGDIR}/$(date +%y%m%d)-${PF}.log" &> /dev/null
+			$0 $* 2>&1 | tee -a "${PORT_LOGDIR}/$(date +%y%m%d)-${PF}.log"
+			if [ "$?" != "0" ]; then
+				echo "Problem creating logfile in ${PORT_LOGDIR}"
+				exit 1
+			fi
+			if [ -f ${T}/successful ]; then
+				exit 0
+			else
+				exit 1
+			fi
+		fi
+	fi
+
+	# Fix the temp dirs so we don't have booboos.
+	for DIR in $(find ${BUILD_PREFIX} -type d -name temp -maxdepth 2 -mindepth 2 -print); do
+		chown -R portage $DIR &>/dev/null
+	done
+
+	if [ -f "${WORKDIR}/environment" ]; then
+		source "${WORKDIR}/environment"
+	fi
+
+	if [ `id -nu` == "portage" ] ; then
+		export CCACHE_DIR=${HOME}/.ccache
+		export USER=portage
+	fi
+fi # $*!=depend
 
 # Prevent aliases from causing portage to act inappropriately.
-# Make sure it's before everything so we don't mess aliases that follow.
 unalias -a
 
-# We need this next line for "die" and "assert". It expands 
-# It _must_ preceed all the calls to die and assert.
-shopt -s expand_aliases
+if [ -n "$#" ]
+then
+	ARGS="${*}"
+fi
 
-# Unset some variables that break things.
-unset GZIP BZIP BZIP2 CDPATH GREP_OPTIONS GREP_COLOR GLOB_IGNORE
-
-alias die='diefunc "$FUNCNAME" "$LINENO" "$?"'
-alias assert='_pipestatus="${PIPESTATUS[*]}"; [[ "${_pipestatus// /}" -eq 0 ]] || diefunc "$FUNCNAME" "$LINENO" "$_pipestatus"'
-alias save_IFS='[ "${IFS:-unset}" != "unset" ] && portage_old_IFS="${IFS}"'
-alias restore_IFS='if [ "${portage_old_IFS:-unset}" != "unset" ]; then IFS="${portage_old_IFS}"; unset portage_old_IFS; else unset IFS; fi'
-
-diefunc() {
-        local funcname="$1" lineno="$2" exitcode="$3"
-        shift 3
-        echo >&2
-        echo "!!! ERROR: $CATEGORY/$PF failed." >&2
-        echo "!!! Function $funcname, Line $lineno, Exitcode $exitcode" >&2
-        echo "!!! ${*:-(no error message)}" >&2
-        echo "!!! If you need support, post the topmost build error, NOT this status message." >&2
-        echo >&2
-        exit 1
-}
-
-killparent() {
-	trap INT
-	kill ${PORTAGE_MASTER_PID}
-}
-
-convert_filter() {
-	while [ -n "$1" ]; do
-		echo -n "$1"
-		shift
-		if [ -n "$1" ]; then
-			echo -n ','
+use() {
+	local x
+	for x in ${USE}
+	do
+		if [ "${x}" = "${1}" ]
+		then
+			echo "${x}"
+			return 0
 		fi
 	done
-}
-
-hasq() {
-        local x
-
-        local me=$1
-        shift
-
-        # All the TTY checks really only help out depend. Which is nice.
-        # Logging kills all this anyway. Everything becomes a pipe. --NJ
-        for x in "$@"; do
-                if [ "${x}" == "${me}" ]; then
-                        return 0
-                fi
-        done
-        return 1
-}
-
-hasv() {
-	if hasq "$@"; then
-		echo "${1}"
-		return 0
-	fi
 	return 1
 }
 
+has() {
+	local x
+
+	local me
+	me=$1
+	shift
+	
+	for x in $@
+	do
+		if [ "${x}" = "${me}" ]
+		then
+			echo "${x}"
+			return 0
+		fi
+	done
+	return 1
+}
+
+has_version() {
+	# return shell-true/shell-false if exists.
+	# Takes single depend-type atoms.
+	# XXX DO NOT ALIGN THIS -- PYTHON WILL NOT BE HAPPY XXX #
+	if python -c "import portage,sys
+mylist=portage.db[\"${ROOT}\"][\"vartree\"].dbapi.match(\"$1\")
+if mylist:
+	sys.exit(0)
+else:
+	sys.exit(1)
+"; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+best_version() {
+	# returns the best/most-current match.
+	# Takes single depend-type atoms.
+	# XXX DO NOT ALIGN THIS -- PYTHON WILL NOT BE HAPPY XXX #
+	echo $(python -c "import portage
+mylist=portage.db[\"${ROOT}\"][\"vartree\"].dbapi.match(\"$1\")
+print portage.best(mylist)
+")
+}
+
+use_with() {
+	if [ -z "$1" ]; then
+		die "use_with() called without parameter."
+	fi
+
+	local UWORD="$2"
+	if [ -z "${UWORD}" ]; then
+		UWORD="$1"
+	fi
+	
+	if use $1 &>/dev/null; then
+		echo "--with-${UWORD}"
+		return 0
+	else
+		echo "--without-${UWORD}"
+		return 1
+	fi
+}
+
+use_enable() {
+	if [ -z "$1" ]; then
+		die "use_with() called without parameter."
+	fi
+
+	local UWORD="$2"
+	if [ -z "${UWORD}" ]; then
+		UWORD="$1"
+	fi
+	
+	if use $1 &>/dev/null; then
+		echo "--enable-${UWORD}"
+		return 0
+	else
+		echo "--disable-${UWORD}"
+		return 1
+	fi
+}
+
+#we need this next line for "die" and "assert"
+shopt -s expand_aliases
+OCC="$CC"
+OCXX="$CXX"
+source /etc/profile.env > /dev/null 2>&1
+[ ! -z "$OCC" ] && export CC="$OCC"
+[ ! -z "$OCXX" ] && export CXX="$OCXX"
+export PATH="/sbin:/usr/sbin:/usr/lib/portage/bin:/bin:/usr/bin:${ROOTPATH}"
+if [ -e /etc/init.d/functions.sh ]
+then
+	source /etc/init.d/functions.sh > /dev/null 2>&1
+elif [ -e /etc/rc.d/config/functions ]
+then
+	source /etc/rc.d/config/functions > /dev/null 2>&1
+fi
+
+# Custom version of esyslog() to take care of the "Red Star" bug
+# if no logger is running (tipically during bootstrap)
+esyslog() {
+	return 0
+}
+
+#The following diefunc() and aliases come from Aron Griffis -- an excellent bash coder -- thanks! 
+
+diefunc() {
+	local funcname="$1" lineno="$2" exitcode="$3"
+	shift 3
+	echo >&2
+	echo "!!! ERROR: $CATEGORY/$PF failed." >&2
+	echo "!!! Function $funcname, Line $lineno, Exitcode $exitcode" >&2
+	echo "!!! ${*:-(no error message)}" >&2
+	echo >&2
+	exit 1
+}
+
+alias die='diefunc "$FUNCNAME" "$LINENO" "$?"'
+alias assert='_retval=$?; [ $_retval = 0 ] || diefunc "$FUNCNAME" "$LINENO" "$_retval"'
+
+# don't need to handle the maintainer fine grained settings here
+# anymore since it's initialized by ebuild through the python
+# portage module
+	
 #if no perms are specified, dirs/files will have decent defaults
 #(not secretive, but not stupid)
 umask 022
+export DESTTREE=/usr
+export INSDESTTREE=""
+export EXEDESTTREE=""
+export DOCDESTTREE=""
+export INSOPTIONS="-m0644"
+export EXEOPTIONS="-m0755"	
+export LIBOPTIONS="-m0644"
+export DIROPTIONS="-m0755"
+export MOPREFIX=${PN}
+#Moved to portage
+#export KVERS=`uname -r`
+
+check_KV()
+{
+	if [ x"${KV}" = x ]
+	then
+		eerror ""
+		eerror "Could not determine your kernel version."
+		eerror "Make sure that you have /usr/src/linux symlink."
+		eerror "And that said kernel has been configured."
+		eerror "You can also simply run the following command"
+		eerror "in the kernel referenced by /usr/src/linux:"
+		eerror " make include/linux/version.h"
+		eerror ""
+		die
+	fi
+}
+
+# adds ".keep" files so that dirs aren't auto-cleaned
+keepdir()
+{
+	dodir $*
+	local x
+	for x in $*
+	do
+		[ ! -e ${D}/${x}/.keep -o -w ${D}/${x}/.keep ] && touch ${D}/${x}/.keep
+	done
+}
 
 # the sandbox is disabled by default except when overridden in the relevant stages
 export SANDBOX_ON="0"
 
-gen_filter() {
-	if [ "$#" == 0 ]; then 
-		#default param to keep things quiet
+# sandbox support functions
+addread()
+{
+	export SANDBOX_READ="$SANDBOX_READ:$1"
+}
+
+addwrite()
+{
+	export SANDBOX_WRITE="$SANDBOX_WRITE:$1"
+}
+
+adddeny()
+{
+	export SANDBOX_DENY="$SANDBOX_DENY:$1"
+}
+
+addpredict()
+{
+	export SANDBOX_PREDICT="$SANDBOX_PREDICT:$1"
+}
+
+if [ "$*" != "depend" ]; then
+	if has distcc ${FEATURES} &>/dev/null; then
+		if [ -d /usr/lib/distcc/bin ]; then
+			#We can enable distributed compile support
+			export PATH="/usr/lib/distcc/bin:${PATH}"
+			[ -z "${DISTCC_HOSTS}" ] && DISTCC_HOSTS="localhost"
+			[ ! -z "${DISTCC_LOG}" ] && addwrite "$(dirname ${DISTCC_LOG})"
+			export DISTCC_HOSTS
+		elif which distcc &>/dev/null; then
+			export CC="distcc $CC"
+			export CXX="distcc $CXX"
+		fi
+	fi
+
+	if has ccache ${FEATURES} &>/dev/null; then
+		#We can enable compiler cache support
+		if   [ -d /usr/lib/ccache/bin ]; then
+			export PATH="/usr/lib/ccache/bin:${PATH}"
+		elif [ -d /usr/bin/ccache ]; then
+			export PATH="/usr/bin/ccache:${PATH}"
+		fi
+		[ -z "${CCACHE_DIR}" ] && export CCACHE_DIR=/root/.ccache
+		addread ${CCACHE_DIR}
+		addwrite ${CCACHE_DIR}
+	fi
+fi # $*==depend
+
+unpack() {
+	local x
+	local y
+	local myfail
+	
+	for x in $@
+	do
+		myfail="failure unpacking ${x}"
+		echo ">>> Unpacking ${x}"
+		y="$(echo $x | sed 's:.*\.\(tar\)\.[a-zA-Z0-9]*:\1:')"
+		case "${x##*.}" in
+		tar) 
+			tar x --no-same-owner -f ${DISTDIR}/${x} || die "$myfail"
+			;;
+		tgz) 
+			tar xz --no-same-owner -f ${DISTDIR}/${x} || die "$myfail"
+			;;
+		tbz2) 
+			tar xj --no-same-owner -f ${DISTDIR}/${x} || die "$myfail"
+			;;
+		ZIP|zip) 
+			unzip -qo ${DISTDIR}/${x} || die "$myfail"
+			;;
+		gz|Z|z) 
+			if [ "${y}" == "tar" ]; then
+				tar xz --no-same-owner -f ${DISTDIR}/${x} || die "$myfail"
+			else
+				gzip -dc ${DISTDIR}/${x} > ${x%.*} || die "$myfail"
+			fi
+			;;
+		bz2) 
+			if [ "${y}" == "tar" ]; then
+				tar xj --no-same-owner -f ${DISTDIR}/${x} || die "$myfail"
+			else
+				bzip2 -dc ${DISTDIR}/${x} > ${x%.*} || die "$myfail"
+			fi
+			;;
+		*)
+			echo "unpack ${x}: file format not recognized. Ignoring."
+			;;
+		esac
+	done
+}
+
+econf() {
+	if [ -x ./configure ] ; then
+		if [ ! -z "${CBUILD}" ]; then
+			EXTRA_ECONF="--build=${CBUILD} ${EXTRA_ECONF}"
+		fi
+		./configure \
+		    --prefix=/usr \
+		    --host=${CHOST} \
+		    --mandir=/usr/share/man \
+		    --infodir=/usr/share/info \
+		    --datadir=/usr/share \
+		    --sysconfdir=/etc \
+		    --localstatedir=/var/lib \
+				${EXTRA_ECONF} \
+		    "$@" || die "econf failed" 
+	else
+		die "no configure script found"
+	fi
+}
+
+einstall() {
+	if [ -f ./[mM]akefile -o -f ./GNUmakefile ] ; then
+		make prefix=${D}/usr \
+		    mandir=${D}/usr/share/man \
+		    infodir=${D}/usr/share/info \
+		    datadir=${D}/usr/share \
+		    sysconfdir=${D}/etc \
+		    localstatedir=${D}/var/lib \
+		    "$@" install || die "einstall failed" 
+	else
+		die "no Makefile found"
+	fi
+}
+
+pkg_setup()
+{
+	return 
+}
+
+pkg_nofetch()
+{
+	[ -z "${SRC_URI}" ] && return
+
+	echo "!!! The following are listed in SRC_URI for ${PN}:"
+	for MYFILE in `echo ${SRC_URI}`; do
+		echo "!!!   $MYFILE"
+	done
+	return 
+}
+
+src_unpack() { 
+	if [ "${A}" != "" ]
+	then
+		unpack ${A}
+	fi	
+}
+
+src_compile() { 
+	if [ -x ./configure ] ; then
+		econf 
+		emake || die "emake failed"
+	fi
+	return 
+}
+
+src_install() 
+{ 
+	return 
+}
+
+pkg_preinst()
+{
+	return
+}
+
+pkg_postinst()
+{
+	return
+}
+
+pkg_prerm()
+{
+	return
+}
+
+pkg_postrm()
+{
+	return
+}
+
+try() {
+	env "$@"
+	if [ "$?" != "0" ]
+	then
 		echo 
+		echo '!!! '"ERROR: the $1 command did not complete successfully."
+		echo '!!! '"(\"$*\")"
+		echo '!!! '"Since this is a critical task, ebuild will be stopped."
+		echo
+		exit 1
+	fi
+}
+
+# Used to generate the /lib/cpp and /usr/bin/cc wrappers
+gen_wrapper() {
+	cat > $1 << END
+#!/bin/sh
+
+$2 "\$@"
+END
+
+	chmod 0755 $1
+}
+
+dyn_setup()
+{
+	# The next bit is to easy the broken pkg_postrm()'s
+	# some of the gcc ebuilds have that nuke the new
+	# /lib/cpp and /usr/bin/cc wrappers ...
+	
+	# Make sure we can have it disabled somehow ....
+	if [ "${DISABLE_GEN_GCC_WRAPPERS}" != "yes" ]
+	then
+		# Create /lib/cpp if missing or a symlink
+		if [ -L /lib/cpp -o ! -e /lib/cpp ]
+		then
+			[ -L /lib/cpp ] && rm -f /lib/cpp
+			gen_wrapper /lib/cpp cpp
+		fi
+		# Create /usr/bin/cc if missing for a symlink
+		if [ -L /usr/bin/cc -o ! -e /usr/bin/cc ]
+		then
+			[ -L /usr/bin/cc ] && rm -f /usr/bin/cc
+			gen_wrapper /usr/bin/cc gcc
+		fi
+	fi
+
+	pkg_setup || die "pkg_setup function failed; exiting."
+}
+
+dyn_unpack() {
+	trap "abort_unpack" SIGINT SIGQUIT
+	local newstuff="no"
+	if [ -e ${WORKDIR} ]
+	then
+		local x
+		local checkme
+		for x in ${AA}
+		do
+			echo ">>> Checking ${x}'s mtime..."
+			if [ ${DISTDIR}/${x} -nt ${WORKDIR} ]
+			then
+				echo ">>> ${x} has been updated; recreating WORKDIR..."
+				newstuff="yes"
+				rm -rf ${WORKDIR}
+				break
+			fi
+		done
+		if [ ${EBUILD} -nt ${WORKDIR} ]
+		then
+			echo ">>> ${EBUILD} has been updated; recreating WORKDIR..."
+			newstuff="yes"
+			rm -rf ${WORKDIR}
+		elif [ ! -f ${BUILDDIR}/.unpacked ]; then
+			echo ">>> Not marked as unpacked; recreating WORKDIR..."
+			newstuff="yes"
+			rm -rf ${WORKDIR}
+		fi
+	fi
+	if [ -e ${WORKDIR} ]
+	then
+		if [ "$newstuff" = "no" ]
+		then
+			echo ">>> WORKDIR is up-to-date, keeping..."
+			return 0
+		fi
+	fi
+	install -m0700 -d ${WORKDIR}
+	[ -d "$WORKDIR" ] && cd ${WORKDIR}
+	echo ">>> Unpacking source..."
+	src_unpack
+	touch ${BUILDDIR}/.unpacked
+	#|| abort_unpack "fail"
+	echo ">>> Source unpacked."
+	cd $BUILDDIR
+	trap SIGINT SIGQUIT
+}
+
+dyn_clean() {
+	rm -rf ${WORKDIR} 
+	rm -rf ${BUILDDIR}/image
+	rm -rf ${BUILDDIR}/build-info
+	rm -rf ${BUILDDIR}/.compiled
+}
+
+into() {
+	if [ $1 = "/" ]
+	then
+		export DESTTREE=""
+	else
+		export DESTTREE=$1
+		if [ ! -d ${D}${DESTTREE} ]
+		then
+			install -d ${D}${DESTTREE}
+		fi
+	fi
+}
+
+insinto() {
+	if [ $1 = "/" ]
+	then
+		export INSDESTTREE=""
+	else
+		export INSDESTTREE=$1
+		if [ ! -d ${D}${INSDESTTREE} ]
+		then
+			install -d ${D}${INSDESTTREE}
+		fi
+	fi
+}
+
+exeinto() {
+	if [ $1 = "/" ]
+	then
+		export EXEDESTTREE=""
+	else
+		export EXEDESTTREE=$1
+		if [ ! -d ${D}${EXEDESTTREE} ]
+		then
+			install -d ${D}${EXEDESTTREE}
+		fi
+	fi
+}
+
+docinto() {
+	if [ $1 = "/" ]
+	then
+		export DOCDESTTREE=""
+	else
+		export DOCDESTTREE=$1
+		if [ ! -d ${D}usr/share/doc/${PF}/${DOCDESTTREE} ]
+		then
+			install -d ${D}usr/share/doc/${PF}/${DOCDESTTREE} 
+		fi
+	fi
+}
+
+insopts() {
+	INSOPTIONS=""
+	for x in $*
+	do
+		#if we have a debug build, let's not strip anything
+		if [ -n "$DEBUGBUILD" ] && [ "$x" = "-s" ]
+		then
+			continue
+ 		else
+			INSOPTIONS="$INSOPTIONS $x"
+	fi
+	done
+	export INSOPTIONS
+}
+
+diropts() {
+	DIROPTIONS=""
+	for x in $*
+	do
+		DIROPTIONS="${DIROPTIONS} $x"
+	done
+	export DIROPTIONS
+}
+
+exeopts() {
+	EXEOPTIONS=""
+	for x in $*
+	do
+		#if we have a debug build, let's not strip anything
+		if [ -n "$DEBUGBUILD" ] && [ "$x" = "-s" ]
+		then
+			continue
+		else
+			EXEOPTIONS="$EXEOPTIONS $x"
+		fi
+	done
+	export EXEOPTIONS
+}
+
+libopts() {
+	LIBOPTIONS=""
+	for x in $*
+	do
+		#if we have a debug build, let's not strip anything
+		if [ -n "$DEBUGBUILD" ] && [ "$x" = "-s" ]
+		then
+			continue
+		else
+			LIBOPTIONS="$LIBOPTIONS $x"
+		fi
+	done
+	export LIBOPTIONS
+}
+
+abort_handler() {
+	local msg
+	if [ "$2" != "fail" ]
+	then
+		msg="${EBUILD}: ${1} aborted; exiting."
+	else
+		msg="${EBUILD}: ${1} failed; exiting."
+	fi
+	echo 
+	echo "$msg" 
+	echo
+	eval ${3}
+	#unset signal handler
+	trap SIGINT SIGQUIT
+}
+
+abort_compile() {
+	abort_handler "src_compile" $1
+	rm -f ${BUILDDIR}/compiled
+	exit 1
+}
+
+abort_unpack() {
+	abort_handler "src_unpack" $1
+	rm -f ${BUILDDIR}/.unpacked
+	rm -rf ${BUILDDIR}/work
+	exit 1
+}
+
+abort_package() {
+	abort_handler "dyn_package" $1
+	rm -f ${BUILDDIR}/.packaged
+	rm -f ${PKGDIR}/All/${PF}.t*
+	exit 1
+}
+
+abort_install() {
+	abort_handler "src_install" $1
+	rm -rf ${BUILDDIR}/image
+	exit 1
+}
+
+dyn_compile() {
+	trap "abort_compile" SIGINT SIGQUIT
+	export CFLAGS CXXFLAGS LIBCFLAGS LIBCXXFLAGS
+	if [ ${BUILDDIR}/.compiled -nt ${WORKDIR} ]
+	then
+		echo ">>> It appears that ${PN} is already compiled; skipping."
+		echo ">>> (clean to force compilation)"
+		trap SIGINT SIGQUIT
 		return
 	fi
-	echo -n '('
-	while [ "$1" ]; do
-		echo -n "$1"
-		shift
-		if [ "$1" ]; then
-			echo -n '|'
-		fi
-	done
-	echo -n ')'
-}
-
-# func for beeping and delaying a defined period of time.
-sleepbeep() {
-	if [ ! "$#" -lt 3 ] || [ ! "$#" -gt 0 ]; then
-		echo "sleepbeep requires one arg- number of beeps"
-		echo "additionally, can supply a 2nd arg- interval between beeps (defaults to 0.25s"
-		die "invalid call to sleepbeep"
+	if [ -d ${S} ]
+		then
+		cd ${S}
 	fi
-	local count=$(($1))
-	local interval="${2:-0.25}"
-	while [ $count -gt 0 ]; do
-		echo -en "\a";
-		sleep $interval &> /dev/null
-		count=$(($count - 1))
-	done
-	return 0
-}
-
-# basically this runs through the output of export/readonly/declare, properly handling variables w/ values 
-# that have newline.
-get_vars() {
-	local l
-	if [ "${portage_old_IFS:-unset}" != "unset" ]; then
-		local portage_old_IFS
-	fi
-	save_IFS
-	IFS=''
-	while read l; do
-		l="${l/=*}"
-		echo "${l##* }"
-	done
-	restore_IFS
-}
-
-# selectively saves  the environ- specifically removes things that have been marked to not be exported.
-# dump the environ to stdout.
-dump_environ() {
-	local f x;
-	declare | filter-env -f $(convert_filter ${DONT_EXPORT_FUNCS}) -v $(convert_filter ${DONT_EXPORT_VARS} f x)
-
-	if ! hasq "--no-attributes" "$@"; then
-		echo "reinstate_loaded_env_attributes ()"
-		echo "{"
-
-		x=$(export | get_vars | egrep -v "$(gen_filter ${DONT_EXPORT_VARS} f x y)$")
-		[ ! -z "$x" ] && echo "    export `echo $x`"
-		
-
-		x=$(readonly | get_vars | egrep -v "$(gen_filter ${DONT_EXPORT_VARS} f x y)")
-		[ ! -z "$x" ] && echo "    readonly `echo $x`"
-		
-
-		x=$(declare -i | get_vars | egrep -v "$(gen_filter ${DONT_EXPORT_VARS} f x y)")
-		[ ! -z "$x" ] && echo "    declare -i `echo $x`"
-
-		declare -F | egrep "^declare -[aFfirtx]+ $(gen_filter ${f} )\$" | egrep -v "^declare -f "
-		shopt -p
-		echo "    unset reinstate_loaded_env_attributes"
-		echo "}"
-	fi
-	
-	debug-print "dumped"
-	if [ ! -z ${DEBUGGING} ]; then
-		echo "#dumping debug info"
-		echo "#var filter..."
-		echo "#$(gen_filter ${DONT_EXPORT_VARS} f x | sort)"
-		echo "#func filter..."
-		echo "#$(gen_filter ${DONT_EXPORT_FUNCS} | sort)"
-		echo "#DONT_EXPORT_VARS follow"
-		for x in `echo $DONT_EXPORT_VARS | sort`; do
-			echo "#    $x";
-		done
-		echo ""
-		echo "#DONT_EXPORT_FUNCS follow"
-		for x in `echo $DONT_EXPORT_FUNCS | sort`; do
-			echo "#    $x";
-		done
-	fi
-}
-
-# dump environ to $1, optionally piping it through $2 and redirecting $2's output to $1.
-export_environ() {
-	local temp_umask
-	if [ "${1:-unset}" == "unset" ]; then
-		die "export_environ requires at least one arguement"
-	fi
-
-	#the spaces on both sides are important- otherwise, the later ${DONT_EXPORT_VARS/ temp_umask /} won't match.
-	#we use spaces on both sides, to ensure we don't remove part of a variable w/ the same name- 
-	# ex: temp_umask_for_some_app == _for_some_app.  
-	#Do it with spaces on both sides.
-
-	DONT_EXPORT_VARS="${DONT_EXPORT_VARS} temp_umask "
-	temp_umask=`umask`
-	umask 0002
-
-	debug-print "exporting env for ${EBUILD_PHASE} to $1, using optional post-processor '${2:-none}'"
-
-	if [ "${2:-unset}" == "unset" ]; then
-		dump_environ > "$1"
-	else
-		dump_environ | $2 > "$1"
-	fi
-	chown portage:portage "$1" &>/dev/null
-	chmod 0664 "$1" &>/dev/null
-
-	DONT_EXPORT_VARS="${DONT_EXPORT_VARS/ temp_umask /}"
-
-	umask $temp_umask
-	debug-print "exported."
-}
-
-# reload a saved env, applying usual filters to the env prior to eval'ing it.
-load_environ() {
-	local src e
-	#protect the exterior env to some degree from older saved envs, where *everything* was dumped (no filters applied)
-	local SANDBOX_STATE=$SANDBOX_ON
-	local EBUILD_PHASE=$EBUILD_PHASE
-	SANDBOX_ON=0
-	SANDBOX_READ="/bin:${SANDBOX_READ}:/dev/urandom:/dev/random:/usr/lib/portage/bin/"
-	SANDBOX_ON=$SANDBOX_STATE
-
-	if [ ! -z $DEBUGGING ]; then
-		echo "loading env for $EBUILD_PHASE" >&2
-	fi
-
-	if [ -n "$1" ]; then
-		src="$1"
-		local c=COMPLETED_EBUILD_PHASES
-		COMPLETED_EBUILD_PHASES="`cat ${PORTAGE_BUILDDIR}/.completed_stages 2> /dev/null`"
-		[ -z "$COMPLETED_EBUILD_PHASES" ] && COMPLETED_EBUILD_PHASES="$c"
-	fi
-	[ ! -z $DEBUGGING ] && echo "loading environment from $src" >&2
-
-	# XXX: note all of the *very careful* handling of bash env dumps through this code, and the fact 
-	# it took 4 months to get it right.  There's a reason you can't just pipe the $(export) to a file.
-	# They were implemented wrong, as I stated when the export kludge was added.
-	# so we're just dropping the attributes.  .51-r4 should carry a fixed version, .51 -> .51-r3
-	# aren't worth the trouble.  Drop all inline declare's that would be executed.
-	# potentially handle this via filter-env?
-	# ~harring
-	function declare() {
-		:
-	}
-	if [ -f "$src" ]; then
-		eval "$({ [ "${src%.bz2}" != "${src}" ] && bzcat "$src" || cat "${src}"
-			} | filter-env -v $(convert_filter ${DONT_EXPORT_VARS}) \
-			-f $(convert_filter ${DONT_EXPORT_FUNCS}) )"
-#			} | egrep -v "^$(gen_filter $DONT_EXPORT_VARS)=")"
-	else
-		echo "ebuild=${EBUILD}, phase $EBUILD_PHASE" >&2
-		return 1
-	fi
-	unset declare
-	if [ -f "${PORTAGE_BUILDDIR}/.completed_stages" ]; then
-		COMPLETED_EBUILD_PHASES=`cat ${PORTAGE_BUILDDIR}/.completed_stages`
-	else
-		COMPLETED_EBUILD_PHASES=''
-	fi
-	return 0
-}
-
-# walk the cascaded profile src'ing it's various bashrcs.
-source_profiles() {
-	local dir
-	save_IFS
-	# XXX: Given the following unset, is this set needed?
-	IFS=$'\n'
-	for dir in ${PROFILE_PATHS}; do
-		# Must unset it so that it doesn't mess up assumptions in the RCs.
-		unset IFS
-		if [ -f "${dir}/profile.bashrc" ]; then
-			source "${dir}/profile.bashrc"
-		fi
-	done
-	restore_IFS
-	if [ -f "$PORTAGE_BASHRC" ]; then
-		source "$PORTAGE_BASHRC"
-	fi
-}
-
-# do all profile, bashrc's, and ebuild sourcing.  Should only be called in setup phase, unless the
-# env is *completely* missing, as it is occasionally for ebuilds during prerm/postrm.
-init_environ() {
-#	echo "initializating environment" >&2
-	OCC="$CC"
-	OCXX="$CXX"
-
-
-	export PATH="/sbin:/usr/sbin:/usr/lib/portage/bin:/bin:/usr/bin${ROOTPATH:+:${ROOTPATH}}"
-	if [ "${EBUILD_PHASE}" == "setup" ]; then
-		#we specifically save the env so it's not stomped on by sourcing.
-		#bug 51552
-		dump_environ --no-attributes > "${T}/.temp_env"
-
-		if [ "$USERLAND" == "GNU" ]; then
-			local PORTAGE_SHIFTED_PATH="$PATH"
-			source /etc/profile.env &>/dev/null
-			PATH="${PORTAGE_SHIFTED_PATH:+${PORTAGE_SHIFTED_PATH}}${PATH:+:${PATH}}"
-		fi
-		#shift path.  I don't care about 51552, I'm not using the env's supplied path, alright? :)
-
-		#restore the saved env vars.
-		if ! load_environ "${T}/.temp_env"; then
-			#this shouldn't happen.
-			die "failed to load ${T}/.tmp_env- fs is readonly?"
-		fi
-
-		rm "${T}/.temp_env"
-		source_profiles
-	fi
-
-	if [ "${EBUILD_PHASE}" != "depend" ]; then
-		[ ! -z "$OCC" ] && export CC="$OCC"
-		[ ! -z "$OCXX" ] && export CXX="$OCXX"
-
-	fi
-
-	[ ! -z "$PREROOTPATH" ] && export PATH="${PREROOTPATH%%:}:$PATH"
-
-
-	export DESTTREE=/usr
-	export INSDESTTREE=""
-	export EXEDESTTREE=""
-	export DOCDESTTREE=""
-	export INSOPTIONS="-m0644"
-	export EXEOPTIONS="-m0755"	
-	export LIBOPTIONS="-m0644"
-	export DIROPTIONS="-m0755"
-	export MOPREFIX=${PN}
-
-	# if daemonized, it's already loaded these funcs.
-	if [ "$DAEMONIZED" != "yes" ]; then
-		source "/usr/lib/portage/bin/ebuild-functions.sh" || die "failed sourcing ebuild-functions.sh"
-	fi
-	SANDBOX_ON="1"
-	export S=${WORKDIR}/${P}
-
-	# Expand KEYWORDS
-	# We need to turn off pathname expansion for -* in KEYWORDS and 
-	# we need to escape ~ to avoid tilde expansion (damn bash) :)
-	set -f
-	KEYWORDS="$(echo ${KEYWORDS//~/\\~})"
-	set +f
-
-	unset   IUSE   DEPEND   RDEPEND   CDEPEND   PDEPEND
-	unset E_IUSE E_DEPEND E_RDEPEND E_CDEPEND E_PDEPEND
-
-	if [ ! -f "${EBUILD}" ]; then
-		echo "bailing, ebuild not found"
-		die "EBUILD=${EBUILD}; problem is, it doesn't exist.  bye." >&2
-	fi
-
-#	eval "$(cat "${EBUILD}"; echo ; echo 'true')" || die "error sourcing ebuild"
-	source "${EBUILD}"
-	if [ "${EBUILD_PHASE}" != "depend" ]; then
-		RESTRICT="${PORTAGE_RESTRICT}"
-		unset PORTAGE_RESTRICT
-	fi
-
-	[ -z "${ERRORMSG}" ] || die "${ERRORMSG}"
-
-	hasq nostrip ${RESTRICT} && export DEBUGBUILD=1
-
-	#a reasonable default for $S
-	if [ "$S" = "" ]; then
-		export S=${WORKDIR}/${P}
-	fi
-
+	#our custom version of libtool uses $S and $D to fix
+	#invalid paths in .la files
+	export S D
+	#some packages use an alternative to $S to build in, cause
+	#our libtool to create problematic .la files
+	export PWORKDIR="$WORKDIR"
 	#some users have $TMP/$TMPDIR to a custom dir in their home ...
 	#this will cause sandbox errors with some ./configure
 	#scripts, so set it to $T.
 	export TMP="${T}"
 	export TMPDIR="${T}"
-
-	# Note: this next line is not the same as export RDEPEND=${RDEPEND:-${DEPEND}}
-	# That will test for unset *or* NULL ("").  We want just to set for unset...
-
-	#turn off glob expansion from here on in to prevent *'s and ? in the DEPEND
-	#syntax from getting expanded :)  Fixes bug #1473
-#	set -f
-	if [ "${RDEPEND-unset}" == "unset" ]; then
-		export RDEPEND="${DEPEND}"
-		debug-print "RDEPEND: not set... Setting to: ${DEPEND}"
+	src_compile 
+	#|| abort_compile "fail" 
+	cd ${BUILDDIR}
+	touch .compiled
+	if [ ! -e "build-info" ]
+	then
+		mkdir build-info
 	fi
-
-	#add in dependency info from eclasses
-	IUSE="$IUSE $E_IUSE"
-	DEPEND="${DEPEND} ${E_DEPEND}"
-	RDEPEND="$RDEPEND $E_RDEPEND"
-	CDEPEND="$CDEPEND $E_CDEPEND"
-	PDEPEND="$PDEPEND $E_PDEPEND"
-
-	unset E_IUSE E_DEPEND E_RDEPEND E_CDEPEND E_PDEPEND
-#	set +f
-
-#	declare -r DEPEND RDEPEND SLOT SRC_URI RESTRICT HOMEPAGE LICENSE DESCRIPTION
-#	declare -r KEYWORDS INHERITED IUSE CDEPEND PDEPEND PROVIDE
-	COMPLETED_EBUILD_PHASES=''
-#	echo "DONT_EXPORT_FUNCS=$DONT_EXPORT_FUNCS" >&2
+	cd build-info
+	echo "$CFLAGS"   > CFLAGS
+	echo "$CXXFLAGS" > CXXFLAGS
+	echo "$CC"       > CC
+	echo "$CXX"      > CXX
+	echo "$CHOST"    > CHOST
+	echo "$CBUILD"   > CBUILD
+	echo "$USE"      > USE
+	echo "$LICENSE"  > LICENSE
+	echo "$CATEGORY" > CATEGORY
+	echo "$PF"       > PF
+	echo "$SLOT"     > SLOT
+	echo "$RDEPEND"  > RDEPEND
+	echo "$CDEPEND"  > CDEPEND
+	echo "$PDEPEND"  > PDEPEND
+	echo "$PROVIDE"  > PROVIDE
+	cp ${EBUILD} ${PF}.ebuild
+	if [ -n "$DEBUGBUILD" ]
+	then
+		touch DEBUGBUILD
+	fi
+	trap SIGINT SIGQUIT
 }
 
-source "/usr/lib/portage/bin/ebuild-default-functions.sh" || die "failed sourcing ebuild-default-functions.sh"
-source "/usr/lib/portage/bin/isolated-functions.sh" || die "failed sourcing stripped down functions.sh"
+dyn_package() {
+	trap "abort_package" SIGINT SIGQUIT
+	cd ${BUILDDIR}/image
+	tar cvf ../bin.tar *
+	cd ..
+	bzip2 -f bin.tar
+	xpak build-info inf.xpak
+	tbz2tool join bin.tar.bz2 inf.xpak ${PF}.tbz2
+	mv ${PF}.tbz2 ${PKGDIR}/All
+	rm -f inf.xpak bin.tar.bz2
+	if [ ! -d ${PKGDIR}/${CATEGORY} ]
+	then
+		install -d ${PKGDIR}/${CATEGORY}
+	fi
+	ln -sf ../All/${PF}.tbz2 ${PKGDIR}/${CATEGORY}/${PF}.tbz2
+	echo ">>> Done."
+	cd ${BUILDDIR}
+	touch .packaged
+	trap SIGINT SIGQUIT
+}
 
-# general func to call for phase execution.  this handles necessary env loading/dumping, and executing pre/post/dyn
-# calls.
-execute_phases() {
-	local ret
-	for myarg in $*; do
-		EBUILD_PHASE="$myarg"
-		MUST_EXPORT_ENV="no"
-		case $EBUILD_PHASE in
-		nofetch)
-			init_environ
-			pkg_nofetch
-			;;
-		prerm|postrm|preinst|postinst|config)
-			export SANDBOX_ON="0"
+dyn_install() {
+	local ROOT
+	trap "abort_install" SIGINT SIGQUIT
+	rm -rf ${BUILDDIR}/image
+	mkdir ${BUILDDIR}/image
+	if [ -d ${S} ]
+	then
+		cd ${S}
+	fi
+	echo
+	echo ">>> Install ${PF} into ${D} category ${CATEGORY}"
+	#our custom version of libtool uses $S and $D to fix
+	#invalid paths in .la files
+	export S D
+	#some packages uses an alternative to $S to build in, cause
+	#our libtool to create problematic .la files
+	export PWORKDIR="$WORKDIR"
+	#some users have $TMP/$TMPDIR to a custom dir in thier home ...
+	#this will cause sandbox errors with some ./configure
+	#scripts, so set it to $T.
+	export TMP="${T}"
+	export TMPDIR="${T}"
+	src_install 
+	#|| abort_install "fail"
+	prepall
+	cd ${D}
+	echo ">>> Completed installing into ${D}"
+	echo
+	cd ${BUILDDIR}
+	trap SIGINT SIGQUIT
+}
 
-			if ! load_environ $PORT_ENV_FILE; then
-				#hokay.  this sucks.
-				ewarn 
-				ewarn "failed to load env"
-				ewarn "this installed pkg may not behave correctly"
-				ewarn
-				sleepbeep 10
-			fi	
+dyn_spec() {
+	tar czf /usr/src/redhat/SOURCES/${PF}.tar.gz ${O}/${PF}.ebuild ${O}/files
 
-			if type reinstate_loaded_env_attributes &> /dev/null; then
-				reinstate_loaded_env_attributes
-			fi
-			[ "$PORTAGE_DEBUG" == "1" ] && set -x
-			type -p pre_pkg_${EBUILD_PHASE} &> /dev/null && pre_pkg_${EBUILD_PHASE}
-			if type -p dyn_${EBUILD_PHASE}; then
-				dyn_${EBUILD_PHASE}
-			else
-				pkg_${EBUILD_PHASE}
-			fi
-			ret=0
-			type -p post_pkg_${EBUILD_PHASE} &> /dev/null && post_pkg_${EBUILD_PHASE}
-			[ "$PORTAGE_DEBUG" == "1" ] && set +x
-			;;
-		clean)
-			einfo "clean phase is now handled in the python side of portage."
-			einfo "ebuild-daemon calls it correctly, upgrading from vanilla portage to ebd" 
-			einfo "always triggers this though.  Please ignore it."
-			;;
-		unpack|compile|test|install)
-			if [ "${SANDBOX_DISABLED="0"}" == "0" ]; then
-				export SANDBOX_ON="1"
-			else
-				export SANDBOX_ON="0"
-			fi
+	cat <<__END1__ > ${PF}.spec
+Summary: ${DESCRIPTION}
+Name: ${PN}
+Version: ${PV}
+Release: ${PR}
+Copyright: GPL
+Group: portage/${CATEGORY}
+Source: ${PF}.tar.gz
+Buildroot: ${D}
+%description
+${DESCRIPTION}
 
-			if ! load_environ ${T}/environment; then
-				ewarn 
-				ewarn "failed to load env.  This is bad, bailing."
-				die "unable to load saved env for phase $EBUILD_PHASE, unwilling to continue"
-			fi
-			if type reinstate_loaded_env_attributes &> /dev/null; then
-#				echo "reinstating attribs" >&2
-				reinstate_loaded_env_attributes
-			fi
-			[ "$PORTAGE_DEBUG" == "1" ] && set -x
-			type -p pre_src_${EBUILD_PHASE} &> /dev/null && pre_src_${EBUILD_PHASE}
-			dyn_${EBUILD_PHASE}
-			ret=0
-			type -p post_src_${EBUILD_PHASE} &> /dev/null && post_src_${EBUILD_PHASE}
-			[ "$PORTAGE_DEBUG" == "1" ] && set +x
-			COMPLETED_EBUILD_PHASES="${COMPLETED_EBUILD_PHASES} ${EBUILD_PHASE}"
-			export SANDBOX_ON="0"
-			;;
-		setup)
-			#pkg_setup needs to be out of the sandbox for tmp file creation;
-			#for example, awking and piping a file in /tmp requires a temp file to be created
-			#in /etc.  If pkg_setup is in the sandbox, both our lilo and apache ebuilds break.
+${HOMEPAGE}
 
-			export SANDBOX_ON="0"
+%prep
+%setup -c
 
-			temp_ebuild_phase=`cat "${PORTAGE_BUILDDIR}/.completed_stages" 2> /dev/null`
-#			echo "temp_ebuild_phase=$temp_ebuild_phase"
-			if hasq setup ${temp_ebuild_phase}; then
-				unset temp_ebuild_phase
-				MUST_EXPORT_ENV="no"
-			else
-				unset temp_ebuild_phase
-				init_environ
-				MUST_EXPORT_ENV="yes"
+%build
 
-				[ "$PORTAGE_DEBUG" == "1" ] && set -x
-				type -p pre_pkg_${EBUILD_PHASE} &> /dev/null && pre_pkg_${EBUILD_PHASE}
-				dyn_${EBUILD_PHASE}
-				ret=0;
-				type -p post_pkg_${EBUILD_PHASE} &> /dev/null && post_pkg_${EBUILD_PHASE}
-				[ "$PORTAGE_DEBUG" == "1" ] && set +x
+%install
 
-				if hasq distcc ${FEATURES} &>/dev/null; then
-					if [ -d /usr/lib/distcc/bin ]; then
-						#We can enable distributed compile support
-						if [ -z "${PATH/*distcc*/}" ]; then
-							# Remove the other reference.
-							remove_path_entry "distcc"
-						fi
-						export PATH="/usr/lib/distcc/bin:${PATH}"
-						[ ! -z "${DISTCC_LOG}" ] && addwrite "$(dirname ${DISTCC_LOG})"
-					elif type -p distcc &>/dev/null; then
-						export CC="distcc $CC"
-						export CXX="distcc $CXX"
-					fi
-				fi
+%clean
 
-				if hasq ccache ${FEATURES} &>/dev/null; then
-					#We can enable compiler cache support
-					if [ -z "${PATH/*ccache*/}" ]; then
-						# Remove the other reference.
-						remove_path_entry "ccache"
-					fi
+%files
+/
+__END1__
 
-					if [ -d /usr/lib/ccache/bin ]; then
-						export PATH="/usr/lib/ccache/bin:${PATH}"
-					elif [ -d /usr/bin/ccache ]; then
-						export PATH="/usr/bin/ccache:${PATH}"
-					fi
+}
 
-					[ -z "${CCACHE_DIR}" ] && export CCACHE_DIR="/root/.ccache"
+dyn_rpm() {
+	dyn_spec
+	rpm -bb ${PF}.spec
+	install -D /usr/src/redhat/RPMS/i386/${PN}-${PV}-${PR}.i386.rpm ${RPMDIR}/${CATEGORY}/${PN}-${PV}-${PR}.rpm
+}
 
-					addread "${CCACHE_DIR}"
-					addwrite "${CCACHE_DIR}"
+dyn_help() {
+	echo
+	echo "Portage"
+	echo "Copyright 2002 Gentoo Technologies, Inc."
+	echo 
+	echo "How to use the ebuild command:"
+	echo 
+	echo "The first argument to ebuild should be an existing .ebuild file."
+	echo
+	echo "One or more of the following options can then be specified.  If more"
+	echo "than one option is specified, each will be executed in order."
+	echo
+	echo "  setup       : execute package specific setup actions"
+	echo "  fetch       : download source archive(s) and patches"
+	echo "  unpack      : unpack/patch sources (auto-fetch if needed)"
+	echo "  compile     : compile sources (auto-fetch/unpack if needed)"
+	echo "  merge       : merge image into live filesystem, recording files in db"
+	echo "                (auto-fetch/unpack/compile if needed)"
+	echo "  unmerge     : remove package from live filesystem"
+	echo "  package     : create tarball package of type ${PACKAGE}"
+	echo "                (will be stored in ${PKGDIR}/All)"
+	echo "  clean       : clean up all source and temporary files"
+	echo
+	echo "The following settings will be used for the ebuild process:"
+	echo
+	echo "  package     : ${PF}" 
+	echo "  slot        : ${SLOT}" 
+	echo "  category    : ${CATEGORY}" 
+	echo "  description : ${DESCRIPTION}"
+	echo "  system      : ${CHOST}" 
+	echo "  c flags     : ${CFLAGS}" 
+	echo "  c++ flags   : ${CXXFLAGS}" 
+	echo "  make flags  : ${MAKEOPTS}" 
+	echo -n "  build mode  : "
+	if [ -n "${DEBUGBUILD}" ]
+	then
+		echo "debug (large)"
+	else
+		echo "production (stripped)"
+	fi
+	echo "  merge to    : ${ROOT}" 
+	echo
+	if [ -n "$USE" ]
+	then
+		echo "Additionally, support for the following optional features will be enabled:"
+		echo 
+		echo "  ${USE}"
+	fi
+	echo
+}
 
-					[ -z "${CCACHE_SIZE}" ] && export CCACHE_SIZE="500M"
-					ccache -M ${CCACHE_SIZE} &> /dev/null
-				fi
-			fi
-			COMPLETED_EBUILD_PHASES="${COMPLETED_EBUILD_PHASES} ${EBUILD_PHASE}"
-			;;
+# --- Former eclass code ---
 
+# debug-print() gets called from many places with verbose status information useful
+# for tracking down problems. The output is in $T/eclass-debug.log.
+# You can set ECLASS_DEBUG_OUTPUT to redirect the output somewhere else as well.
+# The special "on" setting echoes the information, mixing it with the rest of the
+# emerge output.
+# You can override the setting by exporting a new one from the console, or you can
+# set a new default in make.*. Here the default is "" or unset.
+
+# in the future might use e* from /etc/init.d/functions.sh if i feel like it
+debug-print() {
+	# if $T isn't defined, we're in dep calculation mode and 
+	# shouldn't do anything
+	[ -z "$T" ] && return 0
+
+	while [ "$1" ]; do
 	
-		help)
-			init_environ
-			export SANDBOX_ON="1"
+		# extra user-configurable targets
+		if [ "$ECLASS_DEBUG_OUTPUT" == "on" ]; then
+			echo "debug: $1"
+		elif [ -n "$ECLASS_DEBUG_OUTPUT" ]; then
+			echo "debug: $1" >> $ECLASS_DEBUG_OUTPUT
+		fi
+		
+		# default target
+		[ -n "$T" ] && echo $1 >> ${T}/eclass-debug.log
+		# let the portage user own/write to this file
+		[ -n "$T" ] && chown portage.portage ${T}/eclass-debug.log
+		
+		shift
+	done
+}
 
-			[ "$PORTAGE_DEBUG" == "1" ] && set -x
-			type -p pre_pkg_${EBUILD_PHASE} &> /dev/null && pre_pkg_${EBUILD_PHASE}
-			dyn_${EBUILD_PHASE}
-			ret=0
-			type -p post_pkg_${EBUILD_PHASE} &> /dev/null && post_pkg_${EBUILD_PHASE}
-			[ "$PORTAGE_DEBUG" == "1" ] && set +x
+# The following 2 functions are debug-print() wrappers
 
-			COMPLETED_EBUILD_PHASES="${COMPLETED_EBUILD_PHASES} ${EBUILD_PHASE}"
+debug-print-function() {
+	str="$1: entering function" 
+	shift
+	debug-print "$str, parameters: $*"
+}
+
+debug-print-section() {
+	debug-print "now in section $*"
+}
+
+# Sources all eclasses in parameters
+inherit() {
+	unset INHERITED
+	local location
+	while [ "$1" ]
+	do
+		export INHERITED="$INHERITED $1"
+
+		# any future resolution code goes here
+		if [ -n "$PORTDIR_OVERLAY" ]
+		then
+			location="${PORTDIR_OVERLAY}/eclass/${1}.eclass"
+			if [ -e "$location" ]
+			then
+				debug-print "inherit: $1 -> $location"
+				source "$location" || die "died sourcing $location in inherit()"
+				#continue processing, skip sourcing of one in $ECLASSDIR
+				shift
+				continue
+			fi
+		fi
+			
+		location="${ECLASSDIR}/${1}.eclass"
+		debug-print "inherit: $1 -> $location"
+		PECLASS="$ECLASS"
+		export ECLASS="$1"
+		source "$location" || die "died sourcing $location in inherit()"
+		ECLASS="$PECLASS"
+		unset PECLASS
+
+		shift
+	done
+}
+
+# Exports stub functions that call the eclass's functions, thereby making them default.
+# For example, if ECLASS="base" and you call "EXPORT_FUNCTIONS src_unpack", the following
+# code will be eval'd:
+# src_unpack() { base_src_unpack; }
+EXPORT_FUNCTIONS() {
+	if [ -z "$ECLASS" ]; then
+		echo "EXPORT_FUNCTIONS without a defined ECLASS" >&2
+		exit 1
+	fi
+	while [ "$1" ]; do
+		debug-print "EXPORT_FUNCTIONS: ${1} -> ${ECLASS}_${1}" 
+		eval "$1() { ${ECLASS}_$1 ; }" > /dev/null
+		shift
+	done
+}
+
+# adds all parameters to DEPEND and RDEPEND
+newdepend() {
+	debug-print-function newdepend $*
+	debug-print "newdepend: DEPEND=$DEPEND RDEPEND=$RDEPEND"
+
+	while [ -n "$1" ]; do
+		case $1 in
+		"/autotools")
+			DEPEND="${DEPEND} sys-devel/autoconf sys-devel/automake sys-devel/make"
 			;;
-		package|rpm)
-			export SANDBOX_ON="0"
-
-			if ! load_environ ${T}/environment; then
-				ewarn 
-				ewarn "unable to load saved env for phase $EBUILD_PHASE"
-				ewarn "attempting to continue, although this could result in a broken/invalid"
-				ewarn "rpm/binpkg"
-				sleepbeep 10
-			fi
-
-			if type reinstate_loaded_env_attributes &> /dev/null; then
-				reinstate_loaded_env_attributes
-			fi
-
-			[ "$PORTAGE_DEBUG" == "1" ] && set -x
-			type -p pre_pkg_${EBUILD_PHASE} &> /dev/null && pre_pkg_${EBUILD_PHASE}
-			dyn_${EBUILD_PHASE}
-			ret=0
-			type -p post_pkg_${EBUILD_PHASE} &> /dev/null && post_pkg_${EBUILD_PHASE}
-			[ "$PORTAGE_DEBUG" == "1" ] && set +x
-
-			COMPLETED_EBUILD_PHASES="${COMPLETED_EBUILD_PHASES} ${EBUILD_PHASE}"
-			;;
-		depend)
-			SANDBOX_ON="0"
-			MUST_EXPORT_ENV="no"
-
-			trap 'killparent' INT
-			if [ -z "$QA_CONTROLLED_EXTERNALLY" ]; then
-				enable_qa_interceptors
-			fi
-
-			init_environ
-
-			if [ -z "$QA_CONTROLLED_EXTERNALLY" ]; then
-				disable_qa_interceptors
-			fi
-			trap - INT
-
-			set -f
-			speak 'sending_keys'
-			[ "${DEPEND:-unset}" != "unset" ] && 		speak "DEPEND=$(echo $DEPEND)"
-			[ "${RDEPEND:-unset}" != "unset" ] && 		speak "RDEPEND=$(echo $RDEPEND)"
-			[ "$SLOT:-unset}" != "unset" ] && 		speak "SLOT=$(echo $SLOT)"
-			[ "$SRC_URI:-unset}" != "unset" ] && 		speak "SRC_URI=$(echo $SRC_URI)"
-			[ "$RESTRICT:-unset}" != "unset" ] && 		speak "RESTRICT=$(echo $RESTRICT)"
-			[ "$HOMEPAGE:-unset}" != "unset" ] && 		speak "HOMEPAGE=$(echo $HOMEPAGE)"
-			[ "$LICENSE:-unset}" != "unset" ] && 		speak "LICENSE=$(echo $LICENSE)"
-			[ "$DESCRIPTION:-unset}" != "unset" ] && 	speak "DESCRIPTION=$(echo $DESCRIPTION)"
-			[ "$KEYWORDS:-unset}" != "unset" ] && 		speak "KEYWORDS=$(echo $KEYWORDS)"
-			[ "$INHERITED:-unset}" != "unset" ] && 		speak "INHERITED=$(echo $INHERITED)"
-			[ "$IUSE:-unset}" != "unset" ] && 		speak "IUSE=$(echo $IUSE)"
-			[ "$CDEPEND:-unset}" != "unset" ] && 		speak "CDEPEND=$(echo $CDEPEND)"
-			[ "$PDEPEND:-unset}" != "unset" ] && 		speak "PDEPEND=$(echo $PDEPEND)"
-			[ "$PROVIDE:-unset}" != "unset" ] && 		speak "PROVIDE=$(echo $PROVIDE)"
-			speak 'end_keys'
-			set +f
+		"/c")
+			DEPEND="${DEPEND} sys-devel/gcc virtual/glibc"
+			RDEPEND="${RDEPEND} virtual/glibc"
 			;;
 		*)
-			export SANDBOX_ON="1"
-			echo "Please specify a valid command: $EBUILD_PHASE isn't valid."
-			echo
-			dyn_help
-			exit 1
+			DEPEND="$DEPEND $1"
+			if [ -z "$RDEPEND" ] && [ "${RDEPEND-unset}" == "unset" ]; then
+				export RDEPEND="$DEPEND"
+			fi
+			RDEPEND="$RDEPEND $1"
 			;;
 		esac
-
-		cd ${PORTAGE_BUILDDIR} &> /dev/null
-		if [ "${MUST_EXPORT_ENV}" == "yes" ]; then
-#			echo "exporting environ ${EBUILD_PHASE} to ${T}/environment" >&2
-			export_environ "${T}/environment"
-			list=''
-			for x in ${COMPLETED_EBUILD_PHASES}; do
-				if ! hasq $x $list; then
-					list="${list} ${x}"
-				fi
-			done
-			COMPLETED_EBUILD_PHASES="${list}"
-			unset list
-			echo "$COMPLETED_EBUILD_PHASES" > "${PORTAGE_BUILDDIR}/.completed_stages"
-			chown portage:portage "${PORTAGE_BUILDDIR}/.completed_stages" &> /dev/null
-			chmod g+w "${PORTAGE_BUILDDIR}/.completed_stages" &> /dev/null
-			MUST_EXPORT_ENV="no"
-		fi
+		shift
 	done
-	return ${ret:-0}
 }
 
-#echo, everything has been sourced.  now level the read-only's.
-for x in ${DONT_EXPORT_FUNCS}; do
-	declare -fr "$x"
-done
-
-f="$(declare | { 
-	read l; 
-	while [ "${l% \(\)}" == "$l" ]; do
-		echo "${l/=*}";
-		read l;
-	done;
-	unset l
-   })"
-
-#update the don't export filters.
-if [ -z "${ORIG_VARS}" ]; then
-	DONT_EXPORT_VARS="${DONT_EXPORT_VARS} ${f}"
-else
-	DONT_EXPORT_VARS="${DONT_EXPORT_VARS} $(echo "${f}" | egrep -v "^`gen_filter ${ORIG_VARS}`\$")"
+# --- functions end, main part begins ---
+export SANDBOX_ON="1"
+source ${EBUILD} || die "error sourcing ebuild"
+#a reasonable default for $S
+if [ "$S" = "" ]
+then
+	S=${WORKDIR}/${P}
 fi
-unset f
-                 
-if [ -z "${ORIG_FUNCS}" ]; then
-	DONT_EXPORT_FUNCS="${DONT_EXPORT_FUNCS} $(declare -F | cut -s -d ' ' -f 3)"
-else  
-	DONT_EXPORT_FUNCS="${DONT_EXPORT_FUNCS} $(declare -F | cut -s -d ' ' -f 3 )"
+if [ "${RESTRICT/nostrip/}" != "${RESTRICT}" ]
+then
+	export DEBUGBUILD="yes"
+fi
+
+# Note: this next line is not the same as export RDEPEND=${RDEPEND:-${DEPEND}}
+# That will test for unset *or* NULL ("").  We want just to set for unset...
+
+#turn off glob expansion from here on in to prevent *'s and ? in the DEPEND
+#syntax from getting expanded :)  Fixes bug #1473
+set -f
+#if [ -z "`set | grep ^RDEPEND=`" ]; then
+if [ "${RDEPEND-unset}" == "unset" ]; then
+	export RDEPEND=${DEPEND}
+	debug-print "RDEPEND: not set... Setting to: ${DEPEND}"
 fi
 set +f
 
-export XARGS
-if [ "$(id -nu)" == "portage" ] ; then
-	export USER=portage
-fi
-set +H -h
-# if we're being src'd for our functions, do nothing.  if called directly, define a few necessary funcs.
-if [ "$*" != "daemonize" ]; then
+for myarg in $*
+do
+	case $myarg in
+	nofetch)
+		pkg_nofetch
+		;;
+	prerm|postrm|preinst|postinst|config)
+		export SANDBOX_ON="0"
+		if [ "$PORTAGE_DEBUG" = "0" ]
+		then
+			pkg_${myarg}
+			#Allow non-zero return codes since they can be caused by &&
+		else
+			set -x
+			pkg_${myarg}
+			#Allow non-zero return codes since they can be caused by &&
+			set +x
+		fi
+		;;
+	unpack|compile|clean|install)
+		if [ ${SANDBOX_DISABLED="0"} = "0" ]
+		then
+			export SANDBOX_ON="1"
+		else
+			export SANDBOX_ON="0"
+		fi
+		if [ "$PORTAGE_DEBUG" = "0" ]
+		then
+			dyn_${myarg}
+			#Allow non-zero return codes since they can be caused by &&
+		else
+			set -x
+			dyn_${myarg}
+			#Allow non-zero return codes since they can be caused by &&
+			set +x
+		fi
+		export SANDBOX_ON="0"
+		;;
+	help|clean|setup)
+		#pkg_setup needs to be out of the sandbox for tmp file creation;
+		#for example, awking and piping a file in /tmp requires a temp file to be created
+		#in /etc.  If pkg_setup is in the sandbox, both our lilo and apache ebuilds break.
+		export SANDBOX_ON="0"
+		if [ "$PORTAGE_DEBUG" = "0" ]; then
+			dyn_${myarg}
+		else
+			set -x
+			dyn_${myarg}
+			set +x
+		fi
+		;;
+	package|rpm)
+		export SANDBOX_ON="0"
+		if [ "$PORTAGE_DEBUG" = "0" ]
+		then
+			dyn_${myarg}
+		else
+			set -x
+			dyn_${myarg}
+			set +x
+		fi
+		;;
+	depend)
+		export SANDBOX_ON="0"
+		set -f
+		#the extra `echo` commands remove newlines
+		dbkey=${PORTAGE_CACHEDIR}/${CATEGORY}/${PF}
+		if [ ! -d ${PORTAGE_CACHEDIR}/${CATEGORY} ]
+		then
+			install -d -g wheel -m2775 ${PORTAGE_CACHEDIR}/${CATEGORY}
+		fi
+		# Make it group writable. 666&~002==664
+		umask 002
+		echo `echo "$DEPEND"` > $dbkey
+		echo `echo "$RDEPEND"` >> $dbkey
+		echo `echo "$SLOT"` >> $dbkey
+		echo `echo "$SRC_URI"` >> $dbkey
+		echo `echo "$RESTRICT"` >> $dbkey
+		echo `echo "$HOMEPAGE"` >> $dbkey
+		echo `echo "$LICENSE"` >> $dbkey
+		echo `echo "$DESCRIPTION"` >> $dbkey
+		echo `echo "$KEYWORDS"` >> $dbkey
+		echo `echo "$INHERITED"` >> $dbkey
+		echo `echo "$IUSE"` >> $dbkey
+		echo `echo "$CDEPEND"` >> $dbkey
+		echo `echo "$PDEPEND"` >> $dbkey
+		set +f
+		#make sure it is writable by our group:
+		#chmod g+ws $dbkey
+		exit 0
+		;;
+	*)
+		export SANDBOX_ON="1"
+		echo "Please specify a valid command."
+		echo
+		dyn_help
+		exit 1
+		;;
+	esac
+	if [ $? -ne 0 ]
+	then
+		exit 1
+	fi
+done
 
-	if [ "${*/depend}" != "$*" ]; then
-		speak() {
-			echo "$*" >&4
-		}
-		declare -rf speak
-	fi
-	if [ -z "${NOCOLOR}" ]; then
-		set_colors
-	else
-		unset_colors
-	fi
-	execute_phases $*
-	exit 0
-else
-	DAEMONIZED="yes"
-	export DAEMONIZED
-	readonly DAEMONIZED
-fi
-true
+# Save current environment and touch a success file. (echo for success)
+umask 002
+set > ${T}/environment 2>/dev/null
+touch ${T}/successful 2>/dev/null
+#chmod g+w ${T}/environment ${T}/successful &>/dev/null
+echo -n ""

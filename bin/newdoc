@@ -1,13 +1,13 @@
 #!/bin/bash
-# Copyright 1999-2005 Gentoo Foundation
+# Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/newdoc,v 1.8 2005/05/04 00:52:42 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/newdoc,v 1.5 2002/11/23 19:21:58 vapier Exp $
 
 if [ -z "${T}" ] || [ -z "${2}" ] ; then
-	echo "newdoc: Nothing defined to do" 1>&2
+	echo "Nothing defined to do."
 	exit 1
 fi
 
 rm -rf "${T}/${2}"
 cp "${1}" "${T}/${2}"
-exec dodoc "${T}/${2}"
+dodoc "${T}/${2}"

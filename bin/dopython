@@ -1,10 +1,7 @@
-#!/usr/bin/python
-# Copyright 1999-2004 Gentoo Foundation
+#!/usr/bin/python2.2
+# Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dopython,v 1.8 2004/10/04 13:56:50 vapier Exp $
-
-import sys
-sys.path = ["/usr/lib/portage/pym"]+sys.path
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dopython,v 1.4 2002/11/23 19:21:58 vapier Exp $
 
 from sys import *
 import portage

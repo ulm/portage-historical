@@ -1,7 +1,23 @@
 #!/bin/bash
-# Copyright 1999-2004 Gentoo Foundation
+# Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dolib.so,v 1.12 2004/10/10 10:07:20 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dolib.so,v 1.6 2002/11/23 19:21:58 vapier Exp $
 
-exec env LIBOPTIONS="-m0755" \
-	dolib "$@"
+if [ ${#} -lt 1 ] ; then
+	echo "${0}: at least one argument needed"
+	exit 1
+fi
+if [ ! -d "${D}${DESTTREE}/lib" ] ; then
+	install -d "${D}${DESTTREE}/lib"
+fi
+
+for x in "$@" ; do
+	if [ -e "${x}" ] ; then
+		if [ -z "$DEBUGBUILD" ] ; then
+			strip --strip-debug "${x}"
+		fi
+		install -m0755 "${x}" "${D}${DESTTREE}/lib"
+	else
+		echo "${0}: ${x} does not exist"
+	fi
+done

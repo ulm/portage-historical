@@ -1,7 +1,7 @@
 #!/bin/bash
-# Copyright 1999-2004 Gentoo Foundation
+# Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dobin,v 1.13 2004/10/04 13:56:50 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dobin,v 1.7 2002/11/23 19:21:58 vapier Exp $
 
 if [ ${#} -lt 1 ] ; then
 	echo "${0}: at least one argument needed"
@@ -9,20 +9,22 @@ if [ ${#} -lt 1 ] ; then
 fi
 
 if [ ! -d "${D}${DESTTREE}/bin" ] ; then
-	install -d "${D}${DESTTREE}/bin" || exit 2
+	install -d "${D}${DESTTREE}/bin"
 fi
 
 for x in "$@" ; do
 	if [ -x "${x}" ] ; then
+		if [ -z "$DEBUGBUILD" ] ; then
+			MYVAL=`file "${x}" | grep "ELF"` 
+			if [ -n "$MYVAL" ] ; then
+				strip "${x}"
+			fi
+		fi
 		#if executable, use existing perms
-		install "${x}" "${D}${DESTTREE}/bin" || exit 3
+		install "${x}" "${D}${DESTTREE}/bin"
 	else
 		#otherwise, use reasonable defaults
 		echo ">>> dobin: making ${x} executable..."
-		if [ "$USERLAND" == "GNU" ]; then
-			install -m0755 -o root -g root  "${x}" "${D}${DESTTREE}/bin" || exit 4
-		else
-			install -m0755 -o root -g wheel "${x}" "${D}${DESTTREE}/bin" || exit 4
-		fi
+		install -m0755 --owner=root --group=root "${x}" "${D}${DESTTREE}/bin"
 	fi
 done

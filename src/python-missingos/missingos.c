@@ -1,5 +1,3 @@
-/* $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/python-missingos/missingos.c,v 1.5 2003/03/22 14:24:38 carpaski Exp $ */
-
 #include "Python.h"
 
 #include <sys/types.h>

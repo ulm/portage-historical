@@ -1,45 +1,51 @@
 #!/bin/bash
-# Copyright 1999-2005 Gentoo Foundation
+# Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/doman,v 1.18 2005/05/04 23:50:33 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/doman,v 1.9 2002/11/23 19:21:58 vapier Exp $
 
-if [ $# -lt 1 ] ; then
-	echo "$0: at least one argument needed" 1>&2
+if [ ${#} -lt 1 ] ; then
+	echo "${0}: at least one argument needed" 1>&2
 	exit 1
 fi
 
-PORTAGE_COMPRESS=${PORTAGE_COMPRESS:-gzip}
-PORTAGE_COMPRESS_FLAGS=${PORTAGE_COMPRESS_FLAGS:--9}
+# /usr/share/man
+# /usr/X11R6/man
+# /opt/gnome/man
+# /opt/kde/man
 
 BASE="/usr/share"
-i18n=""
+OLDBASE="$BASE"
 
 for x in "$@" ; do
-	if [ "${x:0:6}" == "-i18n=" ] ; then
-		i18n="${x:6}/"
-	fi
-	if [ "${x}" == ".keep" ] ; then
+	[ "$x" == "--"     ] && BASE="/usr/share"
+	[ "$x" == "-kde"   ] && BASE="/opt/kde"
+	[ "$x" == "-gnome" ] && BASE="/opt/gnome"
+	[ "$x" == "-x11"   ] && BASE="/usr/X11R6"
+	if [ "${x:0:1}" == "-" ] ; then
+		OLDBASE="$BASE"
 		continue
 	fi
 
-	suffix=${x##*.}
+	BASE="$OLDBASE"
+	suffix="${x##*.}"
+	if [ "$suffix" = "gz" ] ; then
+		compressed="gz"
+		realname="${x%.*}"
+		suffix="${realname##*.}"
+	else
+		realname="$x"
+		compressed=""
+	fi
 
-	case ${suffix} in
-		gz|bz2|Z)
-			compressed=${suffix}
-			realname=${x%.*}
-			suffix=${realname##*.}
-			;;
-		*)
-			realname=${x}
-			compressed=""
-			;;
-	esac
+	if [ "x" == "${suffix:1:1}" ] ; then
+		OLDBASE="$BASE"
+		BASE="/usr/X11R6"
+	fi
 
-	mandir=${i18n}man${suffix:0:1}
+	mandir=man${suffix:0:1}
 
-	if echo ${mandir} | egrep -q 'man[0-9n](|f|p|pm)$' -; then
-		if [ -s "${x}" ] ; then
+	if echo ${mandir} | egrep -q '^man[1-8n]$' -; then
+		if [ -e "${x}" ] ; then
 			if [ ! -d "${D}${BASE}/man/${mandir}" ] ; then
 				install -d "${D}${BASE}/man/${mandir}"
 			fi
@@ -47,13 +53,12 @@ for x in "$@" ; do
 			install -m0644 "${x}" "${D}${BASE}/man/${mandir}"
 
 			if [ -z "${compressed}" ] ; then
-				"${PORTAGE_COMPRESS}" ${PORTAGE_COMPRESS_FLAGS} -f \
-					"${D}${BASE}/man/${mandir}/${x##*/}"
+				gzip -f -9 "${D}${BASE}/man/${mandir}/${x##*/}"
 			fi
 		else
-			echo "doman: ${x} does not exist" 1>&2
+			echo "doman: ${x} does not exist." 1>&2
 		fi
 	else
-		echo "doman: '${x}' is probably not a man page; skipping" 1>&2
+		echo -e "\adoman: '${x}' is probably not a man page." 1>&2
 	fi
 done

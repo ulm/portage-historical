@@ -1,14 +1,13 @@
-#!/usr/bin/python -O
-# Copyright 1999-2004 Gentoo Foundation
+#!/usr/bin/python2.2
+# Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/db-update.py,v 1.10 2004/11/10 03:10:56 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/db-update.py,v 1.2 2002/11/23 19:21:58 vapier Exp $
 
-import os,sys,string
-sys.path = ["/usr/lib/portage/pym"]+sys.path
-
+import os
+import sys
 import portage
-
-os.chdir(portage.root+portage.VDB_PATH)
+import string
+os.chdir(portage.root+"var/db/pkg")
 myvirts=portage.grabdict(portage.root+"var/cache/edb/virtuals")
 mypvirts={}
 if portage.profiledir:
@@ -21,21 +20,19 @@ for x in sys.argv[1:]:
 	x=myparts[1]+"/"+myparts[2]
 	try:
 		myfile=open(x+"/VIRTUAL","r")
-	except SystemExit, e:
-		raise # Needed else the app won't quit
 	except:
 		continue
 	myline=myfile.readline()
 	mykey=string.join(string.split(myline))
 	if portage.isspecific(x):
-		mysplit=portage.portage_versions.catpkgsplit(x)
+		mysplit=portage.catpkgsplit(x)
 		newkey=mysplit[0]+"/"+mysplit[1]
 		origkey[newkey]=x
 		x=newkey
 	else:
 		origkey[x]=x
 	if portage.isspecific(mykey):
-		mysplit=portage.portage_versions.catpkgsplit(mykey)
+		mysplit=portage.catpkgsplit(mykey)
 		mykey=mysplit[0]+"/"+mysplit[1]
 	myvalidargs.append(x)
 	mydict[x]=mykey
@@ -55,6 +52,6 @@ if not os.path.exists("/tmp/db-upgrade-bak"):
 	os.mkdir("/tmp/db-upgrade-bak")
 print ">>> Backing up to /tmp/db-upgrade-bak..."
 for myarg in myvalidargs:
-	print ">>> Backing up",portage.root+portage.VDB_PATH+"/"+origkey[myarg]
-	os.system("mv "+portage.root+portage.VDB_PATH+"/"+origkey[myarg]+" /tmp/db-upgrade-bak")
+	print ">>> Backing up",portage.root+"var/db/pkg/"+origkey[myarg]
+	os.system("mv "+portage.root+"var/db/pkg/"+origkey[myarg]+" /tmp/db-upgrade-bak")
 print ">>> Done."

@@ -1,48 +1,36 @@
 #!/bin/bash
-# Copyright 1999-2005 Gentoo Foundation
+# Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepall,v 1.14 2005/05/29 05:33:08 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepall,v 1.6 2003/01/05 05:36:18 carpaski Exp $
 
 prepallman
 prepallinfo
 prepallstrip
 
 #this should help to ensure that all (most?) shared libraries are executable
-for i in "${D}"opt/*/lib{,32,64} \
-         "${D}"lib{,32,64}       \
-         "${D}"usr/lib{,32,64}   \
-         "${D}"usr/X11R6/lib{,32,64} ; do
+for i in "${D}"opt/*/lib "${D}"lib "${D}"usr/lib "${D}"usr/X11R6/lib ; do
 	[ ! -d "${i}" ] && continue
 
 	for j in "${i}"/*.so.* "${i}"/*.so ; do
 		[ ! -e "${j}" ] && continue
 		[ -L "${j}" ] && continue
-		[ -x "${j}" ] && continue
 		echo "making executable: /${j/${D}/}"
 		chmod +x "${j}"
 	done
 done
 
-# When installing static libraries into /usr/lib and shared libraries into 
-# /lib, we have to make sure we have a linker script in /usr/lib along side 
-# the static library, or gcc will utilize the static lib when linking :(.
-# http://bugs.gentoo.org/show_bug.cgi?id=4411
-for a in "${D}"/usr/lib/*.a ; do
-	s=${a%.a}.so
-	if [ ! -e "${s}" ] ; then
-		s=${s##*/}
-		if [ -e "${D}/lib/${s}" ] ; then
-			echo -e "\aQA Notice: missing gen_usr_ldscript for ${s}\a"
-			sleep 1
-		fi
-	fi
-done
+# Move aclocals
+for i in `find "${D}"/ -name "aclocal" -type d 2>/dev/null` ; do
+	[ -z "${i}" ] && continue
 
-# Verify that the libtool files don't contain bogus $D entries.
-for a in "${D}"/usr/lib/*.la ; do
-	s=${a##*/}
-	if grep -qs "${PORTAGE_TMPDIR}" "${a}" ; then
-		echo -e "\aQA Notice: ${s} appears to contain PORTAGE_TMPDIR paths\a"
-		sleep 1
-	fi
+	# Strip double '/'
+	dir1="`echo "${i}" | sed  -e 's://:/:g'`"
+	dir2="`echo "${D}/usr/share/aclocal" | sed  -e 's://:/:g'`"
+	
+	[ "${dir1}" == "${dir2}" ] && continue
+
+	echo "moving aclocal: /${i/${D}/}"
+	install -d "${D}"usr/share/aclocal
+	mv "${i}"/* "${D}"usr/share/aclocal
+	rm -fr "${i}"
 done
