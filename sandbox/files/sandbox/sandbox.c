@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 The Leaf, http://www.theleaf.be
 **  Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@theleaf.be>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/files/sandbox/Attic/sandbox.c,v 1.4 2001/12/07 15:14:49 gbevin Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/files/sandbox/Attic/sandbox.c,v 1.5 2001/12/10 11:08:21 gbevin Exp $
 */
 
 #define _GNU_SOURCE
@@ -39,9 +39,12 @@
 #define ENV_SANDBOX_LOG		"SANDBOX_LOG"
 #define ENV_SANDBOX_DIR		"SANDBOX_DIR"
 #define ENV_SANDBOX_LIB		"SANDBOX_LIB"
+
 #define ENV_SANDBOX_DENY	"SANDBOX_DENY"
 #define ENV_SANDBOX_READ	"SANDBOX_READ"
 #define ENV_SANDBOX_WRITE	"SANDBOX_WRITE"
+#define ENV_SANDBOX_PREDICT	"SANDBOX_PREDICT"
+
 #define ENV_SANDBOX_ON		"SANDBOX_ON"
 #define ENV_SANDBOX_BEEP	"SANDBOX_BEEP"
 
@@ -325,6 +328,7 @@ int main(int argc, char** argv)
 	char*		home_dir = NULL;
 	char*		portage_tmp_dir = NULL;
 	char		sandbox_write_var[255];
+	char		sandbox_predict_var[255];
 	char*		tmp_string = NULL;
 	char		full_sandbox_path[255];
 	char		sandbox_log[255];
@@ -597,9 +601,14 @@ int main(int argc, char** argv)
 			}
 			if (NULL == getenv(ENV_SANDBOX_WRITE))
 			{
-				strcpy(sandbox_write_var, "/dev/null:/dev/pts/:/dev/tty:/tmp/");
-				/* this is temporary until Hallski finds how to prevent scrollkeeper from writing there during install */
-				strcat(sandbox_write_var, ":/var/log/scrollkeeper.log");
+				/* these should go into make.globals later on */
+				strcpy(sandbox_write_var, "");
+				strcat(sandbox_write_var, "/dev/null:/dev/pts/:/dev/tty:/tmp/");
+				strcat(sandbox_write_var, ":");
+				strcat(sandbox_predict_var, "/var/log/scrollkeeper.log");
+				strcat(sandbox_write_var, ":");
+				strcat(sandbox_write_var, home_dir);
+				strcat(sandbox_predict_var, "/.gconfd/lock");
 				strcat(sandbox_write_var, ":");
 				strcat(sandbox_write_var, home_dir);
 				strcat(sandbox_write_var, "/.bash_history");
@@ -612,7 +621,21 @@ int main(int argc, char** argv)
 				{
 					strcat(sandbox_write_var, portage_tmp_dir);
 				}
+				/* */
 				setenv(ENV_SANDBOX_WRITE, sandbox_write_var, 1);
+			}
+			if (NULL == getenv(ENV_SANDBOX_PREDICT))
+			{
+				/* these should go into make.globals later on */
+				strcpy(sandbox_predict_var, "");
+				strcat(sandbox_predict_var, home_dir);
+				strcat(sandbox_predict_var, "/.");
+				strcat(sandbox_predict_var, ":");
+				strcat(sandbox_predict_var, "/usr/tmp/conftest");
+				strcat(sandbox_predict_var, ":");
+				strcat(sandbox_predict_var, "/usr/lib/conftest");
+				setenv(ENV_SANDBOX_PREDICT, sandbox_predict_var, 1);
+				/* */
 			}
 			setenv(ENV_SANDBOX_ON, "1", 0);
 
