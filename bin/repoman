@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.107 2004/11/10 03:10:56 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.108 2004/11/16 02:00:38 ferringb Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -580,7 +580,7 @@ else:
 		if abs(time() - ct) > (60*60*24*7):
 			# don't trap the exception, we're watching for errno 2 (file not found), anything else is a bug.
 			backup_exists=1
-			os.renam(portage.CACHE_PATH+'/metadata.dtd',portage.CACHE_PATH+'/metadata.dtd.backup')
+			os.rename(portage.CACHE_PATH+'/metadata.dtd',portage.CACHE_PATH+'/metadata.dtd.backup')
 		else:
 			must_fetch=0
 
