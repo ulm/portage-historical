@@ -2,7 +2,7 @@
 # ebuild-default-functions.sh; default functions for ebuild env that aren't saved- specific to the portage instance.
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.16 2004/12/15 11:50:21 genone Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.17 2004/12/17 00:26:00 ferringb Exp $
 
 has_version() {
 	# if there is a predefined portageq call, use it.
@@ -463,6 +463,7 @@ dyn_install() {
 			chgrp wheel "$file"
 		else
 			chgrp root "$file"
+		fi
 		[ -h "$file" ] || chmod "$s" "$file"
 	done
 
