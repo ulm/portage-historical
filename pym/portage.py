@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.25 2005/01/13 01:06:28 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.26 2005/01/13 13:23:27 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1412,6 +1412,8 @@ class config:
 
 		# User settings and profile settings take precedence over tree.
 		profile_virtuals = stack_dictlist([self.userVirtuals]+self.dirVirtuals,incremental=1)
+		for x in profile_virtuals.keys():
+			profile_virtuals[x].reverse()
 		self.userVirtuals = {} # keep this in case something else is using it.
 
 		# repoman doesn't need local virtuals.
@@ -2518,7 +2520,7 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 	try: 
 		mysettings["SLOT"], mysettings["RESTRICT"] = db["/"]["porttree"].dbapi.aux_get(mycpv,["SLOT","RESTRICT"])
 	except (IOError,KeyError):
-		print red("doebuild():")+" aux_get() error; aborting."
+		print red("doebuild():")+" aux_get() error reading "+mycpv+"; aborting."
 		sys.exit(1)
 
 	newuris, alist  = db["/"]["porttree"].dbapi.getfetchlist(mycpv,mysettings=mysettings)
@@ -2526,11 +2528,11 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 	mysettings["A"]=string.join(alist," ")
 	mysettings["AA"]=string.join(aalist," ")
 	if ("mirror" in features) or fetchall:
-		fetchme=alluris
-		checkme=aalist
+		fetchme=alluris[:]
+		checkme=aalist[:]
 	elif mydo=="digest":
-		fetchme=alluris
-		checkme=aalist
+		fetchme=alluris[:]
+		checkme=aalist[:]
 		digestfn=mysettings["FILESDIR"]+"/digest-"+mysettings["PF"]
 		if os.path.exists(digestfn):
 			mydigests=digestParseFile(digestfn)
@@ -2541,8 +2543,8 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 						del fetchme[i]
 						del checkme[i]
 	else:
-		fetchme=newuris
-		checkme=alist
+		fetchme=newuris[:]
+		checkme=alist[:]
 
 	try:
 		if not os.path.exists(mysettings["DISTDIR"]):
@@ -5254,7 +5256,7 @@ class portdbapi(dbapi):
 		try:
 			myuris = self.aux_get(mypkg,["SRC_URI"])[0]
 		except (IOError,KeyError):
-			print red("getfetchlist():")+" aux_get() error; aborting."
+			print red("getfetchlist():")+" aux_get() error reading "+mypkg+"; aborting."
 			sys.exit(1)
 
 		useflags = string.split(mysettings["USE"])
