@@ -3,6 +3,10 @@
 
 *portage-2.1.0 (...): Code reorg and enhancements
 
+  21 Feb 2003; Alain Penders <alain@gentoo.org> log4py.py log4py.conf:
+  Added log4py logging system.  This is version 1.1 of log4py with the
+  stderr fix applied.
+
   21 Feb 2003; Alain Penders <alain@gentoo.org> plugin.py: Added plugin
   framework module.  (Latest version of this module is kept in
   gentoo/users/alain/plugin, and available from
