@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.21 2004/02/12 04:51:03 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.22 2004/02/27 03:47:48 nakano Exp $
 
 import os,sys
 from output import *
@@ -252,6 +252,11 @@ def help(myaction,myopts,havecolor=1):
 		print "              the presence of an uncorrectable or inconsequential error. This"
 		print "              should only be used in cases where skipping the package will not"
 		print "              result in failed dependencies."
+		print
+		print "       "+green("--tree")+" ("+green("-t")+" short option)"
+		print "              Shows the dependency tree using indentation for dependencies."
+		print "              Only really useful in combination with --emptytree, --update "
+		print "              or --deep."
 		print
 		print "       "+green("--update")+" ("+green("-u")+" short option)"
 		print "              Updates packages to the best version available, which may not"

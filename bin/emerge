@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.271 2004/02/27 02:48:16 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.272 2004/02/27 03:47:48 nakano Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -212,6 +212,11 @@ if ("--tree" in myopts) and ("--columns" in myopts):
 if ("buildpkg" in portage.features) or ("--buildpkgonly" in myopts):
 	if "--buildpkg" not in myopts:
 		myopts.append("--buildpkg")
+
+# --tree only makes sense with --pretend
+if "--tree" in myopts and not (("--pretend" in myopts) or ("--ask" in myopts)):
+	print ">>> --tree implies --pretend... adding --pretend to options."
+	myopts.append("--pretend")
 
 # Also allow -S to invoke search action (-sS)
 if ("--searchdesc" in myopts):
