@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.269.2.11 2003/02/17 00:53:58 alain Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.269.2.12 2003/02/19 14:47:38 alain Exp $
 
 VERSION="2.0.47-r1"
 
@@ -228,7 +228,7 @@ class PortageContext:
 			if not len(self.root):
 				self.root="/"
 			elif self.root[-1]!="/":
-				self.root=root+"/"
+				self.root=self.root+"/"
 		else:
 			self.root="/"
 		if self.root != "/":
@@ -297,8 +297,8 @@ class PortageContext:
 					if mydb.cp_list(x+"/"+myp):
 						mykey=x+"/"+myp
 			if not mykey and type(mydb)!=types.ListType:
-				if virtualpkgmap.has_key(myp):
-					mykey=virtualpkgmap[myp]
+				if self.virtualpkgmap.has_key(myp):
+					mykey=self.virtualpkgmap[myp]
 				#again, we only perform virtual expansion if we have a dbapi (not a list)				
 			if not mykey:
 				mykey="null/"+myp
