@@ -1,6 +1,6 @@
 # Copyright 1998-2004 Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/output.py,v 1.22 2004/09/09 08:02:53 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/output.py,v 1.23 2004/09/29 13:54:51 jstubbs Exp $
 
 import os,sys,re
 
@@ -36,7 +36,7 @@ def nc_len(mystr):
 def xtermTitle(mystr):
 	if havecolor and dotitles and os.environ.has_key("TERM"):
 		myt=os.environ["TERM"]
-		legal_terms = ["xterm","Eterm","aterm","rxvt","screen","kterm"]
+		legal_terms = ["xterm","Eterm","aterm","rxvt","screen","kterm","rxvt-unicode"]
 		if (myt in legal_terms) or myt.startswith("xterm"):
 			sys.stderr.write("\x1b]2;"+str(mystr)+"\x07")
 			sys.stderr.flush()
