@@ -1,7 +1,7 @@
-#!/usr/bin/python -O
+#!/usr/bin/python
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/portageq,v 1.9 2003/11/10 08:30:55 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/portageq,v 1.10 2003/11/28 13:27:16 carpaski Exp $
 
 import sys
 sys.path = ["/usr/lib/portage/pym"]+sys.path
@@ -195,7 +195,7 @@ def envvar(argv):
 #
 
 def usage():
-	rev="$Revision: 1.9 $"
+	rev="$Revision: 1.10 $"
 	ver=string.split(rev, ' ')[1]
 	print ">>> Portage information query tool -- version "+ver
 	print ">>> Usage: portageq <command> [<option> ...]"

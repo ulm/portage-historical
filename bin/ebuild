@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild,v 1.13 2003/11/10 08:30:55 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild,v 1.14 2003/11/28 13:27:16 carpaski Exp $
 
 import os,sys
 sys.path = ["/usr/lib/portage/pym"]+sys.path
@@ -33,7 +33,8 @@ for opt in opts:
 
 for x in pargs[1:]:
 	try:
-		a=portage.doebuild(pargs[0],x,getroot(),debug=debug)
+		tmpsettings = portage.config(clone=portage.settings)
+		a=portage.doebuild(pargs[0],x,getroot(),tmpsettings,debug=debug)
 	except KeyboardInterrupt:
 		print "(interrupted by user -- ctrl-C?)"
 		a=1
