@@ -21,7 +21,7 @@ Here's a simple example ebuild script, :
 .br
 # Author Daniel Robbins <drobbins@gentoo.org>
 .br
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.5,v 1.1 2001/08/26 04:33:43 drobbins Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.5,v 1.2 2001/09/03 04:42:55 lamer Exp $
 .br
 
 A=${P}.tar.gz
@@ -82,7 +82,7 @@ variabels.
 .TP
 \fBWORKDIR\fR
 Contains the path to the package build root. 
-(/tmp/portage/[category]/[package]/work). \fIsrc_unpack\fR gets
+(/var/tmp/portage/[category]/[package]/work). \fIsrc_unpack\fR gets
 executed with \fIWORKDIR\fR as the current directory.
 .TP
 \fBS\fR
@@ -92,7 +92,7 @@ with \fIS\fR as the current directory.
 .TP
 \fBD\fR
 Contains the path to the temporary \fIinstall directory\fR.
-(/tmp/portage/[category]/[package]/image)
+(/var/tmp/portage/[category]/[package]/image)
 .TP
 \fBDESCRIPTION\fR
 Should contain a short description of the package.
