@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.689 2004/08/12 21:17:21 ferringb Exp $
+# $Id: ChangeLog,v 1.690 2004/08/13 08:05:44 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -8,6 +8,13 @@
     3. /etc/portage/profile/virtuals is _USER_ configs only.
     4. /etc/portage/sets/world is a symlink to /var/lib/portage/world
        It is for convenience. Do not mistake this for the actual file.
+
+  13 Aug 2004; Brian Harring <ferringb@gentoo.org> bin/emerge-webrsync:
+  Added support for snapshot md5sum's (mirrors now carry them).
+  This is used to ensure the fetched snapshot is sane; if it's sane, 
+  then we reuse it for sync'ing.  This nulls the -n option, so it's been
+  removed. Closes out #15990, but no longer automatically forcing a refetch.
+  Refetches are only forced if the md5 is invalid.
 
   12 Aug 2004; Brian Harring <ferringb@gentoo.org> pym/portage.py: 
   Cleaned up fetch a bit more, saner error messages when unable to 
