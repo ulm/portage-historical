@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.305 2004/08/01 10:54:38 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.306 2004/08/01 11:39:34 genone Exp $
 
 import os,sys,platform
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -162,8 +162,8 @@ for x in cmdline:
 			elif x[2:] in actions:
 				if x[2:]=="rsync" or x=="rsync":
 					print
-					print red("*** 'rsync' has been deprecated.")
-					print red("*** Please use 'sync' instead.")
+					print red("*** '--rsync' has been deprecated.")
+					print red("*** Please use '--sync' instead.")
 					print
 					x="--sync"
 				if myaction:
@@ -182,7 +182,10 @@ for x in cmdline:
 		if x not in ["system", "world"]:
 			#print red("*** Deprecated use of action '"+x+"'")
 			if x=="rsync":
-				#print red("***   Please use '--sync' instead.")
+				print
+				print red("*** 'rsync' has been deprecated.")
+				print red("*** Please use '--sync' instead.")
+				print
 				x="sync"
 			#else:
 				#print red("***   Please use '--"+x+"' instead.")
