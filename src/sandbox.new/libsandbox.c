@@ -25,7 +25,7 @@
  *  as some of the InstallWatch code was used.
  *
  *
- *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/libsandbox.c,v 1.6 2002/08/22 22:13:04 azarah Exp $
+ *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/libsandbox.c,v 1.7 2002/08/24 08:51:31 azarah Exp $
  *
  */
 
@@ -807,7 +807,8 @@ static void init_env_entries(char*** prefixes_array, int* prefixes_num, char* en
         strncpy(prefix, token, strlen(token) + 1);
         (*prefixes_array)[(*prefixes_num)++] = filter_path(prefix);
         
-        if (prefix) free(prefix); prefix = NULL;
+        if (prefix) free(prefix);
+        prefix = NULL;
 #ifdef REENTRANT_STRTOK
         token = strtok_r(NULL, ":", strtok_buf);
 #else
@@ -815,9 +816,11 @@ static void init_env_entries(char*** prefixes_array, int* prefixes_num, char* en
 #endif
       }
       
-      if (buffer) free(buffer); buffer = NULL;
+      if (buffer) free(buffer);
+      buffer = NULL;
 #ifdef REENTRANT_STRTOK
-      if (strtok_buf) free(strtok_buf); strtok_buf = NULL;
+      if (strtok_buf) free(strtok_buf);
+      strtok_buf = NULL;
 #endif
     }
     else if (prefixes_env_length > 0) {
@@ -827,7 +830,8 @@ static void init_env_entries(char*** prefixes_array, int* prefixes_num, char* en
       strncpy(prefix, prefixes_env, prefixes_env_length + 1);
       (*prefixes_array)[(*prefixes_num)++] = filter_path(prefix);
       
-      if (prefix) free(prefix); prefix = NULL;
+      if (prefix) free(prefix);
+      prefix = NULL;
     }
   }
 }
