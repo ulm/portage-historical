@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.637 2004/07/26 18:30:27 ferringb Exp $
+# $Id: ChangeLog,v 1.638 2004/07/26 20:36:05 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -8,6 +8,11 @@
     3. /etc/portage/virtuals is _USER_ configs only. Do not copy the old file.
     4. /etc/portage/sets/world is a symlink to /var/lib/portage/world
        It is for convenience. Do not mistake this for the actual file.
+
+  26 Jul 2004; Brian Harring <ferringb@gentoo.org> bin/repoman:
+  Added file.executable check- ebuilds, digests, Manifest, ChangeLog, and
+  metadata.xml don't need the executable bit set.  CVS preserves it upon 
+  commit, so we do the check prior to commit.  (#55647)
 
   26 Jul 2004; Brian Harring <ferringb@gentoo.org> bin/emerge:
   Removed the hardcoding of uname for emerge info, using which to find it
