@@ -1,9 +1,9 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.297 2003/02/26 11:24:15 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.298 2003/02/26 16:37:37 alain Exp $
 
-VERSION="2.0.47-r4"
+VERSION="2.0.47-r6"
 
 from stat import *
 from commands import *
