@@ -1,11 +1,19 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.920 2005/03/06 10:51:18 jstubbs Exp $
+# $Id: ChangeLog,v 1.921 2005/03/07 04:00:30 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  06 Mar 2005; Brian Harring <ferringb@gentoo.org> bin/emerge, pym/portage_dep.py, 
+  pym/portage_file.py, pym/portage_util.py, pym/portage.py, pym/config.py, 
+  pym/eclass_cache:
+  Broke config class out into it's own module.  Minimal hacks, 3 from portage
+  imports that can't be gutted till reliance on global db is gone.  Aside 
+  from that, shifts of funcs around.
+  Also broke eclass_cache out.
 
   06 Mar 2005; Jason Stubbs <jstubbs@gentoo.org> bin/emerge: Added a check
   to make sure the file exists before working with it, when called with an

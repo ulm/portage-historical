@@ -1,8 +1,8 @@
 # deps.py -- Portage dependency resolution functions
 # Copyright 2003-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.23 2005/02/26 06:35:20 jstubbs Exp $
-cvs_id_string="$Id: portage_dep.py,v 1.23 2005/02/26 06:35:20 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.24 2005/03/07 04:00:30 ferringb Exp $
+cvs_id_string="$Id: portage_dep.py,v 1.24 2005/03/07 04:00:30 ferringb Exp $"[5:-2]
 
 # DEPEND SYNTAX:
 #
@@ -503,3 +503,38 @@ class DependencyGraph:
 
 		# Return our list.
 		return traversed
+
+def dep_getkey(mydep):
+	if not len(mydep):
+		return mydep
+	if mydep[0]=="*":
+		mydep=mydep[1:]
+	if mydep[-1]=="*":
+		mydep=mydep[:-1]
+	if mydep[0]=="!":
+		mydep=mydep[1:]
+	if mydep[:2] in [ ">=", "<=" ]:
+		mydep=mydep[2:]
+	elif mydep[:1] in "=<>~":
+		mydep=mydep[1:]
+	if isspecific(mydep):
+		mysplit=portage_versions.catpkgsplit(mydep)
+		if not mysplit:
+			return mydep
+		return mysplit[0]+"/"+mysplit[1]
+	else:
+		return mydep
+
+
+iscache={}
+def isspecific(mypkg):
+	"now supports packages with no category"
+	if mypkg in iscache:
+		return iscache[mypkg]
+	mysplit=mypkg.split("/")
+	if not isjustname(mysplit[-1]):
+		iscache[mypkg]=1
+		return 1
+	iscache[mypkg]=0
+	return 0
+
