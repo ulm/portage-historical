@@ -1,8 +1,13 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.470 2003/08/21 01:30:31 carpaski Exp $
+# $Id: ChangeLog,v 1.471 2003/08/22 17:09:37 carpaski Exp $
 
-*portage-2.0.49_pre19 (20 Aug 2003): Fixes + security enhancements
+*portage-2.0.49 (22 Aug 2003): GRP downloading, Selinux, General Fixes
+
+  22 Aug 2003; Nicholas Jones <carpaski@gentoo.org> portage.py: Make
+  auxcache saving more friendly.
+
+*portage-2.0.49_pre20/21 (20 Aug 2003): Fixes + security enhancements
 
   20 Aug 2003; Nicholas Jones <carpaski@gentoo.org> portage.py: Fix for
   auxcache saving.

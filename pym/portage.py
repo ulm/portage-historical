@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.336 2003/08/21 01:30:33 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.337 2003/08/22 17:09:37 carpaski Exp $
 
 VERSION="2.0.49"
 
@@ -3403,13 +3403,19 @@ class portdbapi(dbapi):
 		except:
 			self.auxpickle={}
 		self.auxpickle[self.root] = self.auxcache
+
 		try:
 			cPickle.dump(self.auxpickle, file("/var/cache/edb/auxcache.pickle", "w"), 1)
-			os.chown("/var/cache/edb/auxcache.pickle",uid,portage_gid)
-			os.chmod("/var/cache/edb/auxcache.pickle",0664)
 		except Exception, e:
 			print "!!! Failed to save auxcache"
 			print "!!! "+str(e)
+			return
+			
+		try:
+			os.chown("/var/cache/edb/auxcache.pickle", uid, portage_gid)
+			os.chmod("/var/cache/edb/auxcache.pickle",0664)
+		except Exception, e:
+			pass
 		
 	def finddigest(self,mycpv):
 		try:
