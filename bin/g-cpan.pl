@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.4 2003/02/23 23:10:03 alain Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.5 2003/03/08 20:05:39 jrray Exp $
 
 # History: 
 
@@ -292,8 +292,8 @@ sub get_globals {
     # let's not beat around the bush here, make.conf isn't the
     # only place these variables can be defined
 
-    OVERLAY_DIR=$(/usr/lib/portage/bin/portageq portdir_overlay)
-    PORTAGE_DIR=$(/usr/lib/portage/bin/portageq portdir)
+    $OVERLAY_DIR=qx(/usr/lib/portage/bin/portageq portdir_overlay);
+    $PORTAGE_DIR=qx(/usr/lib/portage/bin/portageq portdir);
     
     unless ( length $OVERLAY_DIR && -d $OVERLAY_DIR ) {
         $OVERLAY_DIR = "";
