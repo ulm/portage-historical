@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.626 2004/07/20 19:16:34 nakano Exp $
+# $Id: ChangeLog,v 1.627 2004/07/21 08:34:29 nakano Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -8,6 +8,9 @@
     3. /etc/portage/virtuals is _USER_ configs only. Do not copy the old file.
     4. /etc/portage/sets/world is a symlink to /var/lib/portage/world
        It is for convenience. Do not mistake this for the actual file.
+
+  21 Jul 2004; Masatomo Nakano <nakano@gentoo.org> bin/emerge: Fixed bug 
+  which blocks a package itself with -U option.
 
   20 Jul 2004; Masatomo Nakano <nakano@gentoo.org> bin/repoman: Fixed
   profile cache problem. (#43601, #56170)
