@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.192 2004/08/24 18:08:12 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.193 2004/08/26 09:16:14 ferringb Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -15,29 +15,6 @@ if [ "$*" != "depend" ] && [ "$*" != "clean" ] && [ "$*" != "nofetch" ]; then
 	if [ -f "${T}/successful" ]; then
 		rm -f "${T}/successful"
 	fi
-
-	# Hurray for per-ebuild logging.
-	if [ ! -z "${PORT_LOGDIR}" ]; then
-		if [ -z "${PORT_LOGGING}" ]; then
-			export PORT_LOGGING=1
-			export SANDBOX_WRITE="$SANDBOX_WRITE:${PORT_LOGDIR}"
-			install -d "${PORT_LOGDIR}" &>/dev/null
-			chown root:portage "${PORT_LOGDIR}" &>/dev/null
-			chmod g+rwxs "${PORT_LOGDIR}" &> /dev/null
-			touch "${PORT_LOGDIR}/${LOG_COUNTER}-${PF}.log" &> /dev/null
-			chmod g+w "${PORT_LOGDIR}/${LOG_COUNTER}-${PF}.log" &> /dev/null
-			echo "$*" >> "${PORT_LOGDIR}/${LOG_COUNTER}-${PF}.log"
-			{ $0 "$@" || rm -f "${T}/successful" ; } 2>&1 \
-			  | tee -i -a "${PORT_LOGDIR}/${LOG_COUNTER}-${PF}.log"
-			if [ -f "${T}/successful" ]; then
-				rm -f "${T}/successful"
-				exit 0
-			else
-				exit 1
-			fi
-		fi
-	fi
-
 	if [ -f "${T}/environment" ]; then
 		source "${T}/environment" &>/dev/null
 	fi
@@ -938,7 +915,6 @@ dyn_test() {
 	if [ -d "${S}" ]; then
 		cd "${S}"
 	fi
-
 	if hasq maketest $RESTRICT; then
 		ewarn "Skipping make test/check due to ebuild restriction."
 		echo ">>> Test phase [explicitly disabled]: ${CATEGORY}/${PF}"
