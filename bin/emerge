@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.313 2004/08/12 10:58:23 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.314 2004/08/13 15:01:32 jstubbs Exp $
 
 import os,sys,platform
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -813,17 +813,9 @@ class depgraph:
 		update_spinner()
 
 		mytype,myroot,mykey=mybigkey
-		if myuse == None:
-			self.pkgsettings.setcpv(mykey)
-			myuse=string.split(self.pkgsettings["USE"], " ")
-
-		self.applied_useflags[mykey] = myuse
-	
 		# select the correct /var database that we'll be checking against
 		vardbapi=portage.db[myroot]["vartree"].dbapi
 
-		merging=1
-		# this is where we add the node to the list of packages to merge
 		if addme:
 			# if the package is already on the system, we add a "nomerge"
 			# directive, otherwise we add a "merge" directive.
@@ -834,6 +826,16 @@ class depgraph:
 					mybigkey.append(myparent.split()[2])
 					self.digraph.addnode(string.join(mybigkey),myparent)
 				return 1
+
+		if myuse == None:
+			self.pkgsettings.setcpv(mykey)
+			myuse=string.split(self.pkgsettings["USE"], " ")
+
+		self.applied_useflags[mykey] = myuse
+	
+		merging=1
+		if addme:
+		# this is where we add the node to the list of packages to merge
 			if not myparent:
 				# command-line specified or part of a world list...
 				if ("self" not in myparams) or (("selective" in myparams) and vardbapi.cpv_exists(mykey)):
