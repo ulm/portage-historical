@@ -1,8 +1,11 @@
 # ChangeLog for Path Sandbox
 # Copyright 2002 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-dev/Attic/ChangeLog,v 1.3 2002/09/01 09:19:11 azarah Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-dev/Attic/ChangeLog,v 1.4 2002/09/01 19:53:23 azarah Exp $
 
   1 Sep 2002; Martin Schlemmer <azarah@gentoo.org> :
+
+  Fix my braindead 'return 1;' in a void function.  Updated sandbox.c,
+  cleanup() for this.
 
   Change cleanup() in sandbox.c not to exit with fail status if
   the pidsfile is missing.  We really should still display sandbox
