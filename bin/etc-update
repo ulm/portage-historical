@@ -8,9 +8,13 @@
 # Leo Lipelis <aeoo@gentoo.org>
 # Karl Trygve Kalleberg <karltk@gentoo.org>
 #
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.21 2004/09/25 13:07:54 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.22 2004/09/27 23:38:21 jstubbs Exp $
 
 export PORTAGE_CALLER="etc-update"
+
+if [ $(/usr/lib/portage/bin/portageq envvar USERLAND) = BSD ] ; then
+	function sed() { gsed "$@"; }
+fi
 
 function get_config() {
 	item=$1
