@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.11 2005/01/12 04:47:52 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.12 2005/01/13 18:17:45 carpaski Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -1610,7 +1610,8 @@ class depgraph:
 				if mysplit and (len(mysplit)==3):
 					if "--emptytree" not in myopts:
 						if mysplit[0]=="sys-apps/portage":
-							if mysplit[1]+mysplit[2]!=portage.VERSION:
+							if ((mysplit[1]+mysplit[2]) != portage.VERSION) and \
+							   ("livecvsportage" not in portage.settings.features):
 								if mylist.index(x)<len(mylist)-1:
 									p.append(red("*** Portage will stop merging at this point and reload itself,"))
 									p.append(red("    recalculate dependencies, and complete the merge."))
@@ -1899,7 +1900,8 @@ class depgraph:
 						myver=mysplit[1]+"-"+mysplit[2]
 						if myver[-3:]=='-r0':
 							myver=myver[:-3]
-						if myver!=portage.VERSION:
+						if (myver != portage.VERSION) and \
+						   ("livecvsportage" not in portage.settings.features):
 							if len(mymergelist) > mergecount:
 								myargv=sys.argv
 								myr=0
