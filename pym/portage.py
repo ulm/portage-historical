@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.528 2004/10/23 14:17:49 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.529 2004/10/24 06:51:17 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -6619,7 +6619,7 @@ class dblink:
 					# old package won't yank the file with it. (non-cfgprot related)
 					os.utime(myrealdest,(thismtime,thismtime))
 					zing="---"
-				if self.settings["ARCH"] == "macos" and myrealdest[-2:] == ".a":
+				if self.settings["ARCH"] == "ppc-macos" and myrealdest[-2:] == ".a":
 
 					# XXX kludge, bug #58848; can be killed when portage stops relying on 
 					# md5+mtime, and uses refcounts
