@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.311 2004/08/04 23:29:37 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.312 2004/08/11 06:41:41 ferringb Exp $
 
 import os,sys,platform
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -862,9 +862,11 @@ class depgraph:
 		# Adjust pkgsettings with any virtuals this package provides.
 		if mytype=="binary":
 			self.pkgsettings.setinst(mykey,portage.db["/"]["bintree"].dbapi)
-		else:
+		elif merging:
 			self.pkgsettings.setinst(mykey,portage.db[myroot]["porttree"].dbapi)
-		
+		else:
+			self.pkgsettings.setinst(mykey,portage.db[myroot]["vartree"].dbapi)
+
 		# whatever the case, we need to add the node to our digraph so
 		# that children can depend upon it.
 		self.digraph.addnode(string.join(mybigkey),myparent)
