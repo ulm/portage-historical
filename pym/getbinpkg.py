@@ -1,7 +1,7 @@
 # getbinpkg.py -- Portage binary-package helper functions
 # Copyright 2003-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/getbinpkg.py,v 1.12.2.1 2004/10/28 14:49:59 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/getbinpkg.py,v 1.12.2.2 2004/10/29 14:51:09 jstubbs Exp $
 
 from output import *
 import htmllib,HTMLParser,string,formatter,sys,os,xpak,time,tempfile,cPickle,base64
@@ -116,9 +116,9 @@ def create_conn(baseurl,conn=None):
 		elif protocol == "http":
 			conn = httplib.HTTPConnection(host)
 		elif protocol == "ftp":
-			passive = 0
+			passive = 1
 			if(host[-1] == "*"):
-				passive = 1
+				passive = 0
 				host = host[:-1]
 			conn = ftplib.FTP(host)
 			if password:

@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dispatch-conf,v 1.7.2.2 2004/10/28 13:35:21 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dispatch-conf,v 1.7.2.3 2004/10/29 14:51:09 jstubbs Exp $
 
 #
 # dispatch-conf -- Integrate modified configs, post-emerge
@@ -19,7 +19,7 @@ sys.path = ["/usr/lib/portage/pym"]+sys.path
 
 import portage, dispatch_conf
 
-FIND_EXTANT_CONFIGS  = "find %s -iname '._cfg????_*'"
+FIND_EXTANT_CONFIGS  = "find %s/ -iname '._cfg????_*' | sed -e 's://:/:g'"
 DIFF_CONTENTS        = 'diff -Nau %s %s'
 DIFF_CVS_INTERP      = 'diff -Nau %s %s | grep "^[+-][^+-]" | grep -v "# .Header:.*"'
 DIFF_WSCOMMENTS      = 'diff -Nau %s %s | grep "^[+-][^+-]" | grep -v "^[-+]#" | grep -v "^[-+][:space:]*$"'
