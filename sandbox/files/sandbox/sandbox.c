@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 The Leaf, http://www.theleaf.be
 **  Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@theleaf.be>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/files/sandbox/Attic/sandbox.c,v 1.3 2001/12/07 10:03:16 gbevin Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/files/sandbox/Attic/sandbox.c,v 1.4 2001/12/07 15:14:49 gbevin Exp $
 */
 
 #define _GNU_SOURCE
@@ -138,7 +138,7 @@ void cleanup()
 						}
 					}
 
-					/* clean the /etc/ld.so.preload file if no sandbox processes are running anymore*/
+					/* clean the /etc/ld.so.preload file if no other sandbox processes are running anymore*/
 					if(num_of_pids == 1)
 					{
 						success = 1;
