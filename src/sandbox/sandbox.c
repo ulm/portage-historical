@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 Geert Bevin, Uwyn, http://www.uwyn.com
 **	Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@uwyn.com>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox/Attic/sandbox.c,v 1.8 2002/04/16 01:07:53 jnelson Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox/Attic/sandbox.c,v 1.9 2002/04/18 01:06:59 drobbins Exp $
 */
 
 #define _GNU_SOURCE
@@ -406,7 +406,7 @@ int main(int argc, char** argv)
 		free(tmp_string);
 		tmp_string = NULL;
 		strcat(sandbox_dir, "/");
-		strcpy(sandbox_lib, "/usr/lib/portage/lib/");
+		strcpy(sandbox_lib, "/lib/");
 		strcat(sandbox_lib, LIB_NAME);
 		if (-1 == stat(sandbox_lib, &sandbox_lib_stat))
 		{
