@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.541 2004/11/07 13:31:43 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.542 2004/11/07 13:37:57 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -6625,8 +6625,8 @@ def get_preferred_fetcher():
 		if usable:
 			if selinux_enabled:
 				selinux_context=selinux.getcontext()
-				selinux_context=selinux_context.replace(mysettings["PORTAGE_T"], \
-					mysettings["PORTAGE_FETCH_T"])
+				selinux_context=selinux_context.replace(settings["PORTAGE_T"], \
+					settings["PORTAGE_FETCH_T"])
 			else:
 				selinux_context = None
 
