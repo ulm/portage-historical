@@ -1,6 +1,10 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.568 2004/04/10 02:16:39 nakano Exp $
+# $Id: ChangeLog,v 1.569 2004/04/10 02:53:56 genone Exp $
+
+  10 Apr 2004; Marius Mauch <genone@gentoo.org> tarball.sh, pym/portage.py:
+  Fixing broken regexp in fixdbentries() (bug 46096), changing version
+  number.
 
   10 Apr 2004; Masatomo Nakano <nakano@gentoo.org> repoman: Fixed unsafety
   temporary file name(#44455). 
