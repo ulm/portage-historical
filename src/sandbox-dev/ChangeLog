@@ -1,8 +1,14 @@
 # ChangeLog for Path Sandbox
 # Copyright 2002 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-dev/Attic/ChangeLog,v 1.6 2002/12/04 18:11:32 azarah Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-dev/Attic/ChangeLog,v 1.7 2002/12/16 19:19:27 azarah Exp $
+
+  16 Dec 2002; Martin Schlemmer <azarah@gentoo.org> create-localdecls :
+
+  Fix memory leak for mips, bug #12236.  Thanks to Torgeir Hansen <torgeir@trenger.ro>
+  for this fix.
 
   4 Dec 2002; J Robert Ray <jrray@gentoo.org> sandbox.h sandbox_futils.c :
+  
   sandbox_futils defined a dirname() function that was masking the same
   function in glibc and was broken (e.g.: SANDBOX_DIR was being set to
   '/usr/lib/portage/bi/').  Fixed function to return expected results and
