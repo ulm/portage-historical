@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.624 2004/07/19 23:47:49 genone Exp $
+# $Id: ChangeLog,v 1.625 2004/07/20 00:01:38 genone Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -10,7 +10,7 @@
        It is for convenience. Do not mistake this for the actual file.
 
   20 Jul 2004; Marius Mauch <genone@gentoo.org> bin/ebuild.sh:
-  added usev() as complement to useq()
+  added usev() and hasv() as complement to useq() and hasq().
 
   18 Jul 2004; Brian Harring <ferringb@gentoo.org> bin/repoman: Corrected 
   ebuild.allmasked check, so that it checks for an available version across all
