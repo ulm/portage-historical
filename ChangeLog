@@ -1,6 +1,9 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.493 2003/12/17 21:01:42 carpaski Exp $
+# $Id: ChangeLog,v 1.494 2003/12/18 20:19:07 nakano Exp $
+
+  18 Dec 2003; Masatomo Nakano <nakano@gentoo.org> repoman: Added virtual
+	dependency check on each arch.
 
   17 Dec 2003; Nicholas Jones <carpaski@gentoo.org> portage.py: Fixed a
 	permission issue involving $T and userpriv. Lockfile touchup.
