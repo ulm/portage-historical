@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.375 2004/01/17 21:52:03 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.376 2004/01/18 02:32:19 nakano Exp $
 
 VERSION="2.0.50_pre15"
 
@@ -2021,7 +2021,7 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 				mysettings["PORT_LOGDIR"]=""
 
 		if mydo=="unmerge":
-			return unmerge(mysettings["CATEGORY"],mysettings["PF"],myroot)
+			return unmerge(mysettings["CATEGORY"],mysettings["PF"],myroot,mysettings)
 
 	# if any of these are being called, handle them -- running them out of the sandbox -- and stop now.
 	if mydo in ["help","clean","setup"]:
