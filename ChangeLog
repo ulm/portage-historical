@@ -1,11 +1,20 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.886 2004/11/23 01:26:44 ferringb Exp $
+# $Id: ChangeLog,v 1.887 2004/11/23 09:26:49 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  23 Nov 2004; Jason Stubbs <jstubbs@gentoo.org> bin/emerge: Added class
+  graph_display and moved most of depgraph.display() into various functions
+  of it. --columns and --resume are not yet supported with it, so the
+  depgraph.display() has been kept for the time being.
+
+  23 Nov 2004; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Commented
+  the deprecation notice for /etc/portage/virtuals as it does not yet have
+  a newer counterpart.
 
   22 Nov 2004; Brian Harring <ferringb@gentoo.org> pym/transports/fetchcommand.py:
   spawn_bash, not spawn.

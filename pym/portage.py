@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.561 2004/11/23 01:52:42 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.562 2004/11/23 09:26:49 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1331,10 +1331,15 @@ class config:
 		if os.environ.get("PORTAGE_CALLER","") != "repoman":
 		   	user_profile_dir = myroot+USER_CONFIG_PATH
 		
-		if os.path.exists("/etc/portage/virtuals"):
-			writemsg("\n\n*** /etc/portage/virtuals should be moved to /etc/portage/profile/virtuals\n")
-			writemsg("*** Please correct this by merging or moving the file. (Deprecation notice)\n\n")
-			time.sleep(1)
+		# XXX: Removing this as virtuals and profile/virtuals behave
+		# differently. portage/profile/virtuals overrides the default
+		# virtuals but are overridden by installed virtuals whereas
+		# portage/virtuals overrides everything.
+
+		#if os.path.exists("/etc/portage/virtuals"):
+		#	writemsg("\n\n*** /etc/portage/virtuals should be moved to /etc/portage/profile/virtuals\n")
+		#	writemsg("*** Please correct this by merging or moving the file. (Deprecation notice)\n\n")
+		#	time.sleep(1)
 		
 		
 		self.dirVirtuals = grab_multiple("virtuals", myvirtdirs, grabdict)
