@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.199 2004/10/10 10:07:20 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.200 2004/10/18 22:20:31 ferringb Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -980,7 +980,8 @@ dyn_install() {
 						#uncomment this line out after developers have had ample time to fix pkgs.
 						#UNSAFE=$(($UNSAFE + 1))
 						echo -ne '\a'
-						echo "QA Notice: Security risk ${x:${#D}:${#x}}. Please consider relinking with 'append-ldflags -Wl,-z,now' to fix."
+						echo "QA Notice: ${x:${#D}:${#x}} is setXid, dynamically linked and using lazy bindings."
+						echo "This combination is generally discouraged. Try: LDFLAGS='-Wl,-z,now' emerge ${PN}"
 						echo -ne '\a'
 						sleep 1
 					fi
