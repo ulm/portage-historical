@@ -1,11 +1,22 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.821 2004/10/29 14:56:56 ferringb Exp $
+# $Id: ChangeLog,v 1.822 2004/10/31 04:07:39 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  31 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> g-cpan.pl: Applied fix
+  for case-less matching of packages names. #69464
+
+  31 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> portage.py: Updated
+  ExtractKernelVersion() to support 2.6.9's new localversion. #67804
+  Reordered a cache update and a return statement so that the cache is
+  actually updated in ververify. #69523
+
+  31 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> bin/ebuild: Added missing
+  portage_util import.
 
   29 Oct 2004; Brian Harring <ferringb@gentoo.org> emerge: Close stdin after 
   the spawn fork for rsync, not in global scope.  #68946
