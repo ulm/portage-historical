@@ -1,11 +1,14 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.771 2004/10/04 13:58:57 vapier Exp $
+# $Id: ChangeLog,v 1.772 2004/10/04 14:22:03 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  04 Oct 2004; <jstubbs@gentoo.org> pym/portage.py: Added fix for config
+  protection failure when destination is a symlink. #13007
 
   04 Oct 2004; <jstubbs@gentoo.org> bin/repoman: Added detection of multiple
   overlays to repoman.

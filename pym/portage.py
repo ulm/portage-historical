@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.515 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.516 2004/10/04 14:22:03 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -6312,7 +6312,7 @@ class dblink:
 						# install of destination is blocked by an existing directory with the same name
 						moveme=0
 						print "!!!",mydest
-					elif S_ISREG(mydmode):
+					elif S_ISREG(mydmode) or (S_ISLNK(mydmode) and S_ISREG(os.stat(mydest)[ST_MODE])):
 						cfgprot=0
 						# install of destination is blocked by an existing regular file;
 						# now, config file management may come into play.
