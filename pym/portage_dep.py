@@ -1,7 +1,7 @@
 # deps.py -- Portage dependency resolution functions
-# Copyright 2003 Gentoo Technologies, Inc.
+# Copyright 2003-2004 Gentoo Foundation
 # Distributed under the GNU Public License v2
-# $Id: portage_dep.py,v 1.13 2004/08/07 12:21:55 jstubbs Exp $
+# $Id: portage_dep.py,v 1.14 2004/08/14 19:49:47 carpaski Exp $
 
 # DEPEND SYNTAX:
 #
