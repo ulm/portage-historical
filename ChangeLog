@@ -1,11 +1,14 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.782 2004/10/11 02:06:49 jstubbs Exp $
+# $Id: ChangeLog,v 1.783 2004/10/11 04:01:00 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  11 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> bin/*: Added catching and
+  propogating of SystemExit exception to all blanket exception handlers.
 
   11 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> repoman: Fixed repoman LICENSE
   check to accept || () conditions.

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/fix-db.py,v 1.7 2004/10/04 13:56:50 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/fix-db.py,v 1.8 2004/10/11 04:01:00 jstubbs Exp $
 
 import os,sys,re
 sys.path = ["/usr/lib/portage/pym"]+sys.path
@@ -34,6 +34,8 @@ times = {}
 
 try:
 	real_counter = long(open("/var/cache/edb/counter").read())
+except SystemExit, e:
+	raise  # This needs to be propogated
 except:
 	writemsg("ERROR: Real counter is invalid.\n")
 	real_counter = 0
@@ -74,6 +76,8 @@ for cat in os.listdir(vardbdir):
 				if mysplit[0] == "obj":
 					try:
 						times[catpkg] = long(mysplit[-1])
+					except SystemExit, e:
+						raise  # This needs to be propogated
 					except:
 						times[catpkg] = -1
 						bad[catpkg] += ["CONTENTS is corrupt"]
@@ -93,6 +97,8 @@ for cat in os.listdir(vardbdir):
 				if counters[catpkg] > real_counter:
 					writemsg("ERROR: Global counter is lower than the '%s' COUNTER." % catpkg)
 					real_counter = fix_global_counter(counters[catpkg])
+			except SystemExit, e:
+				raise  # This needs to be propogated
 			except:
 				bad[catpkg] += ["COUNTER is corrupt"]
 				counters[catpkg] = -1

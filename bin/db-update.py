@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/db-update.py,v 1.8 2004/10/04 13:56:50 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/db-update.py,v 1.9 2004/10/11 04:01:00 jstubbs Exp $
 
 import os,sys,string
 sys.path = ["/usr/lib/portage/pym"]+sys.path
@@ -21,6 +21,8 @@ for x in sys.argv[1:]:
 	x=myparts[1]+"/"+myparts[2]
 	try:
 		myfile=open(x+"/VIRTUAL","r")
+	except SystemExit, e:
+		raise # Needed else the app won't quit
 	except:
 		continue
 	myline=myfile.readline()
