@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.30 2005/01/16 02:35:33 carpaski Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.30 2005/01/16 02:35:33 carpaski Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.31 2005/01/16 07:32:42 carpaski Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.31 2005/01/16 07:32:42 carpaski Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.30 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.31 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -1950,8 +1950,8 @@ def digestCreate(myfiles,basedir,oldDigest={}):
 				print "!!! Given file does not appear to be readable. Does it exist?"
 				print "!!! File:",myfile
 				return None
-			mysize = os.stat(myfile)[stat.ST_SIZE]
-			mysums = portage_checksum.perform_all(myfile)
+			mydigests[x] = portage_checksum.perform_all(myfile)
+			mysize       = os.stat(myfile)[stat.ST_SIZE]
 		else:
 			if x in oldDigest:
 				# DeepCopy because we might not have a unique reference.
@@ -1962,7 +1962,6 @@ def digestCreate(myfiles,basedir,oldDigest={}):
 				print "!!! File:",myfile
 				return None
 			
-		mydigests[x] = mysums
 		if mydigests[x].has_key("size") and (mydigests[x]["size"] != mysize):
 			raise portage_exception.DigestException, "Size mismatch during checksums"
 		mydigests[x]["size"] = copy.deepcopy(mysize)

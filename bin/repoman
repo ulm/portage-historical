@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.9 2005/01/16 02:35:33 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.10 2005/01/16 07:32:42 carpaski Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -16,8 +16,9 @@ version="1.2"
 import string,signal,re,pickle,tempfile
 
 import portage
-import portage_dep
 import portage_checksum
+import portage_const
+import portage_dep
 import cvstree
 import time
 from output import *
@@ -915,7 +916,7 @@ for x in scanlist:
 					portage.do_vartree(dep_settings)
 					dep_settings.regenerate()
 				else:
-					dep_settings=portage.config(config_profile_path=profdir, config_incrementals=portage.incrementals)
+					dep_settings=portage.config(config_profile_path=profdir, config_incrementals=portage_const.INCREMENTALS)
 					if isCvs:
 						dep_settings["PORTDIR_OVERLAY"]=""
 					dep_settings["ARCH"]=arch
