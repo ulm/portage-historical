@@ -1,6 +1,6 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.14 2004/11/07 12:43:03 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.15 2004/11/07 13:31:43 ferringb Exp $
 
 import sys,string,shlex,os.path,stat,types
 import shutil
@@ -12,14 +12,6 @@ def writemsg(mystr,noiselevel=0):
 	if noiselevel <= noiselimit:
 		sys.stderr.write(mystr)
 		sys.stderr.flush()
-
-def normalize_path(mypath):
-	newpath = os.path.normpath(mypath)
-	if len(newpath) > 1:
-		if newpath[:2] == "//":
-			newpath = newpath[1:]
-	return newpath
-
 
 def grabfile(myfilename, compat_level=0):
 	"""This function grabs the lines in a file, normalizes whitespace and returns lines in a list; if a line
