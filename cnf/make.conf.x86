@@ -1,6 +1,6 @@
 # Copyright 2000-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Contains local system settings for Portage system
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.sparc,v 1.38 2004/09/10 18:54:36 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.x86,v 1.1 2004/09/10 18:54:36 carpaski Exp $
 
 # Please review 'man make.conf' for more information.
 
@@ -22,26 +22,13 @@
 # Example:
 #USE="X gtk gnome -alsa"
 
-# Sparc Host Settings
-# ===================
+# Host Setting
+# ============
 #
-# If you have one of these architectures...
-#
-# Sun4c: SPARC Station: SLC, ELC, IPC, IPX, server 1, server 1+, server 2 
-# Sun4d: SPARCCenter 2000
-# Sun4m: classic, LC, LX, station 4, station/server 5, station/server 10
-# 	 station/server 20, JavaStation 1, 10, E, JavaEngine 1  
-# Sun4u:
-# 	 UltraSPARC Sbus based: Ultra1, Ultra2, Ultra1E, Ultra2E, Netra i,
-# 	 Enterprise 1, 2, 150, 3000, 3500, 4000, 4500, 5000, 6000, 6500, 10000 
-#
-# 	 UltraSPARC PCI based: SPARCengine CP1400, CP1500
-#
-#	 UltraSPARC PCI based: Ultra30, UltraAXe, UltraAXi, UltraAXmp, Ultra5,
-#	 Ultra10, Ultra60, Ultra80, SunBlade 100, SunBlade 1000, Netra X1,
-# 	 Netra T series, Enterprise 250, 450
-#
-CHOST="sparc-unknown-linux-gnu"
+# Change this line as appropriate (i686, i586, i486 or i386).
+# All modern systems (even Athlons) should use "i686-pc-linux-gnu".
+# All K6's are i586.
+CHOST="i686-pc-linux-gnu"
 
 # Host and optimization settings 
 # ==============================
@@ -53,27 +40,33 @@ CHOST="sparc-unknown-linux-gnu"
 # package (and in some cases the libraries it uses) at default optimizations
 # before reporting errors to developers.
 #
-# Sparc specific cpu optimizatiobn flags can be found here:
-# http://gcc.gnu.org/onlinedocs/gcc-3.2/gcc/SPARC-Options.html#SPARC%20Options
-# 
 # -mcpu=<cpu-type> means optimize code for the particular type of CPU without
 # breaking compatibility with other CPUs.
 #
-# -mtune=<cpu-type> set the instruction scheduling parameters for machine, but
-# do not set the instruction set or register set.
+# -march=<cpu-type> means to take full advantage of the ABI and instructions
+# for the particular CPU; this will break compatibility with older CPUs (for
+# example, -march=athlon-xp code will not run on a regular Athlon, and
+# -march=i686 code will not run on a Pentium Classic.
 #
-# SPARC CPU types supported in gcc-3.2 and higher:
-#    v7:             cypress
-#    v8:             supersparc, hypersparc
-#    sparclite:      f930, f934, sparclite86x
-#    sparclet:       tsc701
-#    v9:             ultrasparc
+# CPU types supported in gcc-3.2 and higher: athlon-xp, athlon-mp,
+# athlon-tbird, athlon, k6, k6-2, k6-3, i386, i486, i586 (Pentium), i686
+# (PentiumPro), pentium, pentium-mmx, pentiumpro, pentium2 (Celeron),
+# pentium3, and pentium4.
+#
+# Note that Gentoo Linux 1.4 and higher include at least gcc-3.2.
+# 
+# CPU types supported in gcc-2.95*: k6, i386, i486, i586 (Pentium), i686
+# (Pentium Pro), pentium, pentiumpro Gentoo Linux 1.2 and below use gcc-2.95*
+#
+# CRITICAL WARNINGS: ****************************************************** #
+# K6 markings are deceptive. Avoid setting -march for them. See Bug #24379. #
+# Pentium-M CPU's should not enable sse2 until at least gcc-3.4. Bug 50616. #
+# ************************************************************************* #
 #
 # Decent examples:
 #
-#CFLAGS="-mcpu=supersparc -O3 -pipe"
-#CFLAGS="-mcpu=ultrasparc -O3 -pipe"
-#CFLAGS="-mcpu=v8 -mtune=v9 -O2 -pipe"
+#CFLAGS="-mcpu=athlon-xp -O3 -pipe"
+#CFLAGS="-march=pentium3 -O3 -pipe"
 
 # If you set a CFLAGS above, then this line will set your default C++ flags to
 # the same settings.
@@ -99,7 +92,7 @@ CHOST="sparc-unknown-linux-gnu"
 # DO NOT PUT ANYTHING BUT YOUR SPECIFIC ~ARCHITECTURE IN THE LIST.
 # IF YOU ARE UNSURE OF YOUR ARCH, OR THE IMPLICATIONS, DO NOT MODIFY THIS.
 #
-#ACCEPT_KEYWORDS="~sparc"
+#ACCEPT_KEYWORDS="~arch"
 
 # Portage Directories
 # ===================
@@ -287,7 +280,8 @@ CHOST="sparc-unknown-linux-gnu"
 #                sandbox access violations for users. 
 #  'usersandbox' enables sandboxing while portage is running under userpriv.
 #                unpack -- for debugging purposes only.
-#FEATURES="sandbox buildpkg ccache distcc userpriv usersandbox notitles noclean noauto cvs keeptemp keepwork"
+#FEATURES="sandbox buildpkg ccache distcc userpriv usersandbox notitles noclean noauto cvs keeptemp keepwork autoaddcvs"
+#FEATURES="sandbox ccache distcc autoaddcvs"
 #
 # CCACHE_SIZE sets the space use limitations for ccache. The default size is
 #     2G, and will be set if not defined otherwise and ccache is in features. 
