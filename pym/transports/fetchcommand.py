@@ -1,7 +1,7 @@
 # fetchcommand.py; fetcher class encapsulating make.conf FETCHCOMMAND/RESUMECOMMAND, and the ensueing spawn calls
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/transports/fetchcommand.py,v 1.4 2004/11/07 19:51:41 ferringb Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/transports/fetchcommand.py,v 1.5 2004/11/23 01:26:44 ferringb Exp $
 
 import urlparse,types
 import portage_exec
@@ -68,5 +68,5 @@ class CustomConnection:
 			fd_pipes={1:1,2:2}
 		else:
 			fd_pipes={}
-		return portage_exec.spawn(f,fd_pipes=fd_pipes,selinux_context=self.__selinux_context)
+		return portage_exec.spawn_bash(f,fd_pipes=fd_pipes,selinux_context=self.__selinux_context)
 			

@@ -1,11 +1,14 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.885 2004/11/23 01:22:37 ferringb Exp $
+# $Id: ChangeLog,v 1.886 2004/11/23 01:26:44 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  22 Nov 2004; Brian Harring <ferringb@gentoo.org> pym/transports/fetchcommand.py:
+  spawn_bash, not spawn.
 
   22 Nov 2004; Brian Harring <ferringb@gentoo.org> src/filter-env/posix.c:
   Anchor generated regex filters, fix to the damned looping over stdin still.
