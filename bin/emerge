@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.267 2004/02/12 05:20:25 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.268 2004/02/12 10:25:33 nakano Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -1204,6 +1204,9 @@ class depgraph:
 			i += 1
 
 		display_overlays=False
+		# files to fetch list - avoids counting a same file twice 
+		# in size display (verbose mode)
+		myfetchlist=[]
 		for x in mylist:
 			fetch=" "
 			
@@ -1286,8 +1289,14 @@ class depgraph:
 					# size verbose
 					mysize=0
 					if x[0] == "ebuild" and x[-1]!="nomerge":
-						mysize=portage.portdb.getsize(x[2], debug=edebug)
-						if type(mysize) == types.IntType:
+						myfilesdict=portage.portdb.getfetchsizes(x[2], useflags=self.applied_useflags[x[2]], debug=edebug)
+						if myfilesdict==None:
+							myfilesdict="[empty/missing/bad digest]"
+						else:
+							for myfetchfile in myfilesdict.keys():
+								if myfetchfile not in myfetchlist:
+									mysize+=myfilesdict[myfetchfile]
+									myfetchlist.append(myfetchfile)
 							totalsize+=mysize
 						verboseadd+=format_size(mysize)+" "
 
