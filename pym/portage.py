@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.40 2005/02/13 10:48:30 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.40 2005/02/13 10:48:30 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.41 2005/02/18 07:50:20 ferringb Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.41 2005/02/18 07:50:20 ferringb Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.40 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.41 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -4668,8 +4668,8 @@ class vardbapi(dbapi):
 		return returnme
 
 	def cp_all(self,use_cache=1):
-		returnme=[]
 		mylist = self.cpv_all(use_cache=use_cache)
+		d={}
 		for y in mylist:
 			if y[0] == '*':
 				y = y[1:]
@@ -4677,10 +4677,8 @@ class vardbapi(dbapi):
 			if not mysplit:
 				self.invalidentry(self.root+VDB_PATH+"/"+y)
 				continue
-			mykey=mysplit[0]+"/"+mysplit[1]
-			if not mykey in returnme:
-				returnme.append(mykey)
-		return returnme
+			d[mysplit[0]+"/"+mysplit[1]] = None
+		return d.keys()
 
 	def checkblockers(self,origdep):
 		pass
@@ -4976,22 +4974,25 @@ class eclass_cache:
 		if not (self.packages[location][cat].has_key(pkg) and self.packages[location][cat][pkg] and eclass_list):
 			return 0
 
-		eclass_list.sort()
-		eclass_list = portage_util.unique_array(eclass_list)
+#		eclass_list.sort()
+#		eclass_list = portage_util.unique_array(eclass_list)
 		
-		ec_data = self.packages[location][cat][pkg].keys()
-		ec_data.sort()
-		if eclass_list != ec_data:
-			return 0
+#		ec_data = self.packages[location][cat][pkg].keys()
+#		ec_data.sort()
+#		if eclass_list != ec_data:
+#			return 0
 
+		myp = self.packages[location][cat][pkg]
 		for x in eclass_list:
-			if x not in self.eclasses:
+			if not (x in self.eclasses and x in myp and myp[x][:1] == self.eclasses[x][:1]):
 				return 0
-			data = self.packages[location][cat][pkg][x]
-			if data[1] != self.eclasses[x][1]:
-				return 0
-			if data[0] != self.eclasses[x][0]:
-				return 0
+#			if x not in self.eclasses:
+#				return 0
+#			data = self.packages[location][cat][pkg][x]
+#			if data[1] != self.eclasses[x][1]:
+#				return 0
+#			if data[0] != self.eclasses[x][0]:
+#				return 0
 
 		return 1			
 				
@@ -5405,35 +5406,30 @@ class portdbapi(dbapi):
 
 	def cp_all(self):
 		"returns a list of all keys in our tree"
-		biglist=[]
+		d={}
 		for x in self.mysettings.categories:
 			for oroot in self.porttrees:
 				for y in listdir(oroot+"/"+x,EmptyOnError=1,ignorecvs=1):
 					mykey=x+"/"+y
-					if not mykey in biglist:
-						biglist.append(mykey)
-		return biglist
+					d[x+"/"+y] = None
+		return d.keys()
 	
 	def p_list(self,mycp):
-		returnme=[]
+		d={}
 		for oroot in self.porttrees:
 			for x in listdir(oroot+"/"+mycp,EmptyOnError=1,ignorecvs=1):
 				if x[-7:]==".ebuild":
-					mye=x[:-7]
-					if not mye in returnme:
-						returnme.append(mye)
-		return returnme
+					d[x[:-7]] = None
+		return d.keys()
 
 	def cp_list(self,mycp,use_cache=1):
 		mysplit=mycp.split("/")
-		returnme=[]
+		d={}
 		for oroot in self.porttrees:
 			for x in listdir(oroot+"/"+mycp,EmptyOnError=1,ignorecvs=1):
 				if x[-7:]==".ebuild":
-					cp=mysplit[0]+"/"+x[:-7]
-					if not cp in returnme:
-						returnme.append(cp)
-		return returnme
+					d[mysplit[0]+"/"+x[:-7]] = None
+		return d.keys()
 
 	def freeze(self):
 		for x in ["list-visible","bestmatch-visible","match-visible","match-all"]:
