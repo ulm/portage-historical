@@ -1,11 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.872 2004/11/13 21:24:48 ferringb Exp $
+# $Id: ChangeLog,v 1.873 2004/11/14 05:45:57 genone Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  14 Nov 2004; Marius Mauch <genone@gentoo.org> bin/emerge, man/make.conf.5,
+  spec/emerge.syntax, cnf/make.conf.*, cnf/make.globals*:
+  removing all support for AUTOCLEAN=no, it's breaking too many things these
+  days and has no real use anyway.
 
   10 Nov 2004; Brian Harring <ferringb@gentoo.org> pym/dcache.py:
   Updated to make it more memory efficient- slots based, uses weakref

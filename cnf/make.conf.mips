@@ -1,6 +1,6 @@
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.mips,v 1.38 2004/10/10 23:27:28 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.mips,v 1.39 2004/11/14 05:45:57 genone Exp $
 # Contains local system settings for Portage system
 
 # Please review 'man make.conf' for more information.
@@ -218,12 +218,6 @@ CHOST="mips-unknown-linux-gnu"
 #     Note: This is an increment. Running emerge in a niced environment will
 #     reduce it further. Default is unset.
 #PORTAGE_NICENESS=3
-#
-# AUTOCLEAN enables portage to automatically clean out older or overlapping
-#     packages from the system after every successful merge. This is the
-#     same as running 'emerge -c' after every merge. Set with: "yes" or "no".
-#     This does not affect the unpacked source. See 'noclean' below.
-#AUTOCLEAN="yes"
 #
 # FEATURES are settings that affect the functionality of portage. Most of
 #     these settings are for developer use, but some are available to non-
