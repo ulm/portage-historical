@@ -1,6 +1,6 @@
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.x86,v 1.3 2004/09/30 06:34:27 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.x86,v 1.4 2004/10/03 17:56:18 genone Exp $
 # Contains local system settings for Portage system
 
 # Please review 'man make.conf' for more information.
@@ -18,7 +18,7 @@
 # Use 'less' to view them:  --> less /usr/portage/profiles/use.desc <--
 #
 # 'ufed' is an ncurses/dialog interface available in portage to make handling
-# useflags for you. 'emerge app-admin/ufed'
+# useflags for you. 'emerge app-portage/ufed'
 #
 # Example:
 #USE="X gtk gnome -alsa"

@@ -1,6 +1,6 @@
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.globals,v 1.55 2004/09/30 06:29:18 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.globals,v 1.56 2004/10/03 17:56:18 genone Exp $
 # System-wide defaults for the Portage system
 
 #            *****************************
@@ -52,12 +52,12 @@ USE_EXPAND="VIDEO_CARDS INPUT_DEVICES LINGUAS"
 
 # By default wait 5 secs before cleaning a package
 CLEAN_DELAY="5"
-# Set to yes automatically run "emerge clean" after each merge
+# Set to yes automatically run "emerge --clean" after each merge
 # Important, as without this you may experience missing symlinks when
 # downgrading libraries during a batch (world/system) update.
 AUTOCLEAN="yes"
 
-# Number of times 'emerge rsync' will run before giving up.
+# Number of times 'emerge --sync' will run before giving up.
 RSYNC_RETRIES="3"
 # Number of seconds rsync will wait before timing out.
 RSYNC_TIMEOUT="180"
