@@ -91,7 +91,32 @@ class PortageContext:
 		# Initialize prelink support
 		#
 		self.initialize_prelink()
-		
+
+		#
+		# Initialize the dependancy cache directory
+		#
+		self.initialize_cachedir()
+
+		#
+		# Make sure the tmpdir exists
+		#
+		self.check_tmpdir()
+
+		#
+		# Initialize our categories
+		#
+		self.initialize_categories()
+
+		#
+		# initialize the package masks (from /usr/portage/profiles/packages.mask and /etc/make.profile/packages)
+		#
+		self.initialize_pkgmasks()
+
+		#
+		# Initialize our groups (ACCEPT_KEYWORDS)
+		#
+		self.initialize_groups()
+
 
 	def getIncrementals(self):
 		return self.incrementals
@@ -178,7 +203,7 @@ class PortageContext:
 		mysplit=mykey.split("/")
 		if len(mysplit)==1:
 			if mydb and type(mydb)==types.InstanceType:
-				for x in categories:
+				for x in ctx.get_categories():
 					if mydb.cp_list(x+"/"+mykey):
 						return x+"/"+mykey
 				if self.virtualpkgmap.has_key(mykey):
@@ -191,6 +216,7 @@ class PortageContext:
 			return mykey
 
 	def cpv_expand(self, mycpv,mydb=None):
+		global ctx
 		myslash=mycpv.split("/")
 		mysplit=pkgsplit(myslash[-1])
 		if len(myslash)==2:
@@ -212,7 +238,7 @@ class PortageContext:
 				myp=mycpv
 			mykey=None
 			if mydb:
-				for x in categories:
+				for x in ctx.get_categories():
 					if mydb.cp_list(x+"/"+myp):
 						mykey=x+"/"+myp
 			if not mykey and type(mydb)!=types.ListType:
@@ -363,7 +389,7 @@ class PortageContext:
 		"""Load and initialize out list of 3rd party mirrors."""
 		self.thirdpartymirrors=grabdict(self.settings["PORTDIR"]+"/profiles/thirdpartymirrors")
 
-	def getMirrorList(self):
+	def get_mirror_list(self):
 		"""Get our mirror list."""
 		return self.thirdpartymirrors
 
@@ -384,6 +410,83 @@ class PortageContext:
 	def has_prelink(self):
 		"""Does this system support prelinking?  Returns true if it does."""
 		return self.prelink_capable
+
+	def initialize_cachedir(self):
+		"""Make sure we have a valid PORTAGE_CACHEDIR setting for the dependancy cache."""
+		self.dbcachedir=self.settings["PORTAGE_CACHEDIR"]
+		if not self.dbcachedir:
+			#the auxcache is the only /var/cache/edb/ entry that stays at / even when "root" changes.
+			self.dbcachedir="/var/cache/edb/dep/"
+			self.settings["PORTAGE_CACHEDIR"]=self.dbcachedir
+
+	def get_cachedir(self):
+		"""Get our active dependancy cache dir."""
+		return self.dbcachedir
+
+	def check_tmpdir(self):
+		"""Check that PORTAGE_TMPDIR exists and is a directory."""
+		# FIX: This method should return an error if it doesn't, instead of calling sys.exit(1)!
+		if not os.path.exists(self.settings["PORTAGE_TMPDIR"]):
+			print "portage: the directory specified in your PORTAGE_TMPDIR variable, \""+self.settings["PORTAGE_TMPDIR"]+",\""
+			print "does not exist.  Please create this directory or correct your PORTAGE_TMPDIR settting."
+			sys.exit(1)
+		if not os.path.isdir(self.settings["PORTAGE_TMPDIR"]):
+			print "portage: the directory specified in your PORTAGE_TMPDIR variable, \""+self.settings["PORTAGE_TMPDIR"]+",\""
+			print "is not a directory.  Please correct your PORTAGE_TMPDIR settting."
+			sys.exit(1)
+
+	def initialize_categories(self):
+		"""Retreive the categories that we support."""
+		if os.path.exists(self.settings["PORTDIR"]+"/profiles/categories"):
+			self.categories=grabfile(self.settings["PORTDIR"]+"/profiles/categories")
+		else:
+			self.categories=[]
+
+	def get_categories(self):
+		"""Get our categories map."""
+		return self.categories
+
+	def initialize_pkgmasks(self):
+		"""Load and initialize our various package masks.  This includes
+		/usr/portage/profiles/packages.mask and /etc/make.profile/packages."""
+		pkgmasklines=grabfile(self.settings["PORTDIR"]+"/profiles/package.mask")
+		self.maskdict={}
+		for x in pkgmasklines:
+			mycatpkg=dep_getkey(x)
+			if not self.maskdict.has_key(mycatpkg):
+				self.maskdict[mycatpkg]=[x]
+			else:
+				self.maskdict[mycatpkg].append(x)
+		del pkgmasklines
+
+		if self.getProfileDir():
+			pkglines=grabfile(self.getProfileDir()+"/packages")
+		else:
+			pkglines=[]
+		self.revmaskdict={}
+		for x in pkglines:
+			mycatpkg=dep_getkey(x)
+			if not self.revmaskdict.has_key(mycatpkg):
+				self.revmaskdict[mycatpkg]=[x]
+			else:
+				self.revmaskdict[mycatpkg].append(x)
+		del pkglines
+
+	def get_mask_dict(self):
+		"""Returns our package mask dictionary.  (From /usr/portage/profiles/package.mask)"""
+		return self.maskdict
+
+	def get_revmask_dict(self):
+		"""Returns our profile package mask dictionary.  (From /etc/make.profile/packages)"""
+		return self.revmaskdict
+
+	def initialize_groups(self):
+		"""Initialize our groups (ACCEPT_KEYWORDS)."""
+		self.groups=self.settings["ACCEPT_KEYWORDS"].split()
+
+	def get_groups(self):
+		"""Get our groups."""
+		return self.groups
 
 
 #-----------------------------------------------------------------------------
@@ -1097,8 +1200,8 @@ def fetch(myuris, listonly=0):
 			eidx = myuri.find("/", 9)
 			if eidx != -1:
 				mirrorname = myuri[9:eidx]
-				if ctx.getMirrorList().has_key(mirrorname):
-					for locmirr in ctx.getMirrorList()[mirrorname]:
+				if ctx.get_mirror_list().has_key(mirrorname):
+					for locmirr in ctx.get_mirror_list()[mirrorname]:
 						filedict[myfile].append(locmirr+"/"+myuri[eidx+1:])		
 		else:
 				filedict[myfile].append(myuri)
@@ -2571,8 +2674,8 @@ def counter_tick_core(myroot):
 		# now move global counter file into place
 		os.rename(newcpath,cpath)
 		return counter
-	
-cptot=0
+
+
 class vardbapi(dbapi):
 	def __init__(self,root):
 		self.root=root
@@ -2679,7 +2782,7 @@ class vardbapi(dbapi):
 
 	def cp_all(self):
 		returnme=[]
-		for x in categories:
+		for x in ctx.get_categories():
 			try:
 				mylist=listdir(self.root+"var/db/pkg/"+x)
 			except OSError:
@@ -2835,7 +2938,10 @@ class vartree(packagetree):
 	def populate(self):
 		self.populated=1
 
+
 # ----------------------------------------------------------------------------
+
+
 def eclass(myeclass=None,mycpv=None,mymtime=None):
 	"""Caches and retrieves information about ebuilds that use eclasses
 	Returns: Is the ebuild current with the eclass? (true/false)"""
@@ -2915,20 +3021,26 @@ def eclass(myeclass=None,mycpv=None,mymtime=None):
 						return 0
 		#print "!regen mtime"
 		return 1
+
+
 # ----------------------------------------------------------------------------
 
-auxdbkeys=['DEPEND','RDEPEND','SLOT','SRC_URI','RESTRICT','HOMEPAGE','LICENSE','DESCRIPTION','KEYWORDS','INHERITED','IUSE','CDEPEND','PDEPEND']
-auxdbkeylen=len(auxdbkeys)
+
 class portdbapi(dbapi):
 	"this tree will scan a portage directory located at root (passed to init)"
 	def __init__(self):
-		self.root=ctx.settings["PORTDIR"]
+		global ctx
+		self.ctx = ctx
+		self.root=self.ctx.settings["PORTDIR"]
 		self.auxcache={}
 		#if the portdbapi is "frozen", then we assume that we can cache everything (that no updates to it are happening)
 		self.xcache={}
 		self.frozen=0
 		#oroot="overlay root"
 		self.oroot=None
+
+		self.auxdbkeys=['DEPEND','RDEPEND','SLOT','SRC_URI','RESTRICT','HOMEPAGE','LICENSE','DESCRIPTION','KEYWORDS','INHERITED','IUSE','CDEPEND','PDEPEND']
+		self.auxdbkeylen=len(self.auxdbkeys)
 
 	def findname(self,mycpv):
 		"returns file location for this particular package"
@@ -2949,7 +3061,6 @@ class portdbapi(dbapi):
 		"stub code for returning auxilliary db information, such as SLOT, DEPEND, etc."
 		'input: "sys-apps/foo-1.0",["SLOT","DEPEND","HOMEPAGE"]'
 		'return: ["0",">=sys-libs/bar-1.0","http://www.foo.com"] or raise KeyError if error'
-		global auxdbkeys,auxdbkeylen,dbcachedir
 		dmtime=0
 		doregen=0
 		doregen2=0
@@ -2957,7 +3068,7 @@ class portdbapi(dbapi):
 		stale=0
 		usingmdcache=0
 		myebuild=self.findname(mycpv)
-		mydbkey=dbcachedir+"/"+mycpv
+		mydbkey=self.ctx.get_cachedir()+"/"+mycpv
 		mymdkey=None
 		if metacachedir and os.access(metacachedir, os.R_OK):
 			mymdkey=metacachedir+"/"+mycpv
@@ -3048,14 +3159,14 @@ class portdbapi(dbapi):
 		if not mylines:
 			print "no mylines"
 			pass
-		elif len(mylines)<len(auxdbkeys) or doregen2:
+		elif len(mylines)<len(self.auxdbkeys) or doregen2:
 			doregen2=1
 			#print "too few auxdbkeys / invalid generation"
-		elif mylines[auxdbkeys.index("INHERITED")]!="\n":
+		elif mylines[self.auxdbkeys.index("INHERITED")]!="\n":
 			#print "inherits"
 			#Verify if this ebuild is current against the eclasses it uses.
 			#eclass() -> Loads, checks, and returns 1 if it's current.
-			myeclasses=mylines[auxdbkeys.index("INHERITED")].split()
+			myeclasses=mylines[self.auxdbkeys.index("INHERITED")].split()
 			#print "))) 002"
 			for myeclass in myeclasses:
 				#print "PASS ONE:",myeclass
@@ -3104,7 +3215,7 @@ class portdbapi(dbapi):
 			try:
 				mymtime=os.stat(mydbkey)[ST_MTIME]
 				self.auxcache[mycpv]={"mtime": mymtime}
-				myeclasses=mylines[auxdbkeys.index("INHERITED")].split()
+				myeclasses=mylines[self.auxdbkeys.index("INHERITED")].split()
 			except Exception, e:
 				print red("\n\naux_get():")+" stale entry was not regenerated for"
 				print "           "+mycpv+"; deleting and exiting."
@@ -3114,10 +3225,10 @@ class portdbapi(dbapi):
 			for myeclass in myeclasses:
 				eclass(myeclass,mycpv,mymtime)
 			try:
-				for x in range(0,len(auxdbkeys)):
-					self.auxcache[mycpv][auxdbkeys[x]]=mylines[x][:-1]
+				for x in range(0,len(self.auxdbkeys)):
+					self.auxcache[mycpv][self.auxdbkeys[x]]=mylines[x][:-1]
 			except IndexError:
-				print red("\n\naux_get():")+" error processing",auxdbkeys[x],"for",mycpv
+				print red("\n\naux_get():")+" error processing",self.auxdbkeys[x],"for",mycpv
 				print "           Expiring the cache entry and exiting."
 				os.unlink(mydbkey)
 				sys.exit(1)
@@ -3147,7 +3258,7 @@ class portdbapi(dbapi):
 	def cp_all(self):
 		"returns a list of all keys in our tree"
 		biglist=[]
-		for x in categories:
+		for x in self.ctx.get_categories():
 			try:
 				for y in listdir(self.root+"/"+x):
 					if y=="CVS":
@@ -3278,8 +3389,8 @@ class portdbapi(dbapi):
 			print "visible(): invalid cat/pkg-v:",mykey
 			return []
 		mycp=cpv[0]+"/"+cpv[1]
-		if maskdict.has_key(mycp):
-			for x in maskdict[mycp]:
+		if self.ctx.get_mask_dict().has_key(mycp):
+			for x in self.ctx.get_mask_dict()[mycp]:
 				mymatches=self.xmatch("match-all",x)
 				if mymatches==None:
 					#error in package.mask file; print warning and continue:
@@ -3288,8 +3399,8 @@ class portdbapi(dbapi):
 				for y in mymatches:
 					while y in newlist:
 						newlist.remove(y)
-		if revmaskdict.has_key(mycp):
-			for x in revmaskdict[mycp]:
+		if self.ctx.get_revmask_dict().has_key(mycp):
+			for x in self.ctx.get_revmask_dict()[mycp]:
 				#important: only match against the still-unmasked entries...
 				#notice how we pass "newlist" to the xmatch() call below....
 				#Without this, ~ deps in the packages files are broken.
@@ -3308,7 +3419,6 @@ class portdbapi(dbapi):
 
 	def gvisible(self,mylist):
 		"strip out group-masked (not in current group) entries"
-		global groups,ctx
 		if mylist==None:
 			return []
 		newlist=[]
@@ -3316,7 +3426,7 @@ class portdbapi(dbapi):
 			#we need to update this next line when we have fully integrated the new db api
 			auxerr=0
 			try:
-				myaux=ctx.db["/"]["porttree"].dbapi.aux_get(mycpv, ["KEYWORDS"])
+				myaux=self.ctx.db["/"]["porttree"].dbapi.aux_get(mycpv, ["KEYWORDS"])
 			except (KeyError,IOError):
 				return []
 			if not myaux[0]:
@@ -3329,10 +3439,10 @@ class portdbapi(dbapi):
 				if gp=="*":
 					match=1
 					break
-				elif "-"+gp in groups:
+				elif "-"+gp in self.ctx.get_groups():
 					match=0
 					break
-				elif gp in groups:
+				elif gp in self.ctx.get_groups():
 					match=1
 					break
 			if match:
@@ -4212,48 +4322,5 @@ ctx.init()
 
 
 
-dbcachedir=ctx.settings["PORTAGE_CACHEDIR"]
-if not dbcachedir:
-	#the auxcache is the only /var/cache/edb/ entry that stays at / even when "root" changes.
-	dbcachedir="/var/cache/edb/dep/"
-	ctx.settings["PORTAGE_CACHEDIR"]=dbcachedir
-#create PORTAGE_TMPDIR if it doesn't exist.
-if not os.path.exists(ctx.settings["PORTAGE_TMPDIR"]):
-	print "portage: the directory specified in your PORTAGE_TMPDIR variable, \""+ctx.settings["PORTAGE_TMPDIR"]+",\""
-	print "does not exist.  Please create this directory or correct your PORTAGE_TMPDIR settting."
-	sys.exit(1)
-if not os.path.isdir(ctx.settings["PORTAGE_TMPDIR"]):
-	print "portage: the directory specified in your PORTAGE_TMPDIR variable, \""+ctx.settings["PORTAGE_TMPDIR"]+",\""
-	print "is not a directory.  Please correct your PORTAGE_TMPDIR settting."
-	sys.exit(1)
-
-#getting categories from an external file now
-if os.path.exists(ctx.settings["PORTDIR"]+"/profiles/categories"):
-	categories=grabfile(ctx.settings["PORTDIR"]+"/profiles/categories")
-else:
-	categories=[]
-
-pkgmasklines=grabfile(ctx.settings["PORTDIR"]+"/profiles/package.mask")
-if ctx.getProfileDir():
-	pkglines=grabfile(ctx.getProfileDir()+"/packages")
-else:
-	pkglines=[]
-maskdict={}
-for x in pkgmasklines:
-	mycatpkg=dep_getkey(x)
-	if not maskdict.has_key(mycatpkg):
-		maskdict[mycatpkg]=[x]
-	else:
-		maskdict[mycatpkg].append(x)
-del pkgmasklines
-revmaskdict={}
-for x in pkglines:
-	mycatpkg=dep_getkey(x)
-	if not revmaskdict.has_key(mycatpkg):
-		revmaskdict[mycatpkg]=[x]
-	else:
-		revmaskdict[mycatpkg].append(x)
-del pkglines
-groups=ctx.settings["ACCEPT_KEYWORDS"].split()
 
 
