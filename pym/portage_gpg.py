@@ -1,14 +1,14 @@
 # portage_gpg.py -- core Portage functionality
 # Copyright 2004-2004 Gentoo Foundation
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_gpg.py,v 1.4 2004/08/16 20:06:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_gpg.py,v 1.5 2004/08/25 05:25:08 genone Exp $
 
 import os
 import copy
 import types
 import commands
 import portage_exception
-import portage_md5
+import portage_checksum
 
 GPG_BINARY       = "/usr/bin/gpg"
 GPG_OPTIONS      = " --lock-never --no-random-seed-file --no-greeting --no-sig-cache "
@@ -25,7 +25,7 @@ def fileStats(filepath):
 	mya = []
 	for x in os.stat(filepath):
 		mya.append(x)
-	mya.append(portage_md5.perform_checksum(filepath))
+	mya.append(portage_checksum.perform_checksum(filepath))
 	return mya
 
 
