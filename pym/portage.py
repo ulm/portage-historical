@@ -1,9 +1,9 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.269.2.17 2003/02/25 16:31:39 alain Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.269.2.18 2003/03/03 14:58:09 alain Exp $
 
-VERSION="2.1.0_alpha4"
+VERSION="2.1.0_alpha8"
 
 from stat import *
 from commands import *
@@ -93,7 +93,8 @@ class PortageContext:
 			self.profiledir = "/etc/make.profile"
 		else:
 			self.profiledir = None
-			print ">>> Note: /etc/make.profile/make.defaults isn't available; an 'emerge sync' will probably fix this."
+			print ">>> Note: /etc/make.profile/make.defaults isn't available."
+			print "          An 'emerge sync' will probably fix this."
 			self.logger.info("/etc/make.profile/make.defaults isn't available; an 'emerge sync' will probably fix this.")
 
 		#
@@ -1467,7 +1468,11 @@ def doebuild(ctx, myebuild,mydo,myroot,debug=0,listonly=0):
 		return 1
 
 	ctx.settings.reset()
-	ctx.settings["PORTAGE_DEBUG"]=str(debug)
+	if ctx.debug:
+		# Otherwise it overrides emerge's settings.
+		# We have no other way to set debug... debug can't be passed in
+		# due to how it's coded... Don't overwrite this so we can use it.
+		ctx.settings["PORTAGE_DEBUG"]=str(ctx.debug)
 	#ctx.settings["ROOT"]=ctx.getRoot()
 	ctx.settings["ROOT"]=myroot
 	ctx.settings["STARTDIR"]=getcwd()
@@ -1534,7 +1539,8 @@ def doebuild(ctx, myebuild,mydo,myroot,debug=0,listonly=0):
 	# get possible slot information from the deps file
 	if mydo=="depend":
 		myso=getstatusoutput("/usr/sbin/ebuild.sh depend")
-		if debug:
+		if ctx.settings.has_key("PORTAGE_DEBUG") and ctx.settings["PORTAGE_DEBUG"]=="1":
+			print
 			print myso[1]
 		return myso[0]
 
@@ -1554,13 +1560,26 @@ def doebuild(ctx, myebuild,mydo,myroot,debug=0,listonly=0):
 		os.chown(ctx.settings["T"],ctx.get_portage_uid(),ctx.get_portage_gid())
 		os.chmod(ctx.settings["T"],06770)
 
+		if not os.path.exists(ctx.settings["DISTDIR"]):
+			os.makedirs(ctx.settings["DISTDIR"])
+		if not os.path.exists(ctx.settings["DISTDIR"]+"/cvs-src"):
+			os.makedirs(ctx.settings["DISTDIR"]+"/cvs-src")
+		os.chown(ctx.settings["DISTDIR"]+"/cvs-src",0,ctx.get_portage_gid())
+		os.chmod(ctx.settings["DISTDIR"]+"/cvs-src",06770)
+		spawn("chgrp -R "+str(ctx.get_portage_gid())+" "+ctx.settings["DISTDIR"]+"/cvs-src", free=1)
+		spawn("chmod -R g+rw "+ctx.settings["DISTDIR"]+"/cvs-src", free=1)
+
 		if (ctx.has_feature("userpriv")) and (ctx.has_feature("ccache")):
 			if (not ctx.settings.has_key("CCACHE_DIR")) or (ctx.settings["CCACHE_DIR"]==""):
 				ctx.settings["CCACHE_DIR"]=ctx.settings["PORTAGE_TMPDIR"]+"/ccache"
 			if not os.path.exists(ctx.settings["CCACHE_DIR"]):
 				os.makedirs(ctx.settings["CCACHE_DIR"])
-				os.chown(ctx.settings["CCACHE_DIR"],ctx.get_portage_uid(),ctx.get_portage_gid())
+			mystat=os.stat(ctx.settings["CCACHE_DIR"])
+			os.chown(ctx.settings["CCACHE_DIR"],ctx.get_portage_uid(),ctx.get_portage_gid())
 			os.chmod(ctx.settings["CCACHE_DIR"],06770)
+			if mystat[ST_GID]!=ctx.get_portage_gid():
+				spawn("chgrp -R "+str(ctx.get_portage_gid())+" "+ctx.settings["CCACHE_DIR"], free=1)
+				spawn("chmod -R g+rw "+ctx.settings["CCACHE_DIR"], free=1)
 
 			if not os.path.exists(ctx.settings["HOME"]):
 				os.makedirs(ctx.settings["HOME"])
@@ -3063,8 +3082,8 @@ def eclass(ctx, myeclass=None,mycpv=None,mymtime=None):
 	if myeclass != None:
 		if not ctx.mtimedb["eclass"].has_key(myeclass):
 			# Eclass doesn't exist.
-			print "!!! eclass does not exist:",myeclass
-			return None
+			print "!!! eclass '"+myeclass+"' in '"+myeclass+"' does not exist:"
+			raise KeyError
 		else:
 			if (mycpv!=None) and (mymtime!=None):
 				if mycpv not in ctx.mtimedb["packages"]:
@@ -3136,6 +3155,7 @@ class portdbapi(dbapi):
 				return myloc
 			except (OSError,IOError):
 				pass
+		# XXX Catch invalid names? XXX #
 		return self.root+"/"+mysplit[0]+"/"+psplit[0]+"/"+mysplit[1]+".ebuild"
 
 	def aux_get(self,mycpv,mylist,strict=0,metacachedir=None):
@@ -3159,7 +3179,7 @@ class portdbapi(dbapi):
 		try:
 			emtime=os.stat(myebuild)[ST_MTIME]
 		except:
-			return None
+			raise KeyError
 		
 		# first, we take a look at the size of the ebuild/cache entry to ensure we
 		# have a valid data, then we look at the mtime of the ebuild and the
@@ -3196,9 +3216,9 @@ class portdbapi(dbapi):
 			else:
 				if doebuild(self.ctx, myebuild,"depend","/"):
 					#depend returned non-zero exit code...
-					if strict:
-						sys.stderr.write(str(red("\naux_get():")+" (0) Error in",mycpv,"ebuild.\n"))
-						raise KeyError
+					sys.stderr.write(str(red("\naux_get():")+" (0) Error in "+mycpv+" ebuild.\n"
+					  "               Check for syntax error or corruption in the ebuild. (--debug)\n\n"))
+					raise KeyError
 
 			doregen2=1
 			dmtime=0
@@ -3231,9 +3251,8 @@ class portdbapi(dbapi):
 			mylines=mycent.readlines()
 			mycent.close()
 		except (IOError, OSError):
-			print red("\n\naux_get():")+" (1) couldn't open cache entry for",mycpv
-			print "               Check for syntax error or corruption in the ebuild."
-			print 
+			sys.stderr.write(str(red("\naux_get():")+" (1) Error in "+mycpv+" ebuild.\n"
+			  "               Check for syntax error or corruption in the ebuild. (--debug)\n\n"))
 			raise KeyError
 
 		#We now have the db
@@ -3256,8 +3275,7 @@ class portdbapi(dbapi):
 				myret=eclass(self.ctx, myeclass,mycpv,dmtime)
 				#print "eclass '",myeclass,"':",myret,doregen,doregen2
 				if myret==None:
-					print red("\n\naux_get():")+' eclass "'+myeclass+'" from',mydbkey,"not found."
-					print "!!! Eclass '"+myeclass+"'not found."
+					# eclass is missing... We'll die if it doesn't get fixed on regen
 					doregen2=1
 					break
 				if myret==0 and not usingmdcache:
@@ -3285,15 +3303,15 @@ class portdbapi(dbapi):
 			
 			if doebuild(self.ctx, myebuild,"depend","/"):
 				#depend returned non-zero exit code...
-				if strict:
-					print red("\n\naux_get():")+" (0) Error in",mycpv,"ebuild."
-					raise KeyError
+				sys.stderr.write(str(red("\naux_get():")+" (2) Error in "+mycpv+" ebuild.\n"
+				  "               Check for syntax error or corruption in the ebuild. (--debug)\n\n"))
+				raise KeyError
 			try:
 				os.utime(mydbkey,(emtime,emtime))
 				mycent=open(mydbkey,"r")
 			except (IOError, OSError):
-				print red("\n\naux_get():")+" (2) couldn't open cache entry for",mycpv
-				print "               Check for syntax error or corruption in the ebuild."
+				sys.stderr.write(str(red("\naux_get():")+" (3) Error in "+mycpv+" ebuild.\n"
+				  "               Check for syntax error or corruption in the ebuild. (--debug)\n\n"))
 				raise KeyError
 			mylines=mycent.readlines()
 			mycent.close()
@@ -3314,7 +3332,11 @@ class portdbapi(dbapi):
 				os.unlink(mydbkey)
 				sys.exit(1)
 			for myeclass in myeclasses:
-				eclass(self.ctx, myeclass,mycpv,emtime)
+				if eclass(self.ctx, myeclass,mycpv,emtime)==None:
+					# Eclass wasn't found.
+					print red("\n\naux_get():")+' eclass "'+myeclass+'" from',mydbkey,"not found."
+					print "!!! Eclass '"+myeclass+"' not found."
+					sys.exit(1)
 			try:
 				for x in range(0,len(self.auxdbkeys)):
 					self.auxcache[mycpv][self.auxdbkeys[x]]=mylines[x][:-1]
@@ -3518,7 +3540,7 @@ class portdbapi(dbapi):
 			auxerr=0
 			try:
 				myaux=self.ctx.db["/"]["porttree"].dbapi.aux_get(mycpv, ["KEYWORDS"])
-			except (KeyError,IOError):
+			except (KeyError,IOError,TypeError):
 				return []
 			if not myaux[0]:
 				# KEYWORDS=""

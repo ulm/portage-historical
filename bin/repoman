@@ -2,13 +2,13 @@
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
 # Author: Daniel Robbins <drobbins@gentoo.org>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.5.2.4 2003/02/25 16:31:39 alain Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.5.2.5 2003/03/03 14:58:09 alain Exp $
 
 # Next to do: dep syntax checking in ebuilds, mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
 # that last one is tricky because multiple profiles need to be checked.
 
-import os,sys,string,signal,portage,readline
+import os,sys,string,signal,readline,portage
 from output import *
 exename=os.path.basename(sys.argv[0])	
 version="1.2"	
@@ -129,6 +129,30 @@ try:
 	myrepofile.close()
 except:
 	err("Error grabbing repository information; exiting.")
+
+try: # Determine if we're in PORTDIR... If not tell portage to accomodate.
+	mydir=os.getcwd()
+	if mydir!=ctx.settings["PORTDIR"][:len(mydir)]:
+		# We're not in the PORTDIR
+		print
+		print darkred("We're not in PORTDIR..."),
+		while mydir!="/":
+			if os.path.exists(mydir+"/profiles/package.mask"):
+				# mydir == a PORTDIR root... We make PORTDIR = mydir.
+				print darkgreen("setting to:")+" "+bold(mydir)
+				os.environ["PORTDIR"]=mydir
+				reload(portage)
+				ctx = portage.PortageContext()
+				break;
+			else:
+				mydir=os.path.normpath(mydir+"/..")
+		if mydir=="/":
+			print darkred("unable to determine a PORTDIR.")
+except Exception, e:
+	print "!!! Error when determining valid(ity of) PORTDIR:"
+	print "!!!",e
+	pass
+
 reporoot=None
 for x in REPOROOTS:
 	if myreporoot[0:len(x)]==x:
@@ -274,7 +298,7 @@ for x in scanlist:
 			stats["ebuild.namenomatch"]=stats["ebuild.namenomatch"]+1
 			fails["ebuild.namenomatch"].append(x+"/"+y+".ebuild")
 		try:
-			myaux=ctx.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,allvars,strict=1)	
+			myaux=ctx.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,allvars,strict=1)
 		except KeyError:
 			stats["ebuild.syntax"]=stats["ebuild.syntax"]+1
 			fails["ebuild.syntax"].append(x+"/"+y+".ebuild")

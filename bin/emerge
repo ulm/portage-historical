@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.178.2.11 2003/02/25 16:31:39 alain Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.178.2.12 2003/03/03 14:58:09 alain Exp $
 
 import os,sys,portage,emergehelp,xpak,string,re,commands,time,threading,shutil,traceback
 from stat import *
@@ -92,13 +92,16 @@ for x in cmdline:
 				myopts.append(x)
 			elif x[2:] in actions:
 				if x[2:]=="rsync":
-					print
-					print red("*** --rsync has been deprecated.")
-					print red("***   Please use '--sync' instead.")
+					#print
+					#print red("*** --rsync has been deprecated.")
+					#print red("***   Please use '--sync' instead.")
+					x="--sync"
 				if myaction:
+					if myaction not in ["system", "world"]:
+						myaction="--"+myaction
 					print
 					print red("!!!")+green(" Multiple actions requested... Please choose one only.")
-					print red("!!!")+" '"+darkgreen("--"+myaction)+"' "+red("or")+" '"+darkgreen(x)+"'"
+					print red("!!!")+" '"+darkgreen(myaction)+"' "+red("or")+" '"+darkgreen(x)+"'"
 					print
 					sys.exit(1)
 				myaction=x[2:]
@@ -106,19 +109,22 @@ for x in cmdline:
 				print "!!! Error:",x,"is an invalid option."
 				sys.exit(1)
 	elif (not myaction) and (x in actions):
-		print red("*** Deprecated use of action '"+x+"'")
-		if myaction=="rsync":
-			print red("***   Please use '--sync' instead.")
-		else:
-			print red("***   Please use '--"+x+"' instead.")
+		if x not in ["system", "world"]:
+			#print red("*** Deprecated use of action '"+x+"'")
+			if x=="rsync":
+				#print red("***   Please use '--sync' instead.")
+				x="sync"
+			#else:
+				#print red("***   Please use '--"+x+"' instead.")
 		if myaction:
 			print
 			print red("!!!")+green(" Multiple actions requested... Please choose one only.")
-			print red("!!! '")+darkgreen("--"+myaction)+"' "+red("or")+" '"+darkgreen("--"+x)+"'"
+			#print red("!!! '")+darkgreen("--"+myaction)+"' "+red("or")+" '"+darkgreen("--"+x)+"'"
+			print red("!!! '")+darkgreen(myaction)+"' "+red("or")+" '"+darkgreen(x)+"'"
 			print
 			sys.exit(1)
 		myaction=x
-	elif x[-1]=="/":	
+	elif x[-1]=="/":
 		# this little conditional helps tab completion
 		myfiles.append(x[:-1])
 	else:
@@ -1465,6 +1471,7 @@ def post_emerge(retval=0):
 						procount=procount+1
 						print " "+yellow("* IMPORTANT:")+"",len(files),"config files in",x,"need updating."
 		if procount:
+			#print " "+yellow("*")+" Type "+green("emerge --help config")+" to learn how to update config files."
 			print " "+yellow("*")+" Type "+green("emerge --help config")+" to learn how to update config files."
 		print
 	sys.exit(retval)
@@ -1475,7 +1482,7 @@ if "--debug" in myopts:
 
 if myaction in ["sync","rsync"] and (not "--help" in myopts):
 	if "--pretend" in myopts:
-		print "emerge: the \"sync\" and \"rsync\" actions do not support \"--pretend.\""
+		print "emerge: the \"sync\" action does not support \"--pretend.\""
 		sys.exit(1)
 
 	emergelog(" === rsync")
@@ -1486,7 +1493,7 @@ if myaction in ["sync","rsync"] and (not "--help" in myopts):
 		print ">>>",myportdir,"not found, creating it."
 		os.makedirs(myportdir,0755)	
 	syncuri=ctx.settings["SYNC"]
-	os.umask(022)
+	os.umask(0022)
 	if syncuri[:8]=="rsync://":
 		if not os.path.exists("/usr/bin/rsync"):
 			print "!!! /usr/bin/rsync does not exist, so rsync support is disabled."
@@ -1506,7 +1513,6 @@ if myaction in ["sync","rsync"] and (not "--help" in myopts):
 				print "!!! RSYNC_EXCLUDEFROM specified, but file does not exist."
 		mycommand=mycommand+" "+syncuri+"/* "+myportdir
 		print ">>> starting rsync with "+syncuri+"..."
-		#protect users that did not set a default umask
 		exitcode=portage.spawn(ctx, mycommand,free=1)
 		#if the exit code of rsync is 12 retry to rsync till
 		#we have reached RSYNC_RETRIES or the default of 3 retries
@@ -1554,11 +1560,23 @@ if myaction in ["sync","rsync"] and (not "--help" in myopts):
 		sys.exit(1)
 	if os.path.exists(myportdir+"/metadata/cache"):
 		print "\n>>> Updating Portage cache...  ",
+		os.umask(0002)
 		if os.path.exists(ctx.get_cachedir()):
-			portage.spawn(ctx, "rm -rf "+ctx.get_cachedir(),free=1)
+			portage.spawn(ctx, "rm -Rf "+ctx.get_cachedir(),free=1)
+		try:
+			os.mkdir(ctx.get_cachedir())
+			os.chown(ctx.get_cachedir(), os.getuid(), ctx.get_portage_gid())
+			os.chmod(ctx.get_cachedir(), 06775)
+			os.umask(002)
+		except:
+			pass
 		mynodes=ctx.portdb.cp_all()
 		for x in mynodes:
 			myxsplit=x.split("/")
+			if not os.path.exists(ctx.get_cachedir()+"/"+myxsplit[0]):
+				os.mkdir(ctx.get_cachedir()+"/"+myxsplit[0])
+				os.chown(ctx.get_cachedir()+"/"+myxsplit[0], os.getuid(), ctx.get_portage_gid())
+				os.chmod(ctx.get_cachedir()+"/"+myxsplit[0], 06775)
 			mymatches=ctx.portdb.xmatch("match-all",x)
 			for y in mymatches:
 				update_spinner()
@@ -1566,6 +1584,7 @@ if myaction in ["sync","rsync"] and (not "--help" in myopts):
 					ignored=ctx.portdb.aux_get(y,[],metacachedir=myportdir+"/metadata/cache")
 				except:
 					pass
+		portage.spawn(ctx, "chmod -R g+rw "+ctx.get_cachedir(), free=1)
 		sys.stdout.write("\b\b  ...done!\n\n")
 		sys.stdout.flush()
 
@@ -1602,7 +1621,7 @@ elif myaction=="regen":
 elif "config"==myaction:
 	emergelog(" === config")
 	print
-	print "Currently, \'config\' is a --help option only."
+	print "Currently, \'config\' is a help option only."
 	print
 # INFO action
 elif "info"==myaction:
@@ -1659,7 +1678,7 @@ elif "unmerge"==myaction or "prune"==myaction or "clean"==myaction:
 	
 elif "depclean"==myaction:
 	# Kill packages that aren't explicitly merged or are required as a
-	# dependancy of another package. World file is explicit.
+	# dependency of another package. World file is explicit.
 
 	print
 	print red("*** WARNING ***")+" : DEPCLEAN CAN  SERIOUSLY  IMPAIR YOUR SYSTEM. USE CAUTION."
