@@ -68,6 +68,7 @@
 #will not be considered for this dependency.
 
 import string,os
+import re
 from stat import *
 from commands import *
 import fchksum,types
@@ -540,11 +541,75 @@ class config:
 		for x in self.keys(): 
 			mydict[x]=self[x]
 		return mydict
+
+class privclass:
+	"""One-off object for handling the current process's real and effective
+	uid. Instantiated by this module as 'portage.privs'"""
+	def __init__(self):
+		self.intercept = "/usr/lib/portage/lib/intercept.so"
+		self.psre = re.compile("(\d+)\s+(\d+)")
+		self.target = None             # uid to use during unsafe operations
+		self.old = os.getuid()         # original uid when run (often root)
+		self.debug = os.getenv("DEBUG_PORTAGE")
 	
-def spawn(mystring,debug=0):
+	def stayroot(self, root):
+		"""Applies user's 'stayroot' preference. Must be run before any drop or
+		recover operation."""
+		if root:
+			self.target = os.getuid()
+		else:
+			self.target = self.gettarget()
+			self.drop()
+	
+	def gettarget(self):
+		"""Walk up through process ancestry looking for a non-root uid"""
+		uid = self.old
+		pid = os.getppid()
+		while uid == 0 and pid > 1:
+			cmd = "ps --noheaders -o uid,ppid %d" % pid
+			uid, pid = self.psre.search(os.popen(cmd).read()).groups()
+			uid, pid = int(uid), int(pid)
+		# if no non-root uid is found, use 'portage' uid 35
+		if uid == 0:
+			print "!!! no non-root user in process tree: using uid 35 (portage)"
+			uid = 35
+		return uid
+	
+	def drop(self):
+		"""Drop root privs by setting euid to target uid"""
+		if os.geteuid() != self.target:
+			os.seteuid(self.target)
+			if self.debug: print "!!! Drop root privs (uid %d)" % self.target
+	
+	def recover(self):
+		"""Recover root privs by setting euid to root uid (0)"""
+		if os.getuid() == 0:
+			os.seteuid(0)
+			if self.debug: print "!!! Recover root privs"
+	
+	def dropall(self, msg=''):
+		"""Drop root privs by setting euid and real uid to target uid.
+		After this, root privs cannot be recovered by this process."""
+		# if we're not root, we've got no privs to drop
+		if os.getuid() != self.target:
+			os.seteuid(0)
+			os.setuid(self.target)
+			os.seteuid(self.target)
+			if self.debug: print "!!! Drop ALL root privs (uid %d)" %self.target
+		# set up LD_PRELOAD to intercept system calls that would be illegal
+		if os.getuid() != 0:
+			settings["LD_PRELOAD"] = self.intercept
+			# next is an ugly hack to get around make unsetting LD_PRELOAD
+			settings["MAKEFLAGS"] = "LD_PRELOAD=" + self.intercept
+			if self.debug: print "!!! Load intercept " + msg
+
+def spawn(mystring,debug=0,stayroot=0):
 	global settings
 	mypid=os.fork()
 	if mypid==0:
+		# drop all root privs for this forked process
+		if not stayroot:
+			privs.dropall(mystring)
 		mycommand="/bin/bash"
 		if debug:
 			myargs["bash","-x","-c",mystring]
@@ -609,7 +674,8 @@ def doebuild(myebuild,mydo,myroot,checkdeps=1,debug=0):
 		os.makedirs(settings["T"])
 	settings["WORKDIR"]=settings["BUILDDIR"]+"/work"
 	settings["D"]=settings["BUILDDIR"]+"/image/"
-	
+	settings["AUTOSCRIPT"]=settings["BUILDDIR"]+"/build-info/AUTOSCRIPT"
+
 	#initial ebuild.sh bash environment configured
 	myso=getstatusoutput("/usr/sbin/ebuild.sh depend")
 	if myso[0]!=0:
@@ -655,6 +721,10 @@ def doebuild(myebuild,mydo,myroot,checkdeps=1,debug=0):
 	a=open(settings["T"]+"/src_uri_all","w")
 	a.write(flatten(alluris))
 	a.close()
+
+	# clear out old AUTOSCRIPT before doing an install
+	if (mydo=="install" or mydo=="merge") and os.path.isfile(settings["AUTOSCRIPT"]):
+		os.unlink(settings["AUTOSCRIPT"])
 	
 	if mydo=="unpack": 
 		return spawn("/usr/sbin/ebuild.sh fetch unpack")
@@ -662,12 +732,20 @@ def doebuild(myebuild,mydo,myroot,checkdeps=1,debug=0):
 		return spawn("/usr/sbin/ebuild.sh fetch unpack compile")
 	elif mydo=="install":
 		return spawn("/usr/sbin/ebuild.sh fetch unpack compile install")
-	elif mydo in ["prerm","postrm","preinst","postinst","config","touch","clean","fetch","digest","batchdigest"]:
+	elif mydo in ["config","touch","clean","fetch","digest","batchdigest"]:
 		return spawn("/usr/sbin/ebuild.sh "+mydo)
+	elif mydo in ["prerm","postrm","preinst","postinst"]:
+		if os.getuid() != 0:
+			print "!!! The '%s' step must be done as root" % mydo
+			return -1
+		return spawn("/usr/sbin/ebuild.sh "+mydo, stayroot=1)
 	elif mydo=="qmerge": 
 		#qmerge is specifically not supposed to do a runtime dep check
 		return merge(settings["CATEGORY"],settings["PF"],settings["D"],settings["BUILDDIR"]+"/build-info",myroot)
 	elif mydo=="merge":
+		if os.getuid() != 0:
+			print "!!! The 'merge' step must be done as root"
+			return -1
 		retval=spawn("/usr/sbin/ebuild.sh fetch unpack compile install")
 		if retval: return retval
 		if checkdeps:
@@ -771,17 +849,21 @@ def pathstrip(x,mystart):
     return [root+x[len(cpref)+1:],x[len(cpref):]]
 
 def merge(mycat,mypkg,pkgloc,infloc,myroot):
+	privs.recover() # pick up root privs needed for merge
 	mylink=dblink(mycat,mypkg,myroot)
 	if not mylink.exists():
 		mylink.create()
 		#shell error code
 	mylink.merge(pkgloc,infloc,myroot)
+	privs.drop()    # done with root privs
 	
 def unmerge(cat,pkg,myroot):
+	privs.recover() # pick up root privs needed for unmerge
 	mylink=dblink(cat,pkg,myroot)
 	if mylink.exists():
 		mylink.unmerge()
 	mylink.delete()
+	privs.drop()    # done with root privs
 
 def getenv(mykey,dictlist=[]):
 	"dictlist contains a list of dictionaries to check *before* the environment"
@@ -2051,6 +2133,14 @@ class dblink:
 				self.create()
 				#open contents file if it isn't already open
 			mergestart=mergeroot
+			#make sure all files are owned by root.
+			print ">>> Chown work dir to root..."
+			os.system("chown -R 0:0 "+mergeroot)
+			#now adjust ownership as recorded during 'install'
+			if os.path.isfile(settings["AUTOSCRIPT"]):
+				print ">>> Executing AUTOSCRIPT..."
+				os.chmod(settings["AUTOSCRIPT"], 0744)
+				spawn(settings["AUTOSCRIPT"])
 			print ">>> Updating mtimes..."
 			#before merging, it's *very important* to touch all the files !!!
 			os.system("(cd "+mergeroot+"; for x in `find`; do  touch -c $x 2>/dev/null; done)")
@@ -2252,6 +2342,9 @@ class dblink:
 			os.umask(prevmask)
 			#if we opened it, close it	
 			outfile.close()
+			print ">>> Chown work dir to non-root..."
+			#make sure all files are owned so they can be cleaned by non-root later
+			os.system("chown -R %d %s" % (privs.target, mergeroot))
 			if (oldcontents):
 				print ">>> Safely unmerging already-installed instance..."
 				self.unmerge(oldcontents)
@@ -2401,6 +2494,7 @@ def pkgmerge(mytbz2,myroot):
 	xptbz2.unpackinfo(infloc)
 	origdir=os.getcwd()
 	os.chdir(pkgloc)
+	privs.recover() # pick up root privs needed for pkgmerge
 	print ">>> extracting",mypkg
 	notok=os.system("cat "+mytbz2+"| bzip2 -dq | tar xpf -")
 	if notok:
@@ -2421,6 +2515,7 @@ def pkgmerge(mytbz2,myroot):
 		returnme=string.join(string.split(a.read())," ")
 		a.close()
 	cleanup_pkgmerge(mypkg,origdir)
+	privs.drop()    # done with root privs
 	return returnme
 def ebuild_init():
 	"performs db/variable initialization for the ebuild system.  Not required for other scripts."
@@ -2473,3 +2568,5 @@ if root!="/":
 if not profiledir:
 	if os.path.exists("/etc/make.profile/make.defaults"):
 		profiledir="/etc/make.profile"
+# init the shared privs object
+privs = privclass()
