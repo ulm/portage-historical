@@ -1,11 +1,14 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.900 2004/12/09 05:46:55 genone Exp $
+# $Id: ChangeLog,v 1.901 2004/12/09 17:10:26 genone Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  09 Dec 2004; Marius Mauch <genone@gentoo.org> bin/ebuild-functions.sh:
+  Fixing stupid typo that broke einstall for CONF_LIBDIR archs.
 
   09 Dec 2004; Marius Mauch <genone@gentoo.org>
   bin/ebuild-default-functions.sh:

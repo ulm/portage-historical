@@ -2,7 +2,7 @@
 # ebuild-functions.sh; ebuild env functions, saved with the ebuild (not specific to the portage version).
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-functions.sh,v 1.3 2004/11/22 12:17:29 ferringb Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-functions.sh,v 1.4 2004/12/09 17:10:27 genone Exp $
 
 use() {
 	if useq ${1}; then
@@ -101,7 +101,7 @@ econf() {
 		fi
 		local EECONF_CACHE
 		if request_confcache "${T}/local_cache"; then
-			EECONF_CACHE="${EXTRA_ECONF} --cache-file=${T}/local_cache"
+			EECONF_CACHE="--cache-file=${T}/local_cache"
 		fi
 		echo ./configure \
 			--prefix=/usr \
@@ -139,7 +139,7 @@ einstall()
 {
 	# CONF_PREFIX is only set if they didn't pass in libdir above
 	if [ ! -z "${CONF_LIBDIR}" ] && [ "${CONF_PREFIX:-unset}" != "unset" ]; then
-		EXTA_EINSTALL="libdir=${D}/${CONF_PREFIX}/${CONF_LIBDIR} ${EXTRA_EINSTALL}"
+		EXTRA_EINSTALL="libdir=${D}/${CONF_PREFIX}/${CONF_LIBDIR} ${EXTRA_EINSTALL}"
 	fi
 	if [ -f ./[mM]akefile -o -f ./GNUmakefile ] ; then
 		if [ ! -z "${PORTAGE_DEBUG}" ]; then
