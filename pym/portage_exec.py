@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.11 2004/10/11 04:12:02 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.12 2004/10/13 00:01:32 ferringb Exp $
 
 import os,types,atexit
 import signal
@@ -57,7 +57,7 @@ def spawn_sandbox(mycommand,uid=None,opt_name=None,**keywords):
 		raise
 	except:
 		pass
-	return spawn(args,uid=uid,**keywords)
+	return spawn(args,uid=uid,opt_name=opt_name,**keywords)
 
 # base spawn function
 def spawn(mycommand,env={},opt_name=None,fd_pipes=None,returnpid=False,uid=None,gid=None,groups=None,umask=None,logfile=None,path_lookup=True):
