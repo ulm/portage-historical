@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.323 2004/09/14 19:48:40 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.324 2004/09/15 06:40:34 carpaski Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -138,7 +138,7 @@ myopts=[]
 myfiles=[]
 edebug=0
 
-# process short actions and options
+# process short actions
 tmpcmdline=sys.argv[1:]
 #tmpcmdline.extend(portage.settings["EMERGE_OPTS"].split())
 cmdline=[]
@@ -157,7 +157,7 @@ for x in tmpcmdline:
 	else:
 		cmdline.append(x)
 
-# process the command arguments
+# process the options and command arguments
 for x in cmdline:
 	if not x:
 		continue
