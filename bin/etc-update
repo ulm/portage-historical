@@ -8,7 +8,7 @@
 # Leo Lipelis <aeoo@gentoo.org>
 # Karl Trygve Kalleberg <karltk@gentoo.org>
 #
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.12 2003/06/30 06:43:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.13 2003/08/04 15:21:15 aether Exp $
 
 export PORTAGE_CALLER="etc-update"
 
@@ -233,8 +233,9 @@ function do_cfg() {
 					${showdiffcmd}
 				) | ${pager}
 			else
-				echo "Showing differences between ${ofile} and ${file}"
+				echo "Beginning of differences between ${ofile} and ${file}"
 				${showdiffcmd}
+				echo "End of differences between ${ofile} and ${file}"
 			fi
 			if [ -L "${file}" ]; then
 				echo
