@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.547 2004/11/09 11:46:10 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.548 2004/11/09 19:00:23 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1837,8 +1837,8 @@ def digestCreate(myfiles,basedir,oldDigest={}):
 		else:
 			if oldDigest.has_key(x):
 				#DeepCopy because we might not have a unique reference
-				mydigests[x] = copy.deepcopy(olddigest[x])
-				mysize = copy.deepcopy(olddigest[x]["size"])
+				mydigests[x] = copy.deepcopy(oldDigest[x])
+				mysize = copy.deepcopy(oldDigest[x]["size"])
 			else:
 				print "!!! We have a source URI, but no file..."
 				print "!!! File:",myfile
