@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.531 2004/10/25 14:35:34 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.532 2004/10/26 15:19:51 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -5256,7 +5256,7 @@ class portdbapi(dbapi):
 		
 		failures = {}
 		for x in myfiles:
-			if x not in mysums:
+			if not mysums or x not in mysums:
 				ok     = False
 				reason = "digest missing"
 			else:
