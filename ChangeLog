@@ -1,11 +1,17 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.926 2005/03/08 10:14:13 ferringb Exp $
+# $Id: ChangeLog,v 1.927 2005/03/08 12:04:31 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  08 Mar 2005; Brian Harring <ferringb@gentoo.org> pym/portage.py, pym/portage_dep.py,
+  pym/portage_util.py, pym/config.py:  Moved match_from_list, match_to_* stuff
+  into portage_dep, and updated references, and fixed a few bugs related to 
+  match_* locations from last check in.
+  Threw out match_from_list_original func- it's dead code.
 
   06 Mar 2005; Brian Harring <ferringb@gentoo.org> pym/portage.py: Harring's law 
   in effect- stupid one line bugs do not rear their head till the delta hits the 

@@ -1,7 +1,7 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.20 2005/03/07 04:00:30 ferringb Exp $
-cvs_id_string="$Id: portage_util.py,v 1.20 2005/03/07 04:00:30 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.21 2005/03/08 12:04:31 ferringb Exp $
+cvs_id_string="$Id: portage_util.py,v 1.21 2005/03/08 12:04:31 ferringb Exp $"[5:-2]
 
 import sys,string,shlex,os.path,stat,types
 import shutil
@@ -644,27 +644,4 @@ def abssymlink(symlink):
 		mydir=os.path.dirname(symlink)
 		mylink=mydir+"/"+mylink
 	return os.path.normpath(mylink)
-def match_to_list(mypkg,mylist):
-	"""(pkgname,list)
-	Searches list for entries that matches the package.
-	"""
-	matches=[]
-	for x in mylist:
-		if match_from_list(x,[mypkg]):
-			if x not in matches:
-				matches.append(x)
-	return matches
 
-def best_match_to_list(mypkg,mylist):
-	"""(pkgname,list)
-	Returns the most specific entry (assumed to be the longest one)
-	that matches the package given.
-	"""
-	# XXX Assumption is wrong sometimes.
-	maxlen = 0
-	bestm  = None
-	for x in match_to_list(mypkg,mylist):
-		if len(x) > maxlen:
-			maxlen = len(x)
-			bestm  = x
-	return bestm
