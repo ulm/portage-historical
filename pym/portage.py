@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.24 2005/01/11 03:40:57 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.25 2005/01/13 01:06:28 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1675,11 +1675,10 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 			if "primaryuri" in mysettings["RESTRICT"].split():
 				# Use the source site first.
 				if primaryuri_indexes.has_key(myfile):
-					filedict[myfile].insert(primaryuri_index, myuri)
 					primaryuri_indexes[myfile] += 1
 				else:
-					filedict[myfile].insert(0, myuri)
 					primaryuri_indexes[myfile] = 0
+				filedict[myfile].insert(primaryuri_indexes[myfile], myuri)
 			else:
 				filedict[myfile].append(myuri)
 

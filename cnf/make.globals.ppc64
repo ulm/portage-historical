@@ -1,6 +1,6 @@
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.globals.ppc64,v 1.1.2.2 2005/01/03 20:07:10 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.globals.ppc64,v 1.1.2.3 2005/01/13 01:06:27 carpaski Exp $
 # System-wide defaults for the Portage system
 
 #            *****************************
@@ -12,7 +12,7 @@
 # **  USE, CONFIG_*, and FEATURES are incremental  **
 # ***************************************************
 
-GENTOO_MIRRORS="http://gentoo.osuosl.org http://distro.ibiblio.org/pub/Linux/distributions/gentoo"
+GENTOO_MIRRORS="http://distfiles.gentoo.org http://distro.ibiblio.org/pub/Linux/distributions/gentoo"
 SYNC="rsync://rsync.gentoo.org/gentoo-portage"
 # Host-type
 CHOST="powerpc64-unknown-linux-gnu"
