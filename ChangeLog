@@ -1,6 +1,9 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.567 2004/04/09 20:42:35 nakano Exp $
+# $Id: ChangeLog,v 1.568 2004/04/10 02:16:39 nakano Exp $
+
+  10 Apr 2004; Masatomo Nakano <nakano@gentoo.org> repoman: Fixed unsafety
+  temporary file name(#44455). 
 
   09 Apr 2004; Masatomo Nakano <nakano@gentoo.org> portage.py: Fixed
   reorder ld.so.conf bug(#44028). Portage should skip not existing DIR

@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.55 2004/04/09 18:14:33 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.56 2004/04/10 02:16:39 nakano Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -13,7 +13,7 @@ os.environ["PORTAGE_CALLER"]="repoman"
 sys.path = ["/usr/lib/portage/pym"]+sys.path
 version="1.2"	
 
-import string,signal,readline,portage,portage_dep,re,cvstree,pickle
+import string,signal,readline,portage,portage_dep,re,cvstree,pickle,tempfile
 from output import *
 from commands import getstatusoutput
 from time import *
@@ -1100,7 +1100,7 @@ else:
 			exithandler()
 	if not commitmessagefile:
 		unlinkfile=1
-		commitmessagefile="/tmp/.repoman.msg"
+		commitmessagefile=tempfile.mkstemp("",".repoman.msg.","/tmp",True)[1]
 		if os.path.exists(commitmessagefile):
 			os.unlink(commitmessagefile)
 		mymsg=open(commitmessagefile,"w")
