@@ -1,11 +1,12 @@
-#!/bin/bash 
-# Copyright 1999-2002 Gentoo Technologies, Inc.
+#!/bin/bash
+# Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.102.2.1 2003/02/23 02:08:16 alain Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.102.2.2 2003/02/25 15:01:42 alain Exp $
 
-cd ${PORT_TMPDIR}
+cd ${PORTAGE_TMPDIR} &> /dev/null
+cd ${BUILD_PREFIX} &> /dev/null
 
-if [ "$*" != "depend" ]; then
+if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 	if [ -f ${T}/successful ]; then
 		rm -f ${T}/successful
 	fi
@@ -18,14 +19,14 @@ if [ "$*" != "depend" ]; then
 			install -d ${PORT_LOGDIR} &>/dev/null
 			chown root:portage ${PORT_LOGDIR} &>/dev/null
 			chmod g+rwxs ${PORT_LOGDIR} &> /dev/null
-			touch "${PORT_LOGDIR}/$(date +%y%m%d)-${PF}.log" &> /dev/null
-			chmod g+w "${PORT_LOGDIR}/$(date +%y%m%d)-${PF}.log" &> /dev/null
-			$0 $* 2>&1 | tee -a "${PORT_LOGDIR}/$(date +%y%m%d)-${PF}.log"
+			touch "${PORT_LOGDIR}/${LOG_COUNTER}-${PF}.log" &> /dev/null
+			chmod g+w "${PORT_LOGDIR}/${LOG_COUNTER}-${PF}.log" &> /dev/null
+			$0 $* 2>&1 | tee -a "${PORT_LOGDIR}/${LOG_COUNTER}-${PF}.log"
 			if [ "$?" != "0" ]; then
-				echo "Problem creating logfile in ${PORT_LOGDIR}"
 				exit 1
 			fi
 			if [ -f ${T}/successful ]; then
+				rm -f ${T}/successful
 				exit 0
 			else
 				exit 1
@@ -33,20 +34,14 @@ if [ "$*" != "depend" ]; then
 		fi
 	fi
 
-	# Fix the temp dirs so we don't have booboos.
-	for DIR in $(find ${BUILD_PREFIX} -type d -name temp -maxdepth 2 -mindepth 2 -print); do
-		chown -R portage $DIR &>/dev/null
-	done
-
 	if [ -f "${WORKDIR}/environment" ]; then
 		source "${WORKDIR}/environment"
 	fi
 
 	if [ `id -nu` == "portage" ] ; then
-		export CCACHE_DIR=${HOME}/.ccache
 		export USER=portage
 	fi
-fi # $*!=depend
+fi # "$*"!="depend" && "$*"!="clean"
 
 # Prevent aliases from causing portage to act inappropriately.
 unalias -a
@@ -90,15 +85,7 @@ has() {
 has_version() {
 	# return shell-true/shell-false if exists.
 	# Takes single depend-type atoms.
-	# XXX DO NOT ALIGN THIS -- PYTHON WILL NOT BE HAPPY XXX #
-	if python -c "import portage,sys
-ctx = portage.PortageContext()
-mylist=ctx.db[\"${ROOT}\"][\"vartree\"].dbapi.match(\"$1\")
-if mylist:
-	sys.exit(0)
-else:
-	sys.exit(1)
-"; then
+	if /usr/lib/portage/bin/portageq 'has_version' ${ROOT} $1; then
 		return 0
 	else
 		return 1
@@ -108,12 +95,7 @@ else:
 best_version() {
 	# returns the best/most-current match.
 	# Takes single depend-type atoms.
-	# XXX DO NOT ALIGN THIS -- PYTHON WILL NOT BE HAPPY XXX #
-	echo $(python -c "import portage
-ctx = portage.PortageContext()
-mylist=ctx.db[\"${ROOT}\"][\"vartree\"].dbapi.match(\"$1\")
-print portage.best(ctx, mylist)
-")
+	/usr/lib/portage/bin/portageq 'best_version' ${ROOT} $1
 }
 
 use_with() {
@@ -161,7 +143,10 @@ OCXX="$CXX"
 source /etc/profile.env > /dev/null 2>&1
 [ ! -z "$OCC" ] && export CC="$OCC"
 [ ! -z "$OCXX" ] && export CXX="$OCXX"
+
 export PATH="/sbin:/usr/sbin:/usr/lib/portage/bin:/bin:/usr/bin:${ROOTPATH}"
+[ ! -z "$PREROOTPATH" ] && export PATH="${PREROOTPATH%%:}:$PATH"
+
 if [ -e /etc/init.d/functions.sh ]
 then
 	source /etc/init.d/functions.sh > /dev/null 2>&1
@@ -266,7 +251,11 @@ if [ "$*" != "depend" ]; then
 	if has distcc ${FEATURES} &>/dev/null; then
 		if [ -d /usr/lib/distcc/bin ]; then
 			#We can enable distributed compile support
-			export PATH="/usr/lib/distcc/bin:${PATH}"
+			if [ -z "${PATH/*distcc*/}" ]; then
+				# Remove the other reference.
+				PATH="$(echo ${PATH} | sed 's/:[^:]*distcc[^:]*:/:/;s/^[^:]*distcc[^:]*://;s/:[^:]*distcc[^:]*$//')"
+				export PATH="/usr/lib/distcc/bin:${PATH}"
+			fi
 			[ -z "${DISTCC_HOSTS}" ] && DISTCC_HOSTS="localhost"
 			[ ! -z "${DISTCC_LOG}" ] && addwrite "$(dirname ${DISTCC_LOG})"
 			export DISTCC_HOSTS
@@ -278,7 +267,12 @@ if [ "$*" != "depend" ]; then
 
 	if has ccache ${FEATURES} &>/dev/null; then
 		#We can enable compiler cache support
-		if   [ -d /usr/lib/ccache/bin ]; then
+		if [ -z "${PATH/*ccache*/}" ]; then
+			# Remove the other reference.
+			PATH="$(echo ${PATH} | sed 's/:[^:]*ccache[^:]*:/:/;s/^[^:]*ccache[^:]*://;s/:[^:]*ccache[^:]*$//')"
+		fi
+
+		if [ -d /usr/lib/ccache/bin ]; then
 			export PATH="/usr/lib/ccache/bin:${PATH}"
 		elif [ -d /usr/bin/ccache ]; then
 			export PATH="/usr/bin/ccache:${PATH}"
@@ -297,7 +291,7 @@ unpack() {
 	for x in $@
 	do
 		myfail="failure unpacking ${x}"
-		echo ">>> Unpacking ${x}"
+		echo ">>> Unpacking ${x} to $(pwd)"
 		y="$(echo $x | sed 's:.*\.\(tar\)\.[a-zA-Z0-9]*:\1:')"
 		case "${x##*.}" in
 		tar) 
@@ -526,6 +520,14 @@ dyn_clean() {
 	rm -rf ${BUILDDIR}/image
 	rm -rf ${BUILDDIR}/build-info
 	rm -rf ${BUILDDIR}/.compiled
+	if ! has keeptemp $FEATURES; then
+		rm -rf ${T}/*
+	fi
+	if [ -f ${BUILDDIR}/.unpacked ]; then
+		rm -rf ${BUILDDIR}/.unpacked
+		find ${BUILDDIR} -type d | sort -r | xargs rmdir &>/dev/null
+	fi
+	true
 }
 
 into() {
@@ -679,6 +681,19 @@ abort_install() {
 dyn_compile() {
 	trap "abort_compile" SIGINT SIGQUIT
 	export CFLAGS CXXFLAGS LIBCFLAGS LIBCXXFLAGS
+	if has noauto $FEATURES &>/dev/null && [ ! -f ${BUILDDIR}/.unpacked ]; then
+		echo
+		echo "!!! We apparently haven't unpacked... This is probably not what you"
+		echo "!!! want to be doing... You are using FEATURES=noauto so I'll assume"
+		echo "!!! that you know what you are doing... You have 5 seconds to abort..."
+		echo
+		echo -ne "\a"; sleep 0.25 ;	echo -ne "\a"; sleep 0.25
+		echo -ne "\a"; sleep 0.25 ;	echo -ne "\a"; sleep 0.25
+		echo -ne "\a"; sleep 0.25 ;	echo -ne "\a"; sleep 0.25
+		echo -ne "\a"; sleep 0.25 ;	echo -ne "\a"; sleep 0.25
+		sleep 3
+	fi
+	
 	if [ ${BUILDDIR}/.compiled -nt ${WORKDIR} ]
 	then
 		echo ">>> It appears that ${PN} is already compiled; skipping."
@@ -780,6 +795,21 @@ dyn_install() {
 	#|| abort_install "fail"
 	prepall
 	cd ${D}
+
+	declare -i UNSAFE=0
+	for i in $(find ${D}/ -type f -perm -2002); do
+		UNSAFE=$(($UNSAFE + 1))
+		echo "UNSAFE SetGID: $i"
+	done
+	for i in $(find ${D}/ -type f -perm -4002); do
+		UNSAFE=$(($UNSAFE + 1))
+		echo "UNSAFE SetUID: $i"
+	done
+	
+	if [[ $UNSAFE > 0 ]]; then
+		die "There are unsafe files. Portage will not install them."
+	fi
+
 	echo ">>> Completed installing into ${D}"
 	echo
 	cd ${BUILDDIR}
@@ -875,8 +905,6 @@ dyn_help() {
 	echo
 }
 
-# --- Former eclass code ---
-
 # debug-print() gets called from many places with verbose status information useful
 # for tracking down problems. The output is in $T/eclass-debug.log.
 # You can set ECLASS_DEBUG_OUTPUT to redirect the output somewhere else as well.
@@ -901,9 +929,9 @@ debug-print() {
 		fi
 		
 		# default target
-		[ -n "$T" ] && echo $1 >> ${T}/eclass-debug.log
+		echo $1 >> ${T}/eclass-debug.log
 		# let the portage user own/write to this file
-		[ -n "$T" ] && chown portage.portage ${T}/eclass-debug.log
+		chmod g+w ${T}/eclass-debug.log &>/dev/null
 		
 		shift
 	done
@@ -927,29 +955,26 @@ inherit() {
 	local location
 	while [ "$1" ]
 	do
-		export INHERITED="$INHERITED $1"
+		location="${ECLASSDIR}/${1}.eclass"
+		PECLASS="$ECLASS"
+		export ECLASS="$1"
 
 		# any future resolution code goes here
 		if [ -n "$PORTDIR_OVERLAY" ]
 		then
-			location="${PORTDIR_OVERLAY}/eclass/${1}.eclass"
-			if [ -e "$location" ]
-			then
-				debug-print "inherit: $1 -> $location"
-				source "$location" || die "died sourcing $location in inherit()"
-				#continue processing, skip sourcing of one in $ECLASSDIR
-				shift
-				continue
+			olocation="${PORTDIR_OVERLAY}/eclass/${1}.eclass"
+			if [ -e "$olocation" ]; then
+				location="${olocation}"
 			fi
 		fi
-			
-		location="${ECLASSDIR}/${1}.eclass"
 		debug-print "inherit: $1 -> $location"
-		PECLASS="$ECLASS"
-		export ECLASS="$1"
 		source "$location" || die "died sourcing $location in inherit()"
 		ECLASS="$PECLASS"
 		unset PECLASS
+
+		if ! has $1 $INHERITED &>/dev/null; then
+			export INHERITED="$INHERITED $1"
+		fi
 
 		shift
 	done
@@ -999,6 +1024,7 @@ newdepend() {
 
 # --- functions end, main part begins ---
 export SANDBOX_ON="1"
+S=${WORKDIR}/${P}
 source ${EBUILD} || die "error sourcing ebuild"
 #a reasonable default for $S
 if [ "$S" = "" ]
@@ -1092,7 +1118,7 @@ do
 		dbkey=${PORTAGE_CACHEDIR}/${CATEGORY}/${PF}
 		if [ ! -d ${PORTAGE_CACHEDIR}/${CATEGORY} ]
 		then
-			install -d -g wheel -m2775 ${PORTAGE_CACHEDIR}/${CATEGORY}
+			install -d -g ${PORTAGE_GID} -m2775 ${PORTAGE_CACHEDIR}/${CATEGORY}
 		fi
 		# Make it group writable. 666&~002==664
 		umask 002
@@ -1111,7 +1137,6 @@ do
 		echo `echo "$PDEPEND"` >> $dbkey
 		set +f
 		#make sure it is writable by our group:
-		#chmod g+ws $dbkey
 		exit 0
 		;;
 	*)
@@ -1128,9 +1153,15 @@ do
 	fi
 done
 
-# Save current environment and touch a success file. (echo for success)
-umask 002
-set > ${T}/environment 2>/dev/null
-touch ${T}/successful 2>/dev/null
-#chmod g+w ${T}/environment ${T}/successful &>/dev/null
-echo -n ""
+if [ "$myarg" != "clean" ]; then
+	# Save current environment and touch a success file. (echo for success)
+	umask 002
+	set > ${T}/environment 2>/dev/null
+	chown portage:portage ${T}/environment &>/dev/null
+	chmod g+w ${T}/environment &>/dev/null
+fi
+touch ${T}/successful  &>/dev/null
+chown portage:portage ${T}/successful &>/dev/null
+chmod g+w ${T}/successful &>/dev/null
+
+exit 0
