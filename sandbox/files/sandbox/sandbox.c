@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 The Leaf, http://www.theleaf.be
 **  Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@theleaf.be>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/files/sandbox/Attic/sandbox.c,v 1.8 2001/12/11 19:02:13 gbevin Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/files/sandbox/Attic/sandbox.c,v 1.9 2001/12/13 20:33:42 gbevin Exp $
 */
 
 #define _GNU_SOURCE
@@ -624,6 +624,10 @@ int main(int argc, char** argv)
 				strcat(sandbox_write_var, "/usr/tmp/conftest");
 				strcat(sandbox_write_var, ":");
 				strcat(sandbox_write_var, "/usr/lib/conftest");
+				strcat(sandbox_write_var, ":");
+				strcat(sandbox_write_var, "/usr/tmp/cf");
+				strcat(sandbox_write_var, ":");
+				strcat(sandbox_write_var, "/usr/lib/cf");
 				strcat(sandbox_write_var, ":");
 				if (NULL == portage_tmp_dir)
 				{
