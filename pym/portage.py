@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.517 2004/10/05 07:11:26 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.518 2004/10/07 13:23:14 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -5051,7 +5051,7 @@ class portdbapi(dbapi):
 			elif myfile in mymd5s.keys():
 				distfile=settings["DISTDIR"]+"/"+myfile
 				if not os.access(distfile, os.R_OK):
-					filesdict[myfile]=int(mymd5s[myfile][1])
+					filesdict[myfile]=int(mymd5s[myfile]["size"])
 		return filesdict
 
 	def getsize(self,mypkg,useflags=None,debug=0):
