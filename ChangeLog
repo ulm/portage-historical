@@ -1,6 +1,13 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.492 2003/12/15 23:40:25 carpaski Exp $
+# $Id: ChangeLog,v 1.493 2003/12/17 21:01:42 carpaski Exp $
+
+  17 Dec 2003; Nicholas Jones <carpaski@gentoo.org> portage.py: Fixed a
+	permission issue involving $T and userpriv. Lockfile touchup.
+	
+	17  Dec 2003; Nicholas Jones <carpaski@gentoo.org> portage_db_*: Added
+	templates and db for cache interfaces. Presently have a anydbm and a
+	flat file interface working. See the test for operations.
 
   15 Dec 2003; Nicholas Jones <carpaski@gentoo.org> emerge: Added a call
 	to portageq that causes python to create optimized modules prior to it
