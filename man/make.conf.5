@@ -210,7 +210,8 @@ This is the host from which portage will grab prebuilt-binary packages.
 The list is a single entry specifying the full address of the directory 
 serving the tbz2's for your system.  This is only used when running with 
 the get binary pkg options are given to \fBemerge\fR.  Review \fBemerge\fR(1) 
-for more information.
+for more information.  Note that it should point to the 'All' directory on 
+the host that creates the binary packages and not to the root of the \fBPKGDIR\fR.
 .TP
 \fBPORTAGE_NICENESS\fR = \fI[number]\fR
 The value of this variable will be added to the current nice level that 
@@ -320,4 +321,4 @@ Nicholas Jones <carpaski@gentoo.org>
 .br
 Mike Frysinger <vapier@gentoo.org>
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/make.conf.5,v 1.26 2003/09/17 11:00:46 vapier Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/make.conf.5,v 1.27 2003/09/22 04:15:06 vapier Exp $
