@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.935 2005/03/09 09:06:13 ferringb Exp $
+# $Id: ChangeLog,v 1.936 2005/03/09 09:10:18 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -57,6 +57,7 @@
   for metadata transfers.
   Note all existing cache modules/implementations are now invalidated.  Sorry.  Upgrade em.
   Existing cache's on disk are invalidated also, with the exemption of portdir/metadata/cache.
+  Old cache classes have been banished to the attic.
 
   08 Mar 2005; Marius Mauch <genone@gentoo.org> pym/portage.py, pym/ebuild.py:
   Fixing fetch restriction code. Replace references to PORTAGE_RESTRICT with 
