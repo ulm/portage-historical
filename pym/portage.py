@@ -1,9 +1,9 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.359 2003/12/21 21:08:26 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.360 2003/12/22 18:40:23 carpaski Exp $
 
-VERSION="2.0.49-r17"
+VERSION="2.0.50_pre5"
 
 import sys,string,os,re,types,shlex,shutil,xpak,fcntl,signal
 import time,cPickle,atexit,grp,traceback,commands,pwd,cvstree,copy
@@ -1356,7 +1356,7 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0):
 		for x in mysettings["GENTOO_MIRRORS"].split():
 			if x:
 				if x[-1] == '/':
-					mymirrors += [x[1:]]
+					mymirrors += [x[:-1]]
 				else:
 					mymirrors += [x]
 	
@@ -3177,7 +3177,7 @@ def match_from_list(mydep,candidate_list):
 	else:
 		cat,pkg,ver,rev = mycpv_cps
 		if mydep == mycpv:
-			raise KeyError, "Specific key requires and operator (%s)" % (mydep)
+			raise KeyError, "Specific key requires an operator (%s)" % (mydep)
 
 	if ver and rev:
 		operator = get_operator(mydep)
@@ -4591,13 +4591,12 @@ class portdbapi(dbapi):
 			pgroups=groups[:]
 			match=0
 			for mykey in pkgdict:
+				dkey = catpkgsplit(dep_getcpv(mykey))
+				if not dkey:
+					writemsg("--- Invalid depend atom in package.keywords: %s\n" % mykey)
+					continue
 				if db["/"]["porttree"].dbapi.xmatch("bestmatch-list", mykey, None, None, [mycpv]):
-					dkey = catpkgsplit(dep_getcpv(mykey))
-					ckey = catpkgsplit(mycpv)
-					if not dkey:
-						writemsg("--- Invalid depend atom in package.keywords: %s\n" % mykey)
-					elif ckey and (dkey[:2] == ckey[:2]):
-						pgroups.extend(pkgdict[mykey])
+					pgroups.extend(pkgdict[mykey])
 			for gp in mygroups:
 				if gp=="*":
 					writemsg("--- WARNING: Package '%s' uses '*' keyword.\n" % mycpv)

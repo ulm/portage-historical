@@ -1,11 +1,19 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.498 2003/12/21 21:08:26 nakano Exp $
+# $Id: ChangeLog,v 1.499 2003/12/22 18:40:23 carpaski Exp $
+
+*portage-2.0.50_pre7 (22 Dec 2003): API change + enhancements
+
+  22 Dec 2003; Nicholas Jones <carpaski@gentoo.org> ebuild.sh: patch to
+  quote most of the path operators that might involve spaces.
+
+  22 Dec 2003; Nicholas Jones <carpaski@gentoo.org> portage.py: Fix for
+  invalid entries in package.keywords. Character chopping on mirrors
+  fixed again.
 
   21 Dec 2003; Masatomo Nakano <nakano@gentoo.org> bin/ebuild, bin/emerge,
-  pym/portage.py:
-  Changed to show disabled USE flags from use.mask when using emerge -vp.
-  And fixed use.mask issue.
+  pym/portage.py: Changed to show disabled USE flags from use.mask when
+  using emerge -vp. And fixed use.mask issue.
 
   20 Dec 2003; Nicholas Jones <carpaski@gentoo.org> portage.py: Rewrote
   match_from_list -- Simplified and made pkgcmp and match_from_list
