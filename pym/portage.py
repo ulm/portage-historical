@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
-# Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
+# Copyright 1998-2004 Gentoo Foundation
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.476 2004/08/13 08:21:51 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.477 2004/08/14 19:49:06 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
