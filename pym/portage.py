@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.17 2004/12/23 02:11:09 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.18 2004/12/23 02:27:03 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1375,11 +1375,10 @@ class config:
 							usesplit.append(mystr)
 
 		# Pre-Pend ARCH variable to USE settings so '-*' in env doesn't kill arch.
-		if profiledir:
-			if self.configdict["defaults"].has_key("ARCH"):
-				if self.configdict["defaults"]["ARCH"]:
-					if self.configdict["defaults"]["ARCH"] not in usesplit:
-						usesplit.insert(0,self.configdict["defaults"]["ARCH"])
+		if self.configdict["defaults"].has_key("ARCH"):
+			if self.configdict["defaults"]["ARCH"]:
+				if self.configdict["defaults"]["ARCH"] not in usesplit:
+					usesplit.insert(0,self.configdict["defaults"]["ARCH"])
 
 		self.configlist[-1]["USE"]=string.join(usesplit," ")
 
@@ -6868,7 +6867,7 @@ if not os.path.exists(root+"var/tmp"):
 
 os.umask(022)
 profiledir=None
-if os.path.exists(MAKE_DEFAULTS_FILE):
+if os.path.isdir(PROFILE_PATH):
 	profiledir = PROFILE_PATH
 	if os.access(DEPRECATED_PROFILE_FILE, os.R_OK):
 		deprecatedfile = open(DEPRECATED_PROFILE_FILE, "r")

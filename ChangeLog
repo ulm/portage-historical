@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.29 2004/12/23 02:11:08 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.30 2004/12/23 02:27:03 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  24 Dec 2004; Jason Stubbs <jstubbs@gentoo.org> portage.py: Removed assumption
+  that /etc/make.profile/make.defaults must exist for configdict["defaults"] to
+  be populated (and thus ARCH prepended to USE).
 
   23 Dec 2004; Jason Stubbs <jstubbs@gentoo.org> portage.py: Adjusted fetching
   on digest creation such that any preexisting digest entries are used, but
