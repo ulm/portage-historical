@@ -2,7 +2,7 @@
 # ebuild.py; Ebuild classes/abstraction of phase processing, and communicating with a ebuild-daemon.sh instance
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.9 2004/11/12 18:26:57 ferringb Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.10 2005/02/21 12:45:49 genone Exp $
 
 
 import os,sys,traceback
@@ -774,6 +774,12 @@ class ebuild_handler:
 			os.makedirs(mysettings["T"])
 		os.chown(mysettings["T"],portage_uid,portage_gid)
 		os.chmod(mysettings["T"],0770)
+	
+		logdir = mysettings["T"]+"/logging"
+		if not os.path.exists(logdir):
+			os.makedirs(logdir)
+		os.chown(logdir, portage_uid, portage_gid)
+		os.chmod(logdir, 0770)
 	
 		try:
 			if ("nouserpriv" not in string.split(mysettings["RESTRICT"])):

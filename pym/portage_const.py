@@ -1,7 +1,7 @@
 # portage: Constants
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_const.py,v 1.6 2004/12/05 10:23:41 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_const.py,v 1.7 2005/02/21 12:45:49 genone Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -58,3 +58,5 @@ RSYNC_BIN               = "/usr/bin/rsync"
 RSYNC_HOST              = "rsync.gentoo.org/gentoo-portage"
 
 CVS_BIN                 = "/usr/bin/cvs"
+
+EBUILD_PHASES			= "setup unpack compile test install preinst postinst"

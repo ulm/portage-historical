@@ -1,6 +1,30 @@
 # Copyright 1999-2004 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/isolated-functions.sh,v 1.1 2004/11/07 12:49:42 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/isolated-functions.sh,v 1.2 2005/02/21 12:45:49 genone Exp $
+
+# Internal logging function, don't use this in ebuilds
+elog_base() {
+	local messagetype
+	[ -z "${1}" -o -z "${T}" -o ! -d "${T}/logging" ] && return 1
+	case "${1}" in
+		INFO|WARN|ERROR|LOG)
+			messagetype="${1}"
+			shift
+			;;
+		*)
+			echo -e " ${BAD}*${NORMAL} Invalid use of internal function elog_base(), next message will not be logged"
+			return 1
+			;;
+	esac
+	echo ${*} >> ${T}/logging/${EBUILD_PHASE}.${messagetype}
+	return 0
+}
+
+elog() {
+	elog_base LOG ${*}
+	echo -e " ${GOOD}*${NORMAL} ${*}"
+	return 0
+}
 
 esyslog() {
 	local pri=
@@ -21,21 +45,25 @@ esyslog() {
 }
 
 einfo() {
-	echo -e " ${GOOD}*${NORMAL} ${*}"
+	einfon ${*}
+	echo
 	return 0
 }
 
 einfon() {
+	elog_base INFO ${*}
 	echo -ne " ${GOOD}*${NORMAL} ${*}"
 	return 0
 }
 
 ewarn() {
+	elog_base WARN ${*}
 	echo -e " ${WARN}*${NORMAL} ${*}"
 	return 0
 }
 
 eerror() {
+	elog_base ERROR ${*}
 	echo -e " ${BAD}*${NORMAL} ${*}"
 	return 0
 }
