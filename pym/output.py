@@ -1,5 +1,6 @@
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/output.py,v 1.11 2003/02/16 03:03:41 carpaski Exp $
 
 havecolor=1
 codes={}

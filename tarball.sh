@@ -1,4 +1,5 @@
 #!/bin/bash
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.160 2003/02/16 03:03:41 carpaski Exp $
 
 if [ -z "$1" ]; then
 	echo

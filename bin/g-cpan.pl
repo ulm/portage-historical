@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.2 2003/02/16 03:03:41 carpaski Exp $
 
-# author: J Robert Ray <jrray@gentoo.org>
-# 
-#
 # History: 
 
 # 01/08/03: jrray@gentoo.org: remove dependency on Digest::MD5

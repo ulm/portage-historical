@@ -1,4 +1,5 @@
 #!/bin/bash
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dolib,v 1.5 2003/02/16 03:03:41 carpaski Exp $
 
 if [ ${#} -lt 1 ] ; then
 	echo "${0}: at least one argument needed"

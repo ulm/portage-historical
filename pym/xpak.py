@@ -1,3 +1,4 @@
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/xpak.py,v 1.3 2003/02/16 03:03:42 carpaski Exp $
 import sys
 import os
 import string
