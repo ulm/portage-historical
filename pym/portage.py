@@ -2,7 +2,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.572 2005/02/24 23:30:31 solar Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.573 2005/02/25 04:56:53 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -3923,10 +3923,6 @@ class portdbapi(dbapi):
 		
 		self.depcachedir = self.mysettings.depcachedir
 
-		self.tmpfs = self.mysettings["PORTAGE_TMPFS"]
-		if not os.path.exists(self.tmpfs):
-			self.tmpfs = None
-		
 		self.eclassdb = eclass_cache(self.porttree_root, self.mysettings)
 
 		self.metadb       = {}

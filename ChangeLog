@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.911 2005/02/24 23:36:54 solar Exp $
+# $Id: ChangeLog,v 1.912 2005/02/25 04:56:52 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  25 Feb 2005; Brian Harring <ferringb@gentoo.org> pym/portage.py: 
+  yanked PORTAGE_TMPFS support, no longer relevant since data is fed 
+  back via daemon pipes, not via file on disk.
 
   24 Feb 2005; <solar@gentoo.org> bin/ebuild-default-functions.sh:
   - added manifest_files to USER_CONFIG_PATH+/manifest_excludes. The way it
