@@ -1,4 +1,4 @@
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_cpickle.py,v 1.5 2004/05/17 04:21:21 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_cpickle.py,v 1.6 2004/05/23 02:42:19 carpaski Exp $
 
 import anydbm,cPickle,types
 from os import chown,access,R_OK,unlink
@@ -17,9 +17,9 @@ class database(portage_db_template.database):
 		self.filename = self.path + "/" + self.category + ".cpickle"
 		
 		if access(self.filename, R_OK):
-			mypickle=cPickle.Unpickler(open(self.filename,"r"))
-			mypickle.find_global=None
 			try:
+				mypickle=cPickle.Unpickler(open(self.filename,"r"))
+				mypickle.find_global=None
 				self.db = mypickle.load()
 			except:
 				self.db = {}

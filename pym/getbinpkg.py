@@ -1,7 +1,7 @@
 # getbinpkg.py -- Portage binary-package helper functions
 # Copyright 2003 Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Id: getbinpkg.py,v 1.5 2004/02/04 22:40:21 carpaski Exp $
+# $Id: getbinpkg.py,v 1.6 2004/05/23 02:42:19 carpaski Exp $
 
 from output import *
 import htmllib,HTMLParser,string,formatter,sys,os,xpak,time,tempfile,cPickle,base64
@@ -177,10 +177,12 @@ def make_http_request(conn, address, params={}, headers={}, dest=None):
 	the data from address, performing Location forwarding and using the
 	optional params and headers."""
 
-	rc = 301
+	rc = 0
 	response = None
-	while ((rc == 301) or (rc == 302)):
+	while (rc == 0) or (rc == 301) or (rc == 302):
 		try:
+			if (rc != 0):
+				conn,ignore,ignore,ignore,ignore = create_conn(address)
 			conn.request("GET", address, params, headers)
 		except Exception, e:
 			return None,None,"Server request failed:",e[1]
