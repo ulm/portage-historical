@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.408 2004/04/14 01:47:36 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.409 2004/04/20 14:59:36 genone Exp $
 
 VERSION="2.0.50"
 
@@ -3491,13 +3491,17 @@ def getmaskingreason(mycpv):
 				pmaskfile = open(settings["PORTDIR"]+"/profiles/package.mask")
 				comment = ""
 				l = "\n"
-				while l != "":
+				while len(l) > 0:
 					l = pmaskfile.readline()
+					if len(l) == 0:
+						return None
+					print "\'"+l[:-1]+"\'"
 					if l[0] == "#":
 						comment += l
 					elif l == "\n":
 						comment = ""
 					elif l.strip() == x:
+						pmaskfile.close()
 						return comment
 				pmaskfile.close()
 	return None
