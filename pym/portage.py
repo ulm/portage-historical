@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.37 2005/02/03 17:38:41 ferringb Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.37 2005/02/03 17:38:41 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.38 2005/02/05 14:31:25 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.38 2005/02/05 14:31:25 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.37 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.38 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -1074,14 +1074,7 @@ class config:
 			self.loadVirtuals('/')
 					
 			#package.mask
-			# Don't enable per profile package.mask unless the profile
-			# specifically depends on the >=portage-2.0.51 using
-			# <portage-2.0.51 syntax.
-			if self.profiles and (">=sys-apps/portage-2.0.51" in self.packages \
-                                      or "*>=sys-apps/portage-2.0.51" in self.packages):
-				pkgmasklines = grab_multiple("package.mask", self.profiles + locations, grabfile_package)
-			else:
-				pkgmasklines = grab_multiple("package.mask", locations, grabfile_package)
+			pkgmasklines = grab_multiple("package.mask", self.profiles + locations, grabfile_package)
 			pkgmasklines = stack_lists(pkgmasklines, incremental=1)
 
 			self.pmaskdict = {}
@@ -1156,10 +1149,6 @@ class config:
 				else:
 					writemsg(red("!!! Invalid PORTDIR_OVERLAY (not a dir): "+ov+"\n"))
 			self["PORTDIR_OVERLAY"] = string.join(new_ov)
-			self.backup_changes("PORTDIR_OVERLAY")
-
-		if os.environ.get("PORTAGE_CALLER", "") == "repoman":
-			self["PORTDIR_OVERLAY"] = ""
 			self.backup_changes("PORTDIR_OVERLAY")
 
 		self.regenerate()

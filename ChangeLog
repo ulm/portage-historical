@@ -1,11 +1,25 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.65 2005/02/03 17:38:41 ferringb Exp $
+# $Id: ChangeLog,v 1.796.2.66 2005/02/05 14:31:24 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  05 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> bin/emerge: Added removal of
+  --tree and --changelog upon a restart of emerge. Added --ask support to
+  emerge metadata.
+
+  05 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Removed the
+  requisite that a profile must depend on ">=sys-apps/portage-2.0.51" to be
+  able to use package.mask.
+
+  05 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> bin/repoman pym/portage.py:
+  Removed the disabling of PORTDIR_OVERLAY from portage.py and added code to
+  repoman to set PORTDIR to the current directory's repo unless it doesn't
+  contain a profiles directory. If that is the case, PORTDIR is kept and
+  PORTDIR_OVERLAY is set to the current overlay -only-.
 
   03 Feb 2005; Brian Harring <ferringb@gentoo.org> pym/portage.py: bug 80506,
   fixed RESTRICT="(no|)userpriv".

@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.11 2005/01/30 11:33:02 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.12 2005/02/05 14:31:25 jstubbs Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -304,26 +304,10 @@ if mymode=="help" or ("--help" in myoptions):
 if mymode=="last" or (mymode=="lfull"):
 	last()
 
-isCvs=False
-isOverlay=False
-mydir=os.getcwd()
-if mydir[-1] != "/":
-	mydir=mydir + "/"
 
-if not os.path.isdir("CVS"):
-	for overlay in repoman_settings["PORTDIR_OVERLAY"].split():
-		if mydir[:len(overlay)] == overlay:
-			myreporoot=os.getcwd();
-			myreporootpath=overlay
-			isOverlay=True
-			break
-	if not isOverlay:
-		if mydir[:len(repoman_settings["PORTDIR"])] == repoman_settings["PORTDIR"]:
-			myreporoot=os.getcwd();
-			myreporootpath=repoman_settings["PORTDIR"]
-		else:
-			err("We do not appear to be inside a local repository or a portage tree. Exiting.")
-else:
+isCvs=False
+myreporoot=None
+if os.path.isdir("CVS"):
 	repoman_settings["PORTDIR_OVERLAY"]=""
 	if "cvs" not in portage.features:
 		print
@@ -350,73 +334,101 @@ else:
 		raise  # Need to propogate this
 	except:
 		err("Error grabbing repository information; exiting.")
-
-myreporootpath=os.path.normpath(myreporootpath)
+	myreporootpath=os.path.normpath(myreporootpath)
+	if myreporootpath=="/space/cvsroot":
+		print
+		print
+		print red("You're using the wrong cvsroot. For Manifests to be correct, you must")
+		print red("use the same base cvsroot path that the servers use. Please try the")
+		print red("following script to remedy this:")
+		print
+		print "cd my_cvs_tree"
+		print
+		print "rm -Rf [a-z]*"
+		print "cvs up"
+		print
+		if portage.userland=="BSD":
+			print "find ./ -type f -regex '.*/CVS/Root$' -print0 | xargs -0 sed \\"
+		else:
+			print "find ./ -type f -regex '.*/CVS/Root$' -print0 | xargs -0r sed \\"
+		fi
+		print "  -i 's:/space/cvsroot$:/home/cvsroot:'"
+		print
+		print red("You must clear and re-update your tree as all header tags will cause")
+		print red("problems in manifests for all rsync and /home/cvsroot users.")
+		print
+		print "You should do this to any other gentoo trees your have as well,"
+		print "excluding the deletions. 'gentoo-src' should be /home/cvsroot."
+		print
+		sys.exit(123)
 
 if not "--pretend" in myoptions and not isCvs:
 	print
-	print darkgreen("not in a CVS repository, enabling pretend mode")
+	print darkgreen("Not in a CVS repository; enabling pretend mode.")
 	myoptions.append("--pretend");
 
-if myreporootpath=="/space/cvsroot":
-	print
-	print
-	print red("You're using the wrong cvsroot. For Manifests to be correct, you must")
-	print red("use the same base cvsroot path that the servers use. Please try the")
-	print red("following script to remedy this:")
-	print
-	print "cd my_cvs_tree"
-	print
-	print "rm -Rf [a-z]*"
-	print "cvs up"
-	print
-	if portage.userland=="BSD":
-		print "find ./ -type f -regex '.*/CVS/Root$' -print0 | xargs -0 sed \\"
+
+def have_profile_dir(path, maxdepth=3):
+	while path != "/" and maxdepth:
+		if os.path.exists(path + "/profiles/package.mask"):
+			return path
+		path = os.path.normpath(path + "/..")
+		maxdepth -= 1
+
+portdir=None
+portdir_overlay=None
+mydir=os.getcwd()
+if mydir[-1] != "/":
+	mydir += "/"
+
+for overlay in repoman_settings["PORTDIR_OVERLAY"].split():
+	if overlay[-1] != "/":
+		overlay += "/"
+	if mydir[:len(overlay)] == overlay:
+		portdir_overlay = overlay
+		subdir = mydir[len(overlay):]
+		if subdir and subdir[-1] != "/":
+			subdir += "/"
+		if have_profile_dir(mydir, subdir.count("/")):
+			portdir = portdir_overlay
+		break
+
+if not portdir_overlay:
+	if (repoman_settings["PORTDIR"]+"/")[:len(mydir)] == mydir:
+		portdir_overlay = repoman_settings["PORTDIR"]
 	else:
-		print "find ./ -type f -regex '.*/CVS/Root$' -print0 | xargs -0r sed \\"
-	fi
-	print "  -i 's:/space/cvsroot$:/home/cvsroot:'"
-	print
-	print red("You must clear and re-update your tree as all header tags will cause")
-	print red("problems in manifests for all rsync and /home/cvsroot users.")
-	print
-	print "You should do this to any other gentoo trees your have as well,"
-	print "excluding the deletions. 'gentoo-src' should be /home/cvsroot."
-	print
-	sys.exit(123)
+		portdir_overlay = have_profile_dir(mydir)
+	portdir = portdir_overlay
 
-portdir = repoman_settings["PORTDIR"]
-if portdir[-1] != '/':
-	portdir = portdir + "/"
+if not portdir_overlay:
+	print darkred("Unable to determine PORTDIR.")
+	sys.exit(1)
 
-try: # Determine if we're in PORTDIR... If not tell portage to accomodate.
-	mydir=os.getcwd()
-	if mydir[-1] != '/':
-		mydir = mydir + "/"
-	if portdir != mydir[:len(repoman_settings["PORTDIR"])]:
-		# We're not in the PORTDIR
-		print
-		print darkred("We're not in PORTDIR..."),
-		while mydir!="/":
-			if os.path.exists(mydir+"/profiles/package.mask"):
-				# mydir == a PORTDIR root... We make PORTDIR = mydir.
-				print darkgreen("setting to:")+" "+bold(mydir)
-				os.environ["PORTDIR"]=mydir
-				portdir=mydir
-				break;
-			else:
-				mydir=os.path.normpath(mydir+"/..")
-		if mydir=="/":
-			print darkred("unable to determine a PORTDIR.")
-except SystemExit, e:
-	raise  # Need to propogate this
-except Exception, e:
-	print "!!! Error when determining valid(ity of) PORTDIR:"
-	print "!!!",e
-	pass
+if not portdir:
+	portdir = repoman_settings["PORTDIR"]
+
+if portdir[-1] == "/":
+	portdir = portdir[:-1]
+if portdir_overlay[-1] == "/":
+	portdir_overlay = portdir_overlay[:-1]
+
+os.environ["PORTDIR"] = portdir
+if portdir_overlay != portdir:
+	os.environ["PORTDIR_OVERLAY"] = portdir_overlay
+else:
+	os.environ["PORTDIR_OVERLAY"] = ""
+
+print "\nSetting paths:"
+print "PORTDIR = \""+os.environ["PORTDIR"]+"\""
+print "PORTDIR_OVERLAY = \""+os.environ["PORTDIR_OVERLAY"]+"\""
+
 
 reload(portage)
 repoman_settings = portage.config(clone=portage.settings)
+
+if not myreporoot:
+	myreporoot = os.path.basename(portdir_overlay)
+	myreporoot += mydir[len(portdir_overlay):-1]
 
 if isCvs:
 	reporoot=None
@@ -438,8 +450,6 @@ if mymode == "commit" and repolevel not in [1,2,3]:
 	print red("***")
 	err("Unable to identify level we're commiting from for %s" % string.join(reposplit,'/'))
 
-if not isCvs:
-	repolevel-=(string.count(myreporootpath,"/"))
 startdir=os.getcwd()
 
 for x in range(0,repolevel-1):

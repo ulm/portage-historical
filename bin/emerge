@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.14 2005/01/30 11:33:02 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.15 2005/02/05 14:31:24 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -1927,15 +1927,19 @@ class depgraph:
 								portage.portageexit()
 								# Remove --ask from options before restarting
 								mynewargv=[]
+								badlongopts = ["--ask","--tree","--changelog"]
+								badshortopts = ["a","t","l"]
 								for arg in myargv:
 									if arg[0:2] == "--":
-										if arg != "--ask":
-											mynewargv += [arg]
+										if arg in badlongopts:
+											continue
+										mynewargv += [arg]
 									elif arg[0] == "-":
 										myarg = "-"
 										for ch in arg[1:]:
-											if ch != "a":
-												myarg += ch
+											if ch in badshortopts:
+												continue
+											myarg += ch
 										mynewargv += [myarg]
 									else:
 										mynewargv += [arg]
@@ -2323,6 +2327,9 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 	syncuri=string.rstrip(portage.settings["SYNC"])
 	os.umask(0022)
 	if myaction == "metadata":
+		if "--ask" in myopts:
+			if userquery("Are you sure?") == "No":
+				sys.exit(1)
 		print "skipping sync"
 		updatecache_flg = True
 		tmpservertimestampfile = None
