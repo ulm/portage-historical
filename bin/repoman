@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.97 2004/10/19 04:58:42 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98 2004/10/20 14:23:55 jstubbs Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -65,6 +65,7 @@ qahelp={
 	"CVS/Entries.IO_error":"Attempting to commit, and an IO error was encountered access the Entries file",
 	"digest.partial":"Digest files do not contain all corresponding URI elements",
 	"digest.assumed":"Existing digest must be assumed correct",
+	"digest.unused":"Digest entry has no matching SRC_URI entry",
 	"digest.fail":"Digest does not match the specified local file",
 	"digest.stray":"Digest files that do not have a corresponding ebuild",
 	"digest.missing":"Digest files that are missing (ebuild exists, digest doesn't)",
@@ -129,6 +130,7 @@ qawarnings=[
 "digest.notadded",
 "digest.disjointed",
 "digest.missing",
+"digest.unused",
 "DEPEND.badmasked","RDEPEND.badmasked","PDEPEND.badmasked",
 "DEPEND.badindev","RDEPEND.badindev","PDEPEND.badindev",
 "DEPEND.badmaskedindev","RDEPEND.badmaskedindev","PDEPEND.badmaskedindev",
@@ -693,9 +695,14 @@ for x in scanlist:
 					fails["file.executable"].append(x+"/files/"+y)
 				
 				mydigests=portage.digestParseFile(checkdir+"/files/"+y)
-
+				
 				mykey = catdir + "/" + y[7:]
 				myuris,myfiles = portage.db["/"]["porttree"].dbapi.getfetchlist(mykey,all=True)
+
+				for entry in mydigests.keys():
+					if entry not in myfiles:
+						stats["digest.unused"] += 1
+						fails["digest.unused"].append(y+"::"+entry)
 
 				uri_dict = {}
 				for myu in myuris:
