@@ -8,7 +8,7 @@
 # Modified 19 Aug 2002; Martin Schlemmer <azarah@gentoo.org>
 #  Major rewrite to support new stuff
 #
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/Makefile,v 1.2 2002/08/18 22:40:05 azarah Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/Makefile,v 1.3 2002/08/18 23:45:37 azarah Exp $
 
 CC = gcc
 LD = ld
@@ -22,7 +22,7 @@ TARGETS = libsandbox.so sandbox
 all:	$(TARGETS)
 
 sandbox: sandbox.o sandbox_futils.o
-	$(CC) -o sandbox sandbox.o sandbox_futils.o -ldl -lc
+	$(CC) -o sandbox $? -ldl -lc
 
 sandbox.o: sandbox.c sandbox.h
 	$(CC) $(CFLAGS) -Wall -c sandbox.c
@@ -31,7 +31,7 @@ sandbox_futils.o: sandbox_futils.c sandbox.h
 	$(CC) $(CFLAGS) -Wall -c sandbox_futils.c
 
 libsandbox.so: libsandbox.o sandbox_futils.o canonicalize.o
-	$(LD) -shared -o libsandbox.so libsandbox.o sandbox_futils.o canonicalize.o -ldl -lc
+	$(LD) -shared -o libsandbox.so $? -ldl -lc
 
 libsandbox.o: libsandbox.c localdecls.h
 	$(CC) $(CFLAGS) -Wall -c -D_GNU_SOURCE -DPIC -fPIC -D_REENTRANT libsandbox.c
@@ -44,11 +44,12 @@ localdecls.h: create-localdecls libctest.c
 
 
 install: all
-	install -d -m 0755 $(DESTDIR)/usr/lib/portage/bin
 	install -d -m 0755 $(DESTDIR)/lib
-	install -m 0755 sandbox $(DESTDIR)/usr/lib/portage/bin
+	install -d -m 0755 $(DESTDIR)/usr/lib/portage/bin
+	install -d -m 0755 $(DESTDIR)/usr/lib/portage/lib
 	install -m 0755 libsandbox.so $(DESTDIR)/lib
-	-/sbin/ldconfig
+	install -m 0755 sandbox $(DESTDIR)/usr/lib/portage/bin
+	install -m 0755 sandbox.bashrc $(DESTDIR)/usr/lib/portage/lib
 
 
 clean:
