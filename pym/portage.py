@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.438 2004/07/04 08:31:57 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.439 2004/07/06 22:28:55 genone Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1654,7 +1654,7 @@ class config:
 		# Grab the virtuals this package provides and add them into the tree virtuals.
 		virts = mydbapi.aux_get(mycpv, ["PROVIDE"])[0].split()
 
-		cp = dep_getkey(mykey)
+		cp = dep_getkey(mycpv)
 		for virt in virts:
 			virt = dep_getkey(virt)
 			if not self.treeVirtuals.has_key(virt):
