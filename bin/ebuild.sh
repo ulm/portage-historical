@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.85 2002/12/17 09:24:03 azarah Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.86 2002/12/17 13:59:02 azarah Exp $
 
 if [ -n "$#" ]
 then
@@ -384,15 +384,15 @@ dyn_setup()
 	if [ "${DISABLE_GEN_GCC_WRAPPERS}" != "yes" ]
 	then
 		# Create /lib/cpp if missing or a symlink
-		if [ -L /lib/cpp -o ! -f /lib/cpp ]
+		if [ -L /lib/cpp -o ! -e /lib/cpp ]
 		then
-			rm -f /lib/cpp
+			[ -L /lib/cpp ] && rm -f /lib/cpp
 			gen_wrapper /lib/cpp cpp
 		fi
 		# Create /usr/bin/cc if missing for a symlink
-		if [ -L /usr/bin/cc -o ! -f /usr/bin/cc ]
+		if [ -L /usr/bin/cc -o ! -e /usr/bin/cc ]
 		then
-			rm-f /usr/bin/cc
+			[ -L /usr/bin/cc ] && rm -f /usr/bin/cc
 			gen_wrapper /usr/bin/cc gcc
 		fi
 	fi
