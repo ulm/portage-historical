@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.367 2004/01/02 04:58:20 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.368 2004/01/02 10:37:01 nakano Exp $
 
 VERSION="2.0.50_pre8"
 
@@ -3101,7 +3101,10 @@ def dep_wordreduce(mydeplist,mydbapi,mode):
 			else:
 				mydep=mydbapi.match(deplist[mypos])
 			if mydep!=None:
-				deplist[mypos]=(len(mydep)>=1)
+				tmp=(len(mydep)>=1)
+				if deplist[mypos][0]=="!":
+					tmp=not tmp
+				deplist[mypos]=tmp
 			else:
 				#encountered invalid string
 				return None
