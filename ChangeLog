@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.851 2004/11/07 19:28:33 ferringb Exp $
+# $Id: ChangeLog,v 1.852 2004/11/07 19:51:41 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  07 Nov 2004; Brian Harring <ferringb@gentoo.org> pym/transports/fetchcommmand.py:
+  corrected an issue where it wasn't correctly parsing out an appropriate distdir
+  when file_name was specified.
 
   07 Nov 2004; Brian Harring <ferringb@gentoo.org> bin/ebuild-default-functions.sh: 
   addition of INSTALL_MASK support to dyn_preinst.   #67190
