@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.381 2004/01/22 05:51:45 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.382 2004/01/22 07:00:06 carpaski Exp $
 
 VERSION="2.0.50_pre17"
 
@@ -1151,6 +1151,9 @@ class config:
 				mypath = os.path.normpath(os.path.dirname(mypath)+"///"+grabfile(mypath+"/parent")[0])
 				if os.path.exists(mypath):
 					self.profiles.insert(0,mypath)
+
+			if os.path.exists("/etc/portage/profile"):
+				self.profiles.append("/etc/portage/profile")
 
 			self.packages = grab_stacked("packages", self.profiles, grabfile, incremental_lines=1)
 			self.virtuals = self.getvirtuals('/')
@@ -3391,7 +3394,7 @@ def match_from_list(mydep,candidate_list):
 	else:
 		cat,pkg,ver,rev = mycpv_cps
 		if mydep == mycpv:
-			raise KeyError, "Specific key requires an operator (%s)" % (mydep)
+			raise KeyError, "Specific key requires an operator (%s) (try adding an '=')" % (mydep)
 
 	if ver and rev:
 		operator = get_operator(mydep)
