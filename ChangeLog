@@ -1,14 +1,19 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.803 2004/10/23 04:39:38 jstubbs Exp $
+# $Id: ChangeLog,v 1.804 2004/10/23 09:07:41 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
 
+  23 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> dohtml: Reimplemented the
+  option processing to remove the dependency on optparse.
+
   23 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> repoman: Made the invalid
-  profile slightly more intelligable and got rid of the duplicate.
+  profile slightly more intelligable and got rid of the duplicate. Moved
+  the profile KEYWORDS.invalid failure so that it only occurs if the
+  corresponding KEYWORD is valid.
 
   23 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> portage.py: Added settings
   parameter to dep_virtual as the virtuals can now change during dep graph
