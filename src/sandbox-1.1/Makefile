@@ -10,11 +10,11 @@
 #
 # Indent:  indent -kr -i2 -ts2 -sob -l80 -ss -bs -psl
 #
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/Makefile,v 1.7.2.1 2004/10/22 16:53:30 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/Makefile,v 1.7.2.2 2004/11/29 08:41:28 carpaski Exp $
 
 CC ?= gcc
 LD ?= ld
-CFLAGS =
+CFLAGS = 
 ARCH_CFLAGS =
 OBJ_CFLAGS = -D_GNU_SOURCE -DPIC -fPIC -D_REENTRANT
 LIBS =

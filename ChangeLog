@@ -1,11 +1,25 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.17 2004/11/10 20:18:01 ferringb Exp $
+# $Id: ChangeLog,v 1.796.2.18 2004/11/29 08:41:27 carpaski Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  29 Nov 2004; Nicholas Jones <carpaski@gentoo.org> portage_exec.py: Modified
+  the magic constants to be os.access calls.
+
+  29 Nov 2004; Nicholas Jones <carpaski@gentoo.org> portage.py: A few XXX
+  comments. Removed 'aumtime' from the global space. Removed the virtuals
+  code that created an empty and unused virtuals file in /var/cache/edb.
+
+  29 Nov 2004; Nicholas Jones <carpaski@gentoo.org> emerge: Added a few XXX
+  comments to bad code/calls. Adjusted emerge info so that it can read more
+  variables and atoms to print out from the portage tree.
+
+  29 Nov 2004; Nicholas Jones <carpaski@gentoo.org> ebuild.sh: Fixed/Backport
+  the changes to stat_perms so that it works. Fixed the read commands.
 
   10 Nov 2004; Brian Harring <ferringb@gentoo.org> bin/ebuild.sh:
   dyn_install was attempting to be helpful and chown files owned
@@ -17,6 +31,8 @@
   07 Nov 2004; Jason Stubbs <jstubbs@gentoo.org> dispatch-conf: Moved back
   to the version of dispatch-conf that was released (due to python-2.2
   compatibility) and fixed a small type in that version. #70282
+
+*portage-2.0.51-r4 (05 Nov 2004): Internal Release
 
   05 Nov 2004; Jason Stubbs <jstubbs@gentoo.org> doins: Added vapier's fix
   for doins changing existing directory permissions. #69896

@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.5 2004/10/29 14:51:09 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.6 2004/11/29 08:41:28 carpaski Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2558,8 +2558,10 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 
 		if (os.path.exists(cachedir) and os.path.exists(cachedir+"/app-portage")):
 			# removed old style cache.
+			# XXX: Compat Code, and Potentially bad.
 			portage.spawn("rm -Rf "+cachedir+"/*",portage.settings,free=1)
 
+		# Potentially bad
 		if os.path.exists(cachedir+"/"+myportdir):
 			portage.spawn("rm -Rf "+cachedir+"/"+myportdir+"/*",portage.settings,free=1)
 
@@ -2669,6 +2671,10 @@ elif "info"==myaction:
 		os.system("cat /etc/gentoo-release")
 	else:
 		print "Unknown Host Operating System"
+
+	py_vers = string.join(portage.db["/"]["vartree"].dbapi.match("dev-lang/python"), ",")
+	py_this = string.strip(string.split(sys.version,"\n")[0])
+	print "%-20s %s [%s]" % ("Python:",py_vers,py_this)
 	
 	output=commands.getstatusoutput("distcc --version")
 	if not output[0]:
@@ -2686,32 +2692,46 @@ elif "info"==myaction:
 		else:
 			print "[disabled]"
 
-	ac_vers = string.join(portage.db["/"]["vartree"].dbapi.match("sys-devel/autoconf"), ",")
-	am_vers = string.join(portage.db["/"]["vartree"].dbapi.match("sys-devel/automake"), ",")
-	binutils_vers = string.join(portage.db["/"]["vartree"].dbapi.match("sys-devel/binutils"), ",")
-	header_vers = string.join(portage.db["/"]["vartree"].dbapi.match("virtual/os-headers"), ",")
-	libtool_vers = string.join(portage.db["/"]["vartree"].dbapi.match("sys-devel/libtool"), ",")
-	py_vers = string.join(portage.db["/"]["vartree"].dbapi.match("dev-lang/python"), ",")
-	py_this = string.strip(string.split(sys.version,"\n")[0])
+	myvars  = ["sys-devel/autoconf", "sys-devel/automake", "virtual/os-headers",
+	           "sys-devel/binutils", "sys-devel/libtool",  "dev-lang/python"]
+	myvars += portage_util.grabfile(portage.settings["PORTDIR"]+"/profiles/info_pkgs")
+	myvars  = portage_util.unique_array(myvars)		
+	myvars.sort()
+	
+	for x in myvars:
+		if portage.isvalidatom(x):
+			pkg_matches = portage.db["/"]["vartree"].dbapi.match(x)
+			pkgs = ""
+			for y in pkg_matches:
+				mycpv   = portage.catpkgsplit(y)
+				if pkgs:
+					pkgs += ", "
+				pkgs   += str(mycpv[2])
+				if(mycpv[3] != "r0"):
+					pkgs += "-" + str(mycpv[3])
+#			pkgs = string.join(pkg_matches, ",")
+			if not pkgs:
+				pkgs = "[Not Present]"
+			print "%-20s %s" % (x+":", pkgs)
+		else:
+			print "%-20s %s" % (x+":", "[NOT VALID]")
 
-	print "Autoconf: " + ac_vers
-	print "Automake: " + am_vers
-	print "Binutils: " + binutils_vers
-	print "Headers:  " + header_vers
-	print "Libtools: " + libtool_vers
-	print "Python:   " + py_vers + "  [" + py_this + "]"
+	libtool_vers = string.join(portage.db["/"]["vartree"].dbapi.match("sys-devel/libtool"), ",")
 	
 	if "--verbose" in myopts:
 		myvars=portage.settings.keys()
 	else:
-		myvars=['GENTOO_MIRRORS', 'CONFIG_PROTECT', 'CONFIG_PROTECT_MASK',
-				'PORTDIR', 'DISTDIR', 'PKGDIR', 'PORTAGE_TMPDIR', 'PORTDIR_OVERLAY',
-				'USE', 'CHOST', 'CFLAGS', 'CXXFLAGS','ACCEPT_KEYWORDS', 
-				'MAKEOPTS', 'AUTOCLEAN', 'SYNC', 'FEATURES']
+		myvars = ['GENTOO_MIRRORS', 'CONFIG_PROTECT', 'CONFIG_PROTECT_MASK',
+		          'PORTDIR', 'DISTDIR', 'PKGDIR', 'PORTAGE_TMPDIR',
+		          'PORTDIR_OVERLAY', 'USE', 'CHOST', 'CFLAGS', 'CXXFLAGS',
+		          'ACCEPT_KEYWORDS', 'SYNC', 'FEATURES']
+
+		myvars += portage_util.grabfile(portage.settings["PORTDIR"]+"/profiles/info_vars")
+
+	myvars = portage_util.unique_array(myvars)		
 	myvars.sort()
 	for x in myvars:
 		print x+'="'+portage.settings[x]+'"'
-	#print portage.settings.keys()
 	print
 # SEARCH action
 elif "search"==myaction:

@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.9 2004/11/10 21:11:04 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.10 2004/11/29 08:41:28 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -819,7 +819,6 @@ def ExtractKernelVersion(base_dir):
 
 	return (version,None)
 
-aumtime=0
 
 def autouse(myvartree,use_cache=1):
 	"returns set of USE variables auto-enabled due to packages being installed"
@@ -2370,6 +2369,7 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 				if ("userpriv" in features) and (portage_uid and portage_gid):
 					if (secpass==2):
 						if os.path.exists(mysettings["HOME"]):
+							# XXX: Potentially bad, but held down by HOME replacement above.
 							spawn("rm -Rf "+mysettings["HOME"],mysettings, free=1)
 						if not os.path.exists(mysettings["HOME"]):
 							os.makedirs(mysettings["HOME"])
@@ -7009,8 +7009,6 @@ def do_upgrade(mykey):
 	processed=1
 	#remove stale virtual entries (mappings for packages that no longer exist)
 	
-	myvirts=grabdict("/var/cache/edb/virtuals")
-	
 	update_files={}
 	file_contents={}
 	myxfiles = ["package.mask","package.unmask","package.keywords","package.use"]
@@ -7055,13 +7053,6 @@ def do_upgrade(mykey):
 				#update world entries, if any.
 				worldlist[x]=dep_transform(worldlist[x],mysplit[1],mysplit[2])
 		
-			#update virtuals:
-			for myvirt in myvirts.keys():
-				for mypos in range(0,len(myvirts[myvirt])):
-					if myvirts[myvirt][mypos]==mysplit[1]:
-						#update virtual to new name
-						myvirts[myvirt][mypos]=mysplit[2]
-
 			#update /etc/portage/packages.*
 			for x in file_contents:
 				for mypos in range(0,len(file_contents[x])):
@@ -7106,7 +7097,6 @@ def do_upgrade(mykey):
 	for x in worldlist:
 		myworld.write(x+"\n")
 	myworld.close()
-	writedict(myvirts,"/var/cache/edb/virtuals")
 	print ""
 
 def portageexit():

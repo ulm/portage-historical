@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.3 2004/11/10 20:18:01 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.4 2004/11/29 08:41:28 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -998,34 +998,27 @@ dyn_install() {
 	function stat_perms() {
 		local f
 		f=$(stat -c '%f' "$1")
-		f=$(printf %o ox$f)
+		f=$(printf %o 0x$f)
 		f="${f:${#f}-4}"
 		echo $f
 	}
 
 	local file s
-	find "${D}/" -user  portage -print0 | while read file; do
+	find "${D}/" -user portage -o | while read file; do
 		ewarn "file $file was installed with user portage!"
 		s=$(stat_perms $file)
 		chown root "$file"
 		chmod "$s" "$file"
 	done
 
-	if [ "$USERLAND" == "BSD" ]; then
-		find "${D}/" -group portage -print0 | while read file; do
-			ewarn "file $file was installed with group portage!"
-			s=$(stat_perms "$file")
-			chgrp wheel "$file"
-			chmod "%s" "$file"
-		done
-	else
-		find "${D}/" -group portage -print0 | while read file; do
-			ewarn "file $file was installed with group portage!"
-			s=$(stat_perms "$file")
-			chgrp root "$file"
-			chmod "%s" "$file"
-		done
-	fi
+	find "${D}/" -group portage | while read file; do
+		ewarn "file $file was installed with group portage!"
+		s=$(stat_perms "$file")
+		[ "$USERLAND" == "BSD" ] && chgrp wheel "$file"
+		[ "$USERLAND" != "BSD" ] && chgrp root "$file"
+		fi
+		chmod "%s" "$file"
+	done
 
 	unset -f stat_perms
 
@@ -1035,7 +1028,7 @@ dyn_install() {
 	fi
 
 	touch "${BUILDDIR}/.installed"
-	echo ">>> Completed installing into ${D}"
+	echo ">>> Completed installing ${PF} into ${D}"
 	echo
 	cd ${BUILDDIR}
 	trap SIGINT SIGQUIT
