@@ -1,8 +1,12 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.420 2003/02/17 11:58:53 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.421 2003/02/18 15:04:13 alain Exp $
 
 *portage-2.0.47-r2 (17 Feb 2003): Wicked Fast, BugFree, UserPriv
+
+  18 Feb 2003; Alain Penders <alain@gentoo.org> portage-2.0.47-r2.ebuild:
+  If $PORTAGE_TEST is set, skip the beeps/delay messages.  Needed to make
+  the regression test scripts bearable :-)
 
   17 Feb 2003; Nicholas Jones <carpaski@gentoo.org> portage.py: Fixed the
   depcache code once again -- ebuild and cache were never set to the same
