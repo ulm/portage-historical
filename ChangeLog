@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.727 2004/08/31 23:29:59 ferringb Exp $
+# $Id: ChangeLog,v 1.728 2004/09/01 21:06:00 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -9,7 +9,14 @@
     4. /etc/portage/sets/world is a symlink to /var/lib/portage/world
        It is for convenience. Do not mistake this for the actual file.
 
-  13 Aug 2004; Brian Harring <ferringb@gentoo.org> bin/emerge: Debug
+  01 Sep 2004; Brian Harring <ferrignb@gentoo.org> pym/portage.py, 
+  pym/portage_exec.py, pym/portage_checksum.py: Restructured spawn
+  so that we don't have two versions; all spawn calls trace back to 
+  portage_exec.spawn, either through spawn_bash or spawn_sandbox.
+  portage_exec.spawn is strictly an os.execve wrapper now, so bash 
+  doesn't have to be involved unless desired (if desired use spawn_bash).
+
+  31 Aug 2004; Brian Harring <ferringb@gentoo.org> bin/emerge: Debug
   print statement left in global scope, corrected it.
 
   31 Aug 2004; Nicholas Jones <carpaski@gentoo.org> portage_checksum.py:
