@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.16 2004/12/22 00:12:16 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.17 2004/12/23 02:11:09 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -2510,6 +2510,18 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 	if ("mirror" in features) or fetchall:
 		fetchme=alluris
 		checkme=aalist
+	elif mydo=="digest":
+		fetchme=alluris
+		checkme=aalist
+		digestfn=mysettings["FILESDIR"]+"/digest-"+mysettings["PF"]
+		if os.path.exists(digestfn):
+			mydigests=digestParseFile(digestfn)
+			if mydigests:
+				for x in mydigests:
+					while x in checkme:
+						i = checkme.index(x)
+						del fetchme[i]
+						del checkme[i]
 	else:
 		fetchme=newuris
 		checkme=alist
