@@ -1,7 +1,7 @@
 # deps.py -- Portage dependency resolution functions
 # Copyright 2003 Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Id: portage_dep.py,v 1.12 2004/08/07 11:44:04 jstubbs Exp $
+# $Id: portage_dep.py,v 1.13 2004/08/07 12:21:55 jstubbs Exp $
 
 # DEPEND SYNTAX:
 #
@@ -82,7 +82,7 @@ def use_reduce(deparray, uselist=[], masklist=[], matchall=0, excludeall=[]):
 		head = mydeparray.pop(0)
 
 		if type(head) == types.ListType:
-			rlist = rlist + [use_reduce(head, uselist, masklist, matchall)]
+			rlist = rlist + [use_reduce(head, uselist, masklist, matchall, excludeall)]
 
 		else:
 			if head[-1] == "?": # Use reduce next group on fail.
@@ -125,7 +125,7 @@ def use_reduce(deparray, uselist=[], masklist=[], matchall=0, excludeall=[]):
 				if ismatch:
 					target = newdeparray[-1]
 					if isinstance(target, list):
-						rlist += [use_reduce(target, uselist, masklist, matchall)]
+						rlist += [use_reduce(target, uselist, masklist, matchall, excludeall)]
 					else:
 						rlist += [target]
 
