@@ -1,6 +1,12 @@
 # ChangeLog for Path Sandbox
 # Copyright 2002 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/ChangeLog,v 1.25 2003/10/13 19:45:54 azarah Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/ChangeLog,v 1.26 2003/10/14 20:24:39 azarah Exp $
+
+  14 Oct 2003; Martin Schlemmer <azarah@gentoo.org> libsandbox.c :
+  Fix a bug that occurs mainly on 64bit arch, where the file passed to
+  the functions we wrap, is invalid, and then cause canonicalize to pass
+  garbage to before_syscall(), thanks to great detective work from
+  Andrea Luzzardi <al@sig11.org>.
 
   13 Oct 2003; Martin Schlemmer <azarah@gentoo.org> create-localdecls :
   Add a uClibc detection patch from Peter S. Mazinger <ps.m@gmx.net>.
