@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.56 2004/04/10 02:16:39 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.57 2004/04/10 16:22:41 nakano Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -94,7 +94,7 @@ qawarnings=[
 "metadata.missing",
 "metadata.bad"
 ]
-missingvars=["KEYWORDS","LICENSE","DESCRIPTION","SLOT"]
+missingvars=["KEYWORDS","LICENSE","DESCRIPTION","SLOT","IUSE"]
 allvars=portage.auxdbkeys
 commitmessage=None
 commitmessagefile=None
@@ -115,6 +115,7 @@ qahelp={
 	"changelog.notadded":"ChangeLogs that exist but have not been added to cvs",
 	"KEYWORDS.missing":"Ebuilds that have a missing KEYWORDS variable",
 	"LICENSE.missing":"Ebuilds that have a missing LICENSE variable",
+	"IUSE.missing":"Ebuilds that have a missing IUSE variable",
 	"DESCRIPTION.missing":"Ebuilds that have a missing DESCRIPTION variable",
 	"SLOT.missing":"Ebuilds that have a missing SLOT variable",
 	"DEPEND.bad":"User-visible ebuilds with bad DEPEND settings (matched against *visible* ebuilds)",
