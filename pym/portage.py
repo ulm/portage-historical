@@ -1,9 +1,9 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.269.2.14 2003/02/22 19:11:32 alain Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.269.2.15 2003/02/22 23:14:59 alain Exp $
 
-VERSION="2.0.47-r1"
+VERSION="2.1.0_alpha1"
 
 from stat import *
 from commands import *
@@ -360,12 +360,12 @@ class PortageContext:
 					print ">>>",cachedir+"/dep","doesn't exist, creating it..."
 					os.makedirs(cachedir+"/dep",2755)
 				try:
-					os.chown(cachedir,self.uid,self.wheelgid)
+					os.chown(cachedir,self.uid,self.portage_gid)
 					os.chmod(cachedir,0775)
 				except OSError:
 					pass
 				try:
-					os.chown(cachedir+"/dep",self.uid,self.wheelgid)
+					os.chown(cachedir+"/dep",self.uid,self.portage_gid)
 					os.chmod(cachedir+"/dep",02775)
 				except OSError:
 					pass
@@ -478,7 +478,7 @@ class PortageContext:
 	def initialize_prelink(self):
 		"""Initialize prelink handling.  This checks whether or not this system supports prelinking."""
 		self.prelink_capable=0
-		if spawn(self, "/usr/sbin/prelink --version > /dev/null 2>&1") == 0:
+		if spawn(self, "/usr/sbin/prelink --version > /dev/null 2>&1",free=1) == 0:
 			self.prelink_capable=1
 
 	def has_prelink(self):
@@ -502,11 +502,11 @@ class PortageContext:
 		# FIX: This method should return an error if it doesn't, instead of calling sys.exit(1)!
 		if not os.path.exists(self.settings["PORTAGE_TMPDIR"]):
 			print "portage: the directory specified in your PORTAGE_TMPDIR variable, \""+self.settings["PORTAGE_TMPDIR"]+",\""
-			print "does not exist.  Please create this directory or correct your PORTAGE_TMPDIR settting."
+			print "does not exist.  Please create this directory or correct your PORTAGE_TMPDIR setting."
 			sys.exit(1)
 		if not os.path.isdir(self.settings["PORTAGE_TMPDIR"]):
 			print "portage: the directory specified in your PORTAGE_TMPDIR variable, \""+self.settings["PORTAGE_TMPDIR"]+",\""
-			print "is not a directory.  Please correct your PORTAGE_TMPDIR settting."
+			print "is not a directory.  Please correct your PORTAGE_TMPDIR setting."
 			sys.exit(1)
 
 	def initialize_categories(self):
@@ -563,7 +563,7 @@ class PortageContext:
 		return self.groups
 
 	def exithandler(self,foo,bar):
-		"""Handles ^C interupts in a sane manner"""
+		"""Handles ^C interrupts in a sane manner"""
 		#remove temp sandbox files
 		#if (self.secpass==2) and ("sandbox" in features):
 		#	mypid=os.fork()
@@ -590,7 +590,7 @@ class PortageContext:
 		"""Find the current users user id, the wheel group id, the portage user and group
 		id, and determine what access rights the user has.  Three levels of access rights
 		are available: root, user is a member of the wheel group, or normal user."""
-		#Secpass will be set to 1 if the user is root or in the wheel group.
+		#Secpass will be set to 1 if the user is root or in the portage group.
 		self.uid=os.getuid()
 		self.secpass=USER_NORMAL
 		if self.uid==0:
@@ -612,9 +612,12 @@ class PortageContext:
 			self.portage_uid=0
 			self.portage_gid=self.wheelgid
 			print
-			print red(  "portage: 'portage' user or group missing. Please update baselayout")
-			print red(  "         and merge portage user(250) and group(250) into your passwd")
-			print red(  "         and group files. Non-root compilation is disabled until then.")
+			print   red("portage: 'portage' user or group missing. Please update baselayout")
+			print   red("         and merge portage user(250) and group(250) into your passwd")
+			print   red("         and group files. Non-root compilation is disabled until then.")
+			print       "         Also note that non-root/wheel users will need to be added to"
+			print       "         the portage group to do portage commands."
+			print
 			print       "         For the defaults, line 1 goes into passwd, and 2 into group."
 			print green("         portage:x:250:250:portage:/var/tmp/portage:/bin/false")
 			print green("         portage::250:portage")
@@ -659,7 +662,7 @@ def abssymlink(symlink):
 
 def listdir(ctx, path):
 	"""List directory contents, using cache. (from dircache module; streamlined by drobbins)
-	Exceptions will be propogated to the caller."""
+	Exceptions will be propagated to the caller."""
 	try:
 		cached_mtime, list = ctx.dircache[path]
 	except KeyError:
@@ -1008,7 +1011,7 @@ def env_update(ctx, makelinks=1):
 		outfile.write("export "+x+"='"+env[x]+"'\n")
 	outfile.close()
 	
-	#creat /etc/csh.env for (t)csh support
+	#create /etc/csh.env for (t)csh support
 	outfile=open(ctx.getRoot()+"/etc/csh.env","w")
 	outfile.write(cenvnotice)
 	
@@ -1161,7 +1164,7 @@ def spawn(ctx, mystring,debug=0,free=0,droppriv=0):
 	signal handling.  Using spawn allows our Portage signal handler
 	to work."""
 
-	# usefull if an ebuild or so needs to get the pid of our python process
+	# useful if an ebuild or so needs to get the pid of our python process
 	ctx.settings["PORTAGE_MASTER_PID"]=str(os.getpid())
 	droppriv=(droppriv and (ctx.has_feature("userpriv")))
 	
@@ -1176,7 +1179,7 @@ def spawn(ctx, mystring,debug=0,free=0,droppriv=0):
 		else:
 			if droppriv:
 				print "portage: Unable to drop root for",mystring
-		ctx.settings["BASH_ENV"]=ctx.settings["HOME"]+"/.bashrc"
+ 		ctx.settings["BASH_ENV"]="/etc/portage/bashrc"
 
 		if ctx.has_feature("sandbox") and (not free):
 			mycommand="/usr/lib/portage/bin/sandbox"
@@ -1491,7 +1494,7 @@ def doebuild(ctx, myebuild,mydo,myroot,debug=0,listonly=0):
 	ctx.settings["PKG_TMPDIR"]=ctx.settings["PORTAGE_TMPDIR"]+"/portage-pkg"
 	ctx.settings["BUILDDIR"]=ctx.settings["BUILD_PREFIX"]+"/"+ctx.settings["PF"]
 
-	#set up KV variable -- DEP SPEEDUP :: Don't waste time. Keep var persistant.
+	#set up KV variable -- DEP SPEEDUP :: Don't waste time. Keep var persistent.
 	if (mydo!="depend") or not ctx.settings.has_key("KV"):
 		mykv,err1=ExtractKernelVersion(ctx.getRoot()+"usr/src/linux")
 		if mykv:
@@ -1639,9 +1642,15 @@ def doebuild(ctx, myebuild,mydo,myroot,debug=0,listonly=0):
 			"compile": {"dep":"unpack",  "args":(nosandbox,1)}, # optional / portage
 			"install": {"dep":"compile", "args":(0,0)},         # sandbox  / root
 			    "rpm": {"dep":"install", "args":(0,0)},         # sandbox  / root
+		    	"package": {"dep":"install", "args":(0,0)},         # sandbox  / root
 	}
 
-	if mydo in actionmap.keys():	
+	if mydo in actionmap.keys():
+		if mydo=="package":
+			for x in ["","/"+ctx.settings["CATEGORY"],"/All"]:
+				if not os.path.exists(ctx.settings["PKGDIR"]+x):
+					os.makedirs(ctx.settings["PKGDIR"]+x)
+		# REBUILD CODE FOR TBZ2 --- XXXX
 		return spawnebuild(ctx, mydo,actionmap,debug)
 	elif mydo=="qmerge": 
 		#qmerge is specifically not supposed to do a runtime dep check
@@ -1650,33 +1659,9 @@ def doebuild(ctx, myebuild,mydo,myroot,debug=0,listonly=0):
 		retval=spawnebuild(ctx, "install",actionmap,debug,1)
 		if retval: return retval
 		return merge(ctx, ctx.settings["CATEGORY"],ctx.settings["PF"],ctx.settings["D"],ctx.settings["BUILDDIR"]+"/build-info",myroot,myebuild=ctx.settings["EBUILD"])
-	elif mydo=="package":
-		for x in ["","/"+ctx.settings["CATEGORY"],"/All"]:
-			if not os.path.exists(ctx.settings["PKGDIR"]+x):
-				os.makedirs(ctx.settings["PKGDIR"]+x)
-
-		# XXX: This is annoying as it never considers changes.  #
-		# XXX: Removing until we get a few things updated like  #
-		# XXX: rebuild-on-use and others to notice the changes. #
-		#pkgloc=ctx.settings["PKGDIR"]+"/All/"+ctx.settings["PF"]+".tbz2"
-		rebuild=1
-		#if os.path.exists(pkgloc):
-		#	for x in [ctx.settings["A"],ctx.settings["EBUILD"]]:
-		#		if not os.path.exists(x):
-		#			continue
-		#		if os.path.getmtime(x)>os.path.getmtime(pkgloc):
-		#			rebuild=1
-		#			break
-		#else:	
-		#	rebuild=1
-		if not rebuild:
-			print
-			print ">>> Package",ctx.settings["PF"]+".tbz2 appears to be up-to-date."
-			print ">>> To force rebuild, touch",os.path.basename(ctx.settings["EBUILD"])
-			print
-			return 0
-		else:
-			return spawn(ctx, "/usr/sbin/ebuild.sh setup unpack compile install package")
+	else:
+		print "!!! Unknown mydo:",mydo
+		sys.exit(1)
 
 
 def movefile(src,dest,newmtime=None,sstat=None):
@@ -2076,7 +2061,7 @@ def vercmp(ctx, val1,val2):
 		if val2[x][0] == '0' :
 			val2[x]='.' + val2[x]
 
-	# extend varion numbers
+	# extend version numbers
 	if len(val2)<len(val1):
 		val2.extend(["0"]*(len(val1)-len(val2)))
 	elif len(val1)<len(val2):
@@ -2152,7 +2137,7 @@ def dep_opconvert(ctx, mysplit,myuse):
 			try:
 				mynew=dep_opconvert(ctx, mysplit[mypos+1],myuse)
 			except Exception, e:
-				print "!!! Unable to satisfy OR dependancy:",string.join(mysplit," || ")
+				print "!!! Unable to satisfy OR dependency:",string.join(mysplit," || ")
 				raise e
 			mynew[0:0]=["||"]
 			newsplit.append(mynew)
@@ -2570,7 +2555,7 @@ class dbapi:
 		return
 
 	def aux_get(self,mycpv,mylist):
-		"stub code for returning auxilliary db information, such as SLOT, DEPEND, etc."
+		"stub code for returning auxiliary db information, such as SLOT, DEPEND, etc."
 		'input: "sys-apps/foo-1.0",["SLOT","DEPEND","HOMEPAGE"]'
 		'return: ["0",">=sys-libs/bar-1.0","http://www.foo.com"] or [] if mycpv not found'
 		pass
@@ -3163,7 +3148,6 @@ class portdbapi(dbapi):
 		try:
 			emtime=os.stat(myebuild)[ST_MTIME]
 		except:
-			print "!!! Failed to stat ebuild:",myebuild
 			return None
 		
 		# first, we take a look at the size of the ebuild/cache entry to ensure we
@@ -3192,7 +3176,7 @@ class portdbapi(dbapi):
 						mydir=os.path.dirname(mydbkey)
 						if not os.path.exists(mydir):
 							os.makedirs(mydir, 2775)
-							os.chown(mydir,self.ctx.get_uid(),self.ctx.get_wheelgid())
+							os.chown(mydir,self.ctx.get_uid(),self.ctx.get_portage_gid())
 						shutil.copy2(mymdkey, mydbkey)
 						usingmdcache=1
 					except Exception,e:
@@ -3274,12 +3258,20 @@ class portdbapi(dbapi):
 					break
 
 		#print "doregen2: pre"
-		if doregen2:	
+		if doregen2:
 			#sys.stderr.write("-")
 			#sys.stderr.flush()
 			#print "doregen2"
 			stale=1
 			#old cache entry, needs updating (this could raise IOError)
+
+			try:
+				# Can't set the mtime of a file we don't own, so to ensure that it
+				# is owned by the running user, we delete the file so we recreate it.
+				os.unlink(mydbkey)
+			except:
+				pass
+			
 			if doebuild(self.ctx, myebuild,"depend","/"):
 				#depend returned non-zero exit code...
 				if strict:
@@ -3556,7 +3548,7 @@ class binarytree(packagetree):
 			self.tree={}
 	
 	def populate(self):
-		"popules the binarytree"
+		"populates the binarytree"
 		if (not os.path.isdir(self.pkgdir)):
 			return 0
 		if (not os.path.isdir(self.pkgdir+"/All")):
@@ -3572,7 +3564,11 @@ class binarytree(packagetree):
 			mycat=string.strip(mycat)
 			fullpkg=mycat+"/"+mypkg[:-5]
 			mykey=dep_getkey(self.ctx, fullpkg)
-			self.dbapi.cpv_inject(fullpkg)
+			try:
+				# invalid tbz2's can hurt things.
+				self.dbapi.cpv_inject(fullpkg)
+			except:
+				continue
 		self.populated=1
 
 	def inject(self,cpv):
@@ -3778,12 +3774,6 @@ class dblink:
 				if not os.path.islink(obj):
 					print "--- !sym  ","sym", obj
 					continue
-				myabsdest=abssymlink(obj)
-				mydest=os.readlink(obj)
-				if os.path.exists(myabsdest):
-					if mydest != pkgfiles[obj][2]:
-						print "--- !destn","sym", obj
-						continue
 				mysyms.append(obj)
 			elif pkgfiles[obj][0]=="obj":
 				if not os.path.isfile(obj):
@@ -3827,7 +3817,7 @@ class dblink:
 			progress=0
 
 			#step 1: remove all the dead symlinks we can...
-	
+
 			pos = 0
 			while pos<len(mysyms):
 				obj=mysyms[pos]

@@ -65,7 +65,7 @@ class LastModifiedDB:
 					self.mtimedb["version"]=portage.VERSION
 					cPickle.dump(self.mtimedb,open(self.mtimedbfile,"w"))
 					#print "*** Wrote out LastModifiedDB data successfully."
-					os.chown(self.mtimedbfile, self.ctx.get_uid(), self.ctx.get_wheelgid())
+					os.chown(self.mtimedbfile, self.ctx.get_uid(), self.ctx.get_portage_gid())
 					os.chmod(self.mtimedbfile, 0664)
 			except Exception, e:
 				pass
