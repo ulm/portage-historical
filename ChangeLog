@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.922 2005/03/07 04:08:18 ferringb Exp $
+# $Id: ChangeLog,v 1.923 2005/03/08 01:18:47 genone Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  08 Mar 2005; Marius Mauch <genone@gentoo.org> pym/portage.py:
+  reverting broken patch for fakedbapi.cp_all(): it returned a nested list 
+  instead of a simple list and was weird at best.
 
   06 Mar 2005; Brian Harring <ferringb@gentoo.org> autogen.sh:
   used for autogenerating auto* crap after a checkout.

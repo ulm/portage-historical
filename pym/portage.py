@@ -2,10 +2,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.577 2005/03/07 04:00:30 ferringb Exp $
-cvs_id_string="$Id: portage.py,v 1.577 2005/03/07 04:00:30 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.578 2005/03/08 01:18:47 genone Exp $
+cvs_id_string="$Id: portage.py,v 1.578 2005/03/08 01:18:47 genone Exp $"[5:-2]
 
-VERSION="$Revision: 1.577 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.578 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -2458,7 +2458,9 @@ class fakedbapi(dbapi):
 
 	def cp_all(self):
 		returnme=[]
-		return [y for y in [x for x in self.cpdict.values()]]
+		for x in self.cpdict.keys():
+			returnme.extend(self.cpdict[x])
+		return returnme
 
 	def cpv_inject(self,mycpv):
 		"""Adds a cpv from the list of available packages."""
