@@ -1,8 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python2.2
 # pdb.cgi -- cgi to update and query local and remote portage package databases
 # Copyright (C) Sept 2001, Chris Houser <chouser@bluweb.com>
 # Distributed under the GNU General Public License
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/pdb.cgi,v 1.3 2002/02/21 20:10:52 drobbins Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/pdb.cgi,v 1.4 2002/03/31 01:52:03 drobbins Exp $
 
 # config -- begin
 dbfile = '/home/c/proj/pkgdb/gentoo'
