@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.164 2003/03/23 00:01:36 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.165 2003/03/24 03:10:45 carpaski Exp $
 
 if [ -z "$1" ]; then
 	echo
@@ -58,4 +58,3 @@ if [ -d /usr/portage.cvs/sys-apps/portage/ ]; then
 	ebuild /usr/portage/sys-apps/portage/portage-${V}.ebuild fetch digest
 	cp /usr/portage/sys-apps/portage/files/digest-portage-${V} /usr/portage.cvs/sys-apps/portage/files/digest-portage-${V}
 fi
-	
