@@ -1,11 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.867 2004/11/10 18:05:09 ferringb Exp $
+# $Id: ChangeLog,v 1.868 2004/11/10 20:08:07 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  10 Nov 2004; Brian Harring <ferringb@gentoo.org> 
+  bin/ebuild-default-functions.sh, bin/affect-fakeroot-perms.sh:
+  Closing out bug where suid/sgid is wiped by chowning,
+  noticed a similar issue in affect-fakeroot-perms. (#56129)
 
   10 Nov 2004; Brian Harring <ferringb@gentoo.org> bin/ebuild.sh:
   Dropping all support for reloading env attributes from a .51 dump.
