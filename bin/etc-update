@@ -8,7 +8,7 @@
 # Leo Lipelis <aeoo@gentoo.org>
 # Karl Trygve Kalleberg <karltk@gentoo.org>
 #
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.1 2002/09/03 22:43:01 drobbins Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.2 2002/10/15 05:59:08 lostlogic Exp $
 
 function get_config() {
 	item=$1
@@ -285,7 +285,8 @@ rm -rf ${TMP} 2> /dev/null
 mkdir ${TMP} || die "failed mkdir command!" 1
 
 # I need the CONFIG_PROTECT value
-source /etc/make.globals
+CONFIG_PROTECT="$(python -c 'import portage;print portage.settings["CONFIG_PROTECT"]')"
+CONFIG_PROTECT_MASK="$(python -c 'import portage;print portage.settings["CONFIG_PROTECT_MASK"]')"
 
 # load etc-config's configuration
 rm_opts=`get_config rm_opts`
