@@ -2,7 +2,7 @@
 # ebuild.py; Ebuild classes/abstraction of phase processing, and communicating with a ebuild-daemon.sh instance
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.18 2005/03/08 15:52:28 ferringb Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.19 2005/03/08 20:25:48 ferringb Exp $
 
 
 import os,sys,traceback
@@ -628,7 +628,7 @@ class ebuild_handler:
 				mysettings["INHERITED"],mysettings["RESTRICT"] = db[root][tree].dbapi.aux_get(
 					mycpv,["INHERITED","RESTRICT"])
 
-				mysettings["RESTRICT"]=string.join(flatten(portage_dep.use_reduce(
+				mysettings["PORTAGE_RESTRICT"]=string.join(flatten(portage_dep.use_reduce(
 					portage_dep.paren_reduce(mysettings["RESTRICT"]), 
 					uselist=mysettings["USE"].split() )),' ')
 
