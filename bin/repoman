@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.100 2004/10/23 03:33:42 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.101 2004/10/23 04:39:38 jstubbs Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -522,9 +522,9 @@ elif repolevel==3:
 	scanlist.append(catdir+"/"+reposplit[-1])
 
 profiles={}
-badarchs=[]
 descfile=portdir+"/profiles/profiles.desc"
 if os.path.exists(descfile):
+	badarchs=[]
 	for x in portage.grabfile(descfile):
 		if x[0]=="#":
 			continue
@@ -547,18 +547,14 @@ if os.path.exists(descfile):
 		if x[0]=="~":
 			continue
 		if not profiles.has_key(x):
-			print yellow("\""+x+"\" doesn't exist in profiles.desc")
-			print yellow("You need to do \"cvs update\" in profiles dir.")
+			print yellow("\""+x+"\" doesn't have a valid profile listed in profiles.desc")
+			print yellow("You need to do \"cvs update\" in profiles dir or yell at people.")
 			print
 else:
 	print yellow("profiles.desc does not exist: "+descfile)
 	print yellow("You need to do \"cvs update\" in profiles dir.")
 	print
 
-for arch in badarchs:
-	if not profiles.has_key(arch):
-		print "No valid profile found for arch "+arch+"."
-		print
 
 stats={}
 fails={}
