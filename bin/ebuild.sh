@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.95 2003/01/14 19:58:28 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.96 2003/01/25 16:44:22 carpaski Exp $
 
 cd ${PORT_TMPDIR}
 
@@ -228,7 +228,7 @@ keepdir()
 	local x
 	for x in $*
 	do
-		touch ${D}/${x}/.keep
+		[ ! -e ${D}/${x}/.keep -o -w ${D}/${x}/.keep ] && touch ${D}/${x}/.keep
 	done
 }
 
