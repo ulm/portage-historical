@@ -1,7 +1,7 @@
 # portage: Lock management code
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.11 2004/10/11 04:12:02 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.12 2004/10/17 05:06:16 ferringb Exp $
 
 import atexit
 import errno
@@ -84,12 +84,12 @@ def lockfile(mypath,wantnewlockfile=0,unlinkfile=0):
 
 	# try for a non-blocking lock, if it's held, throw a message
 	# we're waiting on lockfile and use a blocking attempt.
-	for locking_method in (fcntl.flock, fcntl.lockf):
+	link_success = False
+	locking_method = None
+	for lock in (fcntl.flock, fcntl.lockf):
 		try:
-			link_success = False
-			locking_method(myfd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+			lock(myfd,fcntl.LOCK_EX|fcntl.LOCK_NB)
 			link_success = True
-			break
 		except IOError, e:
 			if "errno" not in dir(e):
 				raise e
@@ -100,13 +100,15 @@ def lockfile(mypath,wantnewlockfile=0,unlinkfile=0):
 				else:
 					print "waiting for lock on %s" % lockfilename
 				# try for the exclusive lock now.
-				locking_method(myfd,fcntl.LOCK_EX)
+				lock(myfd,fcntl.LOCK_EX)
 				link_success = True
-				break
 			elif e.errno in (errno.ENOLCK, errno.EINVALID):
-				pass
+				continue
 			else:
 				raise e
+		if link_success:
+			locking_method = lock
+
 	
 	if not link_success:
 		# this sucks, badly.
@@ -124,21 +126,23 @@ def lockfile(mypath,wantnewlockfile=0,unlinkfile=0):
 				link_success = hardlink_lockfile(lockfilename)
 		if not link_success:
 			raise
+		#not much for this.
+		locking_method = None
 		myfd = HARDLINK_FD
 
 	if type(lockfilename) == types.StringType and not os.path.exists(lockfilename):
 		# The file was deleted on us... Keep trying to make one...
 		os.close(myfd)
 		portage_util.writemsg("lockfile recurse\n",1)
-		lockfilename,myfd,unlinkfile = lockfile(mypath,wantnewlockfile,unlinkfile)
+		lockfilename,myfd,unlinkfile,locking_method = lockfile(mypath,wantnewlockfile,unlinkfile)
 
 	portage_util.writemsg(str((lockfilename,myfd,unlinkfile))+"\n",1)
-	return (lockfilename,myfd,unlinkfile)
+	return (lockfilename,myfd,unlinkfile,locking_method)
 
 def unlockfile(mytuple):
 	import fcntl
 
-	lockfilename,myfd,unlinkfile = mytuple
+	lockfilename,myfd,unlinkfile,locking_method = mytuple
 
 	if(myfd == HARDLINK_FD):
 		unhardlink_lockfile(lockfilename)
@@ -154,7 +158,7 @@ def unlockfile(mytuple):
 		if myfd == None:
 			myfd = os.open(lockfilename, os.O_WRONLY,0660)
 			unlinkfile = 1
-		fcntl.lockf(myfd,fcntl.LOCK_UN)
+		locking_method(myfd,fcntl.LOCK_UN)
 	except SystemExit, e:
 		raise
 	except Exception, e:
@@ -174,7 +178,7 @@ def unlockfile(mytuple):
 			#portage_util.writemsg("Unlinking...\n")
 			os.unlink(lockfilename)
 			portage_util.writemsg("Unlinked lockfile...\n",1)
-		fcntl.lockf(myfd,fcntl.LOCK_UN)
+		locking_method(myfd,fcntl.LOCK_UN)
 	except SystemExit, e:
 		raise
 	except Exception, e:
