@@ -1,6 +1,10 @@
 # ChangeLog for Path Sandbox
 # Copyright 2002 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/ChangeLog,v 1.13 2003/02/22 15:59:15 azarah Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/ChangeLog,v 1.14 2003/02/23 13:13:36 azarah Exp $
+
+  23 Feb 2003; Martin Schlemmer <azarah@gentoo.org> create-localdecls :
+
+  Add glibc-2.3 support.
 
   22 Feb 2003; Martin Schlemmer <azarah@gentoo.org> sandbox.c :
 
