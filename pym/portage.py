@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.350 2003/12/07 05:08:06 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.351 2003/12/10 03:04:21 nakano Exp $
 
 VERSION="2.0.49-r17"
 
@@ -2602,8 +2602,12 @@ def dep_opconvert(mysplit,myuse,mysettings):
 			if (len(myuse)==1) and (myuse[0]=="*") and mysettings:
 				# enable it even if it's ! (for repoman) but kill it if it's
 				# an arch variable that isn't for this arch. XXX Sparc64?
-				if (mysplit[mypos][:-1] not in mysettings.usemask) or \
-						(mysplit[mypos][:-1]==mysettings["ARCH"]):
+				k=mysplit[mypos][:-1]
+				if k[0]=="!":
+					k=k[1:]
+				if (k not in archlist and k not in mysettings.usemask) or \
+							 (k in archlist and k==mysettings["ARCH"] and \
+								mysplit[mypos][0]!="!"):
 					enabled=1
 				else:
 					enabled=0
