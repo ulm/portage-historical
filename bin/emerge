@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.376 2005/03/09 09:06:13 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.377 2005/03/09 09:17:05 ferringb Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -584,7 +584,7 @@ elif "--help" in myopts:
 	help()
 	sys.exit(0)
 elif portage.secpass!=2:
-	if myaction in ["search", "info", "regen"]:
+	if myaction in ["search", "info", "regen", "metadata"]:
 		pass
 	elif (not myaction) and (not myfiles):
 		pass
@@ -3124,7 +3124,7 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 		try:
 			os.umask(002)
 			os.chown(cachedir, os.getuid(), portage.portage_gid)
-			os.chmod(cachedir, 02775)
+			os.chmod(cachedir, 00775)
 		except SystemExit, e:
 			raise # Needed else can't exit
 		except:
