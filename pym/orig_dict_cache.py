@@ -2,7 +2,7 @@
 # orig_dict_cache.py; older listdir caching implementation
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/orig_dict_cache.py,v 1.4 2004/11/07 14:38:39 ferringb Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/orig_dict_cache.py,v 1.5 2004/11/08 18:23:33 ferringb Exp $
 
 """per process caching of os.listdir returns.
 Symlink unaware, so beware of webs of symlinks"""
@@ -15,7 +15,7 @@ cacheHit = 0
 cacheMiss = 0
 cacheStale = 0
 
-def cacheddir(my_original_path, ignorecvs, ignorelist, EmptyOnError, followSymlinks=True):
+def cacheddir(my_original_path, EmptyOnError, followSymlinks=True):
 	"""return results from cache, updating cache if its stale/incomplete"""
 	global cacheHit, cacheMiss, cacheStale, dircache
 	mypath=portage_file.normpath(my_original_path)
@@ -64,14 +64,7 @@ def cacheddir(my_original_path, ignorecvs, ignorelist, EmptyOnError, followSymli
 				ftype.append(3)
 		dircache[mypath] = mtime, list, ftype
 	
-	ret_list, ret_ftype = [], []
-	for x in range(0, len(list)):
-		if(ignorecvs and (len(list[x]) > 2) and (list[x][:2]!=".#")):
-			ret_list.append(list[x])
-			ret_ftype.append(ftype[x])
-		elif (list[x] not in ignorelist):
-			ret_list.append(list[x])
-			ret_ftype.append(ftype[x])
+	return list[:],ftype[:]
 
 	portage_util.writemsg("cacheddirStats: H:%d/M:%d/S:%d\n" % (cacheHit, cacheMiss, cacheStale),10)
 	return ret_list, ret_ftype

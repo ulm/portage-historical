@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.545 2004/11/08 09:19:36 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.546 2004/11/08 18:23:33 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -199,12 +199,22 @@ def prefix_array(array,prefix,doblanks=1):
 def listdir(mypath, recursive=False, filesonly=False, ignorecvs=False, ignorelist=[], EmptyOnError=False, 
 	followSymlinks=True):
 
-	list, ftype = cacheddir(mypath, ignorecvs, ignorelist, EmptyOnError,followSymlinks=followSymlinks)
+	list, ftype = cacheddir(mypath, EmptyOnError,followSymlinks=followSymlinks)
 
 	if list is None:
 		list=[]
 	if ftype is None:
 		ftype=[]
+
+	if ignorecvs or len(ignorelist):
+		for x in range(0,len(list)):
+			#we're working with first level entries, no os.path.basename requirement
+			if (ignorecvs and (list[x] in ('CVS','.svn') or list[x].startswith(".#"))) and not \
+				b in ignorelist:
+				list.pop(x)
+				ftype.pop(x)
+				continue
+			x += 1
 
 	if not filesonly and not recursive:
 		return list
@@ -212,9 +222,10 @@ def listdir(mypath, recursive=False, filesonly=False, ignorecvs=False, ignorelis
 	if recursive:
 		x=0
 		while x<len(ftype):
-			if ftype[x]==1 and not (ignorecvs and os.path.basename(list[x]) in ('CVS','.svn')):
-				l,f = cacheddir(mypath+"/"+list[x], ignorecvs, ignorelist, EmptyOnError,
-					followSymlinks=followSymlinks)
+			b=os.path.basename(list[x])
+			if ftype[x]==1 and not (ignorecvs and (b in ('CVS','.svn') or b.startswith(".#"))) and not \
+				(b in ignorelist):
+				l,f = cacheddir(mypath+"/"+list[x],EmptyOnError,followSymlinks=followSymlinks)
 								  
 				l=l[:]
 				for y in range(0,len(l)):
