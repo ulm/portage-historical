@@ -2,7 +2,7 @@
 # ebuild-default-functions.sh; default functions for ebuild env that aren't saved- specific to the portage instance.
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.4 2004/11/07 19:28:33 ferringb Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.5 2004/11/10 11:23:35 ferringb Exp $
 
 has_version() {
 	# if there is a predefined portageq call, use it.
@@ -719,6 +719,7 @@ debug-print-section() {
 declare -ix ECLASS_DEPTH=0
 inherit() {
 	local SAVED_INHERIT_COUNT=0 INHERITED_ALREADY=0
+
 	if [[ $ECLASS_DEPTH < 0 ]] && [ "${EBUILD_PHASE}" == "depend" ]; then
 		echo "QA Notice: ${CATEGORY}/${PF} makes multiple inherit calls: $1" >&2
 		SAVED_INHERIT_COUNT=$ECLASS_DEPTH
@@ -733,7 +734,7 @@ inherit() {
 		debug-print "*** Multiple Inheritence (Level: ${ECLASS_DEPTH})"
 	fi
 
-	local location
+	local location olocation
 	local PECLASS
 
 	local B_IUSE
