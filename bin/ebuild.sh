@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.9 2005/01/02 08:05:35 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.10 2005/01/02 09:08:11 jstubbs Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -1073,6 +1073,23 @@ dyn_preinst() {
 					|| IMAGE=${D}
 
 	pkg_preinst
+
+	# hopefully this will someday allow us to get rid of the no* feature flags
+	# we don't want globbing for initial expansion, but afterwards, we do
+	local shopts=$-
+	set -o noglob
+	for no_inst in `echo "${INSTALL_MASK}"` ; do
+		set +o noglob
+		einfo "Removing ${no_inst}"
+		# normal stuff
+		rm -Rf ${IMAGE}/${no_inst} >&/dev/null
+
+		# we also need to handle globs (*.a, *.h, etc)
+		find "${IMAGE}" -name ${no_inst} -exec rm -fR {} \; >&/dev/null
+	done
+	# set everything back the way we found it
+	set +o noglob
+	set -${shopts}
 
 	# remove man pages
 	if hasq noman $FEATURES; then

@@ -1,6 +1,6 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.11.2.2 2004/12/03 04:15:29 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.11.2.3 2005/01/02 09:08:11 jstubbs Exp $
 
 import sys,string,shlex,os.path
 
@@ -222,7 +222,7 @@ def writedict(mydict,myfilename,writekey=1):
 	myfile.close()
 	return 1
 
-def getconfig(mycfg,tolerant=0):
+def getconfig(mycfg,tolerant=0,allow_sourcing=False):
 	mykeys={}
 	try:
 		f=open(mycfg,'r')
@@ -232,6 +232,8 @@ def getconfig(mycfg,tolerant=0):
 		lex=shlex.shlex(f)
 		lex.wordchars=string.digits+string.letters+"~!@#$%*_\:;?,./-+{}"     
 		lex.quotes="\"'"
+		if allow_sourcing:
+			lex.source="source"
 		while 1:
 			key=lex.get_token()
 			if (key==''):

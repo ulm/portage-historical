@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.18 2004/12/23 02:27:03 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.19 2005/01/02 09:08:11 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1008,7 +1008,7 @@ class config:
 
 			try:
 				# XXX: Should depend on root?
-				self.mygcfg=getconfig("/"+MAKE_CONF_FILE)
+				self.mygcfg=getconfig("/"+MAKE_CONF_FILE,allow_sourcing=True)
 				if self.mygcfg == None:
 					self.mygcfg = {}
 			except SystemExit, e:
