@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.140 2003/08/21 01:01:26 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.141 2003/09/02 17:31:40 carpaski Exp $
 
 if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 	if [ -f ${T}/successful ]; then
@@ -780,8 +780,6 @@ dyn_install() {
 	fi
 
 	# Smart FileSystem Permissions
- OIFS="${IFS}"
- export IFS="$(echo)"
 	if has sfperms $FEATURES; then
 		for i in $(find ${D}/ -type f -perm -4000); do
 			ebegin ">>> SetUID: [chmod go-r] $i "
@@ -794,17 +792,16 @@ dyn_install() {
 			eend $?
 		done
 	fi
- IFS="${OIFS}"
 	
 	find ${D}/ -user  portage -print0 | $XARGS -0 -n100 chown root
 	if [ "$USERLAND" == "BSD" ]; then
 		find ${D}/ -group portage -print0 | $XARGS -0 -n100 chgrp wheel
-	else	
-		find ${D}/ -group portage -print0 | $XARGS -0 -n100 chgrp root 
+	else
+		find ${D}/ -group portage -print0 | $XARGS -0 -n100 chgrp root
 	fi
 
 	if use selinux; then
-		if [ -x /usr3/sbin/setfiles ]; then
+		if [ -x /usr/sbin/setfiles ]; then
 			if [ -e ${POLICYDIR}/file_contexts/file_contexts ]; then
 				setfiles -r ${D} ${POLICYDIR}/file_contexts/file_contexts ${D}
 			fi
