@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.193 2004/08/26 09:16:14 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.194 2004/09/05 09:23:17 ferringb Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -1520,8 +1520,11 @@ if hasq "depend" "$@"; then
 	done
 	unset src bin_path body
 fi
-
 source ${EBUILD} || die "error sourcing ebuild"
+if ! hasq depend $EBUILD_PHASE; then
+	RESTRICT="${PORTAGE_RESTRICT}"
+	unset PORTAGE_RESTRICT
+fi
 [ -z "${ERRORMSG}" ] || die "${ERRORMSG}"
 
 # Expand KEYWORDS
