@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.658 2004/08/03 16:28:44 ferringb Exp $
+# $Id: ChangeLog,v 1.659 2004/08/03 16:31:23 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -93,7 +93,7 @@
   (this is needed since sudo emerge blar can bail, leaving a stale lock that 
   non-root usage cannot remove).  Added locking to emerge's emergelog function, 
   preventing log messages from potentially getting mixed together.  Added check 
-  to fetch function to complain if unable to write to DESTDIR (previously the 
+  to fetch function to complain if unable to write to DISTDIR (previously the 
   fetcher just bailed, stepping through each src_uri).  Added lockfiles for 
   fetching/md5ing of the src- these lockfiles are stored in a subdirectory 
   (locks_in_subdir=".locks") if specified, and locking is controlled via 
