@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.166 2002/12/13 15:52:26 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.167 2002/12/15 14:19:21 carpaski Exp $
 
 import os,sys,portage,xpak,string,re,commands,time,threading,shutil,traceback
 from stat import *
@@ -1006,13 +1006,14 @@ class depgraph:
 					print "["+x[0]+" "+addl+"]",x[2],myoldbest
 
 			mysplit=portage.pkgsplit(x[2])
-			if not "--emptytree" in myopts:
+			# XXX mysplit _can_ be None.... Why?
+			if mysplit and "--emptytree" not in myopts:
 				if mysplit[0]=="sys-apps/portage":
 					if mysplit[1]+"-"+mysplit[2]!=portage.VERSION:
 						if mylist.index(x)<len(mylist)-1:
 							print red("*** Portage will stop merging at this point and reload itself,")
 							print red("    recalculate dependancies, and complete the merge.")
-							if not "--update" in myopts:
+							if "--update" not in myopts:
 								print darkgreen("    You may avoid the remerging of packages by updating portage on its own.")
 							print
 			else:
