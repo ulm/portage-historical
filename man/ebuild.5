@@ -41,7 +41,7 @@ src_install() {
 	doinfo doc/sed.info
 	doman doc/sed.1
 	into /
-	dobin sed/sed
+	dobin sed/sed || die "dobin sed failed"
 	dodir /usr/bin
 	dosym /bin/sed /usr/bin/sed
 	dodoc NEWS README* THANKS TODO AUTHORS BUGS ANNOUNCE
@@ -108,9 +108,10 @@ Contains the path to a \fItemporary directory\fR.  You may use this for
 whatever you like.
 .TP
 \fBD\fR = \fI"${PORTAGE_TMPDIR}/portage/${PF}/image"\fR
-Contains the path to the temporary \fIinstall directory\fR.  Every write
-operation that does not involve the helper tools and functions (found
-below) should be prefixed with ${D}.  Do not modify this variable.
+Contains the path to the temporary \fIinstall directory\fR.  Every write 
+operation that does not involve the helper tools and functions (found below) 
+should be prefixed with ${D}.  Do not modify this variable.  This will not be 
+available inside of the pkg_* functions.
 .TP
 \fBDESCRIPTION\fR = \fI"A happy little package"\fR
 Should contain a short description of the package.
@@ -821,4 +822,4 @@ Nicholas Jones <carpaski@gentoo.org>
 Mike Frysinger <vapier@gentoo.org>
 .fi
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.5,v 1.73.2.3 2005/01/15 02:00:46 vapier Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.5,v 1.73.2.4 2005/01/19 02:18:14 vapier Exp $
