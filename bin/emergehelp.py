@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.23 2004/03/01 14:51:24 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.24 2004/05/17 04:21:21 carpaski Exp $
 
 import os,sys
 from output import *
@@ -211,7 +211,7 @@ def help(myaction,myopts,havecolor=1):
 		print
 		print "       "+green("--oneshot")
 		print "              Emerge as normal, but don't add packages to the world profile."
-		print "              This package is will only be updated if it is depend on by"
+		print "              This package will only be updated if it is depended upon by"
 		print "              another package."
 		print
 		print "       "+green("--onlydeps")+" ("+green("-o")+" short option)"

@@ -1,4 +1,4 @@
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_cpickle.py,v 1.4 2004/04/14 01:47:36 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_cpickle.py,v 1.5 2004/05/17 04:21:21 carpaski Exp $
 
 import anydbm,cPickle,types
 from os import chown,access,R_OK,unlink
@@ -7,13 +7,7 @@ import os
 import portage_db_template
 
 class database(portage_db_template.database):
-	def __init__(self,path,category,dbkeys,uid,gid):
-		self.path     = path
-		self.category = category
-		self.dbkeys   = dbkeys
-		self.uid      = uid
-		self.gid      = gid
-		
+	def module_init(self):
 		self.modified = False
 		
 		prevmask=os.umask(0)

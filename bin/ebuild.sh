@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.165 2004/04/30 21:07:50 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.166 2004/05/17 04:21:21 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -23,7 +23,7 @@ if [ "$*" != "depend" ] && [ "$*" != "clean" ] && [ "$*" != "nofetch" ]; then
 			touch "${PORT_LOGDIR}/${LOG_COUNTER}-${PF}.log" &> /dev/null
 			chmod g+w "${PORT_LOGDIR}/${LOG_COUNTER}-${PF}.log" &> /dev/null
 			echo "$*" >> "${PORT_LOGDIR}/${LOG_COUNTER}-${PF}.log"
-			{ $0 $* || rm -f "${T}/successful" ; } 2>&1 \
+			{ $0 "$@" || rm -f "${T}/successful" ; } 2>&1 \
 			  | tee -i -a "${PORT_LOGDIR}/${LOG_COUNTER}-${PF}.log"
 			if [ -f "${T}/successful" ]; then
 				rm -f "${T}/successful"
@@ -66,9 +66,6 @@ fi
 
 export PATH="/sbin:/usr/sbin:/usr/lib/portage/bin:/bin:/usr/bin:${ROOTPATH}"
 [ ! -z "$PREROOTPATH" ] && export PATH="${PREROOTPATH%%:}:$PATH"
-
-# Grab our new utility functions.
-source /usr/lib/portage/bin/extra_functions.sh
 
 if [ -e /etc/init.d/functions.sh ]; then
 	source /etc/init.d/functions.sh  &>/dev/null
@@ -469,6 +466,8 @@ src_unpack() {
 src_compile() { 
 	if [ -x ./configure ]; then
 		econf 
+	fi
+	if [ -f Makefile ] || [ -f GNUmakefile ] || [ -f makefile ]; then
 		emake || die "emake failed"
 	fi
 }
