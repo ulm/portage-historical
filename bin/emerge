@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.279 2004/04/14 01:47:36 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.280 2004/04/25 09:03:22 carpaski Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2294,7 +2294,7 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 	if os.path.exists(myportdir+"/metadata/cache") and updatecache_flg:
 		print "\n>>> Updating Portage cache...  ",
 		os.umask(0002)
-		cachedir = os.path.normpath(portage.settings["PORTAGE_CACHEDIR"])
+		cachedir = os.path.normpath(portage.settings.depcachedir)
 		if cachedir in ["/",    "/bin", "/dev",  "/etc",  "/home",
 		                "/lib", "/opt", "/proc", "/root", "/sbin",
 		                "/sys", "/tmp", "/usr",  "/var"]:
