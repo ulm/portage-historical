@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.15 2005/01/11 03:40:57 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.16 2005/01/11 22:04:56 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -430,7 +430,14 @@ econf() {
 			fi
 			export CONF_PREFIX
 			[ "${CONF_LIBDIR:0:1}" != "/" ] && CONF_LIBDIR="/${CONF_LIBDIR}"
-			EXTRA_ECONF="--libdir=${CONF_PREFIX}${CONF_LIBDIR} ${EXTRA_ECONF}"
+
+			CONF_LIBDIR_RESULT="${CONF_PREFIX}${CONF_LIBDIR}"
+			for X in 1 2 3; do
+				# The escaping is weird. It will break if you escape the last one.
+				CONF_LIBDIR_RESULT="${CONF_LIBDIR_RESULT//\/\///}"
+			done
+
+			EXTRA_ECONF="--libdir=${CONF_LIBDIR_RESULT} ${EXTRA_ECONF}"
 		fi
 		
 		echo "${ECONF_SOURCE}/configure" \
@@ -475,8 +482,15 @@ einstall() {
 	fi
 	unset LIBDIR_VAR
 	if [ -n "${CONF_LIBDIR}" ] && [ "${CONF_PREFIX:-unset}" != "unset" ]; then
-		EXTRA_EINSTALL="libdir=${D}/${CONF_PREFIX}/${CONF_LIBDIR} ${EXTRA_EINSTALL}"
+		EXTRA_EINSTALL_LIBDIR="libdir=${D}/${CONF_PREFIX}/${CONF_LIBDIR}"
+		for X in 1 2 3; do
+			# The escaping is weird. It will break if you escape the last one.
+			EXTRA_EINSTALL_LIBDIR="${EXTRA_EINSTALL_LIBDIR//\/\///}"
+		done
+
+		EXTRA_EINSTALL="${EXTRA_EINSTALL_LIBDIR} ${EXTRA_EINSTALL}"
 	fi
+
 	if [ -f ./[mM]akefile -o -f ./GNUmakefile ] ; then
 		if [ ! -z "${PORTAGE_DEBUG}" ]; then
 			make -n prefix=${D}/usr \

@@ -1,13 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.44 2005/01/11 03:40:57 carpaski Exp $
+# $Id: ChangeLog,v 1.796.2.45 2005/01/11 22:04:55 carpaski Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
 
-*portage-2.0.51-r10 (10 Jan 2004): Cleanup
+*portage-2.0.51-r10 (11 Jan 2004): Cleanup
+
+  11 Jan 2004; Nicholas Jones <carpaski@gentoo.org> ebuild.sh: Fixes for the
+  libdir patch -- libtool can't handle "usr//lib".
 
   10 Jan 2004; Nicholas Jones <carpaski@gentoo.org> portage.py: Made maketest
   enable 'test' in features. Marked a couple more negative flags for restrict.
