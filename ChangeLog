@@ -1,11 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.864 2004/11/10 14:17:43 ferringb Exp $
+# $Id: ChangeLog,v 1.865 2004/11/10 14:54:02 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  10 Nov 2004; Brian Harring <ferringb@gentoo.org> bin/ebuild.sh:
+  Added kludge to filtering for env reloading to match the export kludge
+  added to 2.0.51.  This code must stay in as long as .51 env's 
+  *potentially* exist on a users system.
 
   10 Nov 2004; Brian Harring <ferringb@gentoo.org> bin/ebuild-daemon.sh:
   Made it much more noisy when a violation is hit.
