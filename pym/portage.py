@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.362 2003/12/25 03:06:09 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.363 2003/12/29 09:04:31 nakano Exp $
 
 VERSION="2.0.50_pre8"
 
@@ -2914,10 +2914,16 @@ def cpv_expand(mycpv,mydb=None):
 			# "foo" ?
 			myp=mycpv
 		mykey=None
+		matches=[]
 		if mydb:
 			for x in categories:
 				if mydb.cp_list(x+"/"+myp):
-					mykey=x+"/"+myp
+					matches.append(x+"/"+myp)
+		if (len(matches)>1):
+			raise ValueError, matches
+		elif matches:
+			mykey=matches[0]
+
 		if not mykey and type(mydb)!=types.ListType:
 			if virts_p.has_key(myp):
 				mykey=virts_p[myp]

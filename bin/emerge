@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.242 2003/12/25 03:06:09 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.243 2003/12/29 09:04:31 nakano Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -837,7 +837,16 @@ class depgraph:
 				elif not "--oneshot" in myopts:
 					myfavorites.append(mykey)
 			else:
-				mykey=portage.dep_expand(x,portage.portdb)
+				try: 
+					mykey=portage.dep_expand(x,portage.portdb)
+				except ValueError, errpkgs:
+					print "\n\n!!! The short ebuild name \"" + x + "\" is ambiguous.  Please specify"
+					print "!!! one of the following fully-qualified ebuild names instead:\n"
+					for i in errpkgs[0]:
+						print "    " + green(i)
+					print
+					sys.exit(1)
+
 				# select needs to return 0 on dep_check failure
 
 				if "--debug" in myopts:
