@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.64 2004/06/26 02:46:07 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.65 2004/06/26 17:25:35 genone Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -1146,7 +1146,6 @@ else:
 
 	# Setup the GPG commands
 	def gpgsign(filename):
-		print "in signing function"
 		gpgcmd = "gpg --sign --clearsign --yes "
 		gpgcmd+= "--default-key "+repoman_settings["PORTAGE_GPG_KEY"]
 		if repoman_settings.has_key("PORTAGE_GPG_DIR"):
