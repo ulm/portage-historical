@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.42 2005/02/22 02:39:55 ferringb Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.42 2005/02/22 02:39:55 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.43 2005/02/26 11:22:38 carpaski Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.43 2005/02/26 11:22:38 carpaski Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.42 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.43 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -6765,7 +6765,7 @@ class dblink:
 					# old package won't yank the file with it. (non-cfgprot related)
 					os.utime(myrealdest,(thismtime,thismtime))
 					zing="---"
-				if self.settings["ARCH"] == "ppc-macos" and myrealdest[-2:] == ".a":
+				if self.settings["USERLAND"] == "Darwin" and myrealdest[-2:] == ".a":
 
 					# XXX kludge, bug #58848; can be killed when portage stops relying on 
 					# md5+mtime, and uses refcounts

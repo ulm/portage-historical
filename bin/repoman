@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.12 2005/02/05 14:31:25 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.13 2005/02/26 11:22:38 carpaski Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -347,7 +347,7 @@ if os.path.isdir("CVS"):
 		print "rm -Rf [a-z]*"
 		print "cvs up"
 		print
-		if portage.userland=="BSD":
+		if portage.userland=="BSD" or portage.userland=="Darwin":
 			print "find ./ -type f -regex '.*/CVS/Root$' -print0 | xargs -0 sed \\"
 		else:
 			print "find ./ -type f -regex '.*/CVS/Root$' -print0 | xargs -0r sed \\"

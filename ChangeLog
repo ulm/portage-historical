@@ -1,11 +1,24 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.72 2005/02/22 02:39:56 ferringb Exp $
+# $Id: ChangeLog,v 1.796.2.73 2005/02/26 11:22:37 carpaski Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+*portage-2.0.51.17 (26 Feb 2004): Maintainence Release + BSD chflags
+
+  26 Feb 2005; Nicholas Jones <carpaski@gentoo.org> *: Darwin userland patch
+  from Kito (bug 82312). Adjusted a couple bits like the file was installed
+  with message and etc-update's USERLAND check per Jason suggestion.
+
+  26 Feb 2005; Nicholas Jones <carpaski@gentoo.org> portage_data.py: Added
+  the 'gnu' suffix check for the BSD/GNU people. (bug 80018)
+
+  26 Feb 2005; Nicholas Jones <carpaski@gentoo.org> pym/xpak.py: Added in a
+  method to get both the data and index segments for use with the other memory
+  based functions.
 
   21 Feb 2005; Brian Harring <ferringb@gentoo.org> pym/portage.py: So yeah.
   Don't fool with the eclass_cache.porttree ordering unless you understand that

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.23 2005/02/06 02:48:43 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.24 2005/02/26 11:22:37 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -690,6 +690,10 @@ dyn_clean() {
 		chflags -R noschg,nouchg,nosappnd,nouappnd,nosunlnk,nouunlnk \
 			"${BUILDDIR}"
 	fi
+	
+	if [ "$USERLAND" == "Darwin" ] && type -p chflags &>/dev/null; then
+		chflags -R noschg,nouchg,nosappnd,nouappnd "${BUILDDIR}"
+	fi
 
 	rm -rf "${BUILDDIR}/image"
 
@@ -1063,7 +1067,7 @@ dyn_install() {
 				python -c "import os,stat; print '%o' % os.stat('$1')[stat.ST_MODE]"
 			}
 		else
-			if [ "${USERLAND}" == "BSD" ]; then
+			if [ "${USERLAND}" == "BSD" ] || [ "${USERLAND}" == "Darwin" ]; then
 				do_stat() {
 					# BSD version -- Octal result
 					$(type -p stat) -f '%p' "$1"
@@ -1083,20 +1087,31 @@ dyn_install() {
 	}
 
 	local file s
+	local count=0
 	find "${D}/" -user  portage | while read file; do
-		ewarn "file $file was installed with user portage!"
+		count=$(( $count + 1 ))
 		s=$(stat_perms $file)
 		chown root "$file"
 		chmod "$s" "$file"
 	done
+	if (( $count > 0 )); then
+		ewarn "$count files were installed with user portage!"
+	fi
 
+	count=0
 	find "${D}/" -group portage | while read file; do
-		ewarn "file $file was installed with group portage!"
+		count=$(( $count + 1 ))
 		s=$(stat_perms "$file")
-		[ "$USERLAND" == "BSD" ] && chgrp wheel "$file"
-		[ "$USERLAND" != "BSD" ] && chgrp root "$file"
+		if [ "$USERLAND" == "BSD" ] || [ "$USERLAND" == "Darwin" ];then
+			chgrp wheel "$file"
+		else
+			chgrp root "$file"
+		fi
 		chmod "$s" "$file"
 	done
+	if (( $count > 0 )); then
+		ewarn "$count files were installed with group portage!"
+	fi
 
 	unset -f stat_perms
 

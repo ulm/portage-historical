@@ -1,8 +1,8 @@
 # portage_data.py -- Calculated/Discovered Data Values
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_data.py,v 1.5.2.1 2005/01/16 02:35:33 carpaski Exp $
-cvs_id_string="$Id: portage_data.py,v 1.5.2.1 2005/01/16 02:35:33 carpaski Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_data.py,v 1.5.2.2 2005/02/26 11:22:38 carpaski Exp $
+cvs_id_string="$Id: portage_data.py,v 1.5.2.2 2005/02/26 11:22:38 carpaski Exp $"[5:-2]
 
 import os,pwd,grp
 from portage_util import writemsg
@@ -11,14 +11,16 @@ from output import green,red
 ostype=os.uname()[0]
 
 lchown = None
-if ostype=="Linux":
+if ostype=="Linux" or ostype.lower().endswith("gnu"):
 	userland="GNU"
 	os.environ["XARGS"]="xargs -r"
-elif ostype in ["Darwin","FreeBSD","OpenBSD"]:
-	if ostype == "Darwin":
-		lchown=os.chown
-	userland="BSD"
+elif ostype == "Darwin":
+	userland="Darwin"
 	os.environ["XARGS"]="xargs"	
+	lchown=os.chown
+elif ostype in ["FreeBSD","OpenBSD"]:
+	userland="BSD"
+	os.environ["XARGS"]="xargs"
 else:
 	writemsg(red("Operating system")+" \""+ostype+"\" "+red("currently unsupported. Exiting.")+"\n")
 	sys.exit(1)
