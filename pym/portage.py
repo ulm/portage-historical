@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.363 2003/12/29 09:04:31 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.364 2003/12/29 17:18:55 nakano Exp $
 
 VERSION="2.0.50_pre8"
 
@@ -2719,7 +2719,7 @@ def dep_eval(deplist):
 def dep_zapdeps(unreduced,reduced):
 	"""Takes an unreduced and reduced deplist and removes satisfied dependencies.
 	Returned deplist contains steps that must be taken to satisfy dependencies."""
-	if unreduced==[]:
+	if unreduced==[] or unreduced==['||'] :
 		return None
 	if unreduced[0]=="||":
 		if dep_eval(reduced):
