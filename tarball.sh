@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.178 2004/01/12 21:11:46 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.179 2004/09/26 01:40:55 carpaski Exp $
 
 if [ -z "$1" ]; then
 	echo
@@ -54,3 +54,4 @@ rm -f ${PKG}-${V}/bin/emerge.py ${PKG}-${V}/bin/{pmake,sandbox} ${PKG}-${V}/{bin
 tar cjvf ${TMP}/${PKG}-${V}.tar.bz2 ${PKG}-${V}
 
 scp ${TMP}/${PKG}-${V}.tar.bz2 carpaski@twobit.net:/home/html/gentoo/portage/
+scp ${TMP}/${PKG}-${V}.tar.bz2 carpaski@zarquon.twobit.net:/home/www/localhost/htdocs/gentoo/portage/
