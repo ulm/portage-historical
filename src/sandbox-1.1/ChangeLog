@@ -1,6 +1,10 @@
 # ChangeLog for Path Sandbox
 # Copyright 2002 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/ChangeLog,v 1.20 2003/07/27 15:05:49 azarah Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/ChangeLog,v 1.21 2003/09/27 16:46:43 azarah Exp $
+
+  27 Sep 2003; Martin Schlemmer <azarah@gentoo.org> libsandbox.c :
+  Fix our mkdir wrapper to check if the dir exist, and return EEXIST if so,
+  rather than failing with a violation, bug #29748.
 
   27 Jul 2003; Martin Schlemmer <azarah@gentoo.org> libsandbox.c :
   Fix canonicalize() to ignore calls with path = "".
