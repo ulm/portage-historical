@@ -1,11 +1,17 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.40 2005/01/04 04:40:30 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.41 2005/01/04 09:34:40 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  04 Dec 2005; Jason Stubbs <jstubbs@gentoo.org> ebuild.sh: Added removal of
+  the .packaged and .tested files to the clean stage. Adjusted cleaning of the
+  temp dir to include the directory as well, rather than only the files
+  therein. Added a check and appropriate removal of the entire scratch dir if
+  it is empty at the end of the clean phase.
 
   04 Dec 2005; Jason Stubbs <jstubbs@gentoo.org> portage.py: Turned the
   primaryuri global counter into separate counters per file, so that urls

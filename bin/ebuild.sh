@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.11 2005/01/02 09:36:02 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.12 2005/01/04 09:34:40 jstubbs Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -666,15 +666,17 @@ dyn_clean() {
 	rm -rf "${BUILDDIR}/image"
 
 	if ! hasq keeptemp $FEATURES; then
-		rm -rf "${T}"/*
+		rm -rf "${T}"
 	else
 		mv "${T}/environment" "${T}/environment.keeptemp"
 	fi
 
 	if ! hasq keepwork $FEATURES; then
-		rm -rf "${BUILDDIR}/.compiled"
 		rm -rf "${BUILDDIR}/.unpacked"
+		rm -rf "${BUILDDIR}/.compiled"
+		rm -rf "${BUILDDIR}/.tested"
 		rm -rf "${BUILDDIR}/.installed"
+		rm -rf "${BUILDDIR}/.packaged"
 		rm -rf "${BUILDDIR}/build-info"
 		rm -rf "${WORKDIR}"
 	fi
@@ -683,6 +685,10 @@ dyn_clean() {
 		find "${BUILDDIR}" -type d ! -regex "^${WORKDIR}" | sort -r | tr "\n" "\0" | $XARGS -0 rmdir &>/dev/null
 	fi
 	true
+
+	if [ -z "$(find "${BUILDDIR}" -mindepth 1 -maxdepth 1)" ]; then
+		rmdir "${BUILDDIR}"
+	fi
 }
 
 into() {
