@@ -18,7 +18,7 @@
    02111-1307 USA.  */
 
 /*
- * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/canonicalize.c,v 1.5 2003/07/27 14:31:50 azarah Exp $
+ * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/canonicalize.c,v 1.5.2.1 2004/10/22 16:53:30 carpaski Exp $
  */
 
 #include <stdlib.h>

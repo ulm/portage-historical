@@ -26,7 +26,7 @@
  */
 
 /*
- * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/getcwd.c,v 1.1 2003/07/27 12:31:06 azarah Exp $
+ * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/getcwd.c,v 1.1.2.1 2004/10/22 16:53:30 carpaski Exp $
  */
 
 /* Modified: 26 July 2003; Martin Schlemmer <azarah@gentoo.org>

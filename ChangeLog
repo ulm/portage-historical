@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.1 2004/10/22 14:43:33 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.2 2004/10/22 16:53:29 carpaski Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -9,6 +9,18 @@
 
   22 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> emerge: Added python version
   information to "emerge info" output.
+
+*portage-2.0.51-r2 (22 Oct 2004): Everyone loves finding bugs in stable!
+
+  20 Oct 2004; Nicholas Jones <carpaski@gentoo.org> emerge: Fixed the result
+  checking when ebuilds are called -- this removes the continuing-after failure
+  big discovered by AMD64 today.
+
+  20 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> emerge: Fixed a bug where
+  users were warned against emerging by path when a file/dir exists of the
+  same name of the package to be merged. #68372  Added an warning with delay
+  when emerging an ebuild that is masked.  Added a check on PORTAGE_GPG_DIR
+  which removes "gpg" from FEATURES on an invalid settings. #68387
 
   20 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> emerge: Fixed a bug where
   users were warned against emerging by path when a file/dir exists of the
