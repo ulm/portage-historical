@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 The Leaf, http://www.theleaf.be
 **  Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@theleaf.be>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox/Attic/libsandbox.c,v 1.1 2002/01/06 14:32:38 gbevin Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox/Attic/libsandbox.c,v 1.2 2002/01/15 12:13:08 gbevin Exp $
 */
 
 #define _GNU_SOURCE
@@ -751,13 +751,14 @@ int before_syscall(const char* func, const char* file)
 
 int before_syscall_open_int(const char* func, const char* file, int flags)
 {
-	if (flags == O_RDONLY)
+	if (flags & O_WRONLY ||
+		flags & O_RDWR)
 	{
-		return before_syscall("open_rd", file);
+		return before_syscall("open_wr", file);
 	}
 	else
 	{
-		return before_syscall("open_wr", file);
+		return before_syscall("open_rd", file);
 	}
 }
 
