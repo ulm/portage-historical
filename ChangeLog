@@ -3,6 +3,11 @@
 
 *portage-2.1.0 (...): Code reorg and enhancements
 
+  21 Feb 2003; Alain Penders <alain@gentoo.org> plugin.py: Added plugin
+  framework module.  (Latest version of this module is kept in
+  gentoo/users/alain/plugin, and available from
+  http://cvs.gentoo.org/~alain/.)
+
   16 Feb 2003; Alain Penders <alain@gentoo.org> emerge, portage.py,
   portage_config.py, portage_files.py:  Totally removed global variables
   from the portage modules.  Most of what was global data is now managed
