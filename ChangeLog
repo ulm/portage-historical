@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.722 2004/08/30 10:47:51 jstubbs Exp $
+# $Id: ChangeLog,v 1.723 2004/08/31 02:46:13 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -8,6 +8,14 @@
     3. /etc/portage/profile/virtuals is _USER_ configs only.
     4. /etc/portage/sets/world is a symlink to /var/lib/portage/world
        It is for convenience. Do not mistake this for the actual file.
+
+  30 Aug 2004; Brian Harring <ferringb@gentoo.org> pym/portage.py, 
+  pym/portage_util.py: Removed -all- duplicate function definitions between 
+  portage_util and portage.  This is just -begging- for a bug where 
+  portage.py's definitions are fixed, but portage_util isn't.
+  If you're moving code out of portage.py (good thing) please yank the def 
+  from portage.py.  Especially if you're importing everything from new 
+  home of the module.
 
   30 Aug 2004; Jason Stubbs <jstubbs@gentoo.org> pym/emerge: Added python 2.2
   compatibility fix. (#62128) Added fix to fail nicely on missing
