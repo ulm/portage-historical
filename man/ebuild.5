@@ -291,7 +291,9 @@ or sun specifically.
 .B pkg_nofetch
 If you turn on \fIfetch\fR in \fBRESTRICT\fR, then this function will be
 run when the files in \fBSRC_URI\fR cannot be found.  Useful for
-displaying information to the user on *how* to obtain said files.
+displaying information to the user on *how* to obtain said files.  All 
+you have to do is output a message and let the function return.  Do not 
+end the function with a call to \fBdie\fR.
 .TP
 .B pkg_setup
 This function can be used if the package needs specific setup actions or
@@ -742,4 +744,4 @@ Nicholas Jones <carpaski@gentoo.org>
 .br
 Mike Frysinger <vapier@gentoo.org>
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.5,v 1.45 2003/06/30 06:43:38 carpaski Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.5,v 1.46 2003/07/09 18:47:52 vapier Exp $
