@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.467 2004/08/07 11:40:46 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.468 2004/08/08 03:58:16 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -750,6 +750,10 @@ def env_update(makelinks=1):
 		oldld=None
 
 	ld_cache_update=False
+	if os.environ.has_key("PORTAGE_CALLER") and \
+	   os.environ["PORTAGE_CALLER"] == "env-update":
+		ld_cache_update = True
+							 
 	newld=specials["LDPATH"]
 	if (oldld!=newld):
 		#ld.so.conf needs updating and ldconfig needs to be run
