@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.416 2004/05/17 04:21:21 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.417 2004/05/18 06:31:06 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1728,7 +1728,7 @@ class config:
 		#dirVirtuals = stack_dicts(dvirts, incremental=1)
 		#dirVirtuals = grab_stacked("virtuals",myvirtdirs,grabdict)
 		# User settings and profile settings take precedence over tree.
-		val = stack_dictlist(dirVirtuals+[treeVirtuals]+[userVirtuals],incremental=1)
+		val = stack_dictlist([userVirtuals]+[treeVirtuals]+dirVirtuals,incremental=1)
 		for x in val.keys():
 			val[x].reverse()
 		return val 
