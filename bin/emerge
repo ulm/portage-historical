@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.314 2004/08/13 15:01:32 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.315 2004/08/13 19:35:11 ferringb Exp $
 
 import os,sys,platform
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -1515,7 +1515,7 @@ class depgraph:
 
 		if "--verbose" in myopts:
 			print
-			print "Total size of downloads: "+format_size(totalsize)
+			print "Total size of downloads: "+str(format_size(totalsize))
 			if overlays and display_overlays:
 				print "Portage overlays:"
 				y=0
