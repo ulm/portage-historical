@@ -8,7 +8,7 @@
 #
 # Uhm... time to learn GNU autoconf :-)
 #
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/create-localdecls,v 1.8 2003/06/29 16:20:19 azarah Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/create-localdecls,v 1.9 2003/10/13 19:45:54 azarah Exp $
 
 OUTFILE='localdecls.h'
 
@@ -41,7 +41,7 @@ fi
 
 echo -n 'Checking libc version... '
 gcc -Wall -o libctest libctest.c
-VERSION=`ldd libctest | grep libc\\.so | awk '{print $1}'`
+VERSION=`ldd libctest | grep libc\\.so | grep -v 'ld-uClibc' | awk '{print $1}'`
 rm libctest
 echo $VERSION
 echo "#define LIBC_VERSION \"$VERSION\"" >> $OUTFILE
