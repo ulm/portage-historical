@@ -1,6 +1,11 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.556 2004/02/29 12:48:34 nakano Exp $
+# $Id: ChangeLog,v 1.557 2004/03/01 14:51:24 genone Exp $
+
+  01 Mar 2004; Marius Mauch <genone@gentoo.org> bin/emerge,
+  bin/emergehelp.py, man/emerge.1:
+  Updated docs for --update and removed the "help" action (wasn't working
+  anyway).
 
   29 Feb 2004; Masatomo Nakano <nakano@gentoo.org> portage.py: Fixed 
   wrong USE in 'emerge info'. This should fix #34260.

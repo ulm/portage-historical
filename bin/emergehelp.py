@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.22 2004/02/27 03:47:48 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.23 2004/03/01 14:51:24 genone Exp $
 
 import os,sys
 from output import *
@@ -14,7 +14,7 @@ def shorthelp():
 	print "   "+turquoise("emerge")+" [ "+green("options")+" ] [ "+green("action")+" ] < "+turquoise("system")+" | "+turquoise("world")+" >"
 	print "   "+turquoise("emerge")+" < "+turquoise("sync")+" | "+turquoise("info")+" >"
 	print "   "+turquoise("emerge")+" "+turquoise("--resume")+" [ "+green("--pretend")+" | "+green("--ask")+" | "+green("--skipfirst")+" ]"
-	print "   "+turquoise("emerge")+" "+turquoise("help")+" [ "+green("system")+" | "+green("config")+" | "+green("sync")+" ] "
+	print "   "+turquoise("emerge")+" "+turquoise("--help")+" [ "+green("system")+" | "+green("config")+" | "+green("sync")+" ] "
 	print bold("Options:")+" "+green("-")+"["+green("abcCdDefhikKlnoOpPsSuUvV")+"] ["+green("--oneshot")+"] ["+green("--noconfmem")+"]"
 	print      "                                    ["+green("--columns")+"] ["+green("--nospinner")+"]"
 	print bold("Actions:")+" [ "+green("clean")+" | "+green("depclean")+" | "+green("inject")+" | "+green("prune")+" | "+green("regen")+" | "+green("search")+" | "+green("unmerge")+" ]"
@@ -261,7 +261,9 @@ def help(myaction,myopts,havecolor=1):
 		print "       "+green("--update")+" ("+green("-u")+" short option)"
 		print "              Updates packages to the best version available, which may not"
 		print "              always be the highest version number due to masking for testing"
-		print "              and development."
+		print "              and development. This will also update direct dependencies which"
+		print "              may not what you want. In general use this option only in combi-"
+		print "              nation with the world or system target."
 		print
 		print "       "+green("--upgradeonly")+" ("+green("-U")+" short option)"
 		print "              Updates packages, but excludes updates that would result in a"

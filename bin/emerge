@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.273 2004/02/27 04:37:14 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.274 2004/03/01 14:51:24 genone Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -80,7 +80,7 @@ merged=0
 params=["selective", "deep", "self", "recurse", "empty"]
 actions=[
 "clean", "config", "depclean",
-"help",  "info",   "inject",   "metadata",
+"info",   "inject",   "metadata",
 "prune", "regen",  "rsync",    "search",
 "sync",  "system", "unmerge",  "world",
 ]
@@ -441,7 +441,7 @@ elif "--help" in myopts:
 	help()
 	sys.exit(0)
 elif portage.secpass!=2:
-	if myaction in ["search", "help", "info", "regen"]:
+	if myaction in ["search", "info", "regen"]:
 		pass
 	elif (not myaction) and (not myfiles):
 		pass
