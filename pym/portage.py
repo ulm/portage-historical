@@ -1,9 +1,9 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.372 2004/01/12 21:11:46 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.373 2004/01/13 01:45:58 carpaski Exp $
 
-VERSION="2.0.50_pre10"
+VERSION="2.0.50_pre15"
 
 import sys,string,os,re,types,shlex,shutil,xpak,fcntl,signal
 import time,cPickle,atexit,grp,traceback,commands,pwd,cvstree,copy
@@ -5307,7 +5307,7 @@ class dblink:
 					if not matches:
 						#zap our world entry
 						pass
-					elif (len(matches)==1) and (matches[0]==mycpv):
+					elif (len(matches)==1) and (matches[0]==self.mycpv):
 						#zap our world entry
 						pass
 					else:
