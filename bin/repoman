@@ -1,7 +1,7 @@
 #!/usr/bin/python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.17 2003/03/28 05:15:16 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.18 2003/03/28 17:10:47 carpaski Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -624,7 +624,8 @@ else:
 					myout=[0]
 					mysplit=[0,string.split(string.split(mysplit[0],"\t")[1]," ")[1]]
 				else:
-					myout=getstatusoutput("egrep -q '\$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.17 2003/03/28 05:15:16 carpaski Exp $|\$Id: repoman,v 1.17 2003/03/28 05:15:16 carpaski Exp $' "+mysplit[1])
+					headerstart="'\$Header: "
+					myout=getstatusoutput("egrep -q "+headerstart+"\$' "+mysplit[1])
 				if myout[0]==0:
 					myheaders.append(mysplit[1])
 				myupdates.append(mysplit[1])
