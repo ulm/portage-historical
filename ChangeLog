@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.73 2005/02/26 11:22:37 carpaski Exp $
+# $Id: ChangeLog,v 1.796.2.74 2005/02/27 07:56:38 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -8,6 +8,10 @@
     3. /etc/portage/profile/virtuals is _USER_ configs only.
 
 *portage-2.0.51.17 (26 Feb 2004): Maintainence Release + BSD chflags
+
+  27 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Added back
+  sorting of the final list from portdbapi.cp_all() so that emerge regen
+  is ordered correctly.
 
   26 Feb 2005; Nicholas Jones <carpaski@gentoo.org> *: Darwin userland patch
   from Kito (bug 82312). Adjusted a couple bits like the file was installed

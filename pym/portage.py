@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.43 2005/02/26 11:22:38 carpaski Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.43 2005/02/26 11:22:38 carpaski Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.44 2005/02/27 07:56:38 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.44 2005/02/27 07:56:38 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.43 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.44 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -5415,7 +5415,9 @@ class portdbapi(dbapi):
 				for y in listdir(oroot+"/"+x,EmptyOnError=1,ignorecvs=1):
 					mykey=x+"/"+y
 					d[x+"/"+y] = None
-		return d.keys()
+		l = d.keys()
+		l.sort()
+		return l
 	
 	def p_list(self,mycp):
 		d={}
