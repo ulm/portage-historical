@@ -1,7 +1,7 @@
 # portage_checksum.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_checksum.py,v 1.2 2004/08/31 13:27:28 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_checksum.py,v 1.3 2004/08/31 22:56:51 carpaski Exp $
 
 from portage_const import PRIVATE_PATH,PRELINK_BINARY
 import os
@@ -13,10 +13,11 @@ import commands
 import sha
 
 prelink_capable = False
-results = commands.getstatusoutput(PRELINK_BINARY+" --version > /dev/null 2>&1")
-if (results[0] >> 8) == 0:
-  prelink_capable=1
-del results
+if os.path.exists(PRELINK_BINARY):
+	results = commands.getstatusoutput(PRELINK_BINARY+" --version > /dev/null 2>&1")
+	if (results[0] >> 8) == 0:
+		prelink_capable=1
+	del results
 
 def perform_md5(x, calc_prelink=0):
 	return perform_checksum(x, md5hash, calc_prelink)[0]
