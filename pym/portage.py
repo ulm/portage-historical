@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.364 2003/12/29 17:18:55 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.365 2003/12/31 10:25:38 carpaski Exp $
 
 VERSION="2.0.50_pre8"
 
@@ -4939,7 +4939,7 @@ class dblink:
 		myc.close()
 		pos=1
 		for line in mylines:
-			mydat=string.split(line)
+			mydat = string.split(line)
 			# we do this so we can remove from non-root filesystems
 			# (use the ROOT var to allow maintenance on other partitions)
 			try:
@@ -4953,6 +4953,10 @@ class dblink:
 				elif mydat[0]=="sym":
 					#format: type, mtime, dest
 					x=len(mydat)-1
+					if (x >= 13) and (mydat[-1][-1]==')'): # Old/Broken symlink entry
+						mydat = mydat[:-10]+[mydat[-10:][ST_MTIME][:-1]]
+						print "FIXED SYMLINK LINE:",mydat
+						x=len(mydat)-1
 					splitter=-1
 					while(x>=0):
 						if mydat[x]=="->":
