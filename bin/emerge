@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.350 2004/10/25 13:42:36 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.351 2004/10/28 13:37:08 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -108,9 +108,6 @@ def userquery(prompt, responses=None, colours=None):
 	try:
 		while True:
 			response=raw_input("["+string.join([colours[i](responses[i]) for i in range(len(responses))],"/")+"] ")
-			for key in responses:
-				if response.upper()==key[:len(response)].upper():
-					return key
 			for key in responses:
 				if response.upper()==key[:len(response)].upper():
 					return key
