@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.31 2005/01/16 07:32:42 carpaski Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.31 2005/01/16 07:32:42 carpaski Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.32 2005/01/17 01:34:36 carpaski Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.32 2005/01/17 01:34:36 carpaski Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.31 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.32 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -824,6 +824,7 @@ class config:
 		self.userVirtuals = {}
 		# Virtual negatives from user specifications.
 		self.negVirtuals  = {}
+		self.negVirtualsWarned = False
 
 		self.user_profile_dir = None
 
@@ -843,6 +844,7 @@ class config:
 			self.treeVirtuals = copy.deepcopy(clone.treeVirtuals)
 			self.userVirtuals = copy.deepcopy(clone.userVirtuals)
 			self.negVirtuals  = copy.deepcopy(clone.negVirtuals)
+			self.negVirtualsWarned = clone.negVirtualsWarned
 
 			self.use_defs = copy.deepcopy(clone.use_defs)
 			self.usemask  = copy.deepcopy(clone.usemask)
@@ -1399,6 +1401,14 @@ class config:
 			self.negVirtuals[x] = []
 			for y in self.userVirtuals[x]:
 				if y[0] == '-':
+					if not self.negVirtualsWarned:
+						self.negVirtualsWarned = True
+						print
+						print "!!! Negated virtuals are not supported at this time."
+						print "!!! Please unmerge the undesirable package or preference"
+						print "!!! another package instead of using the negated virtual."
+						print
+					continue
 					self.negVirtuals[x].append(y[:])
 
 		# Collapse the user virtuals so that we don't deal with negatives.
@@ -1420,8 +1430,7 @@ class config:
 	def __getvirtuals_compile(self):
  		"""Actually generate the virtuals we have collected.
        The results are reversed so the list order is left to right.
-       Given data is [Best,Better,Good] sets of [Good, Better, Best]
-"""
+       Given data is [Best,Better,Good] sets of [Good, Better, Best]"""
 		# Virtuals by profile+tree preferences.
 		ptVirtuals   = {}
 		# Virtuals by user+tree preferences.
