@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.48 2005/03/02 15:12:32 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.48 2005/03/02 15:12:32 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.49 2005/03/08 20:28:24 ferringb Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.49 2005/03/08 20:28:24 ferringb Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.48 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.49 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -2337,10 +2337,10 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 
 	if mydo != "depend":
 		try:
-			mysettings["INHERITED"], mysettings["PORTAGE_RESTRICT"] = db[root][tree].dbapi.aux_get( \
+			mysettings["INHERITED"], mysettings["RESTRICT"] = db[root][tree].dbapi.aux_get( \
 				mycpv,["INHERITED","RESTRICT"])
 			mysettings["PORTAGE_RESTRICT"]=string.join(flatten(portage_dep.use_reduce(portage_dep.paren_reduce( \
-				mysettings["PORTAGE_RESTRICT"]), uselist=mysettings["USE"].split())),' ')
+				mysettings["RESTRICT"]), uselist=mysettings["USE"].split())),' ')
 		except SystemExit, e:
 			raise
 		except:
