@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.10 2005/01/16 07:32:42 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.11 2005/01/30 11:33:02 jstubbs Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -620,8 +620,6 @@ else:
 
 
 arch_caches={}
-re_metadata_dtd=re.compile('"[^"]+metadata.dtd"',re.I)
-re_escape_quotes=re.compile('"')
 for x in scanlist:
 	#ebuilds and digests added to cvs respectively.
 	if "--verbose" in myoptions:
@@ -786,13 +784,7 @@ for x in scanlist:
 	else:
 		#Only carry out if in package directory or check forced
 		if xmllint_capable:
-			myf=open(checkdir+"/metadata.xml")
-			s=string.join(myf.readlines(),'')
-			myf.close()
-			s=re_metadata_dtd.sub('"%s/metadata.dtd"' % portage.CACHE_PATH, s)
-			# this is temporary, till spawn has been modified enough that we can hand a pipe to xmllint, and write on our end of it.
-			s=re_escape_quotes.sub('\\"',s)
-			st=getstatusoutput("echo \"%s\" | xmllint --valid -  2>&1 > /dev/null" % s)
+			st=getstatusoutput("xmllint --noout --valid --dtdvalid %s/metadata.dtd %s/metadata.xml" % (portage.CACHE_PATH, checkdir))
 			if st[0] != 0:
 				for z in st[1].split("\n"):
 					print red("!!! ")+z

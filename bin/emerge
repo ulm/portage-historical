@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.13 2005/01/16 02:35:33 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.14 2005/01/30 11:33:02 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -177,7 +177,7 @@ shortmapping={
 "i":"--inject",
 "k":"--usepkg",    "K":"--usepkgonly",
 "l":"--changelog",
-"n":"--noreplace",
+"n":"--noreplace", "N":"--newuse",
 "o":"--onlydeps",  "O":"--nodeps",
 "p":"--pretend",   "P":"--prune",
 "q":"--quiet",
@@ -925,17 +925,9 @@ class depgraph:
 			merging=2
 		if merging==1:
 			mybigkey.append("merge")
-			self.mydbapi[myroot].cpv_inject(mykey)
 		else:
 			mybigkey.append("nomerge")
 			
-		# Adjust pkgsettings with any virtuals this package provides.
-		if merging!=0:
-			if mytype=="binary":
-				self.pkgsettings.setinst(mykey,portage.db["/"]["bintree"].dbapi)
-			elif merging:
-				self.pkgsettings.setinst(mykey,portage.db[myroot]["porttree"].dbapi)
-
 		# whatever the case, we need to add the node to our digraph so
 		# that children can depend upon it.
 		self.digraph.addnode(string.join(mybigkey),myparent)
@@ -1118,12 +1110,30 @@ class depgraph:
 			#mycheck=portage.dep_check(depstring,self.mydbapi[myroot],self.pkgsettings,myuse=myuse)
 
 			if not mycheck[0]:
-				return 0
-			mymerge=mycheck[1]
+				mymerge=[]
+			else:
+				mymerge=mycheck[1]
 
 		else:
 			#we're processing a command-line argument; unconditionally merge it even if it's already merged
 			mymerge=[depstring]
+		
+		# dep_check has been run so we can now add our parent to our
+		# build state to update virtuals and other settings. This
+		# happens after the package is added to the tree so that a
+		# package can depend on a virtual which it satisfies.
+		if myparent:
+			myp = myparent.split()
+			if myp[3]=="merge":
+				self.mydbapi[myroot].cpv_inject(myp[2])
+				if myp[0]=="binary":
+					self.pkgsettings.setinst(myp[2],portage.db["/"]["bintree"].dbapi)
+				else:
+					self.pkgsettings.setinst(myp[2],portage.db[myroot]["porttree"].dbapi)
+
+		if not mymerge:
+			return 1
+		
 		if "--debug" in myopts:
 			print "Candidates:",mymerge
 		for x in mymerge:
@@ -1430,12 +1440,12 @@ class depgraph:
 				print "["+x[0]+" "+addl+"]",red(resolved),
 				if resolved!=x[2]:
 					if x[3]:
-						print red("(\""+x[2]+"\" from pkg "+x[3]+")")
+						print red("(\""+x[2]+"\" is blocking "+x[3]+")")
 					else:
 						print red("(\""+x[2]+"\")")
 				else:
 					if x[3]:
-						print red("(from pkg "+x[3]+")")
+						print red("(is blocking "+x[3]+")")
 					else:
 						print
 			else:
@@ -2814,6 +2824,8 @@ elif "depclean"==myaction:
 	print red("*** WARNING ***")+" : USE FLAGS MAY HAVE AN EXTREME EFFECT ON THE OUTPUT."
 	print red("*** WARNING ***")+" : SOME LIBRARIES MAY BE USED BY PACKAGES BUT ARE NOT"
 	print red("*** WARNING ***")+" : CONSIDERED TO BE A DEPEND DUE TO USE FLAG SETTINGS."
+	print red("*** WARNING ***")+" : emerge --update --deep --newuse world TO VERIFY"
+	print red("*** WARNING ***")+" : SANITY IN THIS REGARD."
 	print red("*** WARNING ***")+" :"
 	print red("*** WARNING ***")+" : Packages  in the list  that are  desired  may be added"
 	print red("*** WARNING ***")+" : directly to the world file to cause them to be ignored"

@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.34 2005/01/24 14:17:07 carpaski Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.34 2005/01/24 14:17:07 carpaski Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.35 2005/01/30 11:33:02 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.35 2005/01/30 11:33:02 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.34 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.35 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -546,6 +546,8 @@ def env_update(makelinks=1):
 		for x in specials["LDPATH"]+specials["PATH"]+specials["PRELINK_PATH"]:
 			if not x:
 				continue
+			if x[-1]!='/':
+				x=x+"/"
 			plmasked=0
 			for y in specials["PRELINK_PATH_MASK"]:
 				if y[-1]!='/':

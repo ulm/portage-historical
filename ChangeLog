@@ -1,11 +1,32 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.60 2005/01/28 07:55:58 ferringb Exp $
+# $Id: ChangeLog,v 1.796.2.61 2005/01/30 11:33:01 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  30 Jan 2005; Jason Stubbs <jstubbs@gentoo.org> emerge emerge.1: Added short
+  -N option for --newuse. Moved virtuals updating for packages that are about
+  to be installed so that the update happens after the virtuals within that
+  package's direct dependencies are resolved. Made the blocking message
+  slightly easier to understand. Added a suggestion to run emerge with --newuse
+  before running depclean.
+
+  30 Jan 2005; Jason Stubbs <jstubbs@gentoo.org> etc-update: Removed the
+  unsetting of various options that happens when using graphical mode.
+
+  30 Jan 2005; Jason Stubbs <jstubbs@gentoo.org> quickpkg: Added -h and --help
+  options.
+
+  30 Jan 2005; Jason Stubbs <jstubbs@gentoo.org> repoman: Added patch to call
+  xmllint directly on metadata.xml rather than piping it. This prevents the
+  need (and possible failure) to escape quote characters.
+
+  30 Jan 2005; Jason Stubbs <jstubbs@gentoo.org> portage.py: Fixed a bug with
+  calculations using PRELINK_PATH_MASK where paths matching those in
+  PRELINK_PATH_MASK were not removed.
 
   28 Jan 2005; Brian Harring <ferringb@gentoo.org> portage_db_flat.py: removed
   the portage_locks locking that was added, using a different strategy reliant
