@@ -1,7 +1,7 @@
 # cvstree.py -- cvs tree utilities
 # Copyright 1998-2003 Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/cvstree.py,v 1.6 2003/11/10 08:30:55 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/cvstree.py,v 1.7 2004/08/13 22:56:52 ferringb Exp $
 
 import string,os,time,sys,re
 from stat import *
@@ -117,8 +117,10 @@ def findunadded(entries,recursive=0,basedir=""):
 	if basedir and basedir[-1]!="/":
 		basedir=basedir+"/"
 	mylist=[]
+	#ignore what cvs ignores.
+	rep = re.compile("RCS|SCCS|CVS|CVS.adm|RCSLOG|cvslog.*|tags|TAGS|.make.state|.nse_depinfo|*~|#*|.#*|,*|_$*|*$|*.old|*.bak|*.BAK|*.orig|*.rej|.del-*|*.a|*.olb|*.o|*.obj|*.so|*.exe|*.Z|*.elc|*.ln|core")
 	for myfile in entries["files"].keys():
-		if "cvs" not in entries["files"][myfile]["status"]:
+		if "cvs" not in entries["files"][myfile]["status"] and not rep.search(myfile):
 			mylist.append(basedir+myfile)
 	if recursive:
 		for mydir in entries["dirs"].keys():
