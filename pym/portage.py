@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.443 2004/07/25 08:02:43 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.444 2004/07/25 08:32:26 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1519,7 +1519,7 @@ class config:
 				else:
 					self.pmaskdict[mycatpkg]=[x]
 
-			pkgprovidedlines = grab_multiple("package.provided", locations, grabfile)
+			pkgprovidedlines = grab_multiple("package.provided", self.profiles, grabfile)
 			pkgprovidedlines = stack_lists(pkgprovidedlines, incremental=1)
 
 			self.pprovideddict = {}
