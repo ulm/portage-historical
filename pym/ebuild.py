@@ -2,7 +2,7 @@
 # ebuild.py; Ebuild classes/abstraction of phase processing, and communicating with a ebuild-daemon.sh instance
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.20 2005/03/09 08:22:59 ferringb Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.21 2005/03/09 09:06:12 ferringb Exp $
 
 
 import os,sys,traceback
@@ -848,7 +848,7 @@ class ebuild_handler:
 				if not os.path.exists(mysettings["CCACHE_DIR"]):
 					os.makedirs(mysettings["CCACHE_DIR"])
 				os.chown(mysettings["CCACHE_DIR"],portage_uid,portage_gid)
-				os.chmod(mysettings["CCACHE_DIR"],02775)
+				os.chmod(mysettings["CCACHE_DIR"],0775)
 		except OSError, e:
 			print "!!! File system problem. (ReadOnly? Out of space?)"
 			print "!!! Perhaps: rm -Rf",mysettings["BUILD_PREFIX"]

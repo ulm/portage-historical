@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.375 2005/03/08 10:02:20 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.376 2005/03/09 09:06:13 ferringb Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2927,7 +2927,7 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 		if not os.path.exists(servertimestampdir):
 			os.mkdir(servertimestampdir)
 			os.chown(servertimestampdir, os.getuid(), portage.portage_gid)
-			os.chmod(servertimestampdir, 02775)
+			os.chmod(servertimestampdir, 0775)
 
 		#exitcode=0
 		try:

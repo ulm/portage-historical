@@ -1,11 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.934 2005/03/09 08:56:44 ferringb Exp $
+# $Id: ChangeLog,v 1.935 2005/03/09 09:06:13 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  09 Mar 2005: Brian Harring <ferringb@gentoo.org> pym/ebuild.py, bin/emerge:
+  Don't set 02775 on depcache_dir.
+  Ever.
+  If the cache backend is stupid and can't get the perms right, fix the backend.
 
   09 Mar 2005; Brian Harring <ferringb@gentoo.org> pym/cache/fs_template.py:
   _ensure_dirs didn't account for umask.
