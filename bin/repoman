@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.7 2005/01/12 04:47:52 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.8 2005/01/13 17:57:15 carpaski Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -1336,6 +1336,11 @@ else:
 			os.unlink(commitmessagefile)
 		mymsg=open(commitmessagefile,"w")
 		mymsg.write(commitmessage)
+		try:
+			mymsg.write("\n(Portage version: "+str(portage.VERSION)+")")
+		except:
+			print "Failed to insert portage version in message!"
+			mymsg.write("\n(Portage version: Unknown)")
 		mymsg.close()
 
 		try:
@@ -1428,6 +1433,11 @@ else:
 	else:
 		mymsg=open(commitmessagefile,"a")
 		mymsg.write(" (Manifest recommit)")
+		try:
+			mymsg.write("\n(Portage version: "+str(portage.VERSION)+")")
+		except:
+			print "Failed to insert portage version in message!"
+			mymsg.write("\n(Portage version: Unknown)")
 		mymsg.close()
 		retval=os.system("/usr/bin/cvs -q commit -F "+commitmessagefile)
 		if retval:
