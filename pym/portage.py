@@ -2,10 +2,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.582 2005/03/08 12:04:31 ferringb Exp $
-cvs_id_string="$Id: portage.py,v 1.582 2005/03/08 12:04:31 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.583 2005/03/09 08:22:58 ferringb Exp $
+cvs_id_string="$Id: portage.py,v 1.583 2005/03/09 08:22:58 ferringb Exp $"[5:-2]
 
-VERSION="$Revision: 1.582 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.583 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -3116,6 +3116,8 @@ class portdbapi(dbapi):
 
 				mydata=ebuild.ebuild_handler().get_keys(myebuild,self.mysettings)
 				self.lock_held = 0
+				if mydata == None:
+					raise Exception("Failed sourcing %s" % mycpv)
 
 				mydata["_mtime_"] = emtime
 				if mydata.get("INHERITED", False):

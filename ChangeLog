@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.931 2005/03/09 06:55:30 genone Exp $
+# $Id: ChangeLog,v 1.932 2005/03/09 08:22:58 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  09 Mar 2005; Brian Harring <ferringb@gentoo.org> pym/portage.py, pym/ebuild.py:
+  Two issues- use parsed restrict handling, and depends phase not bailing when
+  a cpv's key's can't be sourced
 
   09 Mar 2005; Marius Mauch <genone@gentoo.org> pym/elog_modules/mod_mail.py:
   Add a "To" header to mails.
