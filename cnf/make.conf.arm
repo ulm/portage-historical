@@ -1,6 +1,6 @@
 # Copyright 2000-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Contains local system settings for Portage system
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.arm,v 1.20 2004/06/08 09:31:21 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.arm,v 1.21 2004/06/21 10:56:07 carpaski Exp $
 
 # Please review 'man make.conf' for more information.
 
@@ -11,7 +11,7 @@
 # example, quite a few packages have optional X, gtk or GNOME functionality
 # that can only be enabled or disabled at compile-time. Gentoo Linux has a
 # very extensive set of USE variables described in our USE variable HOWTO at
-# http://www.gentoo.org/doc/use-howto.html
+# http://www.gentoo.org/doc/en/handbook/handbook-x86.xml?part=2&chap=1
 #
 # The available list of use flags with descriptions is in your portage tree.
 # Use 'less' to view them:  --> less /usr/portage/profiles/use.desc <--
