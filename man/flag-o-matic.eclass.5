@@ -16,9 +16,9 @@ will only match complete flags.
 .BR "replace-flags " "\fI<orig-flag>\fR \fI<new-flag>\fR"
 Replace all occurences of \fIoriginal flag\fR with \fInew flag\fR.
 .TP
-.BR "replace-cpu-flags " "\fI<new cpu>\fR \fI<old cpus>\fR"
-Replace all -march and -mcpu flags which contain \fIold cpus\fR 
-with -march and -mcpu flags which contain \fInew cpu\fR.
+.BR "replace-cpu-flags " "\fI<old cpus>\fR \fI<new cpu>\fR"
+Replace all -march, -mcpu, and -mtune flags which contain \fIold cpus\fR 
+with -march, -mcpu, and -mtune flags which contain \fInew cpu\fR.
 .TP
 .BR "get-flag " "\fI<flag>\fR"
 If \fIflag\fR is prefixed with -, then the whole flag will 
@@ -67,4 +67,4 @@ Please report bugs via http://bugs.gentoo.org/
 .SH "AUTHORS"
 Mike Frysinger <vapier@gentoo.org>
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/flag-o-matic.eclass.5,v 1.4 2004/09/17 00:17:10 vapier Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/flag-o-matic.eclass.5,v 1.5 2004/09/25 07:37:12 vapier Exp $
