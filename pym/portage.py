@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.358 2003/12/21 08:03:26 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.359 2003/12/21 21:08:26 nakano Exp $
 
 VERSION="2.0.49-r17"
 
@@ -1227,7 +1227,6 @@ class config:
 						mystr = string.lower(var)+"_"+x
 						if mystr not in usesplit:
 							usesplit.append(mystr)
-							self.configlist[-1]["USE"] += " "+mystr
 
 		# Pre-Pend ARCH variable to USE settings so '-*' in env doesn't kill arch.
 		if profiledir:
@@ -1235,7 +1234,8 @@ class config:
 				if self.configdict["defaults"]["ARCH"]:
 					if self.configdict["defaults"]["ARCH"] not in usesplit:
 						usesplit.insert(0,self.configdict["defaults"]["ARCH"])
-						self.configlist[-1]["USE"]=string.join(usesplit," ")
+
+		self.configlist[-1]["USE"]=string.join(usesplit," ")
 	
 	def __getitem__(self,mykey):
 		if mykey=="CONFIG_PROTECT_MASK":
