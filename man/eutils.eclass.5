@@ -1,6 +1,6 @@
 .TH "EUTILS.ECLASS" "5" "Jun 2003" "Portage 2.0.51" "portage"
 .SH "NAME"
-eutils \- many extra (but common) functions that are used in ebuilds
+eutils.eclass \- many extra (but common) functions that are used in ebuilds
 .SH "DESCRIPTION"
 The \fBeutils\fR eclass contains a suite of functions that complement
 the ones that ebuild.sh already contain.  The idea is that the functions
@@ -86,7 +86,7 @@ by \fB${CATEGORY}\fR) then pass a \fItype\fR value (see http://www.freedesktop.o
 for valid values).  Finally, if the application needs to start up in a special directory,
 pass the last value as the full \fIpath\fR name.
 .TP
-.BR "unpack_makeself "\fI[makeself archive]\fR \fI[byte offset]\fR"
+.BR "unpack_makeself " "\fI[makeself archive]\fR \fI[byte offset]\fR"
 Unpack a makeself archive rather than relying on the script to unpack itself.  Useful for when 
 the scripts use old (POSIX) syntax that is no longer supported properly.  If you don't specify 
 a file to unpack, then \fB${A}\fR is used instead.  If you don't specify the offset, then the 
@@ -173,4 +173,4 @@ Please report bugs via http://bugs.gentoo.org/
 .SH "AUTHORS"
 Mike Frysinger <vapier@gentoo.org>
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/eutils.eclass.5,v 1.5 2004/09/17 00:17:10 vapier Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/eutils.eclass.5,v 1.6 2005/02/10 01:37:36 vapier Exp $
