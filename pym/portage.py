@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.300 2003/02/27 11:31:00 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.301 2003/02/27 11:36:42 carpaski Exp $
 
 VERSION="2.0.47-r6"
 
@@ -4283,7 +4283,8 @@ profiledir=None
 if os.path.exists("/etc/make.profile/make.defaults"):
 	profiledir="/etc/make.profile"
 else:
-	print ">>> Note: /etc/make.profile/make.defaults isn't available; an 'emerge sync' will probably fix this."
+	print ">>> Note: /etc/make.profile/make.defaults isn't available."
+	print "          an 'emerge sync' will probably fix this."
 #from here on in we can assume that profiledir is set to something valid
 db={}
 
