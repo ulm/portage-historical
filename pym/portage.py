@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.527 2004/10/23 04:20:29 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.528 2004/10/23 14:17:49 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -748,12 +748,26 @@ def new_protect_filename(mydest, newmd5=None):
 	else:
 		return (new_pfile, old_pfile)
 
+#XXX: These two are now implemented in portage_util.py but are needed here
+#XXX: until the isvalidatom() dependency is sorted out.
+
 def grabdict_package(myfilename,juststrings=0):
 	pkgs=grabdict(myfilename, juststrings=juststrings, empty=1)
 	for x in pkgs.keys():
 		if not isvalidatom(x):
 			del(pkgs[x])
 			writemsg("--- Invalid atom in %s: %s\n" % (myfilename, x))
+	return pkgs
+
+def grabfile_package(myfilename,compatlevel=0):
+	pkgs=grabfile(myfilename,compatlevel)
+	for x in range(len(pkgs)-1,-1,-1):
+		pkg = pkgs[x]
+		if pkg[0] == "*":
+			pkg = pkg[1:]
+		if not isvalidatom(pkg):
+			writemsg("--- Invalid atom in %s: %s\n" % (myfilename, pkgs[x]))
+			del(pkgs[x])
 	return pkgs
 
 # returns a tuple.  (version[string], error[string])
@@ -928,7 +942,7 @@ class config:
 				if os.path.exists("/"+CUSTOM_PROFILE_PATH):
 					self.profiles.append("/"+CUSTOM_PROFILE_PATH)
 
-			self.packages_list = grab_multiple("packages", self.profiles, grabfile)
+			self.packages_list = grab_multiple("packages", self.profiles, grabfile_package)
 			self.packages      = stack_lists(self.packages_list, incremental=1)
 			del self.packages_list
 			#self.packages = grab_stacked("packages", self.profiles, grabfile, incremental_lines=1)
@@ -1053,7 +1067,7 @@ class config:
 				self.pkeywordsdict = pkgdict
 
 				#package.unmask
-				pkgunmasklines = grabfile(USER_CONFIG_PATH+"/package.unmask")
+				pkgunmasklines = grabfile_package(USER_CONFIG_PATH+"/package.unmask")
 				self.punmaskdict = {}
 				for x in pkgunmasklines:
 					mycatpkg=dep_getkey(x)
@@ -1076,9 +1090,9 @@ class config:
 			# <portage-2.0.51 syntax.
 			if self.profiles and (">=sys-apps/portage-2.0.51" in self.packages \
                                       or "*>=sys-apps/portage-2.0.51" in self.packages):
-				pkgmasklines = grab_multiple("package.mask", self.profiles + locations, grabfile)
+				pkgmasklines = grab_multiple("package.mask", self.profiles + locations, grabfile_package)
 			else:
-				pkgmasklines = grab_multiple("package.mask", locations, grabfile)
+				pkgmasklines = grab_multiple("package.mask", locations, grabfile_package)
 			pkgmasklines = stack_lists(pkgmasklines, incremental=1)
 
 			self.pmaskdict = {}
