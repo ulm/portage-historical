@@ -1,9 +1,9 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.9 2004/10/09 02:32:43 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.10 2004/10/10 10:07:21 carpaski Exp $
 
-import os,types
+import os,types,atexit
 import signal
 import portage_data
 import portage_util
@@ -14,6 +14,17 @@ try:
 except:
 	# hokay, no resource module.
 	max_fd_limit=256
+
+spawned_pids = []
+def cleanup():
+	global spawned_pids
+	while spawned_pids:
+		pid = spawned_pids.pop()
+		try:
+			os.kill(pid,SIGKILL)
+		except:
+			pass
+atexit.register(cleanup)
 
 from portage_const import BASH_BINARY,SANDBOX_BINARY,SANDBOX_PIDS_FILE
 def spawn_bash(mycommand,env={},debug=False,opt_name=None,**keywords):
@@ -127,7 +138,14 @@ def spawn(mycommand,env={},opt_name=None,fd_pipes=None,returnpid=False,uid=None,
 		if umask:
 			os.umask(umask)
 		try:
-#			print "execing", myc, myargs
+			# XXX: We would do this to stop ebuild.sh from getting any
+			# XXX: output, and consequently, we'd get to handle the sigINT.
+			#os.close(sys.stdin.fileno())
+			pass
+		except:
+			pass
+		try:
+			#print "execing", myc, myargs
 			os.execve(myc,myargs,env)
 		except Exception, e:
 			raise str(e)+":\n   "+mycommand+" "+string.join(myargs)
@@ -142,6 +160,8 @@ def spawn(mycommand,env={},opt_name=None,fd_pipes=None,returnpid=False,uid=None,
 		os.close(pw)
 	
 	if returnpid:
+		global spawned_pids
+		spawned_pids.append(mypid[-1])
 		return mypid
 	while len(mypid):
 		retval=os.waitpid(mypid[-1],0)[1]

@@ -1,7 +1,7 @@
 # getbinpkg.py -- Portage binary-package helper functions
 # Copyright 2003-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/getbinpkg.py,v 1.9 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/getbinpkg.py,v 1.10 2004/10/10 10:07:20 carpaski Exp $
 
 from output import *
 import htmllib,HTMLParser,string,formatter,sys,os,xpak,time,tempfile,cPickle,base64
@@ -394,7 +394,7 @@ def file_get_lib(baseurl,dest,conn=None):
 	return rc
 
 
-def dir_get_metadata(baseurl,conn=None, chunk_size=3000, verbose=1, usingcache=1, makepickle=None):
+def dir_get_metadata(baseurl, conn=None, chunk_size=3000, verbose=1, usingcache=1, makepickle=None):
 	"""(baseurl,conn,chunk_size,verbose) -- 
 	"""
 	if not conn:

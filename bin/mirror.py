@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/mirror.py,v 1.2 2004/10/04 13:56:50 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/mirror.py,v 1.3 2004/10/10 10:07:20 carpaski Exp $
 
 # Defines the number of threads carrying out the downloading.
 maxsems=5
@@ -44,8 +44,9 @@ class fetcher(Thread):
 
 	def finished(self):
 		if os.path.exists(self.destpath) and self.md5sum:
-			fmd5sum = portage.perform_md5(self.destpath)
-			if self.md5sum[0] == fmd5sum:
+			ok,reason = portage_checksum.verify_all(self.destpath, md5sum)
+			if not ok:
+				portage_util.writemsg("Failed verification:" + reason + "\n")
 				return 1
 		return 0
 	

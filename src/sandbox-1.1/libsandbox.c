@@ -25,7 +25,7 @@
  *  as some of the InstallWatch code was used.
  *
  *
- *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.21 2004/08/02 18:49:31 carpaski Exp $
+ *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.22 2004/10/10 10:07:21 carpaski Exp $
  *
  */
 
@@ -260,14 +260,14 @@ _init(void)
 
 	/* Get the path and name to this library */
 	tmp_string = get_sandbox_lib("/");
-	strncpy(sandbox_lib, tmp_string, 254);
+	strncpy(sandbox_lib, tmp_string, sizeof(sandbox_lib)-1);
 	if (tmp_string)
 		free(tmp_string);
 	tmp_string = NULL;
 
 	/* Generate sandbox pids-file path */
 	tmp_string = get_sandbox_pids_file();
-	strncpy(sandbox_pids_file, tmp_string, 254);
+	strncpy(sandbox_pids_file, tmp_string, sizeof(sandbox_pids_file)-1);
 	if (tmp_string)
 		free(tmp_string);
 	tmp_string = NULL;

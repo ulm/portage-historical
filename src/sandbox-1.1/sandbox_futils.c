@@ -3,7 +3,7 @@
  * Distributed under the terms of the GNU General Public License, v2 or later 
  * Author: Brad House <brad@mainstreetsoftworks.com>
  *
- * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox_futils.c,v 1.9 2004/04/04 20:37:21 carpaski Exp $
+ * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox_futils.c,v 1.10 2004/10/10 10:07:21 carpaski Exp $
  * 
  */
 
@@ -43,14 +43,15 @@ get_sandbox_path(char *argv0)
 	char path[255];
 	char *cwd = NULL;
 
+	memset(path, 0, sizeof(path));
 	/* ARGV[0] specifies full path */
 	if (argv0[0] == '/') {
-		strncpy(path, argv0, 254);
+		strncpy(path, argv0, sizeof(path)-1);
 
 		/* ARGV[0] specifies relative path */
 	} else {
-		egetcwd(cwd, 253);
-		sprintf(path, "%s/%s", cwd, argv0);
+		egetcwd(cwd, sizeof(path)-2);
+		snprintf(path, sizeof(path)-1, "%s/%s", cwd, argv0);
 		if (cwd)
 			free(cwd);
 		cwd = NULL;
@@ -66,11 +67,11 @@ get_sandbox_lib(char *sb_path)
 	char path[255];
 
 #ifdef SB_HAVE_64BIT_ARCH
-        snprintf(path, 254, "%s", LIB_NAME);
+        snprintf(path, sizeof(path)-1, "%s", LIB_NAME);
 #else
-	snprintf(path, 254, "/lib/%s", LIB_NAME);
+	snprintf(path, sizeof(path)-1, "/lib/%s", LIB_NAME);
 	if (file_exist(path, 0) <= 0) {
-		snprintf(path, 254, "%s%s", sb_path, LIB_NAME);
+		snprintf(path, sizeof(path)-1, "%s%s", sb_path, LIB_NAME);
 	}
 #endif
 	return (strdup(path));
@@ -90,9 +91,9 @@ get_sandbox_rc(char *sb_path)
 {
 	char path[255];
 
-	snprintf(path, 254, "/usr/lib/portage/lib/%s", BASHRC_NAME);
+	snprintf(path, sizeof(path)-1, "/usr/lib/portage/lib/%s", BASHRC_NAME);
 	if (file_exist(path, 0) <= 0) {
-		snprintf(path, 254, "%s%s", sb_path, BASHRC_NAME);
+		snprintf(path, sizeof(path)-1, "%s%s", sb_path, BASHRC_NAME);
 	}
 	return (strdup(path));
 }
@@ -106,7 +107,8 @@ get_sandbox_log()
 
 	sprintf(pid_string, "%d", getpid());
 
-	strcpy(path, LOG_FILE_PREFIX);
+	memset(path, 0 , sizeof(path));
+	strncpy(path, LOG_FILE_PREFIX, sizeof(path)-1);
 
 	/* THIS CHUNK BREAK THINGS BY DOING THIS:
 	 * SANDBOX_LOG=/tmp/sandbox-app-admin/superadduser-1.0.7-11063.log
@@ -114,12 +116,12 @@ get_sandbox_log()
 
 	sandbox_log_env = getenv(ENV_SANDBOX_LOG);
 	if (sandbox_log_env) {
-		strcat(path, sandbox_log_env);
-		strcat(path, "-");
+		strncat(path, sandbox_log_env, sizeof(path)-1);
+		strncat(path, "-", sizeof(path)-1);
 	}
 
-	strcat(path, pid_string);
-	strcat(path, LOG_FILE_EXT);
+	strncat(path, pid_string, sizeof(path)-1);
+	strncat(path, LOG_FILE_EXT, sizeof(path)-1);
 	return (strdup(path));
 }
 

@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.518 2004/10/07 13:23:14 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.519 2004/10/10 10:07:20 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1825,10 +1825,12 @@ def digestCreateLines(filelist, mydict):
 			raise portage_exception.DigestException, "No generate digest for '%(file)s'" % {"file":myarchive}
 		for sumName in mydigests[myarchive].keys():
 			mysum = mydigests[myarchive][sumName]
-			compat_prefix="##COMPAT==>1<=="
 			myline = sumName+" "+mysum+" "+myarchive+" "+str(mysize)
-			if sumName != "MD5":
-				myline = compat_prefix + myline
+			if False and sumName != "MD5":
+				# XXXXXXXXXXXXXXXX This cannot be used!
+				# Older portage make very dumb assumptions about the formats.
+				# We need a lead-in period before we break everything.
+				continue
 			mylines.append(myline)
 	return mylines
 
@@ -5967,6 +5969,7 @@ class dblink:
 			myfilelist = listdir(srcroot, recursive=1, filesonly=1)
 
 			# the linkcheck only works if we are in srcroot
+			mycwd = os.getcwd()
 			os.chdir(srcroot)
 			mysymlinks = filter(os.path.islink, listdir(srcroot, recursive=1, filesonly=0))
 
@@ -6024,6 +6027,10 @@ class dblink:
 					self.delete()
 				self.unlockdb()
 				sys.exit(1)
+			try:
+				os.chdir(mycwd)
+			except:
+				pass
 			
 
 		# get old contents info for later unmerging

@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/md5check.py,v 1.3 2004/10/04 13:56:50 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/md5check.py,v 1.4 2004/10/10 10:07:20 carpaski Exp $
 
 import os,sys,string
 os.environ["PORTAGE_CALLER"]="mirror"
@@ -71,11 +71,11 @@ for mycpv in hugelist:
 			continue
 		
 		if mybn not in md5sums.keys():
-			portage.writemsg("Missing md5sum: %s in %s\n" % (mybn, mycpv))
+			portage_util.writemsg("Missing md5sum: %s in %s\n" % (mybn, mycpv))
 		else:
 			if mybn in md5_list.keys():
-				if (md5_list[mybn][0] != md5sums[mybn][0]) or \
-				   (md5_list[mybn][1] != md5sums[mybn][1]):
+				if (md5_list[mybn]["MD5"]  != md5sums[mybn]["MD5"]) or \
+				   (md5_list[mybn]["size"] != md5sums[mybn]["size"]):
 
 					# This associates teh md5 with each file. [md5/size]
 					md5joins = string.split(md5_list[mybn][2],",")
