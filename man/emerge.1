@@ -286,8 +286,10 @@ created with libgd 1.x will not compile with 2.x and must downgrade libgd first
 before they can emerge.
 .TP
 .B [ebuild     U-] x11-base/xfree-4.3.0 [4.2.99.902]
-Xfree 4.2.99.902 was injected in your system (see \fBinject\fR for more info),
-and a newer version of xfree is available.
+The - represents lack of \fBSLOT\fR information about Xfree.  This will occur
+when the previous version emerged was injected (see \fBinject\FR for more info)
+or very outdated (so old that SLOT did not exist).  Either way, a newer version
+of Xfree is availabe for your updating delight.
 .TP
 .B [ebuild    U ] net-analyzer/nmap-3.15_beta2 [3.15_beta1] -gtk -gnome
 The -gtk and -gnome reflect the status of \fBUSE\fR variables when emerging nmap.  Here
@@ -428,4 +430,4 @@ Nicholas Jones <carpaski@gentoo.org>
 .br 
 Phil Bordelon <sunflare@gentoo.org>
 .SH "CVS HEADER"
-$Id: emerge.1,v 1.34 2003/02/28 07:54:59 vapier Exp $
+$Id: emerge.1,v 1.35 2003/02/28 08:02:37 vapier Exp $
