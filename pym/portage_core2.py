@@ -1,7 +1,7 @@
 # Copyright 1999-200 Gentoo Technologies, Inc. 
 # Distributed under the terms of the GNU General Public License, v2 or later 
 # Author: Daniel Robbins <drobbins@gentoo.org>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_core2.py,v 1.2 2001/11/21 07:04:18 drobbins Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_core2.py,v 1.3 2001/11/26 18:21:37 drobbins Exp $
 
 import string
 import re
@@ -416,3 +416,26 @@ if __name__ == "__main__":
 	mynewset=myset.subset([key("media-libs/libsdl"),depid(">=1.2.0"),depid("<1.2.2")])
 	#we print the result :)
 	print mynewset.keydict
+
+"""
+The new download manager:
+
+Karltk needs a feature (for Opera-6) where he can specify that a particular file should not be
+mirrored on ibiblio, since it is illegal to do so.  This only affects one package at the moment,
+but could be more widely used in the future.
+
+Karltk says:
+	manual:http://url
+
+	"error:generic error message"
+
+Of course, we need to continue our ability to handle USE variables.
+
+Support mirroring from a set of pre-defined mirrors:
+	mirror://gnu/path
+
+We need to take advantage of filesizes in digests to detect partial downloads, and restart them.
+We need a way of recording official mirrors (profiles/mirrors?) and selecting our preferred mirror
+from the set (/etc/make.conf?)
+"""
+
