@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.906 2004/12/28 22:46:17 ferringb Exp $
+# $Id: ChangeLog,v 1.907 2004/12/29 05:00:52 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  29 Dec 2004; Jason Stubbs <jstubbs@gentoo.org> bin/emerge: Sort the unmerge
+  to make the --pretend output easier to review when there is a large list.
+  Fixed depclean's attempt at modifying a tuple returned from pkgsplit.
 
   28 Dec 2004; Brian Harring <ferringb@gentoo.org> man/Makefile.am:
   Removed eclass man pages from makefile references.

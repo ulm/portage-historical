@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.368 2004/12/14 12:56:29 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.369 2004/12/29 05:00:52 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2634,7 +2634,9 @@ def unmerge(unmerge_action, unmerge_files):
 		print "\n>>>",unmerge_action+": No packages selected for removal.\n"
 		return 0
 
-	for x in pkgmap.keys():
+	keys = pkgmap.keys()
+	keys.sort()
+	for x in keys:
 		for y in localtree.dep_match(x):
 			if y not in pkgmap[x]["omitted"] and \
 			   y not in pkgmap[x]["selected"] and \
@@ -3307,6 +3309,7 @@ elif "depclean"==myaction:
 	for x in syslist+worldlist:
 		myparts = portage_versions.catpkgsplit(x)
 		if myparts:
+			myparts = list(myparts)
 			if myparts[0][0] in ('<','>','='):
 				myparts[0] = myparts[0][1:]
 			if myparts[0][0] in ('<','>','='):
