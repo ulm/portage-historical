@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.550 2004/11/09 19:16:33 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.551 2004/11/09 20:59:26 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -199,7 +199,7 @@ def prefix_array(array,prefix,doblanks=1):
 def listdir(mypath, recursive=False, filesonly=False, ignorecvs=False, ignorelist=[], EmptyOnError=False, 
 	followSymlinks=True):
 
-	list, ftype = cacheddir(mypath, EmptyOnError,followSymlinks=followSymlinks)
+	list, ftype = cacheddir(mypath, EmptyOnError)
 
 	if list is None:
 		list=[]
@@ -225,9 +225,9 @@ def listdir(mypath, recursive=False, filesonly=False, ignorecvs=False, ignorelis
 		while x<len(ftype):
 			b=os.path.basename(list[x])
 			# if it was cvs, it was filtered already.
-			if ftype[x] == 1:
+			if ftype[x] == 1 or (followSymlinks and ftype[x] == 3):
 
-				l,f = cacheddir(mypath+"/"+list[x],EmptyOnError,followSymlinks=followSymlinks)
+				l,f = cacheddir(mypath+"/"+list[x],EmptyOnError)
 
 				y=0
 				while y < len(l):

@@ -2,7 +2,7 @@
 # orig_dict_cache.py; older listdir caching implementation
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/orig_dict_cache.py,v 1.5 2004/11/08 18:23:33 ferringb Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/orig_dict_cache.py,v 1.6 2004/11/09 20:59:26 ferringb Exp $
 
 """per process caching of os.listdir returns.
 Symlink unaware, so beware of webs of symlinks"""
@@ -15,7 +15,7 @@ cacheHit = 0
 cacheMiss = 0
 cacheStale = 0
 
-def cacheddir(my_original_path, EmptyOnError, followSymlinks=True):
+def cacheddir(my_original_path, EmptyOnError):
 	"""return results from cache, updating cache if its stale/incomplete"""
 	global cacheHit, cacheMiss, cacheStale, dircache
 	mypath=portage_file.normpath(my_original_path)
@@ -44,19 +44,20 @@ def cacheddir(my_original_path, EmptyOnError, followSymlinks=True):
 		ftype = []
 		for x in list:
 			try:
-				if followSymlinks:
-					pathstat = os.stat(mypath+"/"+x)
-				else:
-					pathstat = os.lstat(mypath+"/"+x)
+				pathstat = os.lstat(mypath+"/"+x)
 				
 				if stat.S_ISREG(pathstat[stat.ST_MODE]):
 					ftype.append(0)
 				elif stat.S_ISDIR(pathstat[stat.ST_MODE]):
 					ftype.append(1)
 				elif stat.S_ISLNK(pathstat[stat.ST_MODE]):
-					ftype.append(2)
+					pathstat = os.stat(mypath+"/"+x)
+					if stat.S_ISREG(pathstat[stat.ST_MODE]):
+						ftype.append(2)
+					elif stat.S_ISDIR(pathstat[stat.ST_MODE]):
+						ftype.append(3)
 				else:
-					ftype.append(3)
+					ftype.append(4)
 
 			except SystemExit, e:
 				raise
