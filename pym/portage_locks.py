@@ -1,7 +1,7 @@
 # portage: Lock management code
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.21 2004/11/12 16:28:01 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.22 2004/11/12 17:04:19 ferringb Exp $
 
 import atexit
 import errno
@@ -285,7 +285,7 @@ def hardlink_lockfile(lockfilename, max_wait=14400):
 			print "This is a feature to prevent distfiles corruption."
 			print "/usr/lib/portage/bin/clean_locks can fix stuck locks."
 			print "Lockfile: " + lockfilename
-		time.sleep(0.00001)
+		time.sleep(0.1)
 	
 	os.unlink(myhardlock)
 	return False
