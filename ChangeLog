@@ -1,6 +1,9 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.486 2003/11/29 22:03:20 nakano Exp $
+# $Id: ChangeLog,v 1.487 2003/12/01 15:32:54 nakano Exp $
+
+  01 Dec 2003; Masatomo Nakano <nakano@gentoo.org> emerge: Fixed bug which 
+	always remakes info dir file.
 
   29 Nov 2003; Masatomo Nakano <nakano@gentoo.org> portage.py: Fixed issue with
 	ebuild name rule. Fixed typo with variable name.
