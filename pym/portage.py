@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.349 2003/11/29 22:03:21 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.350 2003/12/07 05:08:06 nakano Exp $
 
 VERSION="2.0.49-r17"
 
@@ -1121,7 +1121,6 @@ class config:
 								self[filename] = "-* "+mydata
 							else:
 								self[filename] = mydata
-							self.backup_changes(filename)
 					except:
 						writemsg("!!! Unable to read file: %s\n" % infodir+"/"+filename)
 						pass
