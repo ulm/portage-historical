@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.11 2003/12/10 06:00:56 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.12 2004/01/22 05:51:45 carpaski Exp $
 
 # History: 
 
@@ -72,7 +72,6 @@ unless (@ARGV) {
     print "Feed me perl modules\n";
     exit;
 }
-
 # Set our temporary overlay directory for the scope of this run. By setting an overlay directory,
 # we bypass the predefined portage directory and allow portage to build a package outside of its
 # normal tree.

@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/chkcontents,v 1.9 2003/12/10 22:44:07 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/chkcontents,v 1.10 2004/01/22 05:51:45 carpaski Exp $
 
 # Very simple program to compare the md5sums of a package as listed
-# in /var/db/pkg/category/package/CONTENTS with the md5sums of the
+# in VDB_PATH/category/package/CONTENTS with the md5sums of the
 # actual programs on the system (and makes sure that symlinks point to
 # the right files).
 
@@ -53,7 +53,7 @@ def CONTENTScheck(path):
 if __name__ == '__main__':
 	import sys
 	if (len(sys.argv) != 2 or sys.argv[1] == "--help"):
-		print "This program compares md5sums in the file /var/db/pkg/category/package/CONTENTS"
+		print "This program compares md5sums in the file VDB_PATH/category/package/CONTENTS"
 		print "with the md5sums of the actual files on the filesystem"
 		print "(and makes sure that symlinks point to the right files)."
 		print "\nUsage: chkcontents path/to/CONTENTS"

@@ -1,9 +1,9 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.152 2004/01/09 22:54:56 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.153 2004/01/22 05:51:45 carpaski Exp $
 
-SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps"
+SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console"
 SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
 SANDBOX_READ="${SANDBOX_READ}:/dev/shm:${PORTAGE_TMPDIR}"
 
@@ -1382,13 +1382,18 @@ for myarg in $*; do
 	depend)
 		export SANDBOX_ON="0"
 		set -f
-		#the extra `echo` commands remove newlines
-		dbkey=${PORTAGE_CACHEDIR}/${CATEGORY}/${PF}
-		if [ ! -d ${PORTAGE_CACHEDIR}/${CATEGORY} ]; then
-			install -d -g ${PORTAGE_GID} -m4775 "${PORTAGE_CACHEDIR}/${CATEGORY}"
+
+		# Handled in portage.py now
+		#dbkey=${PORTAGE_CACHEDIR}/${CATEGORY}/${PF}
+
+		if [ ! -d "$(dirname "${dbkey}")" ]; then
+			install -d -g ${PORTAGE_GID} -m2775 "$(dirname "${dbkey}")"
 		fi
+
 		# Make it group writable. 666&~002==664
 		umask 002
+
+		#the extra `echo` commands remove newlines
 		echo `echo "$DEPEND"`       > $dbkey
 		echo `echo "$RDEPEND"`     >> $dbkey
 		echo `echo "$SLOT"`        >> $dbkey

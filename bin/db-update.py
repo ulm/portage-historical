@@ -1,14 +1,14 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/db-update.py,v 1.5 2003/11/10 08:30:55 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/db-update.py,v 1.6 2004/01/22 05:51:45 carpaski Exp $
 
 import os,sys,string
 sys.path = ["/usr/lib/portage/pym"]+sys.path
 
 import portage
 
-os.chdir(portage.root+"var/db/pkg")
+os.chdir(portage.root+portage.VDB_PATH)
 myvirts=portage.grabdict(portage.root+"var/cache/edb/virtuals")
 mypvirts={}
 if portage.profiledir:
@@ -53,6 +53,6 @@ if not os.path.exists("/tmp/db-upgrade-bak"):
 	os.mkdir("/tmp/db-upgrade-bak")
 print ">>> Backing up to /tmp/db-upgrade-bak..."
 for myarg in myvalidargs:
-	print ">>> Backing up",portage.root+"var/db/pkg/"+origkey[myarg]
-	os.system("mv "+portage.root+"var/db/pkg/"+origkey[myarg]+" /tmp/db-upgrade-bak")
+	print ">>> Backing up",portage.root+portage.VDB_PATH+origkey[myarg]
+	os.system("mv "+portage.root+portage.VDB_PATH+origkey[myarg]+" /tmp/db-upgrade-bak")
 print ">>> Done."

@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.18 2003/12/10 06:00:56 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.19 2004/01/22 05:51:45 carpaski Exp $
 
 import os,sys
 from output import *
@@ -42,8 +42,7 @@ def help(myaction,myopts,havecolor=1):
 		print "              remove functionalities or prevent your system from working."
 		print "              The arguments can be in several different formats :"
 		print "              * world "
-		print "              * system "
-		print "              * /var/db/pkg/category/package-version, or"
+		print "              * system or"
 		print "              * 'dependency specification' (in single quotes is best.)"
 		print "              Here are a few examples of the dependency specification format:"
 		print "              "+bold("binutils")+" matches"
