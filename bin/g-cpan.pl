@@ -1,5 +1,7 @@
 #!/usr/bin/perl -w
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.13 2004/09/09 08:02:53 carpaski Exp $
+# Copyright 1999-2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.14 2004/10/04 13:56:50 vapier Exp $
 
 # History: 
 
