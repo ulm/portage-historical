@@ -11,7 +11,7 @@
 **    Copyright (C) 2001 Geert Bevin, Uwyn, http://www.uwyn.com
 **    Distributed under the terms of the GNU General Public License, v2 or later 
 **    Author : Geert Bevin <gbevin@uwyn.com>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.c,v 1.17 2004/04/11 10:18:05 carpaski Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.c,v 1.18 2004/08/16 08:19:38 carpaski Exp $
 */
 
 /* #define _GNU_SOURCE */
@@ -323,9 +323,17 @@ setenv_sandbox_write(char *home_dir, char *portage_tmp_dir, char *var_tmp_dir,
 		strcat(sandbox_write_var, ":");
 		strcat(sandbox_write_var, "/usr/lib/conftest");
 		strcat(sandbox_write_var, ":");
+		strcat(sandbox_write_var, "/usr/lib32/conftest");
+		strcat(sandbox_write_var, ":");
+		strcat(sandbox_write_var, "/usr/lib64/conftest");
+		strcat(sandbox_write_var, ":");
 		strcat(sandbox_write_var, "/usr/tmp/cf");
 		strcat(sandbox_write_var, ":");
 		strcat(sandbox_write_var, "/usr/lib/cf");
+		strcat(sandbox_write_var, ":");
+		strcat(sandbox_write_var, "/usr/lib32/cf");
+		strcat(sandbox_write_var, ":");
+		strcat(sandbox_write_var, "/usr/lib64/cf");
 		strcat(sandbox_write_var, ":");
 		if (NULL == portage_tmp_dir) {
 			strcat(sandbox_write_var, tmp_dir);
@@ -387,6 +395,12 @@ setenv_sandbox_predict(char *home_dir)
 		strcat(sandbox_predict_var, "/usr/lib/python2.2/");
 		strcat(sandbox_predict_var, ":");
 		strcat(sandbox_predict_var, "/usr/lib/python2.3/");
+		strcat(sandbox_predict_var, ":");
+		strcat(sandbox_predict_var, "/usr/lib/python2.4/");
+		strcat(sandbox_predict_var, ":");
+		strcat(sandbox_predict_var, "/usr/lib/python2.5/");
+		strcat(sandbox_predict_var, ":");
+		strcat(sandbox_predict_var, "/usr/lib/python3.0/");
 		setenv(ENV_SANDBOX_PREDICT, sandbox_predict_var, 1);
 	}
 }

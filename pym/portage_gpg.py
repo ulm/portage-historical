@@ -1,7 +1,7 @@
 # portage_gpg.py -- core Portage functionality
 # Copyright 2004-2004 Gentoo Foundation
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_gpg.py,v 1.2 2004/08/15 05:33:57 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_gpg.py,v 1.3 2004/08/16 08:19:38 carpaski Exp $
 
 import os
 import copy
@@ -54,7 +54,7 @@ class FileChecker:
 			if keydir:
 				pathname = keydir + "/" + keyring
 			if not os.path.isfile(pathname):
-				raise portage_exception.FileNotFound, "keyring: %s" % pathname
+				raise portage_exception.FileNotFound, "keyring missing: %s (dev.gentoo.org/~carpaski/gpg/)" % pathname
 
 		keyringPath = keydir+"/"+keyring
 
@@ -118,10 +118,6 @@ class FileChecker:
 	
 		if signal:
 			raise SignalCaught, "Signal: %d" % (signal)
-	
-		if False and filename == "/usr/portage/sys-apps/portage/Manifest":
-			print filename, result
-			print output
 	
 		trustLevel     = UNTRUSTED
 		if result == 0:

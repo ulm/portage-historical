@@ -1,17 +1,22 @@
 #!/bin/bash
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dolib,v 1.5 2003/02/16 03:03:41 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dolib,v 1.6 2004/08/16 08:19:38 carpaski Exp $
+
+if [ -z "${CONF_LIBDIR}" ]; then
+	# we need this to default to lib so that things dont break
+	CONF_LIBDIR="lib"
+fi
 
 if [ ${#} -lt 1 ] ; then
 	echo "${0}: at least one argument needed"
 	exit 1
 fi
-if [ ! -d "${D}${DESTTREE}/lib" ] ; then
-	install -d "${D}${DESTTREE}/lib"
+if [ ! -d "${D}${DESTTREE}/${CONF_LIBDIR}" ] ; then
+	install -d "${D}${DESTTREE}/${CONF_LIBDIR}"
 fi
 
 for x in "$@" ; do
 	if [ -e "${x}" ] ; then
-		install ${LIBOPTIONS} "${x}" "${D}${DESTTREE}/lib"
+		install ${LIBOPTIONS} "${x}" "${D}${DESTTREE}/${CONF_LIBDIR}"
 	else
 		echo "${0}: ${x} does not exist"
 	fi
