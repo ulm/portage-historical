@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.469 2004/08/09 15:54:55 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.470 2004/08/09 23:24:36 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -2696,10 +2696,10 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 	# Build directory creation isn't required for any of these.
 	if mydo not in ["fetch","digest","manifest"]:
 
-		if not os.path.exists(mysettings["PORTAGE_TMPDIR"]):
-			os.makedirs(mysettings["PORTAGE_TMPDIR"])
-		os.chown(mysettings["PORTAGE_TMPDIR"],portage_uid,portage_gid)
-		os.chmod(mysettings["PORTAGE_TMPDIR"],00775)
+		if not os.path.exists(mysettings["BUILD_PREFIX"]):
+			os.makedirs(mysettings["BUILD_PREFIX"])
+		os.chown(mysettings["BUILD_PREFIX"],portage_uid,portage_gid)
+		os.chmod(mysettings["BUILD_PREFIX"],00775)
 
 		# Should be ok again to set $T, as sandbox does not depend on it
 		mysettings["T"]=mysettings["BUILDDIR"]+"/temp"
