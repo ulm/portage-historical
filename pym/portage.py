@@ -43,7 +43,7 @@ class PortageContext:
 		#
 		# Set up our configuration
 		#
-		self.config = portage_config.config(self)
+		self.settings = portage_config.config(self)
 
 	def getIncrementals(self):
 		return self.incrementals
@@ -52,7 +52,7 @@ class PortageContext:
 		return self.profiledir
 
 	def getUseSplit(self):
-		return self.config.getUseSplit()
+		return self.settings.getUseSplit()
 
 	def do_vartree(self):
 		self.virtualmap=self.getvirtuals("/")
@@ -568,7 +568,7 @@ def env_update(makelinks=1):
 		# don't process backup files
 		if x[-1]=='~' or x[-4:]==".bak":
 			continue
-		myconfig=ctx.config.getconfig(ctx.getRoot()+"etc/env.d/"+x)
+		myconfig=ctx.settings.getconfig(ctx.getRoot()+"etc/env.d/"+x)
 		if myconfig==None:
 			print "!!! Parsing error in",ctx.getRoot()+"etc/env.d/"+x
 			#parse error
@@ -577,13 +577,13 @@ def env_update(makelinks=1):
 		for myspec in specials.keys():
 			if myconfig.has_key(myspec):
  				if myspec in ["LDPATH","PATH","PRELINK_PATH","PRELINK_PATH_MASK"]:
-					specials[myspec].extend(string.split(ctx.config.varexpand(myconfig[myspec]),":"))
+					specials[myspec].extend(string.split(ctx.settings.varexpand(myconfig[myspec]),":"))
 				else:
-					specials[myspec].append(ctx.config.varexpand(myconfig[myspec]))
+					specials[myspec].append(ctx.settings.varexpand(myconfig[myspec]))
 				del myconfig[myspec]
 		# process all other variables
 		for myenv in myconfig.keys():
-			env[myenv]=ctx.config.varexpand(myconfig[myenv])
+			env[myenv]=ctx.settings.varexpand(myconfig[myenv])
 			
 	if os.path.exists(ctx.getRoot()+"etc/ld.so.conf"):
 		myld=open(ctx.getRoot()+"etc/ld.so.conf")
@@ -828,7 +828,7 @@ def spawn(mystring,debug=0,free=0,droppriv=0):
 	to work."""
 
 	# usefull if an ebuild or so needs to get the pid of our python process
-	ctx.config["PORTAGE_MASTER_PID"]=str(os.getpid())
+	ctx.settings["PORTAGE_MASTER_PID"]=str(os.getpid())
 	
 	mypid=os.fork()
 	if mypid==0:
@@ -844,18 +844,18 @@ def spawn(mystring,debug=0,free=0,droppriv=0):
 					# DropPriv is a normally SandBox'd condition.
 					print "portage: Enabling sandbox."
 					free=0
-		ctx.config["HOME"]=ctx.config["BUILD_PREFIX"]
-		ctx.config["BASH_ENV"]=ctx.config["HOME"]+"/.bashrc"
+		ctx.settings["HOME"]=ctx.settings["BUILD_PREFIX"]
+		ctx.settings["BASH_ENV"]=ctx.settings["HOME"]+"/.bashrc"
 
 		if ("sandbox" in features) and (not free):
 			mycommand="/usr/lib/portage/bin/sandbox"
-			myargs=["["+ctx.config["PF"]+"] sandbox",mystring]
+			myargs=["["+ctx.settings["PF"]+"] sandbox",mystring]
 		else:
 			mycommand="/bin/bash"
 			if debug:
-				myargs=["["+ctx.config["PF"]+"] bash","-x","-c",mystring]
+				myargs=["["+ctx.settings["PF"]+"] bash","-x","-c",mystring]
 			else:
-				myargs=["["+ctx.config["PF"]+"] bash","-c",mystring]
+				myargs=["["+ctx.settings["PF"]+"] bash","-c",mystring]
 
 		os.execve(mycommand,myargs,settings.environ())
 		# If the execve fails, we need to report it, and exit
@@ -873,17 +873,17 @@ def spawn(mystring,debug=0,free=0,droppriv=0):
 
 def fetch(myuris, listonly=0):
 	"fetch files.  Will use digest file if available."
-	if ("mirror" in features) and ("nomirror" in ctx.config["RESTRICT"].split()):
+	if ("mirror" in features) and ("nomirror" in ctx.settings["RESTRICT"].split()):
 		print ">>> \"mirror\" mode and \"nomirror\" restriction enabled; skipping fetch."
 		return 1
 	global thirdpartymirrors
-	mymirrors=ctx.config["GENTOO_MIRRORS"].split()
-	fetchcommand=ctx.config["FETCHCOMMAND"]
-	resumecommand=ctx.config["RESUMECOMMAND"]
-	fetchcommand=string.replace(fetchcommand,"${DISTDIR}",ctx.config["DISTDIR"])
-	resumecommand=string.replace(resumecommand,"${DISTDIR}",ctx.config["DISTDIR"])
+	mymirrors=ctx.settings["GENTOO_MIRRORS"].split()
+	fetchcommand=ctx.settings["FETCHCOMMAND"]
+	resumecommand=ctx.settings["RESUMECOMMAND"]
+	fetchcommand=string.replace(fetchcommand,"${DISTDIR}",ctx.settings["DISTDIR"])
+	resumecommand=string.replace(resumecommand,"${DISTDIR}",ctx.settings["DISTDIR"])
 	mydigests=None
-	digestfn=ctx.config["FILESDIR"]+"/digest-"+ctx.config["PF"]
+	digestfn=ctx.settings["FILESDIR"]+"/digest-"+ctx.settings["PF"]
 	if os.path.exists(digestfn):
 		myfile=open(digestfn,"r")
 		mylines=myfile.readlines()
@@ -898,21 +898,21 @@ def fetch(myuris, listonly=0):
 				mydigests[myline[2]]={"md5":myline[1],"size":string.atol(myline[3])}
 			except ValueError:
 				print "!!! The digest",digestfn,"appears to be corrupt.  Aborting."
-	if "fetch" in ctx.config["RESTRICT"].split():
+	if "fetch" in ctx.settings["RESTRICT"].split():
 		# fetch is restricted.	Ensure all files have already been downloaded; otherwise,
 		# print message and exit.
 		gotit=1
 		for myuri in myuris:
 			myfile=os.path.basename(myuri)
 			try:
-				mystat=os.stat(ctx.config["DISTDIR"]+"/"+myfile)
+				mystat=os.stat(ctx.settings["DISTDIR"]+"/"+myfile)
 			except (OSError,IOError),e:
 				# file does not exist
-				print "!!!",myfile,"not found in",ctx.config["DISTDIR"]+"."
+				print "!!!",myfile,"not found in",ctx.settings["DISTDIR"]+"."
 				gotit=0
 		if not gotit:
 			print
-			print "!!!",ctx.config["CATEGORY"]+"/"+ctx.config["PF"],"has fetch restriction turned on."
+			print "!!!",ctx.settings["CATEGORY"]+"/"+ctx.settings["PF"],"has fetch restriction turned on."
 			print "!!! This probably means that this ebuild's files must be downloaded"
 			print "!!! manually.  See the comments in the ebuild for more information."
 			print
@@ -945,7 +945,7 @@ def fetch(myuris, listonly=0):
 				print loc+" ",
 				continue
 			try:
-				mystat=os.stat(ctx.config["DISTDIR"]+"/"+myfile)
+				mystat=os.stat(ctx.settings["DISTDIR"]+"/"+myfile)
 				if mydigests!=None and mydigests.has_key(myfile):
 					#if we have the digest file, we know the final size and can resume the download.
 					if mystat[ST_SIZE]<mydigests[myfile]["size"]:
@@ -975,7 +975,7 @@ def fetch(myuris, listonly=0):
 				myret=spawn(myfetch,free=1)
 				if mydigests!=None and mydigests.has_key(myfile):
 					try:
-						mystat=os.stat(ctx.config["DISTDIR"]+"/"+myfile)
+						mystat=os.stat(ctx.settings["DISTDIR"]+"/"+myfile)
 						# no exception?  file exists. let digestcheck() report
 						# an appropriately for size or md5 errors
 						if myret and (mystat[ST_SIZE]<mydigests[myfile]["size"]):
@@ -983,9 +983,9 @@ def fetch(myuris, listonly=0):
 							if (mystat[ST_SIZE]<100000) and (len(myfile)>4) and not ((myfile[-5:]==".html") or (myfile[-4:]==".htm")):
 								html404=re.compile("<title>.*(not found|404).*</title>",re.I|re.M)
 								try:
-									if html404.search(open(ctx.config["DISTDIR"]+"/"+myfile).read()):
+									if html404.search(open(ctx.settings["DISTDIR"]+"/"+myfile).read()):
 										try:
-											os.unlink(ctx.config["DISTDIR"]+"/"+myfile)
+											os.unlink(ctx.settings["DISTDIR"]+"/"+myfile)
 											print ">>> Deleting invalid distfile. (Improper 404 redirect from server.)"
 										except:
 											pass
@@ -1008,13 +1008,13 @@ def fetch(myuris, listonly=0):
 def digestgen(myarchives,overwrite=1):
 	"""generates digest file if missing.  Assumes all files are available.	If
 	overwrite=0, the digest will only be created if it doesn't already exist."""
-	if not os.path.isdir(ctx.config["FILESDIR"]):
-		os.makedirs(ctx.config["FILESDIR"])
+	if not os.path.isdir(ctx.settings["FILESDIR"]):
+		os.makedirs(ctx.settings["FILESDIR"])
 		if "cvs" in features:
 			print ">>> Auto-adding files/ dir to CVS..."
-			spawn("cd "+ctx.config["O"]+"; cvs add files",free=1)
-	myoutfn=ctx.config["FILESDIR"]+"/.digest-"+ctx.config["PF"]
-	myoutfn2=ctx.config["FILESDIR"]+"/digest-"+ctx.config["PF"]
+			spawn("cd "+ctx.settings["O"]+"; cvs add files",free=1)
+	myoutfn=ctx.settings["FILESDIR"]+"/.digest-"+ctx.settings["PF"]
+	myoutfn2=ctx.settings["FILESDIR"]+"/digest-"+ctx.settings["PF"]
 	if (not overwrite) and os.path.exists(myoutfn2):
 		return
 	print ">>> Generating digest file..."
@@ -1027,7 +1027,7 @@ def digestgen(myarchives,overwrite=1):
 		return
 	
 	for x in myarchives:
-		myfile=ctx.config["DISTDIR"]+"/"+x
+		myfile=ctx.settings["DISTDIR"]+"/"+x
 		mymd5=perform_md5(myfile)
 		mysize=os.stat(myfile)[ST_SIZE]
 		#The [:-1] on the following line is to remove the trailing "L"
@@ -1038,7 +1038,7 @@ def digestgen(myarchives,overwrite=1):
 		sys.exit(1)
 	if "cvs" in features:
 		print ">>> Auto-adding digest file to CVS..."
-		spawn("cd "+ctx.config["FILESDIR"]+"; cvs add digest-"+ctx.config["PF"],free=1)
+		spawn("cd "+ctx.settings["FILESDIR"]+"; cvs add digest-"+ctx.settings["PF"],free=1)
 	print ">>> Computed message digests."
 	
 def digestcheck(myarchives):
@@ -1046,7 +1046,7 @@ def digestcheck(myarchives):
 	if not myarchives:
 		#No archives required; don't expect a digest
 		return 1
-	digestfn=ctx.config["FILESDIR"]+"/digest-"+ctx.config["PF"]
+	digestfn=ctx.settings["FILESDIR"]+"/digest-"+ctx.settings["PF"]
 	if not os.path.exists(digestfn):
 		if "digest" in features:
 			print ">>> No message digest file found:",digestfn
@@ -1080,14 +1080,14 @@ def digestcheck(myarchives):
 				print "!!! the following to generate a new digest:"
 				print "!!!   ebuild /usr/portage/category/package/package-version.ebuild digest" 
 				return 0
-		mymd5=perform_md5(ctx.config["DISTDIR"]+"/"+x)
+		mymd5=perform_md5(ctx.settings["DISTDIR"]+"/"+x)
 		if mymd5 != mydigests[x][0]:
 			print
 			print "!!!",x+": message digests do not match!"
 			print "!!!",x,"is corrupt or incomplete."
 			print ">>> our recorded digest:",mydigests[x][0]
 			print ">>>  your file's digest:",mymd5
-			print ">>> Please delete",ctx.config["DISTDIR"]+"/"+x,"and refetch."
+			print ">>> Please delete",ctx.settings["DISTDIR"]+"/"+x,"and refetch."
 			print
 			return 0
 		else:
@@ -1119,68 +1119,68 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 		print "!!! doebuild: ",myebuild,"does not appear to be an ebuild file."
 		return 1
 	settings.reset()
-	ctx.config["PORTAGE_DEBUG"]=str(debug)
-	#ctx.config["ROOT"]=ctx.getRoot()
-	ctx.config["ROOT"]=myroot
-	ctx.config["STARTDIR"]=getcwd()
-	ctx.config["EBUILD"]=os.path.abspath(myebuild)
-	ctx.config["O"]=os.path.dirname(ctx.config["EBUILD"])
-	category=ctx.config["CATEGORY"]=os.path.basename(os.path.normpath(ctx.config["O"]+"/.."))
+	ctx.settings["PORTAGE_DEBUG"]=str(debug)
+	#ctx.settings["ROOT"]=ctx.getRoot()
+	ctx.settings["ROOT"]=myroot
+	ctx.settings["STARTDIR"]=getcwd()
+	ctx.settings["EBUILD"]=os.path.abspath(myebuild)
+	ctx.settings["O"]=os.path.dirname(ctx.settings["EBUILD"])
+	category=ctx.settings["CATEGORY"]=os.path.basename(os.path.normpath(ctx.settings["O"]+"/.."))
 	#PEBUILD
-	ctx.config["FILESDIR"]=ctx.config["O"]+"/files"
-	pf=ctx.config["PF"]=os.path.basename(ctx.config["EBUILD"])[:-7]
+	ctx.settings["FILESDIR"]=ctx.settings["O"]+"/files"
+	pf=ctx.settings["PF"]=os.path.basename(ctx.settings["EBUILD"])[:-7]
 	mykey=category+"/"+pf
-	ctx.config["ECLASSDIR"]=ctx.config["PORTDIR"]+"/eclass"
-	ctx.config["SANDBOX_LOG"]=ctx.config["PF"]
-	mysplit=pkgsplit(ctx.config["PF"],0)
+	ctx.settings["ECLASSDIR"]=ctx.settings["PORTDIR"]+"/eclass"
+	ctx.settings["SANDBOX_LOG"]=ctx.settings["PF"]
+	mysplit=pkgsplit(ctx.settings["PF"],0)
 	if mysplit==None:
 		print "!!! Error: PF is null; exiting."
 		return 1
-	ctx.config["P"]=mysplit[0]+"-"+mysplit[1]
-	ctx.config["PN"]=mysplit[0]
-	ctx.config["PV"]=mysplit[1]
-	ctx.config["PR"]=mysplit[2]
+	ctx.settings["P"]=mysplit[0]+"-"+mysplit[1]
+	ctx.settings["PN"]=mysplit[0]
+	ctx.settings["PV"]=mysplit[1]
+	ctx.settings["PR"]=mysplit[2]
 	if mysplit[2]=="r0":
-		ctx.config["PVR"]=mysplit[1]
+		ctx.settings["PVR"]=mysplit[1]
 	else:
-		ctx.config["PVR"]=mysplit[1]+"-"+mysplit[2]
-	ctx.config["SLOT"]=""
+		ctx.settings["PVR"]=mysplit[1]+"-"+mysplit[2]
+	ctx.settings["SLOT"]=""
 	if settings.has_key("PATH"):
-		mysplit=string.split(ctx.config["PATH"],":")
+		mysplit=string.split(ctx.settings["PATH"],":")
 	else:
 		mysplit=[]
 	if not "/usr/lib/portage/bin" in mysplit:
-		ctx.config["PATH"]="/usr/lib/portage/bin:"+ctx.config["PATH"]
+		ctx.settings["PATH"]="/usr/lib/portage/bin:"+ctx.settings["PATH"]
 
-	ctx.config["BUILD_PREFIX"]=ctx.config["PORTAGE_TMPDIR"]+"/portage"
-	ctx.config["PKG_TMPDIR"]=ctx.config["PORTAGE_TMPDIR"]+"/portage-pkg"
-	ctx.config["BUILDDIR"]=ctx.config["BUILD_PREFIX"]+"/"+ctx.config["PF"]
+	ctx.settings["BUILD_PREFIX"]=ctx.settings["PORTAGE_TMPDIR"]+"/portage"
+	ctx.settings["PKG_TMPDIR"]=ctx.settings["PORTAGE_TMPDIR"]+"/portage-pkg"
+	ctx.settings["BUILDDIR"]=ctx.settings["BUILD_PREFIX"]+"/"+ctx.settings["PF"]
 
 	try:
 		if mydo!="depend":
-			if not os.path.exists(ctx.config["BUILD_PREFIX"]):
-				os.makedirs(ctx.config["BUILD_PREFIX"])
-			if not os.path.exists(ctx.config["BUILDDIR"]):
-				os.makedirs(ctx.config["BUILDDIR"])
+			if not os.path.exists(ctx.settings["BUILD_PREFIX"]):
+				os.makedirs(ctx.settings["BUILD_PREFIX"])
+			if not os.path.exists(ctx.settings["BUILDDIR"]):
+				os.makedirs(ctx.settings["BUILDDIR"])
 			# Should be ok again to set $T, as sandbox do not depend on it
-			ctx.config["T"]=ctx.config["BUILDDIR"]+"/temp"
-			if not os.path.exists(ctx.config["T"]) and mydo!="depend":
-				os.makedirs(ctx.config["T"])
-			os.chown(ctx.config["BUILD_PREFIX"],portage_uid,portage_gid)
-			os.chown(ctx.config["BUILDDIR"],portage_uid,portage_gid)
-			os.chown(ctx.config["T"],portage_uid,portage_gid)
-			os.chmod(ctx.config["T"],02770)
+			ctx.settings["T"]=ctx.settings["BUILDDIR"]+"/temp"
+			if not os.path.exists(ctx.settings["T"]) and mydo!="depend":
+				os.makedirs(ctx.settings["T"])
+			os.chown(ctx.settings["BUILD_PREFIX"],portage_uid,portage_gid)
+			os.chown(ctx.settings["BUILDDIR"],portage_uid,portage_gid)
+			os.chown(ctx.settings["T"],portage_uid,portage_gid)
+			os.chmod(ctx.settings["T"],02770)
 	except OSError, e:
 		print "!!! File system problem. (ReadOnly? Out of space?)"
-		print "!!! Perhaps: rm -Rf",ctx.config["BUILD_PREFIX"]
+		print "!!! Perhaps: rm -Rf",ctx.settings["BUILD_PREFIX"]
 		print "!!!",str(e)
 		return 1
 
-	ctx.config["WORKDIR"]=ctx.config["BUILDDIR"]+"/work"
-	ctx.config["D"]=ctx.config["BUILDDIR"]+"/image/"
+	ctx.settings["WORKDIR"]=ctx.settings["BUILDDIR"]+"/work"
+	ctx.settings["D"]=ctx.settings["BUILDDIR"]+"/image/"
 
 	if mydo=="unmerge": 
-		return unmerge(ctx.config["CATEGORY"],ctx.config["PF"],myroot)
+		return unmerge(ctx.settings["CATEGORY"],ctx.settings["PF"],myroot)
 	
 	if mydo not in ["help","clean","prerm","postrm","preinst","postinst","config","touch","setup",
 	                "depend","fetch","digest","unpack","compile","install","rpm","qmerge","merge","package"]:
@@ -1192,13 +1192,13 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 		mykv,err1=ExtractKernelVersion(ctx.getRoot()+"usr/src/linux")
 		if mykv:
 			# Regular source tree
-			ctx.config["KV"]=mykv
+			ctx.settings["KV"]=mykv
 		else:
-			ctx.config["KV"]=""
+			ctx.settings["KV"]=""
 
 	if (mydo!="depend") or not settings.has_key("KVERS"):
 		myso=getstatusoutput("uname -r")
-		ctx.config["KVERS"]=myso[1]
+		ctx.settings["KVERS"]=myso[1]
 
 	# get possible slot information from the deps file
 	if mydo=="depend":
@@ -1208,23 +1208,23 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 		return myso[0]
 
 	if settings.has_key("PORT_LOGDIR"):
-		if os.access(ctx.config["PORT_LOGDIR"]+"/",os.W_OK):
-			ctx.config["LOG_COUNTER"]=str(counter_tick_core("/"))
+		if os.access(ctx.settings["PORT_LOGDIR"]+"/",os.W_OK):
+			ctx.settings["LOG_COUNTER"]=str(counter_tick_core("/"))
 		else:
 			print "!!! Cannot create log... No write access / Does not exist"
-			print "!!! PORT_LOGDIR:",ctx.config["PORT_LOGDIR"]
-			ctx.config["PORT_LOGDIR"]=""
+			print "!!! PORT_LOGDIR:",ctx.settings["PORT_LOGDIR"]
+			ctx.settings["PORT_LOGDIR"]=""
 	
 	# if any of these are being called, handle them -- running them out of the sandbox -- and stop now.
 	if mydo in ["help","clean","setup","prerm","postrm","preinst","postinst","config"]:
 		return spawn("/usr/sbin/ebuild.sh "+mydo,debug,free=1)
 	
 	try: 
-		ctx.config["SLOT"], ctx.config["RESTRICT"], myuris = ctx.db["/"]["porttree"].dbapi.aux_get(mykey,["SLOT","RESTRICT","SRC_URI"])
+		ctx.settings["SLOT"], ctx.settings["RESTRICT"], myuris = ctx.db["/"]["porttree"].dbapi.aux_get(mykey,["SLOT","RESTRICT","SRC_URI"])
 	except (IOError,KeyError):
 		print red("doebuild():")+" aux_get() error; aborting."
 		sys.exit(1)
-	newuris=flatten(evaluate(tokenize(myuris),string.split(ctx.config["USE"])))	
+	newuris=flatten(evaluate(tokenize(myuris),string.split(ctx.settings["USE"])))	
 	alluris=flatten(evaluate(tokenize(myuris),[],1))	
 	alist=[]
 	aalist=[]
@@ -1235,8 +1235,8 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 			mya=os.path.basename(x)
 			if not mya in myl[1]:
 				myl[1].append(mya)
-	ctx.config["A"]=string.join(alist," ")
-	ctx.config["AA"]=string.join(aalist," ")
+	ctx.settings["A"]=string.join(alist," ")
+	ctx.settings["AA"]=string.join(aalist," ")
 	if ("cvs" in features) or ("mirror" in features):
 		fetchme=alluris
 		checkme=aalist
@@ -1280,23 +1280,23 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 		return spawnebuild(mydo,actionmap,debug)
 	elif mydo=="qmerge": 
 		#qmerge is specifically not supposed to do a runtime dep check
-		return merge(ctx.config["CATEGORY"],ctx.config["PF"],ctx.config["D"],ctx.config["BUILDDIR"]+"/build-info",myroot)
+		return merge(ctx.settings["CATEGORY"],ctx.settings["PF"],ctx.settings["D"],ctx.settings["BUILDDIR"]+"/build-info",myroot)
 	elif mydo=="merge":
 		retval=spawnebuild("install",actionmap,debug,1)
 		if retval: return retval
-		return merge(ctx.config["CATEGORY"],ctx.config["PF"],ctx.config["D"],ctx.config["BUILDDIR"]+"/build-info",myroot,myebuild=ctx.config["EBUILD"])
+		return merge(ctx.settings["CATEGORY"],ctx.settings["PF"],ctx.settings["D"],ctx.settings["BUILDDIR"]+"/build-info",myroot,myebuild=ctx.settings["EBUILD"])
 	elif mydo=="package":
-		for x in ["","/"+ctx.config["CATEGORY"],"/All"]:
-			if not os.path.exists(ctx.config["PKGDIR"]+x):
-				os.makedirs(ctx.config["PKGDIR"]+x)
+		for x in ["","/"+ctx.settings["CATEGORY"],"/All"]:
+			if not os.path.exists(ctx.settings["PKGDIR"]+x):
+				os.makedirs(ctx.settings["PKGDIR"]+x)
 
 		# XXX: This is annoying as it never considers changes.  #
 		# XXX: Removing until we get a few things updated like  #
 		# XXX: rebuild-on-use and others to notice the changes. #
-		#pkgloc=ctx.config["PKGDIR"]+"/All/"+ctx.config["PF"]+".tbz2"
+		#pkgloc=ctx.settings["PKGDIR"]+"/All/"+ctx.settings["PF"]+".tbz2"
 		rebuild=1
 		#if os.path.exists(pkgloc):
-		#	for x in [ctx.config["A"],ctx.config["EBUILD"]]:
+		#	for x in [ctx.settings["A"],ctx.settings["EBUILD"]]:
 		#		if not os.path.exists(x):
 		#			continue
 		#		if os.path.getmtime(x)>os.path.getmtime(pkgloc):
@@ -1306,8 +1306,8 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 		#	rebuild=1
 		if not rebuild:
 			print
-			print ">>> Package",ctx.config["PF"]+".tbz2 appears to be up-to-date."
-			print ">>> To force rebuild, touch",os.path.basename(ctx.config["EBUILD"])
+			print ">>> Package",ctx.settings["PF"]+".tbz2 appears to be up-to-date."
+			print ">>> To force rebuild, touch",os.path.basename(ctx.settings["EBUILD"])
 			print
 			return 0
 		else:
@@ -1806,7 +1806,7 @@ def dep_opconvert(mysplit,myuse):
 				# enable it even if it's ! (for repoman) but kill it if it's
 				# an arch variable that isn't for this arch. XXX Sparc64?
 				if (mysplit[mypos][:-1] not in settings.usemask) or \
-						(mysplit[mypos][:-1]==ctx.config["ARCH"]):
+						(mysplit[mypos][:-1]==ctx.settings["ARCH"]):
 					enabled=1
 				else:
 					enabled=0
@@ -2154,7 +2154,7 @@ class portagetree:
 			self.pkglines=clone.pkglines
 		else:
 			self.root=root
-			self.portroot=ctx.config["PORTDIR"]
+			self.portroot=ctx.settings["PORTDIR"]
 			self.virtual=virtual
 			self.dbapi=portdb
 
@@ -2683,7 +2683,7 @@ def eclass(myeclass=None,mycpv=None,mymtime=None):
 	if not ctx.mtimedb.has_key("starttime") or (ctx.mtimedb["starttime"]!=starttime):
 		ctx.mtimedb["starttime"]=starttime
 		# Update the cache
-		for x in [ctx.config["PORTDIR"]+"/eclass", ctx.config["PORTDIR_OVERLAY"]+"/eclass"]:
+		for x in [ctx.settings["PORTDIR"]+"/eclass", ctx.settings["PORTDIR_OVERLAY"]+"/eclass"]:
 			if x and os.path.exists(x):
 				dirlist = listdir(x)
 				for y in dirlist:
@@ -2754,7 +2754,7 @@ auxdbkeylen=len(auxdbkeys)
 class portdbapi(dbapi):
 	"this tree will scan a portage directory located at root (passed to init)"
 	def __init__(self):
-		self.root=ctx.config["PORTDIR"]
+		self.root=ctx.settings["PORTDIR"]
 		self.auxcache={}
 		#if the portdbapi is "frozen", then we assume that we can cache everything (that no updates to it are happening)
 		self.xcache={}
@@ -3182,7 +3182,7 @@ class binarytree(packagetree):
 			self.tree=clone.tree
 		else:
 			self.root=root
-			self.pkgdir=ctx.config["PKGDIR"]
+			self.pkgdir=ctx.settings["PKGDIR"]
 			self.dbapi=fakedbapi()
 			self.populated=0
 			self.tree={}
@@ -3325,13 +3325,13 @@ class dblink:
 	def updateprotect(self):
 		#do some config file management prep
 		self.protect=[]
-		for x in string.split(ctx.config["CONFIG_PROTECT"]):
+		for x in string.split(ctx.settings["CONFIG_PROTECT"]):
 			ppath=os.path.normpath(self.myroot+"/"+x)+"/"
 			if os.path.isdir(ppath):
 				self.protect.append(ppath)
 			
 		self.protectmask=[]
-		for x in string.split(ctx.config["CONFIG_PROTECT_MASK"]):
+		for x in string.split(ctx.settings["CONFIG_PROTECT_MASK"]):
 			ppath=os.path.normpath(self.myroot+"/"+x)+"/"
 			if os.path.isdir(ppath):
 				self.protectmask.append(ppath)
@@ -3597,7 +3597,7 @@ class dblink:
 			cfgfiledict=grabdict(destroot+"/var/cache/edb/config")
 		else:
 			cfgfiledict={}
-		if ctx.config.has_key("NOCONFMEM"):
+		if ctx.settings.has_key("NOCONFMEM"):
 			cfgfiledict["IGNORE"]=1
 		else:
 			cfgfiledict["IGNORE"]=0
@@ -3756,7 +3756,7 @@ class dblink:
 						sys.stderr.write("\n!!! Cannot write to '"+mydest+"'.\n")
 						sys.stderr.write("!!! Please check permissions and directories for broken symlinks.\n")
 						sys.stderr.write("!!! You may start the merge process again by using ebuild:\n")
-						sys.stderr.write("!!! ebuild "+ctx.config["PORTDIR"]+"/"+self.cat+"/"+pkgstuff[0]+"/"+self.pkg+".ebuild merge\n")
+						sys.stderr.write("!!! ebuild "+ctx.settings["PORTDIR"]+"/"+self.cat+"/"+pkgstuff[0]+"/"+self.pkg+".ebuild merge\n")
 						sys.stderr.write("!!! And finish by running this: env-update\n\n")
 						return 1
 
@@ -3962,7 +3962,7 @@ class dblink:
 		return os.path.exists(self.dbdir+"/CATEGORY")
 
 def cleanup_pkgmerge(mypkg,origdir):
-	shutil.rmtree(ctx.config["PORTAGE_TMPDIR"]+"/portage-pkg/"+mypkg)
+	shutil.rmtree(ctx.settings["PORTAGE_TMPDIR"]+"/portage-pkg/"+mypkg)
 	os.chdir(origdir)
 
 def pkgmerge(mytbz2,myroot):
@@ -3981,7 +3981,7 @@ def pkgmerge(mytbz2,myroot):
 		return None
 	mycat=mycat.strip()
 	mycatpkg=mycat+"/"+mypkg
-	tmploc=ctx.config["PORTAGE_TMPDIR"]+"/portage-pkg/"
+	tmploc=ctx.settings["PORTAGE_TMPDIR"]+"/portage-pkg/"
 	pkgloc=tmploc+"/"+mypkg+"/bin/"
 	infloc=tmploc+"/"+mypkg+"/inf/"
 	myebuild=tmploc+"/"+mypkg+"/inf/"+os.path.basename(mytbz2)[:-4]+"ebuild"
@@ -4090,7 +4090,7 @@ def do_upgrade(mykey):
 
 if (secpass==2) and (not os.environ.has_key("SANDBOX_ACTIVE")):
 	#only do this if we're root
-	updpath=os.path.normpath(ctx.config["PORTDIR"]+"/profiles/updates")
+	updpath=os.path.normpath(ctx.settings["PORTDIR"]+"/profiles/updates")
 	didupdate=0
 	try:
 		for myfile in listdir(updpath):
@@ -4109,11 +4109,11 @@ if (secpass==2) and (not os.environ.has_key("SANDBOX_ACTIVE")):
 
 #the new standardized db names:
 portdb=portdbapi()
-if ctx.config["PORTDIR_OVERLAY"]:
-	if os.path.isdir(ctx.config["PORTDIR_OVERLAY"]):
-		portdb.oroot=ctx.config["PORTDIR_OVERLAY"]
+if ctx.settings["PORTDIR_OVERLAY"]:
+	if os.path.isdir(ctx.settings["PORTDIR_OVERLAY"]):
+		portdb.oroot=ctx.settings["PORTDIR_OVERLAY"]
 	else:
-		print "portage: init: PORTDIR_OVERLAY points to",ctx.config["PORTDIR_OVERLAY"],"which isn't a directory. Exiting."
+		print "portage: init: PORTDIR_OVERLAY points to",ctx.settings["PORTDIR_OVERLAY"],"which isn't a directory. Exiting."
 		sys.exit(1)
 
 
@@ -4126,37 +4126,37 @@ ctx.db["/"]["bintree"]=binarytree("/",ctx.virtualmap)
 if ctx.getRoot()!="/":
 	ctx.db[ctx.getRoot()]["porttree"]=portagetree(ctx.getRoot(),ctx.virtualmap)
 	ctx.db[ctx.getRoot()]["bintree"]=binarytree(ctx.getRoot(),ctx.virtualmap)
-thirdpartymirrors=grabdict(ctx.config["PORTDIR"]+"/profiles/thirdpartymirrors")
+thirdpartymirrors=grabdict(ctx.settings["PORTDIR"]+"/profiles/thirdpartymirrors")
 
 #,"porttree":portagetree(ctx.getRoot(),ctx.virtualmap),"bintree":binarytree(ctx.getRoot(),ctx.virtualmap)}
-features=ctx.config["FEATURES"].split()
+features=ctx.settings["FEATURES"].split()
 
 # Defaults set at the top of perform_checksum.
 if os.system("/usr/sbin/prelink --version > /dev/null 2>&1") == 0:
 	prelink_capable=1
 
-dbcachedir=ctx.config["PORTAGE_CACHEDIR"]
+dbcachedir=ctx.settings["PORTAGE_CACHEDIR"]
 if not dbcachedir:
 	#the auxcache is the only /var/cache/edb/ entry that stays at / even when "root" changes.
 	dbcachedir="/var/cache/edb/dep/"
-	ctx.config["PORTAGE_CACHEDIR"]=dbcachedir
+	ctx.settings["PORTAGE_CACHEDIR"]=dbcachedir
 #create PORTAGE_TMPDIR if it doesn't exist.
-if not os.path.exists(ctx.config["PORTAGE_TMPDIR"]):
-	print "portage: the directory specified in your PORTAGE_TMPDIR variable, \""+ctx.config["PORTAGE_TMPDIR"]+",\""
+if not os.path.exists(ctx.settings["PORTAGE_TMPDIR"]):
+	print "portage: the directory specified in your PORTAGE_TMPDIR variable, \""+ctx.settings["PORTAGE_TMPDIR"]+",\""
 	print "does not exist.  Please create this directory or correct your PORTAGE_TMPDIR settting."
 	sys.exit(1)
-if not os.path.isdir(ctx.config["PORTAGE_TMPDIR"]):
-	print "portage: the directory specified in your PORTAGE_TMPDIR variable, \""+ctx.config["PORTAGE_TMPDIR"]+",\""
+if not os.path.isdir(ctx.settings["PORTAGE_TMPDIR"]):
+	print "portage: the directory specified in your PORTAGE_TMPDIR variable, \""+ctx.settings["PORTAGE_TMPDIR"]+",\""
 	print "is not a directory.  Please correct your PORTAGE_TMPDIR settting."
 	sys.exit(1)
 
 #getting categories from an external file now
-if os.path.exists(ctx.config["PORTDIR"]+"/profiles/categories"):
-	categories=grabfile(ctx.config["PORTDIR"]+"/profiles/categories")
+if os.path.exists(ctx.settings["PORTDIR"]+"/profiles/categories"):
+	categories=grabfile(ctx.settings["PORTDIR"]+"/profiles/categories")
 else:
 	categories=[]
 
-pkgmasklines=grabfile(ctx.config["PORTDIR"]+"/profiles/package.mask")
+pkgmasklines=grabfile(ctx.settings["PORTDIR"]+"/profiles/package.mask")
 if ctx.getProfileDir():
 	pkglines=grabfile(ctx.getProfileDir()+"/packages")
 else:
@@ -4177,6 +4177,6 @@ for x in pkglines:
 	else:
 		revmaskdict[mycatpkg].append(x)
 del pkglines
-groups=ctx.config["ACCEPT_KEYWORDS"].split()
+groups=ctx.settings["ACCEPT_KEYWORDS"].split()
 
 
