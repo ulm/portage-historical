@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.293 2003/02/22 16:59:08 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.294 2003/02/22 19:19:11 carpaski Exp $
 
 VERSION="2.0.47-r3"
 
@@ -3005,7 +3005,6 @@ class portdbapi(dbapi):
 		try:
 			emtime=os.stat(myebuild)[ST_MTIME]
 		except:
-			print "!!! Failed to stat ebuild:",myebuild
 			return None
 		
 		# first, we take a look at the size of the ebuild/cache entry to ensure we
