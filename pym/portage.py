@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.269.2.13 2003/02/19 15:45:40 alain Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.269.2.14 2003/02/22 19:11:32 alain Exp $
 
 VERSION="2.0.47-r1"
 
@@ -12,7 +12,7 @@ from output import *
 import string,os,re,types,sys,shlex,shutil,xpak,fcntl,signal,time,missingos,cPickle,atexit,grp,traceback,commands,pwd
 import portage_config
 import portage_files
-
+import log4py
 
 #
 # Definitions for access rights.
@@ -26,6 +26,9 @@ USER_ROOT	= 2
 
 class PortageContext:
 	def __init__(self):
+		self.logger = self.get_logger(self)
+		self.logger.debug("initializing")
+
 		self.incrementals=["USE","FEATURES","ACCEPT_KEYWORDS","ACCEPT_LICENSE","CONFIG_PROTECT_MASK","CONFIG_PROTECT","PRELINK_PATH","PRELINK_PATH_MASK"]
 		self.stickies=["KEYWORDS_ACCEPT","USE","CFLAGS","CXXFLAGS","MAKEOPTS","EXTRA_ECONF","EXTRA_EMAKE"]
 		self.db = {}
@@ -92,6 +95,7 @@ class PortageContext:
 		else:
 			self.profiledir = None
 			print ">>> Note: /etc/make.profile isn't available; an 'emerge sync' will probably fix this."
+			self.logger.info("/etc/make.profile isn't available; an 'emerge sync' will probably fix this.")
 
 		#
 		# Load the LastModified DB
@@ -173,6 +177,11 @@ class PortageContext:
 		#
 		self.initialize_groups()
 
+		self.logger.debug("initialization complete")
+
+
+	def get_logger(self, classid):
+		return log4py.Logger(log4py.TRUE,"/etc/portage/log4py.conf").get_instance(classid)
 
 	def get_incrementals(self):
 		return self.incrementals
@@ -184,6 +193,8 @@ class PortageContext:
 		return self.settings.get_usesplit()
 
 	def do_vartree(self):
+		self.logger.debug("Loading virtual(pkg)map")
+
 		self.virtualmap=self.getvirtuals("/")
 		self.virtualpkgmap={}
 
@@ -233,11 +244,13 @@ class PortageContext:
 			self.root="/"
 		if self.root != "/":
 			if not os.path.exists(self.root[:-1]):
-				print "!!! Error: ROOT",self.root,"does not exist.  Please correct this."
+				self.logger.error("ROOT",self.root[:-1],"does not exist!")
+				print "!!! Error: ROOT",self.root[:-1],"does not exist.  Please correct this."
 				print "!!! Exiting."
 				print
 				sys.exit(1)
 			elif not os.path.isdir(self.root[:-1]):
+				self.logger.error("Root",self.root[:-1],"is not a directory.")
 				print "!!! Error: ROOT",self.root[:-1],"is not a directory.  Please correct this."
 				print "!!! Exiting."
 				print
@@ -315,9 +328,11 @@ class PortageContext:
 		if creating them fails."""
 		os.umask(0)
 		if not os.path.exists(self.getRoot()+"tmp"):
+			self.logger.info(self.getRoot()+"tmp doesn't exist, creating it...")
 			print ">>> "+self.getRoot()+"tmp doesn't exist, creating it..."
 			os.mkdir(self.getRoot()+"tmp",01777)
 		if not os.path.exists(self.getRoot()+"var/tmp"):
+			self.logger.info(self.getRoot()+"var/tmp doesn't exist, creating it...")
 			print ">>> "+self.getRoot()+"var/tmp doesn't exist, creating it..."
 			try:
 				os.mkdir(self.getRoot()+"var",0755)
@@ -326,7 +341,8 @@ class PortageContext:
 			try:
 				os.mkdir(self.getRoot()+"var/tmp",01777)
 			except:
-				print "portage: couldn't create /var/tmp; exiting."
+				self.logger.error("Couldn't create "+self.getRoot()+"var/tmp, exiting...")
+				print "portage: couldn't create "+self.getRoot()+"var/tmp; exiting."
 				sys.exit(1)
 
 	def create_cache_directories(self):
@@ -336,11 +352,13 @@ class PortageContext:
 		if not os.environ.has_key("SANDBOX_ACTIVE"):
 			for cachedir in cachedirs:
 				if not os.path.exists(cachedir):
-					os.makedirs(cachedir,0755)
+					self.logger.info(cachedir,"doesn't exist, creating it...")
 					print ">>>",cachedir,"doesn't exist, creating it..."
+					os.makedirs(cachedir,0755)
 				if not os.path.exists(cachedir+"/dep"):
-					os.makedirs(cachedir+"/dep",2755)
+					self.logger.info(cachedir+"/dep doesn't exist, creating it...")
 					print ">>>",cachedir+"/dep","doesn't exist, creating it..."
+					os.makedirs(cachedir+"/dep",2755)
 				try:
 					os.chown(cachedir,self.uid,self.wheelgid)
 					os.chmod(cachedir,0775)
@@ -371,10 +389,12 @@ class PortageContext:
 			if not len(mysplit):
 				continue
 			if mysplit[0]!="move":
+				self.logger.info("do_update() - Update type \""+mysplit[0]+"\" not recognized.")
 				print "portage: Update type \""+mysplit[0]+"\" not recognized."
 				processed=0
 				continue
 			if len(mysplit)!=3:
+				self.logger.info("do_update() - Update command \""+myline+"\" invalid; skipping.")
 				print "portage: Update command \""+myline+"\" invalid; skipping."
 				processed=0
 				continue
@@ -458,7 +478,7 @@ class PortageContext:
 	def initialize_prelink(self):
 		"""Initialize prelink handling.  This checks whether or not this system supports prelinking."""
 		self.prelink_capable=0
-		if spawn("/usr/sbin/prelink --version > /dev/null 2>&1") == 0:
+		if spawn(self, "/usr/sbin/prelink --version > /dev/null 2>&1") == 0:
 			self.prelink_capable=1
 
 	def has_prelink(self):
@@ -3228,7 +3248,7 @@ class portdbapi(dbapi):
 		if not mylines:
 			print "no mylines"
 			pass
-		elif doregen2 or len(mylines)<len(auxdbkeys):
+		elif doregen2 or len(mylines)<len(self.auxdbkeys):
 			doregen2=1
 			#print "too few auxdbkeys / invalid generation"
 		elif mylines[self.auxdbkeys.index("INHERITED")]!="\n":
