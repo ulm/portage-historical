@@ -1,11 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.778 2004/10/09 01:03:30 ferringb Exp $
+# $Id: ChangeLog,v 1.779 2004/10/09 02:32:43 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  08 Oct 2004; Brian Harring <ferringb@gentoo.org> portage_exec.py: Removed 
+  the portage_exec.spawn_bash call for tee logging- instead, transferred in 
+  some code that does path lookups (closer to the older portage.spawn call).
+  Path lookup by default is on, but can be disabled via path_lookup=False.
 
   08 Oct 2004; Brian Harring <ferringb@gentoo.org> portage_locks.py: Reverted 
   to using flock by default- if it fails (unavailable), -then- use lockf, then
