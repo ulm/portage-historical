@@ -1,7 +1,7 @@
 # Copyright 1999-200 Gentoo Technologies, Inc. 
 # Distributed under the terms of the GNU General Public License, v2 or later 
 # Author: Daniel Robbins <drobbins@gentoo.org>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_core2.py,v 1.4 2001/11/26 19:23:51 drobbins Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_core2.py,v 1.5 2002/06/17 00:47:06 drobbins Exp $
 
 import string
 import re
@@ -61,7 +61,6 @@ class selector:
 		return self.repr
 
 class key(selector):
-
 	"""A 'key' (name may change in the future) is used to specify a category
 	(in "not specific" mode) or a category and package (in "specific" mode).
 	It does not specify any version information."""
