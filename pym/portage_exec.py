@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.4 2004/09/01 21:06:00 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.5 2004/09/02 02:44:40 ferringb Exp $
 
 import os,types
 import signal
@@ -103,17 +103,15 @@ def spawn(mycommand,env={},opt_name=None,fd_pipes=None,returnpid=False,uid=None,
 					os.close(x)
 				except:
 					pass
-		if uid:
-			os.setuid(uid)
+		# note this order must be preserved- can't change gid/groups if you change uid first.
 		if gid:
 			os.setgid(gid)
 		if groups:
 			os.setgroups(groups)
+		if uid:
+			os.setuid(uid)
 		if umask:
 			os.umask(umask)
-#		print "mycommand=",mycommand[0]
-#		print "args=",myargs
-#		print "env=",env
 		try:
 			os.execve(mycommand[0],myargs,env)
 		except Exception, e:
