@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.15 2004/12/17 22:25:13 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.16 2004/12/22 00:12:16 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1401,11 +1401,6 @@ class config:
 		if os.environ.get("PORTAGE_CALLER","") != "repoman":
 		  user_profile_dir = myroot+USER_CONFIG_PATH
 
-		if os.path.exists("/etc/portage/virtuals"):
-			writemsg("\n\n*** /etc/portage/virtuals should be moved to /etc/portage/profile/virtuals\n")
-			writemsg("*** Please correct this by merging or moving the file. (Deprecation notice)\n\n")
-			time.sleep(1)
-			
 		self.dirVirtuals = grab_multiple("virtuals", myvirtdirs, grabdict)
 		self.dirVirtuals.reverse()
 		self.userVirtuals = {}
