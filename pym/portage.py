@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.548 2004/11/09 19:00:23 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.549 2004/11/09 19:11:41 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1863,8 +1863,8 @@ def digestCreateLines(filelist, mydict):
 			if sumName not in portage_checksum.get_valid_checksum_keys():
 				continue
 			mysum = mydigests[myarchive][sumName]
-			
-			myline = sumName[:]
+
+			myline = sumName
 			myline += " "+mysum
 			myline += " "+myarchive
 			myline += " "+str(mysize)
