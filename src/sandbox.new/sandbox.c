@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 Geert Bevin, Uwyn, http://www.uwyn.com
 **	Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@uwyn.com>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/sandbox.c,v 1.1 2002/08/18 21:25:24 azarah Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/sandbox.c,v 1.2 2002/08/19 18:08:19 azarah Exp $
 */
 
 #define _GNU_SOURCE
@@ -781,3 +781,7 @@ int main(int argc, char** argv)
     }
   }
 }
+
+
+
+// vim:expandtab noai:cindent ai

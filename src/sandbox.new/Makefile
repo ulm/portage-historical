@@ -8,7 +8,7 @@
 # Modified 19 Aug 2002; Martin Schlemmer <azarah@gentoo.org>
 #  Major rewrite to support new stuff
 #
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/Makefile,v 1.4 2002/08/18 23:56:13 azarah Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/Makefile,v 1.5 2002/08/19 18:08:19 azarah Exp $
 
 CC = gcc
 LD = ld
@@ -57,3 +57,5 @@ clean:
 	rm -f *.o *~ core
 	rm -f localdecls.h
 
+
+# vim:expandtab noai:cindent ai
