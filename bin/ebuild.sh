@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.141 2003/09/02 17:31:40 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.142 2003/09/29 18:13:42 carpaski Exp $
 
 if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 	if [ -f ${T}/successful ]; then
@@ -656,6 +656,9 @@ dyn_compile() {
 	[ "${LDFLAGS-unset}"     != "unset" ] && export LDFLAGS
 	[ "${ASFLAGS-unset}"     != "unset" ] && export ASFLAGS
 
+	[ "${DISTCC_DIR-unset}"  == "unset" ] && export DISTCC_DIR="${PORT_TMPDIR}/.distcc"
+	[ ! -z "${DISTCC_DIR}" ] && addwrite "${DISTCC_DIR}"
+
 	if has noauto $FEATURES &>/dev/null && [ ! -f ${BUILDDIR}/.unpacked ]; then
 		echo
 		echo "!!! We apparently haven't unpacked... This is probably not what you"
@@ -802,9 +805,13 @@ dyn_install() {
 
 	if use selinux; then
 		if [ -x /usr/sbin/setfiles ]; then
-			if [ -e ${POLICYDIR}/file_contexts/file_contexts ]; then
-				setfiles -r ${D} ${POLICYDIR}/file_contexts/file_contexts ${D}
+			if [ -f ${POLICYDIR}/file_contexts/file_contexts ]; then
+				cp -f ${POLICYDIR}/file_contexts/file_contexts ${T}
+			else
+				make -C ${POLICYDIR} FC=${T}/file_contexts ${T}/file_contexts
 			fi
+
+			/usr/sbin/setfiles -r ${D} ${T}/file_contexts ${D}
 		fi
 	fi
 
