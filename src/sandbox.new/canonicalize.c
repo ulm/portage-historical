@@ -17,6 +17,10 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
    02111-1307 USA.  */
 
+/*
+ * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/canonicalize.c,v 1.3 2002/08/20 10:08:33 azarah Exp $
+ */
+
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
