@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/db-update.py,v 1.9 2004/10/11 04:01:00 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/db-update.py,v 1.10 2004/11/10 03:10:56 genone Exp $
 
 import os,sys,string
 sys.path = ["/usr/lib/portage/pym"]+sys.path
@@ -28,14 +28,14 @@ for x in sys.argv[1:]:
 	myline=myfile.readline()
 	mykey=string.join(string.split(myline))
 	if portage.isspecific(x):
-		mysplit=portage.catpkgsplit(x)
+		mysplit=portage.portage_versions.catpkgsplit(x)
 		newkey=mysplit[0]+"/"+mysplit[1]
 		origkey[newkey]=x
 		x=newkey
 	else:
 		origkey[x]=x
 	if portage.isspecific(mykey):
-		mysplit=portage.catpkgsplit(mykey)
+		mysplit=portage.portage_versions.catpkgsplit(mykey)
 		mykey=mysplit[0]+"/"+mysplit[1]
 	myvalidargs.append(x)
 	mydict[x]=mykey

@@ -2,7 +2,7 @@
 # ebuild.py; Ebuild classes/abstraction of phase processing, and communicating with a ebuild-daemon.sh instance
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.5 2004/11/09 12:59:18 ferringb Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.6 2004/11/10 03:10:56 genone Exp $
 
 
 import os,sys,traceback
@@ -11,6 +11,7 @@ import portage_const,types
 from portage_const import *
 import portage_locks, portage_util
 import portage_exec
+import portage_versions
 import shutil, anydbm
 import stat
 import string
@@ -565,7 +566,7 @@ class ebuild_handler:
 		mypv        = os.path.basename(ebuild_path)[:-7]
 		mycpv       = cat+"/"+mypv
 	
-		mysplit=portage_dep.pkgsplit(mypv,silent=0)
+		mysplit=portage_versions.pkgsplit(mypv,silent=0)
 		if mysplit==None:
 			writemsg("!!! Error: PF is null '%s'; exiting.\n" % mypv)
 			return 1

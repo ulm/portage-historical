@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/fixvirtuals,v 1.3 2004/10/11 04:01:00 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/fixvirtuals,v 1.4 2004/11/10 03:10:56 genone Exp $
 
 import os,sys
 sys.path = ["/usr/lib/portage/pym"]+sys.path
@@ -19,7 +19,7 @@ myprovides=portage.db["/"]["vartree"].get_all_provides()
 for myvirt in myprovides.keys():
 	newvirts[myvirt]=[]
 	for mycatpkg in myprovides[myvirt]:
-		mysplit=portage.catpkgsplit(mycatpkg)
+		mysplit=portage.portage_versions.catpkgsplit(mycatpkg)
 		pkg=mysplit[0]+"/"+mysplit[1]
 
 		try:

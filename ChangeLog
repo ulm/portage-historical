@@ -1,11 +1,20 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.861 2004/11/09 23:20:47 ferringb Exp $
+# $Id: ChangeLog,v 1.862 2004/11/10 03:10:56 genone Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  10 Nov 2004; Marius Mauch <genone@gentoo.org> +pym/portage_versions.py,
+  bin/db-update.py, bin/emerge, bin/fixvirtuals, bin/pkgname, bin/repoman,
+  pym/ebuild.py, pym/portage.py, pym/portage_dep.py:
+  Integrated the new version parsing and comparison code from bug #37406, moved
+  pkgsplit, catpkgsplit, pkgcmp, vercmp and ververify in portage_versions.py
+  and changed all calls to them. The new code allows for more flexible 
+  version strings, some functions probably still have to be fixed to work
+  with those new extensions.
 
   09 Nov 2004; Brian Harring <ferringb@gentoo.org> pym/dcache.py, 
   pym/orig_dict_cache.py, portage.py:  Removed listdir optional arg
