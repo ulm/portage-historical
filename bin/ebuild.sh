@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.191 2004/08/22 04:33:37 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.192 2004/08/24 18:08:12 ferringb Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -935,7 +935,9 @@ dyn_package() {
 
 dyn_test() {
 	trap "abort_test" SIGINT SIGQUIT
-	cd "${S}"
+	if [ -d "${S}" ]; then
+		cd "${S}"
+	fi
 
 	if hasq maketest $RESTRICT; then
 		ewarn "Skipping make test/check due to ebuild restriction."

@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.715 2004/08/24 06:41:16 ferringb Exp $
+# $Id: ChangeLog,v 1.716 2004/08/24 18:08:12 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -8,6 +8,9 @@
     3. /etc/portage/profile/virtuals is _USER_ configs only.
     4. /etc/portage/sets/world is a symlink to /var/lib/portage/world
        It is for convenience. Do not mistake this for the actual file.
+
+  24 Aug 2004; Brian Harring <ferringb@gentoo.ogr> bin/ebuild.sh: Tweak to
+  dyn_test to check if $S exists prior to cd'ing to it.
 
   24 Aug 2004; Brian Harring <ferringb@gentoo.org> pym/portage.py: Fixed a 
   traceback issues in dblink.treewalk when collision-protect is active.  
