@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.172 2003/07/16 12:59:18 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.173 2003/07/30 13:28:24 carpaski Exp $
 
 if [ -z "$1" ]; then
 	echo
@@ -31,7 +31,10 @@ sed '/^VERSION=/s/^.*$/VERSION="'${V}'"/' < ${DEST}/pym/portage.py.orig > ${DEST
 cp ${DEST}/man/emerge.1 ${DEST}/man/emerge.1.orig
 sed "s/##VERSION##/${V}/g" < ${DEST}/man/emerge.1.orig > ${DEST}/man/emerge.1
 rm ${DEST}/pym/portage.py.orig ${DEST}/man/emerge.1.orig
+
+sed -i -e "s:\t:  :g" ChangeLog
 cp ChangeLog ${DEST}
+
 cd ${DEST}
 find -name CVS -exec rm -rf {} \;
 find -name '*~' -exec rm -rf {} \;

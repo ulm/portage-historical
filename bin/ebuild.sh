@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.136 2003/07/25 04:41:32 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.137 2003/07/30 13:28:24 carpaski Exp $
 
 if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 	if [ -f ${T}/successful ]; then
@@ -1179,7 +1179,6 @@ PDEPEND="$PDEPEND $E_PDEPEND"
 set +f
 
 for myarg in $*; do
-	echo "myarg: $myarg"
 	case $myarg in
 	nofetch)
 		pkg_nofetch
