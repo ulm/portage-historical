@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.8 2004/11/08 09:18:42 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.9 2004/11/10 21:11:04 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -6240,7 +6240,7 @@ class dblink:
 				if not isowned:
 					print "existing file "+f+" is not owned by this package"
 					stopmerge=True
-			print green("*")+" spend "+str(time.time()-starttime)+" seconds checking for file collisions"
+			print green("*")+" spent "+str(time.time()-starttime)+" seconds checking for file collisions"
 			if stopmerge:
 				print red("*")+" This package is blocked because it wants to overwrite"
 				print red("*")+" files belonging to other packages (see messages above)."
