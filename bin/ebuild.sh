@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.196 2004/09/13 07:36:00 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.197 2004/09/21 01:08:05 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -851,6 +851,7 @@ dyn_compile() {
 	cd build-info
 
 	echo "$ASFLAGS"        > ASFLAGS
+	echo "$CATEGORY"       > CATEGORY
 	echo "$CBUILD"         > CBUILD
 	echo "$CC"             > CC
 	echo "$CDEPEND"        > CDEPEND
@@ -862,17 +863,19 @@ dyn_compile() {
 	echo "$EXTRA_ECONF"    > EXTRA_ECONF
 	echo "$EXTRA_EINSTALL" > EXTRA_EINSTALL
 	echo "$EXTRA_ECONF"    > EXTRA_EMAKE
+	echo "$FEATURES"       > FEATURES
+	echo "$INHERITED"      > INHERITED
 	echo "$IUSE"           > IUSE
 	echo "$PKGUSE"         > PKGUSE
 	echo "$LDFLAGS"        > LDFLAGS
 	echo "$LIBCFLAGS"      > LIBCFLAGS
 	echo "$LIBCXXFLAGS"    > LIBCXXFLAGS
 	echo "$LICENSE"        > LICENSE
-	echo "$CATEGORY"       > CATEGORY
 	echo "$PDEPEND"        > PDEPEND
 	echo "$PF"             > PF
 	echo "$PROVIDE"        > PROVIDE
 	echo "$RDEPEND"        > RDEPEND
+	echo "$RESTRICT"       > RESTRICT
 	echo "$SLOT"           > SLOT
 	echo "$USE"            > USE
 

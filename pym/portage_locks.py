@@ -1,7 +1,7 @@
 # portage: Lock management code
 # Copyright 2004-2004 Gentoo Foundation
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.2 2004/08/16 20:06:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.3 2004/09/21 01:08:06 carpaski Exp $
 
 import os
 import types
@@ -56,7 +56,8 @@ def lockfile(mypath,wantnewlockfile=0,unlinkfile=0):
 	else:
 		raise ValueError, "Unknown type passed in '%s': '%s'" % (type(mypath),mypath)
 
-	#try for a non-blocking lock, if it's held, throw a message we're waiting on lockfile and use a blocking attempt.
+	# try for a non-blocking lock, if it's held, throw a message
+	# we're waiting on lockfile and use a blocking attempt.
 	try:
 		fcntl.flock(myfd,fcntl.LOCK_EX|fcntl.LOCK_NB)
 

@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.5 2004/09/02 02:44:40 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.6 2004/09/21 01:08:06 carpaski Exp $
 
 import os,types
 import signal
@@ -52,7 +52,7 @@ def spawn(mycommand,env={},opt_name=None,fd_pipes=None,returnpid=False,uid=None,
 	mypid=[]
 	if logfile:
 		pr,pw=os.pipe()
-		mypid.extend(spawn_bash("/bin/tee -i -a '%s'" % logfile,returnpid=True,fd_pipes={0:pr,1:1,2:2}))
+		mypid.extend(spawn_bash("PATH=/bin:/usr/bin tee -i -a '%s'" % logfile,returnpid=True,fd_pipes={0:pr,1:1,2:2}))
 		retval=os.waitpid(mypid[-1],os.WNOHANG)[1]
 		if retval != 0:
 			# he's dead jim.
