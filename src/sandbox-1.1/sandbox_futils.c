@@ -3,7 +3,7 @@
  * Distributed under the terms of the GNU General Public License, v2 or later 
  * Author: Brad House <brad@mainstreetsoftworks.com>
  *
- * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox_futils.c,v 1.5 2003/09/28 08:37:19 azarah Exp $
+ * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox_futils.c,v 1.6 2004/01/24 19:03:19 carpaski Exp $
  * 
  */
 
@@ -95,11 +95,19 @@ get_sandbox_log()
 	sprintf(pid_string, "%d", getpid());
 
 	strcpy(path, LOG_FILE_PREFIX);
+
+
+	/* THIS CHUNK BREAK THINGS BY DOING THIS:
+	 * SANDBOX_LOG=/tmp/sandbox-app-admin/superadduser-1.0.7-11063.log
+	 */
+
 	sandbox_log_env = getenv(ENV_SANDBOX_LOG);
 	if (sandbox_log_env) {
 		strcat(path, sandbox_log_env);
 		strcat(path, "-");
 	}
+
+
 	strcat(path, pid_string);
 	strcat(path, LOG_FILE_EXT);
 	return (strdup(path));
