@@ -4,7 +4,7 @@
  * Distributed under the terms of the GNU General Public License, v2 or later 
  * Author: Brad House <brad@mainstreetsoftworks.com>
  *    
- * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.h,v 1.3 2002/12/04 15:29:45 jrray Exp $
+ * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.h,v 1.4 2003/07/27 12:31:06 azarah Exp $
  */
 
 #ifndef __SANDBOX_H__
@@ -22,7 +22,6 @@
 /* Uncommend to not have the protected shell forked, just run in parent process */
 /* ONLY FOR DEBUGGING PURPOSES!! (strace needs it like that) */
 /* #define NO_FORK */
-
 
 #define LD_PRELOAD_FILE		"/etc/ld.so.preload"
 #define LIB_NAME		"libsandbox.so"
@@ -64,6 +63,5 @@ int file_truncate(int fd);
 int file_exist(char *filename, int checkmode);
 
 #endif
-
 
 // vim:expandtab noai:cindent ai
