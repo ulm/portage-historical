@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.87 2002/12/18 09:43:39 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.88 2002/12/21 12:35:51 carpaski Exp $
 
 if [ -n "$#" ]
 then
@@ -103,6 +103,11 @@ use_enable() {
 		return 1
 	fi
 }
+
+if [ `id -nu` == "portage" ] ; then
+	export CCACHE_DIR=${HOME}/.ccache
+	export USER=portage
+fi
 
 #we need this next line for "die" and "assert"
 shopt -s expand_aliases
@@ -819,6 +824,8 @@ debug-print() {
 		
 		# default target
 		[ -n "$T" ] && echo $1 >> ${T}/eclass-debug.log
+		# let the portage user own/write to this file
+		[ -n "$T" ] && chown portage.portage ${T}/eclass-debug.log
 		
 		shift
 	done
@@ -954,10 +961,12 @@ do
 		fi
 		if [ "$PORTAGE_DEBUG" = "0" ]
 		then
+			dyn_setup
 			dyn_${myarg}
 			#Allow non-zero return codes since they can be caused by &&
 		else
 			set -x
+			dyn_setup
 			dyn_${myarg}
 			#Allow non-zero return codes since they can be caused by &&
 			set +x
