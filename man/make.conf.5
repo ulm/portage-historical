@@ -130,6 +130,14 @@ Autogenerate a digest for packages.
 .B distcc
 Enable portage support for the distcc package.
 .TP
+.B distlocks
+Portage uses lockfiles to ensure competing instances don't clobber
+each other's files. This feature is enabled by default but may cause
+heartache on less intelligent remote filesystems like NFSv2 and some
+strangely configured Samba server (oplocks off, NFS re-export). A tool
+/usr/lib/portage/bin/clean_locks exists to help handle lock issues
+when a problem arises (normally due to a crash or disconnect).
+.TP
 .B fixpackages
 Runs the script that will fix the dependencies in all binary packages.  This is 
 run whenever packages are moved around in the portage tree.  Please note that this 
@@ -375,4 +383,4 @@ Nicholas Jones <carpaski@gentoo.org>
 .br 
 Mike Frysinger <vapier@gentoo.org>
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/make.conf.5,v 1.41 2004/09/19 23:57:18 vapier Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/make.conf.5,v 1.42 2004/09/26 10:44:31 carpaski Exp $

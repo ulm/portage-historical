@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.509 2004/09/25 13:07:55 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.510 2004/09/26 10:44:31 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1459,7 +1459,7 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 
 	mymirrors=[]
 	
-	if listonly:
+	if listonly or ("distlocks" not in features):
 		use_locks = 0
 
 	# local mirrors are always added
@@ -1624,7 +1624,10 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 				old_umask=os.umask(0002)
 				os.mkdir(mysettings["DISTDIR"]+"/"+locks_in_subdir,0775)
 				if os.stat(mysettings["DISTDIR"]+"/"+locks_in_subdir).st_gid != portage_gid:
-					os.chown(mysettings["DISTDIR"]+"/"+locks_in_subdir,-1,portage_gid)
+					try:
+						os.chown(mysettings["DISTDIR"]+"/"+locks_in_subdir,-1,portage_gid)
+					except:
+						pass
 				os.umask(old_umask)
 
 	
