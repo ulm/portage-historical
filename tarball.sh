@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.181 2004/10/20 01:24:49 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.181.2.1 2004/11/30 23:24:04 vapier Exp $
 
 if [ -z "$1" ]; then
 	echo
@@ -39,6 +39,7 @@ sed '/^VERSION=/s/^.*$/VERSION="'${V}'"/' < ${DEST}/pym/portage.py.orig > ${DEST
 cp ${DEST}/man/emerge.1 ${DEST}/man/emerge.1.orig
 sed "s/##VERSION##/${V}/g" < ${DEST}/man/emerge.1.orig > ${DEST}/man/emerge.1
 rm ${DEST}/pym/portage.py.orig ${DEST}/man/emerge.1.orig
+rm ${DEST}/man/*.eclass.5
 
 sed -i -e "s:\t:  :g" ChangeLog
 cp ChangeLog ${DEST}
