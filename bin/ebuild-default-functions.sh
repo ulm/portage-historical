@@ -2,7 +2,7 @@
 # ebuild-default-functions.sh; default functions for ebuild env that aren't saved- specific to the portage instance.
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.9 2004/11/11 00:03:55 ferringb Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.10 2004/11/11 00:08:12 ferringb Exp $
 
 has_version() {
 	# if there is a predefined portageq call, use it.
@@ -385,7 +385,7 @@ dyn_test() {
 function stat_perms() {
 	local f
 	f=$(stat -c '%f' "$1")
-	f=$(printf %o ox$f)
+	f=$(printf %o 0x$f)
 	f="${f:${#f}-4}"
 	echo $f
 }
