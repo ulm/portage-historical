@@ -1,26 +1,43 @@
 # cvstree.py -- cvs tree utilities
 # Copyright 1998-2003 Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/cvstree.py,v 1.1 2003/04/02 07:28:42 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/cvstree.py,v 1.2 2003/04/09 12:08:41 carpaski Exp $
 
 import string,os,time,sys
 from stat import *
 
 # [D]/Name/Version/Date/Flags/Tags
 
-def fileat(entries, path):
+def pathdata(entries, path):
 	"""(entries,path)
-	Returns the data(dict) for a specific file at the path specified."""
+	Returns the data(dict) for a specific file/dir at the path specified."""
 	mysplit=string.split(path,"/")
 	myentries=entries
-	myfile=mysplit[-1]
+	mytarget=mysplit[-1]
 	mysplit=mysplit[:-1]
 	for mys in mysplit:
 		if myentries["dirs"].has_key(mys):
 			myentries=myentries["dirs"][mys]
 		else:
 			return None
-	return myentries["files"][myfile]
+	if myentries["dirs"].has_key(mytarget):
+		return myentries["dirs"][mytarget]
+	elif myentries["files"].has_key(mytarget):
+		return myentries["files"][mytarget]
+	else:
+		return None
+
+def fileat(entries, path):
+	return pathdata(entries,path)
+
+def isadded(entries, path):
+	"""(entries,path)
+	Returns true if the path exists and is added to the cvs tree."""
+	mytarget=pathdata(entries, path)
+	if mytarget:
+		if "cvs" in mytarget["status"]:
+			return 1
+	return 0
 
 def findnew(entries,recursive=0,basedir=""):
 	"""(entries,recursive=0,basedir="")

@@ -1,9 +1,9 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepallstrip,v 1.9 2003/03/22 14:24:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepallstrip,v 1.10 2003/04/09 12:08:41 carpaski Exp $
 
-if [ -n "${DEBUGBUILD}" ] ; then
+if has nostrip $FEATURES $RESTRICT; then
 	exit 0
 fi
 
