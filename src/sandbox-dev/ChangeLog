@@ -1,6 +1,11 @@
 # ChangeLog for Path Sandbox
 # Copyright 2002 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-dev/Attic/ChangeLog,v 1.4 2002/09/01 19:53:23 azarah Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-dev/Attic/ChangeLog,v 1.5 2002/12/04 00:51:30 azarah Exp $
+
+  4 Dec 2002; Martin Schlemmer <azarah@gentoo.org> :
+
+  Fix a segfault in libsandbox.c if canonicalize() was called with
+  first parameter = NULL.
 
   1 Sep 2002; Martin Schlemmer <azarah@gentoo.org> :
 

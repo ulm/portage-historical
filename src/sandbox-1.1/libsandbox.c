@@ -25,7 +25,7 @@ S *  Path sandbox for the gentoo linux portage package system, initially
  *  as some of the InstallWatch code was used.
  *
  *
- *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.2 2002/08/26 19:40:31 azarah Exp $
+ *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.3 2002/12/04 00:51:30 azarah Exp $
  *
  */
 
@@ -242,6 +242,9 @@ void _init(void)
 static void canonicalize(const char *path, char *resolved_path)
 {
   int old_errno = errno;
+
+  /* If path == NULL, return or we get a segfault */
+  if (NULL == path) return;
   
   if(!erealpath(path, resolved_path) && (path[0] != '/')) {
     /* The path could not be canonicalized, append it
