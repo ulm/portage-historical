@@ -13,7 +13,7 @@ Here's a simple example ebuild:
 .br 
 # Distributed under the terms of the GNU General Public License v2
 .br
-#\ $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.5,v 1.20 2002/11/11 03:33:13 vapier Exp $
+#\ $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.5,v 1.21 2002/11/11 06:36:51 vapier Exp $
 .br 
 
 S=${WORKDIR}/${P}
@@ -180,6 +180,11 @@ files in \fBSRC_URI\fR will not be downloaded from the \fBGENTOO_MIRRORS\fR.
 .br
 .I fetch:
 like \fInomirror\fR but the files will not be fetched via \fBSRC_URI\fR either.
+.TP
+\fBPROVIDE\fR = \fI"virtual/TARGET"\fR
+This variable should only be used when a package provides a virtual target.  For example,
+blackdown-jdk and sun-jdk provide \fIvirtual/jdk\fR.  This allows for packages to depend on
+\fIvirtual/jdk\fR rather than on blackdown or sun specifically.
 .SH "FUNCTIONS"
 .TP
 \fBpkg_setup\fR
