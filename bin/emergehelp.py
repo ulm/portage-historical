@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.19 2004/01/22 05:51:45 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.20 2004/02/04 22:40:21 carpaski Exp $
 
 import os,sys
 from output import *
@@ -13,9 +13,9 @@ def shorthelp():
 	print "   "+turquoise("emerge")+" [ "+green("options")+" ] [ "+green("action")+" ] [ "+turquoise("ebuildfile")+" | "+turquoise("tbz2file")+" | "+turquoise("dependency")+" ] [ ... ]"
 	print "   "+turquoise("emerge")+" [ "+green("options")+" ] [ "+green("action")+" ] < "+turquoise("system")+" | "+turquoise("world")+" >"
 	print "   "+turquoise("emerge")+" < "+turquoise("sync")+" | "+turquoise("info")+" >"
-	print "   "+turquoise("emerge")+" "+turquoise("--resume")+" ["+green("--pretend")+" | "+green("--skipfirst")+"]"
+	print "   "+turquoise("emerge")+" "+turquoise("--resume")+" [ "+green("--pretend")+" | "+green("--ask")+" | "+green("--skipfirst")+" ]"
 	print "   "+turquoise("emerge")+" "+turquoise("help")+" [ "+green("system")+" | "+green("config")+" | "+green("sync")+" ] "
-	print bold("Options:")+" "+green("-")+"["+green("bcCdDefhikKlnoOpPsSuUvV")+"] ["+green("--oneshot")+"] ["+green("--noconfmem")+"]"
+	print bold("Options:")+" "+green("-")+"["+green("abcCdDefhikKlnoOpPsSuUvV")+"] ["+green("--oneshot")+"] ["+green("--noconfmem")+"]"
 	print      "                                    ["+green("--columns")+"] ["+green("--nospinner")+"]"
 	print bold("Actions:")+" [ "+green("clean")+" | "+green("depclean")+" | "+green("inject")+" | "+green("prune")+" | "+green("regen")+" | "+green("search")+" | "+green("unmerge")+" ]"
 	print
@@ -121,6 +121,14 @@ def help(myaction,myopts,havecolor=1):
 		print "              format described in the "+bold("clean")+" action above."
 		print
 		print turquoise("Options:")
+		print "       "+green("--ask")+" ("+green("-a")+" short option)"
+		print "              before performing the merge, display what ebuilds and tbz2s will"
+		print "              be installed, in the same format as when using --pretend; then"
+		print "              ask whether to continue with the merge or abort. Using --ask is"
+		print "              more efficient than using --pretend and then executing the same"
+		print "              command without --pretend, as dependencies will only need to be"
+		print "              calculated once."
+		print
 		print "       "+green("--buildpkg")+" ("+green("-b")+" short option)"
 		print "              tell emerge to build binary packages for all ebuilds processed"
 		print "              (in addition to actually merging the packages.  Useful for"

@@ -1,6 +1,10 @@
 # Copyright 2002-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/extra_functions.sh,v 1.6 2003/06/30 06:43:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/extra_functions.sh,v 1.7 2004/02/04 22:40:21 carpaski Exp $
+
+ordertest() {
+	echo "RUNNING FROM EXTRA_FUNCTIONS.SH"
+}
 
 # ============================================================================
 # Extracted from flag-o-matic -- March 10, 2003
@@ -169,6 +173,8 @@ EPATCH_FORCE="no"
 # <azarah@gentoo.org> (10 Nov 2002)
 #
 epatch() {
+	echo "RUNNING FROM extra_functions.sh"
+
 	local PIPE_CMD=""
 	local STDERR_TARGET="${T}/$$.out"
 	local PATCH_TARGET="${T}/$$.patch"
