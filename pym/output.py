@@ -1,6 +1,6 @@
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/output.py,v 1.16 2003/05/29 08:34:55 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/output.py,v 1.17 2003/12/08 15:11:28 nakano Exp $
 
 import os,sys
 
@@ -32,7 +32,7 @@ codes["darkred"]="\x1b[31;06m"
 def xtermTitle(mystr):
 	if havecolor and dotitles and os.environ.has_key("TERM"):
 		myt=os.environ["TERM"]
-		if myt in ["xterm","Eterm","aterm","rxvt"]:
+		if myt in ["xterm","Eterm","aterm","rxvt","screen"]:
 			sys.stderr.write("\x1b]1;\x07\x1b]2;"+str(mystr)+"\x07")
 			sys.stderr.flush()
 
