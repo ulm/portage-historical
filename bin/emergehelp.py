@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.26 2004/07/28 02:37:49 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.27 2004/08/04 23:29:37 ferringb Exp $
 
 import os,sys
 from output import *
@@ -173,6 +173,13 @@ def help(myaction,myopts,havecolor=1):
 		print "              Instead of doing any package building, just perform fetches for"
 		print "              all packages (main package as well as all dependencies.) When"
 		print "              used in combination with --pretend all the SRC_URIs will be"
+		print "              displayed multiple mirrors per line, one line per file."
+		print
+		print "       "+green("--fetch-all-uri")
+		print "              Instead of doing any package building, just perform fetches for"
+		print "              all packages (main package as well as all dependencies.), grabbing"
+		print "	             all possible files."
+		print "              When used in combination with --pretend all the SRC_URIs will be"
 		print "              displayed multiple mirrors per line, one line per file."
 		print
 		print "       "+green("--getbinpkg")+" ("+green("-g")+" short option)"
