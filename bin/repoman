@@ -2,7 +2,7 @@
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
 # Author: Daniel Robbins <drobbins@gentoo.org>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.5 2002/07/27 19:13:59 drobbins Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.5.2.1 2003/02/17 05:29:51 alain Exp $
 
 # Next to do: dep syntax checking in ebuilds, mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -12,6 +12,9 @@ import os,sys,string,signal,portage,readline
 from output import *
 exename=os.path.basename(sys.argv[0])	
 version="1.2"	
+
+ctx = portage.PortageContext()
+
 
 def err(txt):
 	print exename+": "+txt
@@ -149,7 +152,7 @@ scanlist=[]
 if repolevel==2:
 	#we are inside a category directory
 	catdir=reposplit[-1]
-	if catdir not in portage.categories:
+	if catdir not in ctx.categories:
 		caterror(catdir)
 	mydirlist=os.listdir(startdir)
 	for x in mydirlist:
@@ -158,7 +161,7 @@ if repolevel==2:
 		if os.path.isdir(startdir+"/"+x):
 			scanlist.append(catdir+"/"+x)
 elif repolevel==1:
-	for x in portage.categories:
+	for x in ctx.categories:
 		if not os.path.isdir(startdir+"/"+x):
 			continue
 		for y in os.listdir(startdir+"/"+x):
@@ -167,7 +170,7 @@ elif repolevel==1:
 			if os.path.isdir(startdir+"/"+x+"/"+y):
 				scanlist.append(x+"/"+y)
 elif repolevel==3:
-	if reposplit[-2] not in portage.categories:
+	if reposplit[-2] not in ctx.categories:
 		caterror(catdir)
 	scanlist.append(reposplit[-2]+"/"+reposplit[-1])
 
@@ -260,7 +263,7 @@ for x in scanlist:
 			else:
 				stats["digest.missing"]=stats["digest.missing"]+1
 				fails["digest.missing"].append(x+"/files/digest-"+y)
-		myesplit=portage.pkgsplit(y)
+		myesplit=portage.pkgsplit(ctx, y)
 		if myesplit==None:
 			stats["ebuild.invalidname"]=stats["ebuild.invalidname"]+1
 			fails["ebuild.invalidname"].append(x+"/"+y+".ebuild")
@@ -269,7 +272,7 @@ for x in scanlist:
 			stats["ebuild.namenomatch"]=stats["ebuild.namenomatch"]+1
 			fails["ebuild.namenomatch"].append(x+"/"+y+".ebuild")
 		try:
-			myaux=portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,allvars,strict=1)	
+			myaux=ctx.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,allvars,strict=1)	
 		except KeyError:
 			stats["ebuild.syntax"]=stats["ebuild.syntax"]+1
 			fails["ebuild.syntax"].append(x+"/"+y+".ebuild")
@@ -283,7 +286,7 @@ for x in scanlist:
 				myqakey=missingvars[pos]+".missing"
 				stats[myqakey]=stats[myqakey]+1
 				fails[myqakey].append(x+"/"+y+".ebuild")
-		if not catdir+"/"+y in portage.db["/"]["porttree"].dbapi.xmatch("list-visible",x):
+		if not catdir+"/"+y in ctx.db["/"]["porttree"].dbapi.xmatch("list-visible",x):
 			#we are testing deps for a masked package; give it some lee-way
 			suffix="masked"
 			matchmode="match-all"
@@ -292,7 +295,7 @@ for x in scanlist:
 			matchmode="match-visible"
 		for mytype,mypos in [["DEPEND",len(missingvars)],["RDEPEND",len(missingvars)+1]]:
 			mykey=mytype+".bad"+suffix
-			mydep=portage.dep_check(myaux[mypos],portage.db["/"]["porttree"].dbapi,use="all",mode=matchmode)
+			mydep=portage.dep_check(ctx, myaux[mypos],ctx.db["/"]["porttree"].dbapi,use="all",mode=matchmode)
 			if mydep[0]==1:
 				if mydep[1]!=[]:
 					#we have some unsolvable deps
