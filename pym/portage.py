@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.510 2004/09/26 10:44:31 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.511 2004/09/26 13:15:31 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1031,7 +1031,7 @@ class config:
 			self.loadVirtuals('/')
 					
 			#package.mask
-			pkgmasklines = grab_multiple("package.mask", locations, grabfile)
+			pkgmasklines = grab_multiple("package.mask", self.profiles + locations, grabfile)
 			pkgmasklines = stack_lists(pkgmasklines, incremental=1)
 
 			self.pmaskdict = {}
