@@ -1,12 +1,23 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.759 2004/09/26 13:31:45 jstubbs Exp $
+# $Id: ChangeLog,v 1.760 2004/09/27 01:45:27 carpaski Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
 
+*portage-2.0.51_rc5 (26 Sep 2004): RC + Lock cleanup, Happy RC #1
+
+  26 Sep 2004; Nicholas Jones <carpaski@gentoo.org> emerge: Modified the
+	spinner again, --nospinner provides a basic ticker of one '.' per 100,
+	normal spinner is the twirly one, and the FEATURES=candy spinner is a
+	scrolly message.
+	
+  26 Sep 2004; Nicholas Jones <carpaski@gentoo.org> portage_locks.py: Fixed it.
+	Discovered that the hardlocks were failing due to the creation of the lock
+	prior to the link operation which was due to the NFS fcntl lock failure.
+	
   26 Sep 2004; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Added
   support for per profile package.mask. Included check of packages file
   to ensure that the profile depends on an adequate portage version.
