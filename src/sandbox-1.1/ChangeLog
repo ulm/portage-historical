@@ -1,6 +1,9 @@
 # ChangeLog for Path Sandbox
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/ChangeLog,v 1.37.2.2 2004/11/07 15:07:14 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/ChangeLog,v 1.37.2.3 2004/12/01 22:14:09 carpaski Exp $
+
+  01 Dec 2004; Nicholas Jones <carpaski@gentoo.org> libsandbox.c, sandbox.c:
+  Added ferringb's code to handle the sandbox pid overflow problem.
 
   07 Nov 2004; Brian Harring <ferringb@gentoo.org> libsandbox.c: c99 standard
   allowing data and code mixing in code isn't available for gcc 2.95- should fix

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.4 2004/11/29 08:41:28 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.5 2004/12/01 22:14:09 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -1004,7 +1004,7 @@ dyn_install() {
 	}
 
 	local file s
-	find "${D}/" -user portage -o | while read file; do
+	find "${D}/" -user  portage | while read file; do
 		ewarn "file $file was installed with user portage!"
 		s=$(stat_perms $file)
 		chown root "$file"
@@ -1016,8 +1016,7 @@ dyn_install() {
 		s=$(stat_perms "$file")
 		[ "$USERLAND" == "BSD" ] && chgrp wheel "$file"
 		[ "$USERLAND" != "BSD" ] && chgrp root "$file"
-		fi
-		chmod "%s" "$file"
+		chmod "$s" "$file"
 	done
 
 	unset -f stat_perms

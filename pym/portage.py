@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.11 2004/11/30 22:20:24 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.12 2004/12/01 22:14:09 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -2287,7 +2287,7 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 			mysettings["INHERITED"], mysettings["PORTAGE_RESTRICT"] = db[root][tree].dbapi.aux_get( \
 				mycpv,["INHERITED","RESTRICT"])
 			mysettings["PORTAGE_RESTRICT"]=string.join(flatten(portage_dep.use_reduce(portage_dep.paren_reduce( \
-				mysettings["PORTAGE_RESTRICT"]), uselist=mysettings["USE"].split())),'')
+				mysettings["PORTAGE_RESTRICT"]), uselist=mysettings["USE"].split())),' ')
 		except SystemExit, e:
 			raise
 		except:
