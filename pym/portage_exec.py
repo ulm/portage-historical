@@ -1,8 +1,8 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.20 2005/02/26 06:35:20 jstubbs Exp $
-cvs_id_string="$Id: portage_exec.py,v 1.20 2005/02/26 06:35:20 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.21 2005/02/26 06:41:48 ferringb Exp $
+cvs_id_string="$Id: portage_exec.py,v 1.21 2005/02/26 06:41:48 ferringb Exp $"[5:-2]
 
 import os,types,string,sys
 import signal
@@ -143,7 +143,7 @@ def spawn(mycommand,env={},raw_exit_code=False,opt_name=None,fd_pipes=None,retur
 		if type(mycommand)==types.StringType:
 			mycommand=mycommand.split()
 		myc = mycommand[0]
-		if not os.path.exists(myc) or not os.stat(myc)[0] & 0x0248:
+		if not os.access(myc, os.X_OK):
 			if not path_lookup:
 				return None
 			myc = find_binary(myc)
