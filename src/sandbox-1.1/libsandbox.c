@@ -25,7 +25,7 @@
  *  as some of the InstallWatch code was used.
  *
  *
- *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.13 2003/10/14 20:24:39 azarah Exp $
+ *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.14 2003/11/02 19:08:06 azarah Exp $
  *
  */
 
@@ -1286,7 +1286,8 @@ before_syscall(const char *func, const char *file)
 	sbcontext_t sbcontext;
 
 	if (!strlen(file)) {
-		errno = EINVAL;
+		/* The file/directory does not exist */
+		errno = ENOENT;
 		return 0;
 	}
 
