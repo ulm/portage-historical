@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.103 2003/02/07 11:32:05 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.104 2003/02/11 20:49:07 carpaski Exp $
 
 cd ${PORT_TMPDIR}
 
@@ -925,29 +925,26 @@ inherit() {
 	local location
 	while [ "$1" ]
 	do
-		export INHERITED="$INHERITED $1"
+		location="${ECLASSDIR}/${1}.eclass"
+		PECLASS="$ECLASS"
+		export ECLASS="$1"
 
 		# any future resolution code goes here
 		if [ -n "$PORTDIR_OVERLAY" ]
 		then
-			location="${PORTDIR_OVERLAY}/eclass/${1}.eclass"
-			if [ -e "$location" ]
-			then
-				debug-print "inherit: $1 -> $location"
-				source "$location" || die "died sourcing $location in inherit()"
-				#continue processing, skip sourcing of one in $ECLASSDIR
-				shift
-				continue
+			olocation="${PORTDIR_OVERLAY}/eclass/${1}.eclass"
+			if [ -e "$olocation" ]; then
+				location="${olocation}"
 			fi
 		fi
-			
-		location="${ECLASSDIR}/${1}.eclass"
 		debug-print "inherit: $1 -> $location"
-		PECLASS="$ECLASS"
-		export ECLASS="$1"
 		source "$location" || die "died sourcing $location in inherit()"
 		ECLASS="$PECLASS"
 		unset PECLASS
+
+		if ! has $1 $INHERITED &>/dev/null; then
+			export INHERITED="$INHERITED $1"
+		fi
 
 		shift
 	done
