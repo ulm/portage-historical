@@ -1,6 +1,6 @@
 .TH VIM-PLUGIN.ECLASS 5 "Dec 2004" "Portage 2.0.51" portage
 .SH NAME
-vim-plugin \- functions to ease installation of Vim plugins
+vim-plugin.eclass \- functions to ease installation of Vim plugins
 .SH DESCRIPTION
 The \fBvim-plugin\fR eclass provides functions meant to simplify the
 installation of Vim plugins into a version-independent directory,
@@ -66,18 +66,21 @@ with the following format for contents:
 .SH PACKAGE NAMING CONVENTIONS
 Where possible, the upstream script name should be used as the package name.
 For packages which provide syntax or filetype files, the name should be suffixed
-with "-syntax" (for example, "app-vim/gentoo-syntax", "app-vim/fluxbox-syntax", "app-vim/selinux-syntax").
+with "-syntax" (for example, "app-vim/gentoo-syntax", "app-vim/fluxbox-syntax", 
+"app-vim/selinux-syntax").
 .SH PACKAGE VARIABLE CONVENTIONS
-The canonical form for the HOMEPAGE variable for vim.org scripts is "http://www.vim.org/scripts/script.php?script_id=123".
+The canonical form for the HOMEPAGE variable for vim.org scripts is 
+http://www.vim.org/scripts/script.php?script_id=123.
 .SH REPORTING BUGS
 Please report bugs via http://bugs.gentoo.org/
 .SH SEE ALSO
 .BR ebuild (5)
 .SH FILES
+.nf
 .B /usr/portage/eclass/vim-plugin.eclass  
-.br
 .B /usr/portage/eclass/vim-doc.eclass
+.fi
 .SH AUTHORS
 Aaron Walker <ka0ttic@gentoo.org>
 .SH CVS HEADER
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/vim-plugin.eclass.5,v 1.1.2.1 2004/12/17 05:55:45 vapier Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/vim-plugin.eclass.5,v 1.1.2.2 2005/01/15 00:19:36 vapier Exp $
