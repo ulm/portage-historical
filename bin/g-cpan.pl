@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.14 2004/10/04 13:56:50 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.15 2004/10/04 13:58:03 vapier Exp $
 
 # History: 
 
@@ -182,7 +182,7 @@ sub create_ebuild {
     print EBUILD <<"HERE";
 
 
-# Copyright 1999-2003 Gentoo Technologies, Inc.
+# Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 inherit perl-module

@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
-# Copyright 1999-2003 Gentoo Technologies, Inc.
+# Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/db-update.py,v 1.7 2004/01/24 19:03:19 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/db-update.py,v 1.8 2004/10/04 13:56:50 vapier Exp $
 
 import os,sys,string
 sys.path = ["/usr/lib/portage/pym"]+sys.path

@@ -1,9 +1,9 @@
 #!/usr/bin/python
-
-# Copyright 1999-2004 Gentoo Technologies, Inc.
+# Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dohtml,v 1.13 2004/10/04 13:56:50 vapier Exp $
 # Author Karl Trygve Kalleberg <karltk@gentoo.org>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dohtml,v 1.12 2004/07/26 00:47:51 ferringb Exp $
+
 #
 # Typical usage:
 # dohtml -r docs/*

@@ -1,6 +1,7 @@
 #!/usr/bin/python
-
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/regenworld,v 1.9 2004/06/26 14:13:00 nakano Exp $
+# Copyright 1999-2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/regenworld,v 1.10 2004/10/04 13:56:50 vapier Exp $
 
 import sys
 sys.path.insert(0, "/usr/lib/portage/pym")

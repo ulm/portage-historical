@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
-# Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.770 2004/10/04 13:31:58 jstubbs Exp $
+# Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
+# $Id: ChangeLog,v 1.771 2004/10/04 13:58:57 vapier Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.

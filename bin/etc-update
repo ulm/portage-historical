@@ -1,14 +1,14 @@
 #!/bin/bash
-# Copyright 2002 Gentoo Technologies, Inc.
-# Distributed under the terms of the GNU Public License v2
+# Copyright 1999-2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.23 2004/10/04 13:56:50 vapier Exp $
+
 # Author Brandon Low <lostlogic@gentoo.org>
 #
 # Previous version (from which I've borrowed a few bits) by:
 # Jochem Kossen <j.kossen@home.nl>
 # Leo Lipelis <aeoo@gentoo.org>
 # Karl Trygve Kalleberg <karltk@gentoo.org>
-#
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.22 2004/09/27 23:38:21 jstubbs Exp $
 
 export PORTAGE_CALLER="etc-update"
 

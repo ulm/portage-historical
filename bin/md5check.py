@@ -1,4 +1,7 @@
 #!/usr/bin/python -O
+# Copyright 1999-2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/md5check.py,v 1.3 2004/10/04 13:56:50 vapier Exp $
 
 import os,sys,string
 os.environ["PORTAGE_CALLER"]="mirror"

@@ -1,13 +1,12 @@
 #!/usr/bin/python -O
+# Copyright 1999-2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dispatch-conf,v 1.7 2004/10/04 13:56:50 vapier Exp $
 
 #
 # dispatch-conf -- Integrate modified configs, post-emerge
 #
-#  Copyright 2003 Gentoo Technologies, Inc.
-#  Distributed under the terms of the GNU Public License v2
-#
 #  Jeremy Wohl (http://igmus.org)
-#  $Id: dispatch-conf,v 1.6 2004/09/09 08:02:53 carpaski Exp $
 #
 # TODO
 #  dialog menus
