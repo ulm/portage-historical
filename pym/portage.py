@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.466 2004/08/07 10:56:24 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.467 2004/08/07 11:40:46 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -3876,7 +3876,7 @@ def dep_check(depstring,mydbapi,mysettings,use="yes",mode=None,myuse=None,use_ca
 
 		while mysettings["ARCH"] in mymasks:
 			del mymasks[mymasks.index(mysettings["ARCH"])]
-		mysplit = portage_dep.use_reduce(mysplit,myusesplit,masklist=mymasks,matchall=(use=="all"))
+		mysplit = portage_dep.use_reduce(mysplit,myusesplit,masklist=mymasks,matchall=(use=="all"),excludeall=[mysettings["ARCH"]])
 	else:
 		mysplit = portage_dep.use_reduce(mysplit,myusesplit,matchall=(use=="all"))
 	

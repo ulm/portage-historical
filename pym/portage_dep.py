@@ -1,7 +1,7 @@
 # deps.py -- Portage dependency resolution functions
 # Copyright 2003 Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Id: portage_dep.py,v 1.10 2004/08/07 10:56:24 jstubbs Exp $
+# $Id: portage_dep.py,v 1.11 2004/08/07 11:40:46 jstubbs Exp $
 
 # DEPEND SYNTAX:
 #
@@ -55,10 +55,11 @@ def paren_reduce(mystr,tokenize=1):
 			mylist = mylist + [subsec]
 	return mylist
 
-def use_reduce(deparray, uselist=[], masklist=[], matchall=0):
+def use_reduce(deparray, uselist=[], masklist=[], matchall=0, excludeall=[]):
 	"""Takes a paren_reduce'd array and reduces the use? conditionals out
 	leaving an array with subarrays
 	"""
+	print excludeall
 	# Quick validity checks
 	for x in range(1,len(deparray)):
 		if deparray[x] in ["||","&&"]:
@@ -111,7 +112,7 @@ def use_reduce(deparray, uselist=[], masklist=[], matchall=0):
 					head = head[:-1]
 					if head[0] == "!":
 						head = head[1:]
-						if not matchall and head in uselist:
+						if not matchall and head in uselist or head in excludeall:
 							ismatch = False
 							break
 					elif head not in masklist:
