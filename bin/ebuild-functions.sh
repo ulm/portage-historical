@@ -2,7 +2,7 @@
 # ebuild-functions.sh; ebuild env functions, saved with the ebuild (not specific to the portage version).
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-functions.sh,v 1.6 2005/02/26 04:14:19 jstubbs Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-functions.sh,v 1.7 2005/03/21 08:24:53 genone Exp $
 
 use() {
 	if useq ${1}; then
@@ -77,7 +77,7 @@ econf() {
 				local x
 				for x in $(find ${WORKDIR} -type f -name config.guess -o -name config.sub); do
 					echo " * econf: updating ${x/${WORKDIR}\/} with /usr/share/gnuconfig/${x##*/}"
-					cp "/usr/share/gnuconfig/${x##*/}" "${x}"
+					cp -f "/usr/share/gnuconfig/${x##*/}" "${x}"
 				done
 			fi
 		fi
