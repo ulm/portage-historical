@@ -1,6 +1,6 @@
-# Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
+# Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/output.py,v 1.14 2003/03/23 00:13:27 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/output.py,v 1.15 2003/04/27 21:16:50 carpaski Exp $
 
 import os
 

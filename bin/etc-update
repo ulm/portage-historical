@@ -8,7 +8,9 @@
 # Leo Lipelis <aeoo@gentoo.org>
 # Karl Trygve Kalleberg <karltk@gentoo.org>
 #
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.7 2003/03/14 04:26:44 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.8 2003/04/27 21:16:50 carpaski Exp $
+
+export PORTAGE_CALLER="etc-update"
 
 function get_config() {
 	item=$1

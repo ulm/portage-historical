@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.123 2003/04/09 14:36:59 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.124 2003/04/27 21:16:47 carpaski Exp $
 
 if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 	if [ -f ${T}/successful ]; then
@@ -308,6 +308,15 @@ econf() {
 
 einstall() {
 	if [ -f ./[mM]akefile -o -f ./GNUmakefile ] ; then
+		if [ ! -z "${PORTAGE_DEBUG}" ]; then
+			make -n prefix=${D}/usr \
+			    datadir=${D}/usr/share \
+			    infodir=${D}/usr/share/info \
+		  	  localstatedir=${D}/var/lib \
+			    mandir=${D}/usr/share/man \
+			    sysconfdir=${D}/etc \
+			    "$@" install
+		fi
 		make prefix=${D}/usr \
 		    datadir=${D}/usr/share \
 		    infodir=${D}/usr/share/info \
