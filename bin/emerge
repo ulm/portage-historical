@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.302 2004/07/26 18:30:27 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.303 2004/07/26 22:36:42 ferringb Exp $
 
 import os,sys,platform
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -372,7 +372,7 @@ def getgccversion():
 
 	gcc_env_dir = os.path.join('/', 'etc', 'env.d', 'gcc')
 	gcc_config_config = os.path.join(gcc_env_dir, 'config')
-	gcc_ver_command = '`which gcc` -dumpversion'
+	gcc_ver_command = 'gcc -dumpversion'
 	gcc_ver_prefix = 'gcc-'
 
 	gcc_not_found_error = red(
@@ -382,7 +382,7 @@ def getgccversion():
 	)
 
 	gcc_distcc_broken_error = green(
-	'!!! Using `which gcc` to gcc locate version, this may break\n' +
+	'!!! Relying on the shell to locate gcc, this may break\n' +
 	'!!! DISTCC, installing gcc-config and setting your current gcc\n' +
 	'!!! profile will fix this'
 	)
@@ -2429,13 +2429,13 @@ elif "config"==myaction:
 	print
 # INFO action
 elif "info"==myaction:
-	unameout=commands.getstatusoutput("`which uname` -mrp")[1]
+	unameout=commands.getstatusoutput("uname -mrp")[1]
 	print getportageversion()
 	print "================================================================="
 	print "System uname: "+unameout
 	os.system("cat /etc/gentoo-release")
 	
-	output=commands.getstatusoutput("`which distcc` --version")
+	output=commands.getstatusoutput("distcc --version")
 	if not output[0]:
 		print str(string.split(output[1],"\n",1)[0]),
 		if "distcc" in portage.features:
@@ -2443,7 +2443,7 @@ elif "info"==myaction:
 		else:
 			print "[disabled]"
 
-	output=commands.getstatusoutput("`which ccache` -V")
+	output=commands.getstatusoutput("ccache -V")
 	if not output[0]:
 		print str(string.split(output[1],"\n",1)[0]),
 		if "ccache" in portage.features:
