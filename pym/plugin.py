@@ -1,13 +1,27 @@
-#!/usr/bin/python2.2
+#!/usr/bin/python
 
 """
-Plug-In Framework - version 1.1
-Copyright 2003 - Alain Penders <alain@gentoo.org>
-Distributed under the GNU Public License v2
+Plug-In Framework - version 1.2
+Copyright 2003 - Alain Penders  (alain@rexorient.com or alain@gentoo.org)
 
 This framework enables an application to easily load plugins.  Each plugin
 can register functions that are called when certain events occurs in the
 application.
+
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 import string,sys,types,os.path
@@ -760,7 +774,7 @@ class CallbackException(Exception):
 	lower priority callback functions.  The value of this exception should be
 	set, and will be returned by the call() method."""
 	def info(self):
-		print "A function associated with this even terminated the callback calling."
+		print "A function associated with this event terminated the callback calling."
 
 
 #-----------------------------------------------------------------------------
