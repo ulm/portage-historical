@@ -1,6 +1,6 @@
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exception.py,v 1.7 2004/10/05 07:11:26 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exception.py,v 1.8 2004/10/19 04:58:42 carpaski Exp $
 
 class PortageException(Exception):
 	"""General superclass for portage exceptions"""
@@ -52,8 +52,6 @@ class MissingParameter(PortageException):
 		return repr(self.value)
 
 
-
-
 class InvalidData(PortageException):
 	"""An incorrect formatting was passed instead of the expected one"""
 	def __init__(self,value):
@@ -96,6 +94,29 @@ class DirectoryNotFound(InvalidLocation):
 
 class CommandNotFound(PortageException):
 	"""A required binary was not available or executable"""
+	def __init__(self,value):
+		self.value = value[:]
+	def __str__(self):
+		return repr(self.value)
+
+
+
+class PortagePackageException(PortageException):
+	"""Malformed or missing package data"""
+	def __init__(self,value):
+		self.value = value[:]
+	def __str__(self):
+		return repr(self.value)
+
+class PackageNotFound(PortagePackageException):
+	"""Missing Ebuild or Binary"""
+	def __init__(self,value):
+		self.value = value[:]
+	def __str__(self):
+		return repr(self.value)
+
+class InvalidPackageName(PortagePackageException):
+	"""Malformed package name"""
 	def __init__(self,value):
 		self.value = value[:]
 	def __str__(self):

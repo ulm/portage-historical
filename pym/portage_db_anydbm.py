@@ -1,6 +1,6 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_anydbm.py,v 1.10 2004/10/11 04:12:02 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_anydbm.py,v 1.11 2004/10/19 04:58:42 carpaski Exp $
 
 import anydbm,cPickle,types,os
 
@@ -47,7 +47,7 @@ class database(portage_db_template.database):
 	
 	def set_values(self,key,val):
 		self.check_key(key)
-		self.db[key] = cPickle.dumps(val)
+		self.db[key] = cPickle.dumps(val,cPickle.HIGHEST_PROTOCOL)
 	
 	def del_key(self,key):
 		if self.has_key(key):

@@ -1,9 +1,9 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.12 2004/10/13 00:01:32 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.13 2004/10/19 04:58:42 carpaski Exp $
 
-import os,types,atexit
+import os,types,atexit,string
 import signal
 import portage_data
 import portage_util

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.200 2004/10/18 22:20:31 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201 2004/10/19 04:58:42 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -808,6 +808,9 @@ dyn_compile() {
 	[ "${LIBCXXFLAGS-unset}" != "unset" ] && export LIBCXXFLAGS
 	[ "${LDFLAGS-unset}"     != "unset" ] && export LDFLAGS
 	[ "${ASFLAGS-unset}"     != "unset" ] && export ASFLAGS
+
+	[ "${CCACHE_DIR-unset}"  != "unset" ] && export CCACHE_DIR
+	[ "${CCACHE_SIZE-unset}" != "unset" ] && export CCACHE_SIZE
 
 	[ "${DISTCC_DIR-unset}"  == "unset" ] && export DISTCC_DIR="${PORTAGE_TMPDIR}/.distcc"
 	[ ! -z "${DISTCC_DIR}" ] && addwrite "${DISTCC_DIR}"

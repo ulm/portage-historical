@@ -1,6 +1,6 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.10 2004/10/11 04:12:02 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.11 2004/10/19 04:58:42 carpaski Exp $
 
 import sys,string,shlex,os.path
 
@@ -368,7 +368,7 @@ def pickle_write(data,filename,debug=0):
 	import cPickle,os
 	try:
 		myf=open(filename,"w")
-		cPickle.dump(data,myf)
+		cPickle.dump(data,myf,cPickle.HIGHEST_PROTOCOL)
 		myf.flush()
 		myf.close()
 		writemsg("Wrote pickle: "+str(filename)+"\n",1)
