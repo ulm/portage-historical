@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524 2004/10/20 01:24:49 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.1 2004/10/22 14:43:33 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1160,6 +1160,14 @@ class config:
 		self.features = portage_util.unique_array(self["FEATURES"].split())
 		self.features.sort()
 		
+		#XXX: Should this be temporary? Is it possible at all to have a default?
+		if "gpg" in self.features:
+			if not os.path.exists(self["PORTAGE_GPG_DIR"]) or not os.path.isdir(self["PORTAGE_GPG_DIR"]):
+				writemsg("PORTAGE_GPG_DIR is invalid. Removing gpg from FEATURES.\n")
+				self.features.remove("gpg")
+				self["FEATURES"] = string.join(self.features, " ")
+				self.backup_changes("FEATURES")
+
 		if mycpv:
 			self.setcpv(mycpv)
 
