@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.77 2004/08/03 16:53:49 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.78 2004/08/04 13:13:04 ferringb Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -113,7 +113,8 @@ qahelp={
 	"digest.unmatch":"Digests which are incomplete (please check if your USE/ARCH includes all files)",
 	"ebuild.notadded":"Ebuilds that exist but have not been added to cvs",
 	"changelog.notadded":"ChangeLogs that exist but have not been added to cvs",
-	"file.execultable":"Ebuilds, digests, metadata.xml, Manifest, and ChangeLog do note need the executable bit",
+	"file.executable":"Ebuilds, digests, metadata.xml, Manifest, and ChangeLog do note need the executable bit",
+	"file.size":"Files in the files directory must be under 20k",
 	"KEYWORDS.missing":"Ebuilds that have a missing KEYWORDS variable",
 	"LICENSE.missing":"Ebuilds that have a missing LICENSE variable",
 	"IUSE.missing":"Ebuilds that have a missing IUSE variable",
