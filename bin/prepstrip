@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepstrip,v 1.24 2004/12/05 10:23:41 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepstrip,v 1.25 2004/12/06 03:04:31 carpaski Exp $
 
 if [ "${FEATURES//*nostrip*/true}" == "true" ] || [ "${RESTRICT//*nostrip*/true}" == "true" ] ; then
 	echo "nostrip"
@@ -11,9 +11,9 @@ else
 	type -p ${STRIP} > /dev/null || STRIP=strip
 fi
 
-STRIP_FLAGS="${STRIP_FLAGS:---strip-unneeded}"
+PORTAGE_STRIP_FLAGS="${PORTAGE_STRIP_FLAGS:---strip-unneeded}"
 
-echo "strip: ${STRIP_FLAGS}"
+echo "strip: ${PORTAGE_STRIP_FLAGS}"
 retval=0
 
 for x in "$@" ; do
@@ -33,7 +33,7 @@ for x in "$@" ; do
 		fi
 		if [ -z "${f/*SB shared object*/}" ]; then
 			echo "   ${x:${#D}:${#x}}"
-			${STRIP} ${STRIP_FLAGS} "${x}"
+			${STRIP} ${PORTAGE_STRIP_FLAGS} "${x}"
 
 			if [ -x /usr/bin/readelf ] ; then
 				/usr/bin/readelf -d "${x}" | grep TEXTREL > /dev/null
