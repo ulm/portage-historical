@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.472 2004/08/11 04:20:51 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.473 2004/08/11 04:58:27 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -183,10 +183,10 @@ def lockfile(mypath,wantnewlockfile=0,unlinkfile=0):
 		if not os.path.exists(os.path.dirname(mypath)):
 			raise IOError, "Base path does not exist '%s'" % os.path.dirname(mypath)
 		if not os.path.exists(lockfilename):
-			old_umask=os.umask(0002)
-			myfd = os.open(lockfilename, os.O_CREAT|os.O_WRONLY,0660)
+			old_mask=os.umask(000)
+			myfd = os.open(lockfilename, os.O_CREAT|os.O_RDWR,0660)
 			os.chown(lockfilename,os.getuid(),portage_gid)
-			os.umask(old_umask)
+			os.umask(old_mask)
 		else:
 			myfd = os.open(lockfilename, os.O_CREAT|os.O_WRONLY,0660)
 
