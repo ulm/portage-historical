@@ -2,10 +2,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.584 2005/03/09 09:07:13 ferringb Exp $
-cvs_id_string="$Id: portage.py,v 1.584 2005/03/09 09:07:13 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.585 2005/03/10 19:17:09 genone Exp $
+cvs_id_string="$Id: portage.py,v 1.585 2005/03/10 19:17:09 genone Exp $"[5:-2]
 
-VERSION="$Revision: 1.584 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.585 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -332,7 +332,7 @@ def elog_process(cpv, mysettings):
 		if not msgtype.upper() in mysettings["PORTAGE_LOG_CLASSES"].split() \
 				and not msgtype.lower() in mysettings["PORTAGE_LOG_CLASSES"].split():
 			continue
-		if msgfunction not in EBUILD_PHASES.split():
+		if msgfunction not in portage_const.EBUILD_PHASES.split():
 			print "!!! can't process invalid log file: %s" % f
 			continue
 		if not msgfunction in mylogentries:
@@ -346,7 +346,7 @@ def elog_process(cpv, mysettings):
 
 	# generate a single string with all log messages
 	fulllog = ""
-	for phase in EBUILD_PHASES.split():
+	for phase in portage_const.EBUILD_PHASES.split():
 		if not phase in mylogentries:
 			continue
 		for msgtype,msgcontent in mylogentries[phase]:
