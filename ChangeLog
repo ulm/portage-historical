@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.719 2004/08/27 01:57:35 ferringb Exp $
+# $Id: ChangeLog,v 1.720 2004/08/27 02:09:12 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -11,7 +11,7 @@
 
   26 Aug 2004; Brian Harring <Ferringb@gentoo.org> bin/etc-update: minor 
   tweak to etc-update to support single quotes in /etc/etc-update.conf
-  bug (#56785).
+  bug (#56785).  Added Mamoru Komachi (usata)'s fix for osx (#60721).
 
   26 Aug 2004; Brian Harring <ferringb@gentoo.org> pym/portage.py, 
   pym/portage_exec.py, bin/ebuild.sh: Removed the PORT_LOGDIR $0 $* | tee 
