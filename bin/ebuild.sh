@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.115 2003/02/28 06:26:08 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.116 2003/03/02 20:06:38 carpaski Exp $
 
 if [ -n "$#" ]
 then
@@ -268,11 +268,13 @@ econf() {
 einstall() {
 	if [ -f ./[mM]akefile -o -f ./GNUmakefile ] ; then
 		make prefix=${D}/usr \
-		    mandir=${D}/usr/share/man \
-		    infodir=${D}/usr/share/info \
 		    datadir=${D}/usr/share \
-		    sysconfdir=${D}/etc \
+		    incdir=${D}/usr/include \
+		    infodir=${D}/usr/share/info \
+		    libdir=${D}/usr/lib \
 		    localstatedir=${D}/var/lib \
+		    mandir=${D}/usr/share/man \
+		    sysconfdir=${D}/etc \
 		    "$@" install || die "einstall failed" 
 	else
 		die "no Makefile found"
