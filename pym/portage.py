@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.330 2003/07/22 07:19:04 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.331 2003/07/25 04:41:33 carpaski Exp $
 
 VERSION="2.0.49"
 
@@ -3391,9 +3391,10 @@ class portdbapi(dbapi):
 			sys.exit(1)
 		
 		psplit=pkgsplit(mysplit[1])
-		for myloc in suffix_array(self.overlays, "/"+mysplit[0]+"/"+psplit[0]+"/"+mysplit[1]+".ebuild"):
-			if os.access(myloc, os.R_OK):
-				return myloc,1
+		if psplit:
+			for myloc in suffix_array(self.overlays, "/"+mysplit[0]+"/"+psplit[0]+"/"+mysplit[1]+".ebuild"):
+				if os.access(myloc, os.R_OK):
+					return myloc,1
 
 		# XXX Why are there errors here? XXX
 		try:
@@ -3997,7 +3998,9 @@ class binarytree(packagetree):
 			os.makedirs(settings["PKGDIR"]+"/All/", 0775)
 		except:
 			pass
-		getbinpkg.file_get(settings["PORTAGE_BINHOST"]+"/"+mysplit[1]+".tbz2", settings["PKGDIR"]+"/All/"+mysplit[1]+".tbz2")
+		myf = open(settings["PKGDIR"]+"/All/"+mysplit[1]+".tbz2", "w+")
+		getbinpkg.file_get(settings["PORTAGE_BINHOST"]+"/"+mysplit[1]+".tbz2", myf)
+		myf.close()
 		return
 
 class dblink:
