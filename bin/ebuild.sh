@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.102 2003/02/05 06:03:47 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.103 2003/02/07 11:32:05 carpaski Exp $
 
 cd ${PORT_TMPDIR}
 
@@ -18,9 +18,9 @@ if [ "$*" != "depend" ]; then
 			install -d ${PORT_LOGDIR} &>/dev/null
 			chown root:portage ${PORT_LOGDIR} &>/dev/null
 			chmod g+rwxs ${PORT_LOGDIR} &> /dev/null
-			touch "${PORT_LOGDIR}/$(date +%y%m%d)-${PF}.log" &> /dev/null
-			chmod g+w "${PORT_LOGDIR}/$(date +%y%m%d)-${PF}.log" &> /dev/null
-			$0 $* 2>&1 | tee -a "${PORT_LOGDIR}/$(date +%y%m%d)-${PF}.log"
+			touch "${PORT_LOGDIR}/${LOG_COUNTER}-${PF}.log" &> /dev/null
+			chmod g+w "${PORT_LOGDIR}/${LOG_COUNTER}-${PF}.log" &> /dev/null
+			$0 $* 2>&1 | tee -a "${PORT_LOGDIR}/${LOG_COUNTER}-${PF}.log"
 			if [ "$?" != "0" ]; then
 				echo "Problem creating logfile in ${PORT_LOGDIR}"
 				exit 1

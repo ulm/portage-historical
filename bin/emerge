@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.178 2003/02/03 13:13:43 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.179 2003/02/07 11:32:05 carpaski Exp $
 
 import os,sys,portage,emergehelp,xpak,string,re,commands,time,threading,shutil,traceback
 from stat import *
@@ -493,6 +493,7 @@ class depgraph:
 			edepend["DEPEND"] =""
 			edepend["RDEPEND"]=string.join(mytbz2.getelements("RDEPEND")," ")
 			edepend["PDEPEND"]=string.join(mytbz2.getelements("PDEPEND")," ")
+			edepend["CDEPEND"]=string.join(mytbz2.getelements("CDEPEND")," ")
 			edepend["REBUILD"]=string.join(mytbz2.getelements("REBUILD")," ")
 			edepend["SLOT"]   =mytbz2.getfile("SLOT",mypkgparts[2])
 		elif mytype=="ebuild":
@@ -895,9 +896,23 @@ class depgraph:
 				sys.exit(1)
 
 		mymergelist=[]
+		myfavs=portage.grabfile(portage.root+"var/cache/edb/world")
+		myfavdict=genericdict(myfavs)
+		mysysdict=genericdict(syslist)
 		for x in range(len(mylist)):
 			if mylist[x][3]!="nomerge":
+				# Add to the mergelist
 				mymergelist.append(mylist[x])
+			else:
+				# Add to the world file. Since we won't be able to later.
+				myfavkey=portage.cpv_getkey(mylist[x][2])
+				if (not "--fetchonly" in myopts) and (myfavkey in favorites):
+					#don't record if already in system profile or already recorded
+					if (not mysysdict.has_key(myfavkey)) and (not myfavdict.has_key(myfavkey)):
+						#we don't have a favorites entry for this package yet; add one
+						myfavdict[myfavkey]=myfavkey
+						print ">>> Recording",myfavkey,"in \"world\" favorites file..."
+		portage.writedict(myfavdict,portage.root+"var/cache/edb/world",writekey=0)
 
 		mergecount=0
 		for x in mymergelist:

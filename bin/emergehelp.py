@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.2 2003/01/07 13:08:48 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.3 2003/02/07 11:32:05 carpaski Exp $
 
 import os,sys
 from output import *
@@ -170,8 +170,10 @@ def help(myaction,myopts,havecolor=1):
 		print "              ebuilds and tbz2s *would* have been installed if --pretend"
 		print "              weren't used.  Using --pretend is strongly recommended before"
 		print "              installing an unfamiliar package.  In the printout, N = new,"
-		print "              U = upgrading, R = replacing, B = blocked by an already installed"
-		print "              package."
+		print "              U = updating, R = replacing, B = blocked by an already installed"
+		print "              package, D = possible downgrading. --verbose causes affecting"
+		print "              use flags to be printed out accompanied by a '+' for enabled"
+		print "              and a '-' for disabled flags."
 		print
 		print "       "+green("--changelog")+" ("+green("-l")+" short option)"
 		print "              When pretending, also display the ChangeLog entries for packages"
@@ -186,7 +188,9 @@ def help(myaction,myopts,havecolor=1):
 		print "                emerge -S 'perl.*module'"
 		print
 		print "       "+green("--update")+" ("+green("-u")+" short option)"
-		print "              Updates packages to the most recent version available."
+		print "              Updates packages to the best version available, which may not"
+		print "              always be the highest version number due to masking for testing"
+		print "              and development."
 		print
 		print "       "+green("--deep")
 		print "              When used in conjunction with --update, this flag forces emerge"
@@ -209,8 +213,7 @@ def help(myaction,myopts,havecolor=1):
 		print "              available at the time of dependancy calculation."
 		print
 		print "       "+green("--verbose")+" ("+green("-v")+" short option)"
-		print "              Tell emerge to run in verbose mode.  Currently, this causes"
-		print "              emerge to print out GNU info errors, if any."
+		print "              Tell emerge to run in verbose mode."
 	elif myaction in ["rsync","sync"]:
 		print
 		print bold("Usage: ")+turquoise("emerge")+" "+turquoise("sync")
