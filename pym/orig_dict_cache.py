@@ -1,3 +1,9 @@
+#!/usr/bin/python
+# orig_dict_cache.py; older listdir caching implementation
+# Copyright 1999-2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/orig_dict_cache.py,v 1.3 2004/11/07 14:06:53 ferringb Exp $
+
 """per process caching of os.listdir returns.
 Symlink unaware, so beware of webs of symlinks"""
 

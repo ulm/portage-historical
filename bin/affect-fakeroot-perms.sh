@@ -1,4 +1,10 @@
 #!/bin/bash
+# affect-fakeroot-perms.sh; Make claimed fakeroot permissions, a reality.
+# Copyright 2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/affect-fakeroot-perms.sh,v 1.2 2004/11/07 14:06:53 ferringb Exp $
+
+
 echo "adjusting $2 using $1" >&2
 find "$2" | egrep -v "$2\$" | while read r; do
 		fakeroot -i "${1}" -- stat -c'%u:%g;%f=%n' "$r"

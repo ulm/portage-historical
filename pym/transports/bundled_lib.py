@@ -1,9 +1,7 @@
-#11/03/2004
-#Brian Harring
-#<ferringb@gentoo.org>
-
-#basically a bundled ftp/http capable fetcher implementation.
-#currently used by repoman, will be the basis of the reworked getbinpkg
+# bundled_lib.py; implementation of a fetcher class useing httplib and ftplib.
+# Copyright 2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/transports/bundled_lib.py,v 1.2 2004/11/07 14:06:53 ferringb Exp $
 
 import httplib, ftplib, urlparse, base64, re, sys, os
 

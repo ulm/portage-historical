@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.15 2004/11/07 11:58:29 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.16 2004/11/07 14:06:53 ferringb Exp $
 
 import os,types,string,sys
 import signal
@@ -28,7 +28,6 @@ def cleanup(pids,block_exceptions=True):
 		pids = [pids]
 	for x in pids:
 		try:
-#			print "killing pid %i" % x
 			os.kill(x,signal.SIGTERM)
 			if os.waitpid(x,os.WNOHANG)[1] == 0:
 				# feisty bugger, still alive.
@@ -223,7 +222,7 @@ def spawn(mycommand,env={},raw_exit_code=False,opt_name=None,fd_pipes=None,retur
 		# note this order must be preserved- can't change gid/groups if you change uid first.
 		if selinux_capable and selinux_context:
 			import selinux
-			selinux.setcontext(selinux_context)
+			selinux.setexec(selinux_context)
 		if gid:
 			os.setgid(gid)
 		if groups:

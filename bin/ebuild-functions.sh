@@ -1,6 +1,8 @@
 #!/bin/bash
-# Gentoo Foundation
-# Brian Harring <ferringb@gentoo.org>
+# ebuild-functions.sh; ebuild env functions, saved with the ebuild (not specific to the portage version).
+# Copyright 2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-functions.sh,v 1.2 2004/11/07 14:06:53 ferringb Exp $
 
 use() {
 	if useq ${1}; then
