@@ -13,7 +13,7 @@ Here's a simple example ebuild:
 .br 
 # Distributed under the terms of the GNU General Public License v2
 .br
-#\ $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.5,v 1.27 2002/12/06 02:20:09 vapier Exp $
+#\ $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.5,v 1.28 2002/12/16 17:14:51 vapier Exp $
 .br 
 
 S=${WORKDIR}/${P}
@@ -483,6 +483,10 @@ Sets the root (\fIDESTTREE\fR) for other functions like \fBdobin\fR, \fBdosbin\f
 \fBdoinfo\fR, \fBdolib\fR.
 .br
 The default root is /usr.
+.TP
+\fBkeepdir\fR \fI<path>\fR
+Tells portage to leave a directory behind even if it is empty.  Functions the same as
+\fBdodir\fR.
 .TP
 \fBdobin\fR \fI<binary> [list of more binaries]\fR
 Installs a \fIbinary\fR or a list of binaries into \fIDESTTREE\fR/bin.  Creates all necessary dirs.
