@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.58 2004/04/16 23:14:26 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.59 2004/04/22 01:06:45 genone Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -800,6 +800,7 @@ for x in scanlist:
 		#syntax checks
 		gentoo_copyright = re.compile(r'^# Copyright 1999-' + strftime("%Y", gmtime()) + r' Gentoo Technologies, Inc\.')
 		gentoo_license = re.compile(r'^# Distributed under the terms of the GNU General Public License v2$')
+		cvs_header = re.compile(r'^#\s*\$Header.*\$$')
 		ignore_line = re.compile(r'(^$)|(^(\t)*#)')
 		leading_spaces = re.compile(r'^[\S\t]')
 		trailing_whitespace = re.compile(r'.*([\S]$)')
@@ -822,6 +823,13 @@ for x in scanlist:
 				match = gentoo_license.match(line)
 				if not match:
 					myerrormsg = "Gentoo License Error."
+					stats["ebuild.badheader"] +=1
+					fails["ebuild.badheader"].append(x+"/"+y+".ebuild: %s" % myerrormsg)
+			# CVS Header check
+			elif linenum == 3:
+				match = cvs_header.match(line)
+				if not match:
+					myerrormsg = "CVS Header Error."
 					stats["ebuild.badheader"] +=1
 					fails["ebuild.badheader"].append(x+"/"+y+".ebuild: %s" % myerrormsg)
 			else:
