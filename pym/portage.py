@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.525 2004/10/21 14:29:15 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.526 2004/10/21 20:54:38 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -6984,12 +6984,16 @@ def do_upgrade(mykey):
 	
 	update_files={}
 	file_contents={}
-	for x in ["package.mask","package.unmask","package.keywords","package.use"]:
+	myxfiles = ["package.mask","package.unmask","package.keywords","package.use"]
+	myxfiles = myxfiles + prefix_array(myxfiles, "profile/")
+	for x in myxfiles:
 		try:
-			myfile=open("/etc/portage/"+x,"r")
+			myfile = open("/etc/portage/"+x,"r")
 			file_contents[x] = myfile.readlines()
 			myfile.close()
 		except IOError:
+			if file_contents.has_key(x):
+				del file_contents[x]
 			continue
 
 	worldlist=grabfile("/"+WORLD_FILE)
