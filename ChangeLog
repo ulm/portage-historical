@@ -1,6 +1,9 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.549 2004/02/12 10:36:41 nakano Exp $
+# $Id: ChangeLog,v 1.550 2004/02/13 15:02:35 nakano Exp $
+
+  13 Feb 2004; Masatomo Nakano <nakano@gentoo.org> portage.py: Fixed parsing
+  SRC_URI bug when FEATURES="cvs". This should close #16159.
 
   12 Feb 2004; Masatomo Nakano <nakano@gentoo.org> emerge, pym/portage.py:
   TGL's patch for correction package size when emerge -v. -- Fixed
