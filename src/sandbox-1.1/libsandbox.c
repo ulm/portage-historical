@@ -25,7 +25,7 @@
  *  as some of the InstallWatch code was used.
  *
  *
- *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.19 2004/04/14 01:47:36 carpaski Exp $
+ *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.20 2004/07/24 04:09:36 jstubbs Exp $
  *
  */
 
@@ -431,7 +431,6 @@ fopen(const char *pathname, const char *mode)
 int
 lchown(const char *path, uid_t owner, gid_t group)
 {
-/* Linux specific? */
 	int result = -1;
 	char canonic[SB_PATH_MAX];
 
@@ -439,8 +438,8 @@ lchown(const char *path, uid_t owner, gid_t group)
 
 	if FUNCTION_SANDBOX_SAFE
 		("lchown", canonic) {
-		check_dlsym(chown);
-		result = true_chown(path, owner, group);
+		check_dlsym(lchown);
+		result = true_lchown(path, owner, group);
 		}
 
 	return result;

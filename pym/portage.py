@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.440 2004/07/10 04:32:32 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.441 2004/07/24 04:09:36 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1652,7 +1652,12 @@ class config:
 
 	def setinst(self,mycpv,mydbapi):
 		# Grab the virtuals this package provides and add them into the tree virtuals.
-		virts = mydbapi.aux_get(mycpv, ["PROVIDE"])[0].split()
+		provides = mydbapi.aux_get(mycpv, ["PROVIDE"])[0]
+		if isinstance(mydbapi, portdbapi):
+			myuse = self["USE"]
+		else:
+			myuse = mydbapi.aux_get(mycpv, ["USE"])[0]
+		virts = portage_dep.use_reduce(portage_dep.paren_reduce(provides), myuse.split())
 
 		cp = dep_getkey(mycpv)
 		for virt in virts:
@@ -4737,7 +4742,11 @@ class vartree(packagetree):
 		try:
 			mylines = grabfile(self.root+VDB_PATH+"/"+mycpv+"/PROVIDE")
 			if mylines:
-				for myprovide in string.split(string.join(mylines)):
+				myuse = grabfile(self.root+VDB_PATH+"/"+mycpv+"/USE")
+				myuse = string.split(string.join(myuse))
+				mylines = string.join(mylines)
+				mylines = portage_dep.use_reduce(portage_dep.paren_reduce(mylines), myuse)
+				for myprovide in mylines:
 					mys = catpkgsplit(myprovide)
 					if not mys:
 						mys = string.split(myprovide, "/")
