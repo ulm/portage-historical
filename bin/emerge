@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.288 2004/06/21 10:51:56 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.289 2004/06/22 13:06:13 carpaski Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -296,12 +296,6 @@ if ("--debug" in myopts):
 	portage.settings.backup_changes("PORTAGE_DEBUG")
 	portage.debug=1
 	portage.settings.lock()
-
-# Python will try to compile the python modules, so we should do
-# it outside of a sandbox first.
-tmpsettings = portage.config(clone=portage.settings)
-portage.spawn("/usr/lib/portage/bin/portageq pkgdir &> /dev/null", tmpsettings, free=1)
-
 
 def emergelog(mystr):
 	if "notitles" not in portage.features:
