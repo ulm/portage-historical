@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.171 2004/06/20 12:56:16 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.172 2004/06/21 10:51:56 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -46,6 +46,13 @@ fi
 # Prevent aliases from causing portage to act inappropriately.
 # Make sure it's before everything so we don't mess aliases that follow.
 unalias -a
+
+if [ "$USERLAND" == "BSD" ]; then
+	alias make=gmake
+	alias tar=gtar
+	alias patch=gpatch
+	alias sed=gsed
+fi
 
 # Unset some variables that break things.
 unset GZIP BZIP BZIP2 CDPATH GREP_OPTIONS GREP_COLOR
@@ -104,7 +111,7 @@ useq() {
 	local x
 	
 	# Make sure we have this USE flag in IUSE
-	if ! hasq "${u}" ${IUSE} && ! hasq "${u}" ${PORTAGE_ARCHLIST} selinux; then
+	if ! hasq "${u}" ${IUSE} ${E_IUSE} && ! hasq "${u}" ${PORTAGE_ARCHLIST} selinux; then
 		echo "QA Notice: USE Flag '${u}' not in IUSE for ${CATEGORY}/${PF}" >&2
 	fi
 
@@ -179,27 +186,27 @@ if [ "${EBUILD_PHASE}" == "depend" ]; then
 
 function java-config() {
 	[ "${EBUILD_PHASE}" == "depend" ] && echo "QA Notice: java-config in global scope: ${CATEGORY}/$PF" >&2
-	`type -p java-config || echo "missing: java-config` "$@"
+	`type -p java-config || echo "missing.java-config"` "$@"
 }
 
 function python-config() {
 	[ "${EBUILD_PHASE}" == "depend" ] && echo "QA Notice: java-config in global scope: ${CATEGORY}/$PF" >&2
-	`type -p python-config || echo "missing: python-config` "$@"
+	`type -p python-config || echo "missing.python-config"` "$@"
 }
 
 function gcc() {
 	[ "${EBUILD_PHASE}" == "depend" ] && echo "QA Notice: gcc in global scope: ${CATEGORY}/$PF" >&2
-	`type -p gcc || echo "missing: gcc` "$@"
+	`type -p gcc || echo "missing.gcc"` "$@"
 }
 
 function perl() {
 	[ "${EBUILD_PHASE}" == "depend" ] && echo "QA Notice: perl in global scope: ${CATEGORY}/$PF" >&2
-	`type -p perl || echo "missing: perl` "$@"
+	`type -p perl || echo "missing.perl"` "$@"
 }
 
 function grep() {
 	[ "${EBUILD_PHASE}" == "depend" ] && echo "QA Notice: grep in global scope: ${CATEGORY}/$PF" >&2
-	`type -p grep || echo "missing: grep` "$@"
+	`type -p grep || echo "missing.grep"` "$@"
 }
 
 # ----
@@ -240,6 +247,7 @@ use_with() {
 	else
 		echo "--without-${UWORD}"
 	fi
+	return 0
 }
 
 use_enable() {
@@ -264,6 +272,7 @@ use_enable() {
 	else
 		echo "--disable-${UWORD}"
 	fi
+	return 0
 }
 
 diefunc() {
@@ -1090,6 +1099,7 @@ dyn_help() {
 	echo "  manifest    : creates a manifest file for the package"
 	echo "  unpack      : unpack/patch sources (auto-fetch if needed)"
 	echo "  compile     : compile sources (auto-fetch/unpack if needed)"
+	echo "  test        : test package (auto-fetch/unpack/compile if needed)"
 	echo "  preinst     : execute pre-install instructions"
 	echo "  postinst    : execute post-install instructions"
 	echo "  install     : installs the package to the temporary install directory"
@@ -1455,7 +1465,7 @@ unset   IUSE   DEPEND   RDEPEND   CDEPEND   PDEPEND
 unset E_IUSE E_DEPEND E_RDEPEND E_CDEPEND E_PDEPEND
 
 declare -rx EBUILD_PHASE="$*"
-declare -r T P PN PV PVR PR A AA D EBUILD EMERGE_FROM O PPID FILESDIR
+declare -r T P PN PV PVR PR A D EBUILD EMERGE_FROM O PPID FILESDIR
 declare -r PORTAGE_TMPDIR
 
 

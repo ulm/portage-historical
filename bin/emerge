@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.287 2004/06/21 09:40:54 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.288 2004/06/21 10:51:56 carpaski Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -422,7 +422,14 @@ def getgccversion():
 
 def getportageversion():
 	try:
-		profilever=os.path.basename(os.path.normpath(os.readlink("/etc/make.profile")))
+		import re
+		profilever = os.path.normpath("///"+os.readlink("/etc/make.profile"))
+		basepath   = os.path.normpath("///"+portage.settings["PORTDIR"]+"/profiles")
+		if re.match(basepath,profilever):
+			profilever = profilever[len(basepath)+1:]
+		else:
+			profilever = "!"+profilever
+		del basepath
 	except:
 		profilever="unavailable"
 	libcver=[]

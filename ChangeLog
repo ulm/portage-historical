@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.600 2004/06/21 09:40:54 jstubbs Exp $
+# $Id: ChangeLog,v 1.601 2004/06/21 10:51:56 carpaski Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -8,6 +8,23 @@
     3. /etc/portage/virtuals is _USER_ configs only. Do not copy the old file.
     4. /etc/portage/sets/world is a symlink to /var/lib/portage/world
        It is for convenience. Do not mistake this for the actual file.
+
+  21 Jun 2004; Nicholas Jones <carpaski@gentoo.org> portage.py: Disabled the
+  URL encoding for BINHOST as it will take a lot of work to get it right.
+  Execve try/except added to handle missing binaries and such. Changed the
+  default HOME to be TMPDIR/homedir. Try/except on db close operations. Add
+  in missing unlocks. Hacked in the /var/lib/portage in a chroot fix.
+
+  21 Jun 2004; Nicholas Jones <carpaski@gentoo.org> emerge: Added more info
+  into the profile for the stacked profiles.
+
+  21 Jun 2004; Nicholas Jones <carpaski@gentoo.org> ebuild.sh: The userland
+  fixes for *BSD. QA Notice fix for IUSE verbosity on global scope stuff.
+  Missing quote fix for QA intercepters. Return 0 in the use_* functions.
+  Removed AA from the readonly list.
+
+  21 Jun 2004; Nicholas Jones <carpaski@gentoo.org> dohtml: Karl's update
+  which is mostly a rewrite.
 
   21 Jun 2004; Jason Stubbs <jstubbs@gentoo.org> bin/emerge:
   Modified emerge to build up a fakedb regardless of 'empty' in params, 
