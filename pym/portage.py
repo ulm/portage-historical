@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.463 2004/08/06 00:59:19 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.464 2004/08/06 01:08:25 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -3867,16 +3867,15 @@ def dep_check(depstring,mydbapi,mysettings,use="yes",mode=None,myuse=None,use_ca
 	mysplit = portage_dep.paren_reduce(depstring)
 
 	if mysettings:
-#		mymasks = mysettings.usemask+archlist
 		if use=="all":
 			mymasks=archlist
 		else:
 			mymasks=mysettings.usemask+archlist
 		while mysettings["ARCH"] in mymasks:
 			del mymasks[mymasks.index(mysettings["ARCH"])]
-		mysplit = portage_dep.use_reduce(mysplit,myusesplit,masklist=mymasks)
+		mysplit = portage_dep.use_reduce(mysplit,myusesplit,masklist=mymasks,matchall=(use=="all"))
 	else:
-		mysplit = portage_dep.use_reduce(mysplit,myusesplit)
+		mysplit = portage_dep.use_reduce(mysplit,myusesplit,matchall=(use=="all"))
 	
 	#convert virtual dependencies to normal packages.
 	mysplit=dep_virtual(mysplit)
