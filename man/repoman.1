@@ -66,6 +66,12 @@ The ebuilds were not added to cvs when the matching digest had already been adde
 .BR digest.disjointed
 The digests were not added to cvs when the matching ebuild had already been added.
 .TP
+.BR file.size
+The file's size exceeds 20k, current policy is no files over 20k in a packages files directory.
+.TP
+.BR file.executable
+The file has the executable bit set, when it's not needed- check is limited to ebuilds, digests, Manifest, ChangeLog, and metadata.xml.
+.TP
 .BR DEPEND.bad
 User-visible ebuilds with bad DEPEND settings (matched against *visible* ebuilds).
 In other words, user-visiable ebuilds could not be found to satisfy the DEPEND settings.
@@ -108,4 +114,4 @@ Please report bugs via http://bugs.gentoo.org/
 .br
 The \fIdev-util/lintool\fR package. 
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/repoman.1,v 1.3 2004/05/17 04:21:21 carpaski Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/repoman.1,v 1.4 2004/07/29 11:40:59 ferringb Exp $
