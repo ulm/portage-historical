@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.434 2004/06/27 01:01:17 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.435 2004/06/27 04:17:40 genone Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -6113,7 +6113,10 @@ class dblink:
 		# check for package collisions
 		if "collision-protect" in features:
 			myfilelist = listdir(srcroot, recursive=1, filesonly=1)
-			mysymlinks = filter(os.path.islink, listdir(srcroot, recursive=1))
+
+			# the linkcheck only works if we are in srcroot
+			os.chdir(srcroot)
+			mysymlinks = filter(os.path.islink, listdir(srcroot, recursive=1, filesonly=0))
 
 			stopmerge=False
 			starttime=time.time()
