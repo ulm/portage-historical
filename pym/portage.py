@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.397 2004/02/25 09:04:17 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.398 2004/02/29 12:48:35 nakano Exp $
 
 VERSION="2.0.50_pre17"
 
@@ -6267,7 +6267,7 @@ def do_vartree(mysettings):
 
 usedefaults=settings.use_defs
 do_vartree(settings)
-settings.regenerate() # XXX: Regenerate use after we get a vartree -- GLOBAL
+settings.reset() # XXX: Regenerate use after we get a vartree -- GLOBAL
 
 
 # XXX: Might cause problems with root="/" assumptions
