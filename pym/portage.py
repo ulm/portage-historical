@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.346 2003/11/10 08:30:55 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.347 2003/11/23 06:39:31 drobbins Exp $
 
 VERSION="2.0.49-r15"
 
@@ -3568,7 +3568,7 @@ class vartree(packagetree):
 		for x in mydirlist:
 			mypsplit=pkgsplit(x)
 			if not mypsplit:
-				self.invalidentry(self.root+"var/db/pkg/"+mysplit[0]+"/"+x)
+				self.dbapi.invalidentry(self.root+"var/db/pkg/"+mysplit[0]+"/"+x)
 				continue
 			if mypsplit[0]==mysplit[1]:
 				appendme=[mysplit[0]+"/"+x,[mysplit[0],mypsplit[0],mypsplit[1],mypsplit[2]]]
@@ -3596,7 +3596,7 @@ class vartree(packagetree):
 		for x in mydirlist:
 			mypsplit=pkgsplit(x)
 			if not mypsplit:
-				invalidentry(self.root+"var/db/pkg/"+mysplit[0]+"/"+x)
+				self.dbapi.invalidentry(self.root+"var/db/pkg/"+mysplit[0]+"/"+x)
 				continue
 			if mypsplit[0]==mysplit[1]:
 				return 1
