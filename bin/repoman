@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.57 2004/04/10 16:22:41 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.58 2004/04/16 23:14:26 nakano Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -685,7 +685,7 @@ for x in scanlist:
 		for mytype in ["DEPEND","RDEPEND","PDEPEND"]:
 			catpkg = catdir+"/"+y
 			mydepstr = string.join(portage.db["/"]["porttree"].dbapi.aux_get(catpkg, [mytype]))
-			if " ?" in mydepstr:
+			if (string.find(mydepstr, " ?") <> -1):
 				stats[mytype+".syntax"] += 1
 				fails[mytype+".syntax"].append(catpkg+".ebuild "+mytype+": '?' preceded by space")
 				baddepsyntax = True
@@ -1101,7 +1101,7 @@ else:
 			exithandler()
 	if not commitmessagefile:
 		unlinkfile=1
-		commitmessagefile=tempfile.mkstemp("",".repoman.msg.","/tmp",True)[1]
+		commitmessagefile=tempfile.mktemp(".repoman.msg")
 		if os.path.exists(commitmessagefile):
 			os.unlink(commitmessagefile)
 		mymsg=open(commitmessagefile,"w")
