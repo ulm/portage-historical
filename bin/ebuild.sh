@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.2 2004/11/02 14:56:57 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.3 2004/11/10 20:18:01 ferringb Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -995,12 +995,39 @@ dyn_install() {
 		die "There are ${UNSAFE} unsafe files. Portage will not install them."
 	fi
 	
-	find "${D}/" -user portage -print0 | $XARGS -0 -n100 chown root
+	function stat_perms() {
+		local f
+		f=$(stat -c '%f' "$1")
+		f=$(printf %o ox$f)
+		f="${f:${#f}-4}"
+		echo $f
+	}
+
+	local file s
+	find "${D}/" -user  portage -print0 | while read file; do
+		ewarn "file $file was installed with user portage!"
+		s=$(stat_perms $file)
+		chown root "$file"
+		chmod "$s" "$file"
+	done
+
 	if [ "$USERLAND" == "BSD" ]; then
-		find "${D}/" -group portage -print0 | $XARGS -0 -n100 chgrp wheel
+		find "${D}/" -group portage -print0 | while read file; do
+			ewarn "file $file was installed with group portage!"
+			s=$(stat_perms "$file")
+			chgrp wheel "$file"
+			chmod "%s" "$file"
+		done
 	else
-		find "${D}/" -group portage -print0 | $XARGS -0 -n100 chgrp root
+		find "${D}/" -group portage -print0 | while read file; do
+			ewarn "file $file was installed with group portage!"
+			s=$(stat_perms "$file")
+			chgrp root "$file"
+			chmod "%s" "$file"
+		done
 	fi
+
+	unset -f stat_perms
 
 	# Portage regenerates this on the installed system.
 	if [ -f "${D}/usr/share/info/dir.gz" ]; then
