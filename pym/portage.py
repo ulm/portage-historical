@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.373 2004/01/13 01:45:58 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.374 2004/01/13 23:03:58 carpaski Exp $
 
 VERSION="2.0.50_pre15"
 
@@ -4410,23 +4410,24 @@ class portdbapi(dbapi):
 				except:
 					pass
 			
-				if debug:
-					writemsg("Generating cache entry(2) for: "+str(myebuild)+"\n")
-				myret=doebuild(myebuild,"depend","/",self.mysettings)
-				if myret:
-					#depend returned non-zero exit code...
-					writemsg(str(red("\naux_get():")+" (2) Error in "+mycpv+" ebuild. ("+str(myret)+")\n"
-					  "               Check for syntax error or corruption in the ebuild. (--debug)\n\n"))
-					raise KeyError
-				try:
-					os.utime(mydbkey,(emtime,emtime))
-					mycent=open(mydbkey,"r")
-				except (IOError, OSError):
-					writemsg(str(red("\naux_get():")+" (3) Error in "+mycpv+" ebuild.\n"
-					  "               Check for syntax error or corruption in the ebuild. (--debug)\n\n"))
-					raise KeyError
-				mylines=mycent.readlines()
-				mycent.close()
+				if usingmdcache:
+					if debug:
+						writemsg("Generating cache entry(2) for: "+str(myebuild)+"\n")
+					myret=doebuild(myebuild,"depend","/",self.mysettings)
+					if myret:
+						#depend returned non-zero exit code...
+						writemsg(str(red("\naux_get():")+" (2) Error in "+mycpv+" ebuild. ("+str(myret)+")\n"
+						  "               Check for syntax error or corruption in the ebuild. (--debug)\n\n"))
+						raise KeyError
+					try:
+						os.utime(mydbkey,(emtime,emtime))
+						mycent=open(mydbkey,"r")
+					except (IOError, OSError):
+						writemsg(str(red("\naux_get():")+" (3) Error in "+mycpv+" ebuild.\n"
+						  "               Check for syntax error or corruption in the ebuild. (--debug)\n\n"))
+						raise KeyError
+					mylines=mycent.readlines()
+					mycent.close()
 
 			#print "stale: pre"
 			if stale:
