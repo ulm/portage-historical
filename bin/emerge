@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.321 2004/08/30 10:47:52 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.322 2004/08/31 23:29:59 ferringb Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -1054,7 +1054,8 @@ class depgraph:
 			binpkguseflags=None
 			if x[0]=="!":
 				# if this package is myself, don't append it to block list.
-				print "Myparent",myparent
+				if "--debug" in myopts:
+					print "Myparent",myparent
 				if (myparent):
 					if myparent.split()[2] in portage.portdb.xmatch("match-all", x[1:]):
 						# myself, so exit.
