@@ -52,7 +52,10 @@ site-specific overrides of \fB/etc/make.profile/\fR
 .nf
 arch.list
 categories
+info_pkgs
+info_vars
 package.mask
+profiles.desc
 thirdpartymirrors
 use.desc
 use.local.desc
@@ -459,6 +462,12 @@ games\-strategy
 sys\-kernel
 .fi
 .TP
+.BR info_pkgs
+A list of all the packages which will be displayed when you run `emerge info`.
+.TP
+.BR info_vars
+A list of all the variables which will be displayed when you run `emerge info`.
+.TP
 .BR package.mask
 This contains a list of DEPEND atoms for packages that should not be installed 
 in any profile.  Useful for adding the latest KDE betas and making sure no 
@@ -480,6 +489,27 @@ package has been masked and WHO is doing the masking.
 # new kde betas
 =kde\-base/kde\-3.2.0_beta1
 =kde\-base/kdeaccessibility\-3.2.0_beta1
+.fi
+.TP
+.BR profiles.desc
+List all the current stable and development profiles.  If a profile is listed 
+here, then it will be checked by repoman.  At the moment, only 1 profile is 
+allowed per stable/dev/KEYWORD; the last one found is the last one used.
+
+.I Format:
+.nf
+\- comments begin with #
+\- one profile list per line in format: arch dir status
+\- arch must be listed in arch.list
+\- dir is relative to profiles.desc
+\- status must be 'stable' or 'dev'
+.fi
+
+.I Example:
+.nf
+alpha default-linux/alpha/2004.3 stable
+m68k  default-linux/m68k         dev
+x86   default-linux/x86/2004.3   stable
 .fi
 .TP
 .BR thirdpartymirrors
@@ -575,4 +605,4 @@ Please report bugs via http://bugs.gentoo.org/
 .BR ebuild (5),
 .BR make.conf (5)
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/portage.5,v 1.17.2.6 2005/03/30 01:52:20 vapier Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/portage.5,v 1.17.2.7 2005/03/30 05:31:54 vapier Exp $
