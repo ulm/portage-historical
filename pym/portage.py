@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.428 2004/06/20 06:58:39 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.429 2004/06/21 03:17:48 genone Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -6103,7 +6103,7 @@ class dblink:
 			# feel free to improve
 			if os.path.exists(self.myroot+VDB_PATH+"/"+self.cat):
 				for mydir in os.listdir(self.myroot+VDB_PATH+"/"+self.cat):
-					if os.path.isdir(self.myroot+VDB_PATH+"/"+self.cat+mydir):
+					if os.path.isdir(self.myroot+VDB_PATH+"/"+self.cat+"/"+mydir):
 						otherpkg.append(self.cat+"/"+mydir.split("/")[-1])
 			for p in otherpkg:
 				# the new package doesn't have a category, this can create problems
