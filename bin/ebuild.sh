@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.190 2004/08/22 04:23:27 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.191 2004/08/22 04:33:37 ferringb Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -433,10 +433,10 @@ econf() {
 		# if the profile defines a location to install libs to aside from default, pass it on.
 		# if the ebuild passes in --libdir, they're responsible for the conf_libdir fun.
 		if [ ! -z "${CONF_LIBDIR}" ] && [ "${*/--libdir}" == "$*" ]; then
-			if [ "${*/--prefix}" == "${EXTRA_ECONF}" ]; then
+			if [ "${*/--prefix}" == "$*" ]; then
 				CONF_PREFIX="/usr"
 			else
-				local args="$(echo $@)"
+				local args="$(echo $*)"
 				local -a pref=($(echo ${args/*--prefix[= ]}))
 				CONF_PREFIX=${pref}
 			fi
