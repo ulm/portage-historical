@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.89 2004/08/31 08:17:11 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.90 2004/09/14 19:48:40 carpaski Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -323,7 +323,9 @@ else:
 		myrepofile.close()
 		if myreporootpath == myreporoot[:len(myreporootpath)]:
 			# goofy os x cvs co.
-			myreporoot = myreporoot[len(myreporootpath):]		
+			myreporoot = myreporoot[len(myreporootpath):]
+			while myreporoot and myreporoot[0] == '/':
+				myreporoot = myreporoot[1:]
 	except:
 		err("Error grabbing repository information; exiting.")
 
