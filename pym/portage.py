@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.555 2004/11/12 17:44:00 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.556 2004/11/12 17:46:18 genone Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -5273,7 +5273,7 @@ class dblink:
 			# the linkcheck only works if we are in srcroot
 			try:
 				mycwd = os.getcwd()
-			except os.OSerror:
+			except OSError:
 				mycwd="/"
 			os.chdir(srcroot)
 			mysymlinks = filter(os.path.islink, listdir(srcroot, recursive=1, 
