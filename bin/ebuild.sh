@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.78 2002/11/09 10:00:18 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.79 2002/11/11 19:13:08 carpaski Exp $
 
 if [ -n "$#" ]
 then
@@ -45,7 +45,7 @@ diefunc() {
 	local funcname="$1" lineno="$2" exitcode="$3"
 	shift 3
 	echo >&2
-	echo "!!! ERROR: The ebuild did not complete successfully." >&2
+	echo "!!! ERROR: $CATEGORY/$PF failed." >&2
 	echo "!!! Function $funcname, Line $lineno, Exitcode $exitcode" >&2
 	echo "!!! ${*:-(no error message)}" >&2
 	echo >&2
@@ -173,7 +173,7 @@ unpack() {
 			fi
 			;;
 		*)
-			die "unpack ${x}: file format not recognized"
+			echo "unpack ${x}: file format not recognized. Ignoring."
 			;;
 		esac
 	done
@@ -189,6 +189,7 @@ econf() {
 		    --datadir=/usr/share \
 		    --sysconfdir=/etc \
 		    --localstatedir=/var/lib \
+				${EXTRA_ECONF} \
 		    "$@" || die "econf failed" 
 	else
 		die "no configure script found"

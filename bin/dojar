@@ -3,7 +3,7 @@
 # Copyright 1999-2002 Gentoo Technologies, Inc.                                 
 # Distributed under the terms of the GNU General Public License, v2 or later    
 # Author Karl Trygve Kalleberg <karltk@gentoo.org>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dojar,v 1.3 2002/04/10 15:45:58 karltk Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dojar,v 1.4 2002/11/11 19:13:08 carpaski Exp $
 #
 # Typical usage:
 #  dojar foo.jar bar.jar
@@ -32,24 +32,23 @@ fi
 
 jarroot="${DESTTREE}/share/${PN}/"
 jardest="${DESTTREE}/share/${PN}/${JARDESTTREE}/"
-pf=${D}${jarroot}/package.env
+pf="${D}${jarroot}/package.env"
 
-dodir ${jardest}
+dodir "${jardest}"
 
 for i in $* ; do
-	bn=`basename $i`
-	
+	bn="$(basename $i)"
 
-	if [ -f $pf ] ; then
-		oldcp=`grep "CLASSPATH=" $pf | sed "s/CLASSPATH=//"`
-		grep -v "CLASSPATH=" $pf > ${pf}.new
-		echo "CLASSPATH=${oldcp}:${jardest}${bn}" >> ${pf}.new
-		mv ${pf}.new $pf
+	if [ -f "$pf" ] ; then
+		oldcp=`grep "CLASSPATH=" "$pf" | sed "s/CLASSPATH=//"`
+		grep -v "CLASSPATH=" "$pf" > "${pf}.new"
+		echo "CLASSPATH=${oldcp}:${jardest}${bn}" >> "${pf}.new"
+		mv "${pf}.new" "$pf"
 	else
-		echo "DESCRIPTION=\"${DESCRIPTION}\"" > $pf
-		echo "CLASSPATH=${jardest}${bn}" >> $pf
+		echo "DESCRIPTION=\"${DESCRIPTION}\"" > "$pf"
+		echo "CLASSPATH=${jardest}${bn}" >> "$pf"
 	fi
 	
-	cp $i ${D}${jardest}/
-	chmod 0444 ${D}${jardest}/${bn}
+	cp "$i" "${D}${jardest}/"
+	chmod 0444 "${D}${jardest}/${bn}"
 done
