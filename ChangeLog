@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.14 2004/11/05 13:49:22 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.15 2004/11/07 06:18:57 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  07 Nov 2004; Jason Stubbs <jstubbs@gentoo.org> dispatch-conf: Moved back
+  to the version of dispatch-conf that was released (due to python-2.2
+  compatibility) and fixed a small type in that version. #70282
 
   05 Nov 2004; Jason Stubbs <jstubbs@gentoo.org> doins: Added vapier's fix
   for doins changing existing directory permissions. #69896
