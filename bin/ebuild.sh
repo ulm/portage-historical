@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.181 2004/08/03 04:34:21 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.182 2004/08/05 04:06:25 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -1328,8 +1328,8 @@ newdepend() {
 			do_newdepend DEPEND sys-devel/autoconf sys-devel/automake sys-devel/make
 			;;
 		"/c")
-			do_newdepend DEPEND sys-devel/gcc virtual/glibc
-			do_newdepend RDEPEND virtual/glibc
+			do_newdepend DEPEND sys-devel/gcc virtual/libc
+			do_newdepend RDEPEND virtual/libc
 			;;
 		*)
 			do_newdepend DEPEND $1

@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/emergehelp.py,v 1.3 2004/08/04 23:29:37 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/emergehelp.py,v 1.4 2004/08/05 04:06:26 carpaski Exp $
 
 import os,sys
 from output import *
@@ -165,7 +165,7 @@ def help(myaction,myopts,havecolor=1):
 		print 
 		print "       "+green("--emptytree")+" ("+green("-e")+" short option)"
 		print "              Virtually tweaks the tree of installed packages to only contain"
-		print "              glibc, this is great to use together with --pretend. This makes"
+		print "              libc, this is great to use together with --pretend. This makes"
 		print "              it possible for developers to get a complete overview of the"
 		print "              complete dependency tree of a certain package."
 		print
