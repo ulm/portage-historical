@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.45 2005/02/28 12:16:51 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.45 2005/02/28 12:16:51 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.46 2005/03/01 01:17:54 carpaski Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.46 2005/03/01 01:17:54 carpaski Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.45 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.46 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -1421,9 +1421,10 @@ class config:
 		return self.__getvirtuals_compile()
 
 	def __getvirtuals_compile(self):
- 		"""Actually generate the virtuals we have collected.
-       The results are reversed so the list order is left to right.
-       Given data is [Best,Better,Good] sets of [Good, Better, Best]"""
+		"""Actually generate the virtuals we have collected.
+		The results are reversed so the list order is left to right.
+		Given data is [Best,Better,Good] sets of [Good, Better, Best]"""
+
 		# Virtuals by profile+tree preferences.
 		ptVirtuals   = {}
 		# Virtuals by user+tree preferences.
