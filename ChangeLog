@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.702 2004/08/16 07:28:52 ferringb Exp $
+# $Id: ChangeLog,v 1.703 2004/08/16 07:45:43 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -8,10 +8,6 @@
     3. /etc/portage/profile/virtuals is _USER_ configs only.
     4. /etc/portage/sets/world is a symlink to /var/lib/portage/world
        It is for convenience. Do not mistake this for the actual file.
-
-  16 Aug 2004; Brian Harring <ferringb@gentoo.org> bin/repoman: Added quick 
-  hack to repoman for xmllint version compatability; if libxml > 206??, then 
-  --nonet, otherwise --noent.
   
   16 Aug 2004; Brian Harring <ferringb@gentoo.org> pym/cvstree.py 
   pym/portage.py: Round #2 of ignorecvs, now w/ sane regex goodness and an 
