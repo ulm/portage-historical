@@ -1,6 +1,8 @@
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_anydbm.py,v 1.5 2004/03/19 21:41:59 carpaski Exp $
 
 import anydbm,cPickle,types
-from os import chown
+from os import chown,path,umask,mkdir
+from os.path import exists
 
 import portage_db_template
 
@@ -12,10 +14,14 @@ class database(portage_db_template.database):
 		self.uid      = uid
 		self.gid      = gid
 		
-		if not os.path.exists(self.path):
-			prevmask=os.umask(0)
-			makedirs(self.path, 02775)
-			os.umask(prevmask)
+		if not exists(self.path):
+			prevmask=umask(0)
+			current_path="/"
+			for mydir in self.path.split("/"):
+				current_path += "/"+mydir
+				if not exists(current_path):
+					mkdir(current_path)
+			umask(prevmask)
 
 		self.filename = self.path + "/" + self.category + ".anydbm"
 		
