@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.347 2004/10/21 20:54:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.348 2004/10/23 01:37:07 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2682,12 +2682,15 @@ elif "info"==myaction:
 	binutils_vers = string.join(portage.db["/"]["vartree"].dbapi.match("sys-devel/binutils"), ",")
 	header_vers = string.join(portage.db["/"]["vartree"].dbapi.match("virtual/os-headers"), ",")
 	libtool_vers = string.join(portage.db["/"]["vartree"].dbapi.match("sys-devel/libtool"), ",")
+	py_vers = string.join(portage.db["/"]["vartree"].dbapi.match("dev-lang/python"), ",")
+	py_this = string.strip(string.split(sys.version,"\n")[0])
 
 	print "Autoconf: " + ac_vers
 	print "Automake: " + am_vers
 	print "Binutils: " + binutils_vers
 	print "Headers:  " + header_vers
 	print "Libtools: " + libtool_vers
+	print "Python:   " + py_vers + "  [" + py_this + "]"
 	
 	if "--verbose" in myopts:
 		myvars=portage.settings.keys()
