@@ -45,7 +45,7 @@ class config:
 		self.configdict["globals"]=self.configlist[-1]
 
 		# Does /etc/make.profile/make.defaults exist?
-		if self.ctx.getProfileDir():
+		if self.ctx.get_profiledir():
 			self.mygcfg=self.getconfig("/etc/make.profile/make.defaults")
 			if self.mygcfg==None:
 				print "!!! Parse error in /etc/make.defaults. Never modify this file."
@@ -63,7 +63,7 @@ class config:
 		self.configlist.append(self.mygcfg)
 		self.configdict["conf"]=self.configlist[-1]
 
-		for x in self.ctx.getIncrementals():
+		for x in self.ctx.get_incrementals():
 			if os.environ.has_key(x):
 				self.backupenv[x]=os.environ[x]
 		#auto-use:
@@ -92,7 +92,7 @@ class config:
 		if useonly:
 			myincrementals=["USE"]
 		else:
-			myincrementals=self.ctx.getIncrementals()
+			myincrementals=self.ctx.get_incrementals()
 		for mykey in myincrementals:
 			if mykey=="USE":
 				mydbs=self.uvlist
@@ -136,14 +136,14 @@ class config:
 				self.usesplit.append(x)
 		
 		# Pre-Pend ARCH variable to USE settings so '-*' in env doesn't kill arch.
-		if self.ctx.getProfileDir():
+		if self.ctx.get_profiledir():
 			if self.configdict["defaults"].has_key("ARCH"):
 				if self.configdict["defaults"]["ARCH"]:
 					if self.configdict["defaults"]["ARCH"] not in self.usesplit:
 						self.usesplit.insert(0,self.configdict["defaults"]["ARCH"])
 						self.configlist[-1]["USE"]=string.join(self.usesplit," ")
 
-	def getUseSplit(self):
+	def get_usesplit(self):
 		return self.usesplit
 	
 	def __getitem__(self,mykey):

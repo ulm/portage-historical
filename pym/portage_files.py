@@ -59,15 +59,14 @@ class LastModifiedDB:
 
 
 	def store_db(self):
-		## ALAIN: FIX -- secpass, uid, and wheelgid should not be referenced like this!!!
-		if portage.secpass:
+		if (self.ctx.secpass != portage.USER_NORMAL):
 			try:
 				if self.mtimedb and not os.environ.has_key("SANDBOX_ACTIVE"):
 					self.mtimedb["version"]=portage.VERSION
 					cPickle.dump(self.mtimedb,open(self.mtimedbfile,"w"))
 					print "*** Wrote out LastModifiedDB data successfully."
-					os.chown(self.mtimedbfile,portage.uid,portage.wheelgid)
-					os.chmod(self.mtimedbfile,0664)
+					os.chown(self.mtimedbfile, self.ctx.get_uid(), self.ctx.get_wheelgid())
+					os.chmod(self.mtimedbfile, 0664)
 			except Exception, e:
 				pass
 
