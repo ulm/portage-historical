@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.165 2003/03/24 03:10:45 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.166 2003/04/02 07:28:42 carpaski Exp $
 
 if [ -z "$1" ]; then
 	echo
@@ -54,6 +54,7 @@ if [ -d /usr/portage.cvs/sys-apps/portage/ ]; then
 	cp /usr/portage/sys-apps/portage/portage-${PREVEB}.ebuild /usr/portage.cvs/sys-apps/portage/portage-${V}.ebuild
 	rm -f /usr/portage/sys-apps/portage/files/digest-portage-${V}
 	rm -f /usr/portage.cvs/sys-apps/portage/files/digest-portage-${V}
+	rm -f /bigmama/share/archive/mirrors/gentoo/distfiles/portage-${V}.tar.bz2
 	rm -f $(python -c "import portage; print portage.settings['DISTDIR']+\"/${PKG}-${V}.tar.bz2\"")
 	ebuild /usr/portage/sys-apps/portage/portage-${V}.ebuild fetch digest
 	cp /usr/portage/sys-apps/portage/files/digest-portage-${V} /usr/portage.cvs/sys-apps/portage/files/digest-portage-${V}
