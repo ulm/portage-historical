@@ -1,6 +1,13 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.472 2003/09/02 17:31:40 carpaski Exp $
+# $Id: ChangeLog,v 1.473 2003/09/11 03:36:18 carpaski Exp $
+
+*portage-2.0.49-r4 (10 Sep 2003): Fixes
+
+  10 Sep 2003; Nicholas Jones <carpaski@gentoo.org> *: Added the facility
+  to incorporate binary package use flags when calculating deps. Changes in
+  -r2 and -r3 included quick fixes to SELinux code and the addition of
+  LINGUAS to USE_EXPAND.
 
 *portage-2.0.49-r1 (25 Aug 2003): Fixes
 
