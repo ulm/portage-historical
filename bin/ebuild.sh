@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.194 2004/09/05 09:23:17 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.195 2004/09/09 08:02:53 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -961,6 +961,25 @@ dyn_install() {
 		echo "UNSAFE SetUID: $i"
 	done
 	
+	if [ -x /usr/bin/readelf -a -x /usr/bin/file ]; then
+		for x in $(find "${D}/" -type f \( -perm -04000 -o -perm -02000 \) ); do
+			f=$(file "${x}")
+			if [ -z "${f/*SB executable*/}" -o -z "${f/*SB shared object*/}" ]; then
+				/usr/bin/readelf -d "${x}" | egrep '\(FLAGS(.*)NOW' > /dev/null
+				if [ $? != 0 ]; then
+					if [ ! -z "${f/*statically linked*/}" ]; then
+						#uncomment this line out after developers have had ample time to fix pkgs.
+						#UNSAFE=$(($UNSAFE + 1))
+						echo -ne '\a'
+						echo "QA Notice: Security risk ${x:${#D}:${#x}}. Please consider relinking with 'append-ldflags -Wl,-z,now' to fix."
+						echo -ne '\a'
+						sleep 1
+					fi
+				fi
+			fi
+		done
+	fi
+
 	if [[ $UNSAFE > 0 ]]; then
 		die "There are ${UNSAFE} unsafe files. Portage will not install them."
 	fi

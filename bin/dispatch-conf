@@ -7,7 +7,7 @@
 #  Distributed under the terms of the GNU Public License v2
 #
 #  Jeremy Wohl (http://igmus.org)
-#  $Id: dispatch-conf,v 1.5 2004/08/09 04:00:48 ferringb Exp $
+#  $Id: dispatch-conf,v 1.6 2004/09/09 08:02:53 carpaski Exp $
 #
 # TODO
 #  dialog menus
@@ -50,6 +50,14 @@ class dispatch:
                 continue
 
             confs += self.massage (os.popen (FIND_EXTANT_CONFIGS % (path,)).readlines ())
+
+        if self.options['use-rcs'] == 'yes' and ((os.system( "which rcs >/dev/null 2>&1" ) == 256)
+                                                 or (os.system( "which ci >/dev/null 2>&1" ) == 256)
+                                                 or (os.system( "which co >/dev/null 2>&1" ) == 256) 
+                                                 or (os.system( "which rcsmerge >/dev/null 2>&1" ) == 256)):
+            print >> sys.stderr, 'dispatch-conf: Error finding all RCS utils and use-rcs=yes in config; fatal'
+            return False
+
 
         #
         # Remove new configs identical to current
@@ -184,7 +192,7 @@ class dispatch:
         the diff of what changed into the LOG_CHANGES_TO file."""
         os.system((DIFF_CONTENTS % (curconf, newconf)) + '>>' + LOG_CHANGES_TO)
         try:
-            shutil.move (newconf, curconf)
+            shutil.move(newconf, curconf)
         except (IOError, os.error), why:
             print >> sys.stderr, 'dispatch-conf: Error renaming %s to %s: %s; fatal' % \
                   (newconf, curconf, str(why))

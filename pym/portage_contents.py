@@ -1,7 +1,7 @@
 # portage_contents.py -- (Persistent) Contents File Management
 # Copyright 2004-2004 Gentoo Foundation
 # Distributed under the GNU Public License v2
-# $Id: portage_contents.py,v 1.1 2004/09/05 02:22:16 carpaski Exp $
+# $Id: portage_contents.py,v 1.2 2004/09/09 08:02:53 carpaski Exp $
 
 import os,string,types,sys,copy
 import portage_exception
@@ -31,7 +31,7 @@ def ContentsHandler(filename):
 		parts  = string.split(line)
 
 		mytype   = parts[0]
- 		mytarget = None
+		mytarget = None
 
 		if   mytype in ["dir","dev","fif"]:
 			mypath = string.join(parts[1:])
