@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.291 2003/02/21 08:59:34 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.292 2003/02/21 10:19:48 carpaski Exp $
 
 VERSION="2.0.47-r3"
 
@@ -3629,12 +3629,6 @@ class dblink:
 				if not os.path.islink(obj):
 					print "--- !sym  ","sym", obj
 					continue
-				myabsdest=abssymlink(obj)
-				mydest=os.readlink(obj)
-				if os.path.exists(myabsdest):
-					if mydest != pkgfiles[obj][2]:
-						print "--- !destn","sym", obj
-						continue
 				mysyms.append(obj)
 			elif pkgfiles[obj][0]=="obj":
 				if not os.path.isfile(obj):
@@ -3678,7 +3672,7 @@ class dblink:
 			progress=0
 
 			#step 1: remove all the dead symlinks we can...
-	
+
 			pos = 0
 			while pos<len(mysyms):
 				obj=mysyms[pos]
