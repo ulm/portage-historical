@@ -1,7 +1,7 @@
-# portage.py -- core Portage functionality
-# Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
+# portage_checksum.py -- core Portage functionality
+# Copyright 1998-2004 Gentoo Foundation
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_checksum.py,v 1.1 2004/08/25 05:25:08 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_checksum.py,v 1.2 2004/08/31 13:27:28 carpaski Exp $
 
 from portage_const import PRIVATE_PATH,PRELINK_BINARY
 import os
@@ -61,11 +61,13 @@ def sha1hash(filename):
 
 	return (sum.hexdigest(),size)
 
-def perform_checksum(filename, hash_function=md5hash, calc_prelink=prelink_capable):
+def perform_checksum(filename, hash_function=md5hash, calc_prelink=0):
+	myfilename      = filename[:]
 	prelink_tmpfile = PRIVATE_PATH+"/prelink-checksum.tmp"
-	mylock = portage_locks.lockfile(prelink_tmpfile, wantnewlockfile=1)
-	myfilename=filename
+	mylock          = None
+	
 	if calc_prelink and prelink_capable:
+		mylock = portage_locks.lockfile(prelink_tmpfile, wantnewlockfile=1)
 		# Create non-prelinked temporary file to md5sum.
 		# Raw data is returned on stdout, errors on stderr.
 		# Non-prelinks are just returned.
@@ -82,6 +84,6 @@ def perform_checksum(filename, hash_function=md5hash, calc_prelink=prelink_capab
 
 	if calc_prelink and prelink_capable:
 		os.unlink(prelink_tmpfile)
-	portage_locks.unlockfile(mylock)
+		portage_locks.unlockfile(mylock)
 
 	return (myhash,mysize)

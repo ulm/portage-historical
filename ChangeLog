@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.724 2004/08/31 08:17:11 ferringb Exp $
+# $Id: ChangeLog,v 1.725 2004/08/31 13:27:27 carpaski Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -8,6 +8,16 @@
     3. /etc/portage/profile/virtuals is _USER_ configs only.
     4. /etc/portage/sets/world is a symlink to /var/lib/portage/world
        It is for convenience. Do not mistake this for the actual file.
+
+  31 Aug 2004; Nicholas Jones <carpaski@gentoo.org> portage_checksum.py:
+  Only prelink-check when requested -- This is only valid for merge/unmerge
+  operations -- Also happens to fix the access violations in portageq.
+
+  31 Aug 2004; Nicholas Jones <carpaski@gentoo.org> portage.py: Adjustments
+  for the prelink-check changes.
+
+  31 Aug 2004; Nicholas Jones <carpaski@gentoo.org> portage_exception.py:
+  Made the exceptions more hierarchial. Yes, I'm aware I can't speel.
 
   30 Aug 2004; Brian Harring <ferringb@gentoo.org> bin/repoman: Added 
   solar's patch to make the file.size check display the size of the 
@@ -76,14 +86,14 @@
 *portage-2.0.51_pre20 (16 Aug 2004): Fixes and Public Readiness & GPG
   
   16 Aug 2004; Nicholas Jones <carpaski@gentoo.org> portage.py: Fixed the
-	imports and new modules so that the API remains constant.
+  imports and new modules so that the API remains constant.
 
   16 Aug 2004; Nicholas Jones <carpaski@gentoo.org> portage_exec.py: Created
-	for external operations and calls. Presently contains spawn. Mostly for
-	prevention of circular imports.
+  for external operations and calls. Presently contains spawn. Mostly for
+  prevention of circular imports.
 
   16 Aug 2004; Nicholas Jones <carpaski@gentoo.org> portage_md5.py: using
-	the spawn call from portage_exec.py to avoid the circular import.
+  the spawn call from portage_exec.py to avoid the circular import.
 
   16 Aug 2004; Brian Harring <ferringb@gentoo.org> bin/repoman: Fixed a 
   traceback related to file.size and --fix, added compatability tweaks for

@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.489 2004/08/31 02:46:13 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.490 2004/08/31 13:27:28 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -6321,7 +6321,7 @@ class dblink:
 					return 1
 			elif S_ISREG(mymode):
 				# we are merging a regular file
-				mymd5=portage_checksum.perform_md5(mysrc)
+				mymd5=portage_checksum.perform_md5(mysrc,calc_prelink=1)
 				# calculate config file protection stuff
 				mydestdir=os.path.dirname(mydest)	
 				moveme=1
@@ -6339,7 +6339,7 @@ class dblink:
 						# we only need to tweak mydest if cfg file management is in play.
 						if myppath:
 							# we have a protection path; enable config file management.
-							destmd5=portage_checksum.perform_md5(mydest)
+							destmd5=portage_checksum.perform_md5(mydest,calc_prelink=1)
 							cycled=0
 							if cfgfiledict.has_key(myrealdest):
 								if destmd5 in cfgfiledict[myrealdest]:
@@ -6428,7 +6428,7 @@ class dblink:
 							
 						# and now we're at the end. yay.
 						myf.close()
-						mymd5=portage_checksum.perform_md5(myrealdest)
+						mymd5=portage_checksum.perform_md5(myrealdest,calc_prelink=1)
 					os.utime(myrealdest,(thismtime,thismtime))
 
 				if mymtime!=None:

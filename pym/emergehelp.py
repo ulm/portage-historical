@@ -1,7 +1,6 @@
-#!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/emergehelp.py,v 1.4 2004/08/05 04:06:26 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/emergehelp.py,v 1.5 2004/08/31 13:27:28 carpaski Exp $
 
 import os,sys
 from output import *
