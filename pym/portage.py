@@ -2,10 +2,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.583 2005/03/09 08:22:58 ferringb Exp $
-cvs_id_string="$Id: portage.py,v 1.583 2005/03/09 08:22:58 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.584 2005/03/09 09:07:13 ferringb Exp $
+cvs_id_string="$Id: portage.py,v 1.584 2005/03/09 09:07:13 ferringb Exp $"[5:-2]
 
-VERSION="$Revision: 1.583 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.584 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -5124,7 +5124,7 @@ if not os.environ.has_key("SANDBOX_ACTIVE"):
 		try:
 			mystat=os.lstat(cachedir+"/dep")
 			os.chown(cachedir+"/dep",uid,portage_gid)
-			os.chmod(cachedir+"/dep",02775)
+			os.chmod(cachedir+"/dep",0775)
 			if mystat[stat.ST_GID]!=portage_gid:
 				spawn("chown -R "+str(uid)+":"+str(portage_gid)+" "+cachedir+"/dep",settings,free=1)
 				spawn("chmod -R u+rw,g+rw "+cachedir+"/dep",settings,free=1)
