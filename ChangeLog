@@ -1,6 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2002 Gentoo Technologies, Inc.; Distributed under the GPL v2
 
+*portage-2.1.0 (...): Code reorg and enhancements
+
+  07 Feb 2003; Alain Penders <alain@gentoo.org> portage.py and
+  portage_config.py: Initial version of portage_config.py (configuration
+  does no longer use globals).  Moved all config related functions into
+  the config class to simplify variable handling.  Added PortageContext
+  class to portage.py, and moved a bunch of the global data and init code
+  into it.  Cleaned up profiledir handling.
+
 *portage-2.0.46-r11 (04 Feb 2003): Fixups
 
   04 Feb 2003; Nicholas Jones <carpaski@gentoo.org> ebuild.sh: distcc
