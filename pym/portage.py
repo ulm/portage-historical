@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.448 2004/07/28 04:51:19 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.449 2004/07/28 14:36:30 nakano Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -6776,6 +6776,9 @@ def pkgmerge(mytbz2,myroot,mysettings):
 	# (before extracting binaries) if there's a problem
 	origdir=getcwd()
 	os.chdir(pkgloc)
+
+	mysettings.configdict["pkg"]["CATEGORY"] = mycat;
+	a=doebuild(myebuild,"setup",myroot,mysettings)
 	print ">>> extracting",mypkg
 	notok=spawn("bzip2 -dqc -- '"+mytbz2+"' | tar xpf -",mysettings,free=1)
 	if notok:
