@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.5 2004/11/02 14:56:57 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.6 2004/11/02 15:29:57 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -797,6 +797,7 @@ def ExtractKernelVersion(base_dir):
 
 	version = ''
 
+	#XXX: The following code relies on the ordering of vars within the Makefile
 	for line in lines:
 		# split on the '=' then remove annoying whitespace
 		items = string.split(line, '=')
@@ -810,6 +811,22 @@ def ExtractKernelVersion(base_dir):
 		elif items[0] == 'EXTRAVERSION' and \
 			items[-1] != items[0]:
 			version += items[1]
+
+	# Grab a list of files named localversion* and sort them
+	localversions = os.listdir(base_dir)
+	for x in range(len(localversions)-1,-1,-1):
+		if localversions[x][:12] != "localversion":
+			del localversions[x]
+	localversions.sort()
+
+	# Append the contents of each to the version string, stripping ALL whitespace
+	for lv in localversions:
+		version += string.join(string.split(string.join(grabfile(base_dir+"/"+lv))), "")
+
+	# Check the .config for a CONFIG_LOCALVERSION and append that too, also stripping whitespace
+	kernelconfig = getconfig(base_dir+"/.config")
+	if kernelconfig and kernelconfig.has_key("CONFIG_LOCALVERSION"):
+		version += string.join(string.split(kernelconfig["CONFIG_LOCALVERSION"]), "")
 
 	return (version,None)
 
@@ -2806,8 +2823,8 @@ def ververify(myorigval,silent=1):
 	if myval[-1][-1] in string.lowercase:
 		try:
 			foo=int(myval[-1][:-1])
-			return 1
 			vercache[myorigval]=1
+			return 1
 			# 1a, 2.0b, etc.
 		except SystemExit, e:
 			raise
@@ -6571,7 +6588,8 @@ class dblink:
 						print "!!!",mydest
 					elif stat.S_ISREG(mydmode) or (stat.S_ISLNK(mydmode) and os.path.exists(mydest) and stat.S_ISREG(os.stat(mydest)[stat.ST_MODE])):
 						cfgprot=0
-						# install of destination is blocked by an existing regular file;
+						# install of destination is blocked by an existing regular file,
+						# or by a symlink to an existing regular file;
 						# now, config file management may come into play.
 						# we only need to tweak mydest if cfg file management is in play.
 						if myppath:
