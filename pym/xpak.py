@@ -1,4 +1,4 @@
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/xpak.py,v 1.6 2003/03/22 23:41:18 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/xpak.py,v 1.7 2003/03/28 05:15:16 carpaski Exp $
 
 # The format for a tbz2/xpak:
 #
@@ -244,7 +244,10 @@ class tbz2:
 	def scan(self):
 		"""Scans the tbz2 to locate the xpak segment and setup internal values.
 		This function is called by relevant functions already."""
-		mystat=os.lstat(self.file)
+		try:
+			mystat=os.stat(self.file)
+		except:
+			return 0
 		if self.filestat:
 			changed=0
 			for x in [ST_SIZE, ST_MTIME, ST_CTIME]:
