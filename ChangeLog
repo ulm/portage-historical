@@ -3,6 +3,14 @@
 
 *portage-2.1.0 (...): Code reorg and enhancements
 
+  16 Feb 2003; Alain Penders <alain@gentoo.org> emerge, portage.py,
+  portage_config.py, portage_files.py:  Totally removed global variables
+  from the portage modules.  Most of what was global data is now managed
+  by the PortageContext class, which needs to be instantiated and passed
+  into most portage calls.  A bunch of data is now available through
+  accessor methods.  For example, the old ("abc" in features) should now
+  be done as ctx.has_feature("abc").
+
   07 Feb 2003; Alain Penders <alain@gentoo.org> portage.py and
   portage_config.py: Initial version of portage_config.py (configuration
   does no longer use globals).  Moved all config related functions into
