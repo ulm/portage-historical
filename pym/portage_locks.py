@@ -1,7 +1,7 @@
 # portage: Lock management code
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.18 2004/10/19 04:58:42 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.19 2004/10/24 05:07:05 jstubbs Exp $
 
 import atexit
 import errno
@@ -65,12 +65,15 @@ def lockfile(mypath,wantnewlockfile=0,unlinkfile=0):
 		if not os.path.exists(lockfilename):
 			old_mask=os.umask(000)
 			myfd = os.open(lockfilename, os.O_CREAT|os.O_RDWR,0660)
-			if os.stat(lockfilename).st_gid != portage_data.portage_gid:
-				try:
+			try:
+				if os.stat(lockfilename).st_gid != portage_data.portage_gid:
 					os.chown(lockfilename,os.getuid(),portage_data.portage_gid)
-				except SystemExit, e:
-					raise
-				except:
+			except SystemExit, e:
+				raise
+			except OSError, e:
+				if e[0] == 2: # No such file or directory
+					return lockfile(mypath,wantnewlockfile,unlinkfile)
+				else:
 					portage_util.writemsg("Cannot chown a lockfile. This could cause inconvenience later.\n");
 			os.umask(old_mask)
 		else:
