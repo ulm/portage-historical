@@ -1,3 +1,5 @@
+/* $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox/problems/Attic/libsandbox_emacsbug.c,v 1.2 2003/03/22 14:24:38 carpaski Exp $ */
+
 #define _GNU_SOURCE
 #define _REENTRANT
 

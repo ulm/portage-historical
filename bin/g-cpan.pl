@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.5 2003/03/08 20:05:39 jrray Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.6 2003/03/22 14:24:38 carpaski Exp $
 
 # History: 
 
@@ -294,6 +294,8 @@ sub get_globals {
 
     $OVERLAY_DIR=qx(/usr/lib/portage/bin/portageq portdir_overlay);
     $PORTAGE_DIR=qx(/usr/lib/portage/bin/portageq portdir);
+		chomp $OVERLAY_DIR;
+		chomp $PORTAGE_DIR;
     
     unless ( length $OVERLAY_DIR && -d $OVERLAY_DIR ) {
         $OVERLAY_DIR = "";

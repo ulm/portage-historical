@@ -1,23 +1,11 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepallstrip,v 1.8 2003/02/22 16:59:08 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepallstrip,v 1.9 2003/03/22 14:24:38 carpaski Exp $
 
 if [ -n "${DEBUGBUILD}" ] ; then
 	exit 0
 fi
 
-echo "strip:"
-z="`find "${D}"/ -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 -or -name "*.so" -or -name "*.so.*" \) 2>/dev/null`"
-
-for x in ${z} ; do
-	f="`file "${x}"`"
-	if [ "${f/*SB executable*/1}" == "1"  ] ; then
-		echo "${x}"
-		strip "${x}"
-	fi
-	if [ "${f/*SB shared object*/1}" == "1" ] ; then
-		echo "${x}"
-		strip --strip-debug "${x}"
-	fi
-done
+echo "prepallstrip:"
+prepstrip "${D}"
