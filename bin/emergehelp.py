@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.25 2004/06/10 04:14:03 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.26 2004/07/28 02:37:49 nakano Exp $
 
 import os,sys
 from output import *
@@ -15,7 +15,7 @@ def shorthelp():
 	print "   "+turquoise("emerge")+" < "+turquoise("sync")+" | "+turquoise("info")+" >"
 	print "   "+turquoise("emerge")+" "+turquoise("--resume")+" [ "+green("--pretend")+" | "+green("--ask")+" | "+green("--skipfirst")+" ]"
 	print "   "+turquoise("emerge")+" "+turquoise("--help")+" [ "+green("system")+" | "+green("config")+" | "+green("sync")+" ] "
-	print bold("Options:")+" "+green("-")+"["+green("abcCdDefhikKlnoOpPsSuUvV")+"] ["+green("--oneshot")+"] ["+green("--noconfmem")+"]"
+	print bold("Options:")+" "+green("-")+"["+green("abcCdDefhikKlnoOpPsSuUvV")+"] ["+green("--oneshot")+"] ["+green("--newuse")+"] ["+green("--noconfmem")+"]"
 	print      "                                    ["+green("--columns")+"] ["+green("--nospinner")+"]"
 	print bold("Actions:")+" [ "+green("clean")+" | "+green("depclean")+" | "+green("inject")+" | "+green("prune")+" | "+green("regen")+" | "+green("search")+" | "+green("unmerge")+" ]"
 	print
@@ -186,6 +186,10 @@ def help(myaction,myopts,havecolor=1):
 		print "              ANY information from the local machine. All binaries will be"
 		print "              downloaded from the remote server without consulting packages"
 		print "              existing in the packages directory."
+		print
+		print "       "+green("--newuse")
+		print "              Tells emerge to include installed packages where USE flags have "
+		print "              changed since installation."
 		print
 		print "       "+green("--noconfmem")
 		print "              Portage keeps track of files that have been placed into"
