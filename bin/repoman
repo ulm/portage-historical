@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.94 2004/10/10 23:27:28 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.95 2004/10/11 02:06:49 jstubbs Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -910,14 +910,22 @@ for x in scanlist:
 		for mypos in range(len(myuse)):
 			stats["IUSE.invalid"]=stats["IUSE.invalid"]+1
 			fails["IUSE.invalid"].append(x+"/"+y+".ebuild: %s" % myuse[mypos])	
-		#license checks
+
+		# license checks
 		myuse=portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,["LICENSE"])[0]
+		# Parse the LICENSE variable, remove USE conditions and
+		# flatten it.
 		myuse=portage_dep.use_reduce(portage_dep.paren_reduce(myuse), matchall=1)
 		myuse=portage.flatten(myuse)
+		# Check each entry to ensure that it exists in PORTDIR's
+		# license directory.
 		for mypos in range(0,len(myuse)):
-			if myuse[mypos] not in liclist:
+			# Need to check for "||" manually as no portage
+			# function will remove it without removing values.
+			if myuse[mypos] not in liclist and myuse[mypos] != "||":
 				stats["LICENSE.invalid"]=stats["LICENSE.invalid"]+1
 				fails["LICENSE.invalid"].append(x+"/"+y+".ebuild: %s" % myuse[mypos])
+
 		#keyword checks
 		myuse=string.split(portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,["KEYWORDS"])[0])
 		for mykey in myuse:
