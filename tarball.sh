@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.166 2003/04/02 07:28:42 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.167 2003/04/02 07:30:53 carpaski Exp $
 
 if [ -z "$1" ]; then
 	echo
@@ -36,7 +36,7 @@ cd ${DEST}
 find -name CVS -exec rm -rf {} \;
 chown -R root.root ${DEST}
 cd $TMP
-rm -f ${PKG}-${V}/bin/emerge.py
+rm -f ${PKG}-${V}/bin/emerge.py ${PKG}-${V}/bin/pmake ${PKG}-${V}/bin/*.py[oc] ${PKG}-${V}/pym/*.py[oc]
 tar cjvf ${TMP}/${PKG}-${V}.tar.bz2 ${PKG}-${V}
 
 if [ -L ${TMP}/portage-copy ]; then
