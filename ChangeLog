@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.651 2004/08/02 03:30:24 nakano Exp $
+# $Id: ChangeLog,v 1.652 2004/08/02 14:37:44 nakano Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -9,6 +9,9 @@
     4. /etc/portage/sets/world is a symlink to /var/lib/portage/world
        It is for convenience. Do not mistake this for the actual file.
 
+  02 Aug 2004; Masatomo Nakano <nakano@gentoo.org> bin/emerge: Added code
+  to skip directory in info dir. (#59138)
+	
   01 Aug 2004; Masatomo Nakano <nakano@gentoo.org> bin/emerge: Added
   message about ._cfg* files after emerge sync.
 
