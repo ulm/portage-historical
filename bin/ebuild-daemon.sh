@@ -2,7 +2,7 @@
 # ebuild-daemon.sh; core ebuild processor handling code
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-daemon.sh,v 1.7 2004/11/22 12:05:57 ferringb Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-daemon.sh,v 1.8 2004/11/28 09:09:01 ferringb Exp $
  
 source /usr/lib/portage/bin/ebuild.sh daemonize
 
@@ -229,6 +229,7 @@ while [ "$alive" == "1" ]; do
 			for e in $phases; do
 				if [ -z $PORTAGE_LOGFILE ]; then
 					execute_phases ${e}
+					ret=$?
 				else
 					# why do it this way rather then the old '[ -f ${T}/.succesfull }'?
 					# simple.  this allows the actual exit code to be used, rather then just stating no .success == 1 || 0
@@ -240,8 +241,8 @@ while [ "$alive" == "1" ]; do
 						umask 0002
 						tee -i -a $PORTAGE_LOGFILE
 					}
+					ret=${PIPESTATUS[0]}
 				fi
-				ret=$?
 				# if sandbox log exists, then there were complaints from it.
 				# tell python to display the errors, then dump relevant vars for debugging.
 				if [ -n "$SANDBOX_LOG" ] && [ -e "$SANDBOX_LOG" ]; then
