@@ -89,7 +89,7 @@ completes, the sources should be fully compiled.
 .TP
 .BR preinst
 Run package specific actions that need to be done before the package
-is installed into the temporary root.
+is installed into the live filesystem.
 .TP
 .BR install
 Installs the package to the temporary \fIinstall directory\fR by running
@@ -100,7 +100,7 @@ file system or included in a binary package.
 .TP
 .BR postinst
 Run package specific actions that need to be done after the package
-is installed into the temporary root.  Usually helpful messages are
+is installed into the live filesystem.  Usually helpful messages are
 shown here.
 .TP
 .BR qmerge
@@ -163,4 +163,4 @@ Nicholas Jones <carpaski@gentoo.org>
 .br
 Mike Frysinger <vapier@gentoo.org>
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.1,v 1.10 2003/02/17 01:55:40 carpaski Exp $"
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/ebuild.1,v 1.11 2003/03/05 16:31:54 vapier Exp $"
