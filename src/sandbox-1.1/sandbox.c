@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 Geert Bevin, Uwyn, http://www.uwyn.com
 **	Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@uwyn.com>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.c,v 1.3 2002/08/31 19:32:19 azarah Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.c,v 1.4 2002/09/01 09:19:11 azarah Exp $
 */
 
 #define _GNU_SOURCE
@@ -169,15 +169,16 @@ void cleanup()
     if (file_exist(PIDS_FILE, 1) <= 0) {
       perror(">>> pids file is not a regular file");
       success = 0;
-      /* Go ahead and exit, pids file is not a regular file */
-      exit(1);
+      /* We should really not fail if the pidsfile is missing here, but
+       * rather just exit cleanly, as there is still some cleanup to do */
+      return 1;
     }
 
     pids_file = file_open(PIDS_FILE, "r+", 0);
     if (-1 == pids_file) {
       success = 0;
-      /* Go ahead and exit, failed opening pids file */
-      exit(1);
+      /* Nothing more to do here */
+      return 1;
     }
 
     /* Load "still active" pids into an array */
@@ -257,7 +258,7 @@ void cleanup()
   }
 
   if (0 == success) {
-    exit(1);
+    return 1;
   }
 }
 
