@@ -2,7 +2,7 @@
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
 
-# $Id: portage.py,v 1.269.2.8 2003/02/15 14:55:06 alain Exp $
+# $Id: portage.py,v 1.269.2.9 2003/02/15 19:06:53 alain Exp $
 
 VERSION="2.0.47-r1"
 
@@ -31,22 +31,79 @@ class PortageContext:
 		self.stickies=["KEYWORDS_ACCEPT","USE","CFLAGS","CXXFLAGS","MAKEOPTS","EXTRA_ECONF","EXTRA_EMAKE"]
 		self.db = {}
 
+		# valid end of version components; integers specify offset from release version
+		# pre=prerelease, p=patchlevel (should always be followed by an int), rc=release candidate
+		# all but _p (where it is required) can be followed by an optional trailing integer
+		self.endversion={"pre":-2,"p":0,"alpha":-4,"beta":-3,"rc":-1}
+
+		# as there's no reliable way to set {}.keys() order
+		# netversion_keys will be used instead of endversion.keys
+		# to have fixed search order, so that "pre" is checked
+		# before "p"
+		self.endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
+
+		# These don't really belong here.  They're part of functions that should be classes/methods.
+		self.vcmpcache={}
+		self.catcache={}
+		self.pkgcache={}
+		self.iscache={}
+		self.vercache={}
+		self.dircache={}
+
 	def init(self):
+
+		#
+		# Initialize the access rights and find the needed userids and groupids.
+		#
+		self.initialize_access_rights()
+
+		#
+		# Make sure we're in a valid directory.
+		#
+		getcwd()
+
+		#
+		# Grab our start time, used by the eclass code.
+		#
+		self.starttime=long(time.time())
+
+		#
+		# Unless we're in debug mode, initialize the ^C handler.
+		#
+		if not os.environ.has_key("DEBUG"):
+			signal.signal(signal.SIGINT,self.exithandler)
+
+		#
+		# Setup our ROOT
+		#
 		self.setupRoot()
 
+		#
+		# Create our tmp and cache directories
+		#
 		self.create_tmp_directories()
 		self.create_cache_directories()
 
 		os.umask(022)
 
+
+		#
+		# Setup our profiledir
+		#
 		if os.path.exists("/etc/make.profile"):
 			self.profiledir = "/etc/make.profile"
 		else:
 			self.profiledir = None
 			print ">>> Note: /etc/make.profile isn't available; an 'emerge sync' will probably fix this."
 
+		#
+		# Load the LastModified DB
+		#
 		self.mtimedb = portage_files.LastModifiedDB(self)
 
+		#
+		# Load and initialize default USE values
+		#
 		self.setupUseDefaults()
 
 		#
@@ -120,14 +177,14 @@ class PortageContext:
 		self.initialize_groups()
 
 
-	def getIncrementals(self):
+	def get_incrementals(self):
 		return self.incrementals
 
-	def getProfileDir(self):
+	def get_profiledir(self):
 		return self.profiledir
 
-	def getUseSplit(self):
-		return self.settings.getUseSplit()
+	def get_usesplit(self):
+		return self.settings.get_usesplit()
 
 	def do_vartree(self):
 		self.virtualmap=self.getvirtuals("/")
@@ -205,7 +262,7 @@ class PortageContext:
 		mysplit=mykey.split("/")
 		if len(mysplit)==1:
 			if mydb and type(mydb)==types.InstanceType:
-				for x in ctx.get_categories():
+				for x in self.get_categories():
 					if mydb.cp_list(x+"/"+mykey):
 						return x+"/"+mykey
 				if self.virtualpkgmap.has_key(mykey):
@@ -218,7 +275,6 @@ class PortageContext:
 			return mykey
 
 	def cpv_expand(self, mycpv,mydb=None):
-		global ctx
 		myslash=mycpv.split("/")
 		mysplit=pkgsplit(myslash[-1])
 		if len(myslash)==2:
@@ -240,7 +296,7 @@ class PortageContext:
 				myp=mycpv
 			mykey=None
 			if mydb:
-				for x in ctx.get_categories():
+				for x in self.get_categories():
 					if mydb.cp_list(x+"/"+myp):
 						mykey=x+"/"+myp
 			if not mykey and type(mydb)!=types.ListType:
@@ -289,12 +345,12 @@ class PortageContext:
 					os.makedirs(cachedir+"/dep",2755)
 					print ">>>",cachedir+"/dep","doesn't exist, creating it..."
 				try:
-					os.chown(cachedir,uid,wheelgid)
+					os.chown(cachedir,self.uid,self.wheelgid)
 					os.chmod(cachedir,0775)
 				except OSError:
 					pass
 				try:
-					os.chown(cachedir+"/dep",uid,wheelgid)
+					os.chown(cachedir+"/dep",self.uid,self.wheelgid)
 					os.chmod(cachedir+"/dep",02775)
 				except OSError:
 					pass
@@ -354,8 +410,7 @@ class PortageContext:
 
 
 	def handle_updates(self):
-		global secpass
-		if (secpass==USER_ROOT) and (not os.environ.has_key("SANDBOX_ACTIVE")):
+		if (self.secpass==USER_ROOT) and (not os.environ.has_key("SANDBOX_ACTIVE")):
 			#only do this if we're root
 			updpath=os.path.normpath(self.settings["PORTDIR"]+"/profiles/updates")
 			didupdate=0
@@ -461,8 +516,8 @@ class PortageContext:
 				self.maskdict[mycatpkg].append(x)
 		del pkgmasklines
 
-		if self.getProfileDir():
-			pkglines=grabfile(self.getProfileDir()+"/packages")
+		if self.get_profiledir():
+			pkglines=grabfile(self.get_profiledir()+"/packages")
 		else:
 			pkglines=[]
 		self.revmaskdict={}
@@ -490,40 +545,82 @@ class PortageContext:
 		"""Get our groups."""
 		return self.groups
 
+	def exithandler(self,foo,bar):
+		"""Handles ^C interupts in a sane manner"""
+		#remove temp sandbox files
+		#if (self.secpass==2) and ("sandbox" in features):
+		#	mypid=os.fork()
+		#	if mypid==0:
+		#		myargs=[]
+		#		mycommand="/usr/lib/portage/bin/testsandbox.sh"
+		#		myargs=["testsandbox.sh","0"]
+		#		myenv={}
+		#		os.execve(mycommand,myargs,myenv)
+		#		os._exit(1)
+		#		sys.exit(1)
+		#	retval=os.waitpid(mypid,0)[1]
+		#	if retval==0:
+		#		if os.path.exists("/tmp/sandboxpids.tmp"):
+		#			os.unlink("/tmp/sandboxpids.tmp")
+		if self.mtimedb:
+			self.mtimedb.store_db()
+		# 0=send to *everybody* in process group
+		os.kill(0,signal.SIGKILL)
+		sys.exit(1)
+
+
+	def initialize_access_rights(self):
+		"""Find the current users user id, the wheel group id, the portage user and group
+		id, and determine what access rights the user has.  Three levels of access rights
+		are available: root, user is a member of the wheel group, or normal user."""
+		#Secpass will be set to 1 if the user is root or in the wheel group.
+		self.uid=os.getuid()
+		self.secpass=USER_NORMAL
+		if self.uid==0:
+			self.secpass=USER_ROOT
+		try:
+			self.wheelgid=grp.getgrnam("wheel")[2]
+			if (self.secpass == USER_NORMAL) and (self.wheelgid in os.getgroups()):
+				self.secpass=USER_WHEEL
+		except KeyError:
+			print "portage initialization: your system doesn't have a \"wheel\" group."
+			print "Please fix this so that Portage can operate correctly (It's normally GID 10)"
+			pass
+
+		#Discover the uid and gid of the portage user/group
+		try:
+			self.portage_uid=pwd.getpwnam("portage")[2]
+			self.portage_gid=grp.getgrnam("portage")[2]
+		except KeyError:
+			self.portage_uid=0
+			self.portage_gid=self.wheelgid
+			print
+			print red(  "portage: 'portage' user or group missing. Please update baselayout")
+			print red(  "         and merge portage user(250) and group(250) into your passwd")
+			print red(  "         and group files. Non-root compilation is disabled until then.")
+			print       "         For the defaults, line 1 goes into passwd, and 2 into group."
+			print green("         portage:x:250:250:portage:/var/tmp/portage:/bin/false")
+			print green("         portage::250:portage")
+			print
+
+	def get_portage_uid(self):
+		"""Get the portage user id."""
+		return self.portage_uid
+
+	def get_portage_gid(self):
+		"""Get the portage group id."""
+		return self.portage_gid
+
+	def get_uid(self):
+		"""Get the current users` user id."""
+		return self.uid
+
+	def get_wheelgid(self):
+		"""Return the WHEEL group id."""
+		return self.wheelgid
+
 
 #-----------------------------------------------------------------------------
-
-
-#Secpass will be set to 1 if the user is root or in the wheel group.
-uid=os.getuid()
-secpass=0
-if uid==0:
-	secpass=2
-try:
-	wheelgid=grp.getgrnam("wheel")[2]
-	if (not secpass) and (wheelgid in os.getgroups()):
-		secpass=1
-except KeyError:
-	print "portage initialization: your system doesn't have a \"wheel\" group."
-	print "Please fix this so that Portage can operate correctly (It's normally GID 10)"
-	pass
-
-#Discover the uid and gid of the portage user/group
-try:
-	portage_uid=pwd.getpwnam("portage")[2]
-	portage_gid=grp.getgrnam("portage")[2]
-except KeyError:
-	portage_uid=0
-	portage_gid=wheelgid
-	print
-	print red("portage: 'portage' user or group missing. Please update baselayout")
-	print red(  "         and merge portage user(250) and group(250) into your passwd")
-	print red(  "         and group files. Non-root compilation is disabled until then.")
-	print       "         For the defaults, line 1 goes into passwd, and 2 into group."
-	print green("         portage:x:250:250:portage:/var/tmp/portage:/bin/false")
-	print green("         portage::250:portage")
-	
-	print
 
 
 def getcwd():
@@ -533,7 +630,7 @@ def getcwd():
 	except:
 		os.chdir("/")
 		return "/"
-getcwd()
+
 
 def abssymlink(symlink):
 	"This reads symlinks, resolving the relative symlinks, and returning the absolute."
@@ -543,18 +640,18 @@ def abssymlink(symlink):
 		mylink=mydir+"/"+mylink
 	return os.path.normpath(mylink)
 
-dircache={}
 def listdir(path):
 	"""List directory contents, using cache. (from dircache module; streamlined by drobbins)
 	Exceptions will be propogated to the caller."""
+	global ctx
 	try:
-		cached_mtime, list = dircache[path]
+		cached_mtime, list = ctx.dircache[path]
 	except KeyError:
 		cached_mtime, list = -1, []
 	mtime = os.stat(path)[8]
 	if mtime != cached_mtime:
 		list = os.listdir(path)
-		dircache[path] = mtime, list
+		ctx.dircache[path] = mtime, list
 	return list
 
 try:
@@ -611,38 +708,6 @@ except ImportError:
 		return (sum.hexdigest(),size)
 		#return (md5_to_hex(sum.digest()),size)
 
-starttime=long(time.time())
-#ALAIN: Can't do this anymore...
-#features=[]
-
-def exithandler(foo,bar):
-	"""Handles ^C interupts in a sane manner"""
-	global ctx,secpass
-	#remove temp sandbox files
-#	if (secpass==2) and ("sandbox" in features):
-#		mypid=os.fork()
-#		if mypid==0:
-#			myargs=[]
-#			mycommand="/usr/lib/portage/bin/testsandbox.sh"
-#			myargs=["testsandbox.sh","0"]
-#			myenv={}
-#			os.execve(mycommand,myargs,myenv)
-#			os._exit(1)
-#			sys.exit(1)
-#		retval=os.waitpid(mypid,0)[1]
-#		if retval==0:
-#			if os.path.exists("/tmp/sandboxpids.tmp"):
-#				os.unlink("/tmp/sandboxpids.tmp")
-	if ctx:
-		ctx.mtimedb.store_db()
-	# 0=send to *everybody* in process group
-	os.kill(0,signal.SIGKILL)
-	sys.exit(1)
-
-# dropping the signal handler to gives better tracebacks
-# enable unless we're debugging
-if not os.environ.has_key("DEBUG"):
-	signal.signal(signal.SIGINT,exithandler)
 
 def tokenize(mystring):
 	"""breaks a string like 'foo? (bar) oni? (blah (blah))'
@@ -724,8 +789,8 @@ def flatten(mytokens):
 			newlist.append(x)
 	return newlist
 
-#beautiful directed graph object
 
+#beautiful directed graph object
 class digraph:
 	def __init__(self):
 		self.dict={}
@@ -799,19 +864,8 @@ class digraph:
 			mygraph.okeys=self.okeys[:]
 		return mygraph
 
-# valid end of version components; integers specify offset from release version
-# pre=prerelease, p=patchlevel (should always be followed by an int), rc=release candidate
-# all but _p (where it is required) can be followed by an optional trailing integer
-
-endversion={"pre":-2,"p":0,"alpha":-4,"beta":-3,"rc":-1}
-# as there's no reliable way to set {}.keys() order
-# netversion_keys will be used instead of endversion.keys
-# to have fixed search order, so that "pre" is checked
-# before "p"
-endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
 
 #parse /etc/env.d and generate /etc/profile.env
-
 def env_update(makelinks=1):
 	global ctx
 	if not os.path.exists(ctx.getRoot()+"etc/env.d"):
@@ -1085,8 +1139,6 @@ def ExtractKernelVersion(base_dir):
 		version = version[1:-1]
 	return (version,None)
 
-aumtime=0
-
 def spawn(mystring,debug=0,free=0,droppriv=0):
 	"""spawn a subprocess with optional sandbox protection, 
 	depending on whether sandbox is enabled.  The "free" argument,
@@ -1104,10 +1156,10 @@ def spawn(mystring,debug=0,free=0,droppriv=0):
 	mypid=os.fork()
 	if mypid==0:
 		myargs=[]
-		if droppriv and portage_gid and portage_uid:
+		if droppriv and ctx.get_portage_gid() and ctx.get_portage_uid():
 			#drop root privileges, become the 'portage' user
-			os.setgid(portage_gid)
-			os.setuid(portage_uid)
+			os.setgid(ctx.get_portage_gid())
+			os.setuid(ctx.get_portage_uid())
 		else:
 			if droppriv:
 				print "portage: Unable to drop root for",mystring
@@ -1128,7 +1180,7 @@ def spawn(mystring,debug=0,free=0,droppriv=0):
 			else:
 				myargs=["["+ctx.settings["PF"]+"] bash","-c",mystring]
 
-		os.execve(mycommand,myargs,settings.environ())
+		os.execve(mycommand,myargs,ctx.settings.environ())
 		# If the execve fails, we need to report it, and exit
 		# *carefully* --- report error here
 		os._exit(1)
@@ -1369,6 +1421,7 @@ def digestcheck(myarchives):
 
 # parse actionmap to spawn ebuild with the appropriate args
 def spawnebuild(mydo,actionmap,debug,alwaysdep=0):
+	global ctx
 	if alwaysdep or (not ctx.has_feature("noauto")):
 		# process dependency first
 		if "dep" in actionmap[mydo].keys():
@@ -1384,14 +1437,14 @@ def spawnebuild(mydo,actionmap,debug,alwaysdep=0):
 
 # "checkdeps" support has been deprecated.  Relying on emerge to handle it.
 def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
-	global settings,ctx
+	global ctx
 	if not os.path.exists(myebuild):
 		print "!!! doebuild:",myebuild,"not found."
 		return 1
 	if myebuild[-7:]!=".ebuild":
 		print "!!! doebuild: ",myebuild,"does not appear to be an ebuild file."
 		return 1
-	settings.reset()
+	ctx.settings.reset()
 	ctx.settings["PORTAGE_DEBUG"]=str(debug)
 	#ctx.settings["ROOT"]=ctx.getRoot()
 	ctx.settings["ROOT"]=myroot
@@ -1418,7 +1471,7 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 	else:
 		ctx.settings["PVR"]=mysplit[1]+"-"+mysplit[2]
 	ctx.settings["SLOT"]=""
-	if settings.has_key("PATH"):
+	if ctx.settings.has_key("PATH"):
 		mysplit=string.split(ctx.settings["PATH"],":")
 	else:
 		mysplit=[]
@@ -1439,9 +1492,9 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 			ctx.settings["T"]=ctx.settings["BUILDDIR"]+"/temp"
 			if not os.path.exists(ctx.settings["T"]) and mydo!="depend":
 				os.makedirs(ctx.settings["T"])
-			os.chown(ctx.settings["BUILD_PREFIX"],portage_uid,portage_gid)
-			os.chown(ctx.settings["BUILDDIR"],portage_uid,portage_gid)
-			os.chown(ctx.settings["T"],portage_uid,portage_gid)
+			os.chown(ctx.settings["BUILD_PREFIX"],ctx.get_portage_uid(),ctx.get_portage_gid())
+			os.chown(ctx.settings["BUILDDIR"],ctx.get_portage_uid(),ctx.get_portage_gid())
+			os.chown(ctx.settings["T"],ctx.get_portage_uid(),ctx.get_portage_gid())
 			os.chmod(ctx.settings["T"],02770)
 	except OSError, e:
 		print "!!! File system problem. (ReadOnly? Out of space?)"
@@ -1461,7 +1514,7 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 		return 1
 
 	#set up KV variable -- DEP SPEEDUP :: Don't waste time. Keep var persistant.
-	if (mydo!="depend") or not settings.has_key("KV"):
+	if (mydo!="depend") or not ctx.settings.has_key("KV"):
 		mykv,err1=ExtractKernelVersion(ctx.getRoot()+"usr/src/linux")
 		if mykv:
 			# Regular source tree
@@ -1469,7 +1522,7 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 		else:
 			ctx.settings["KV"]=""
 
-	if (mydo!="depend") or not settings.has_key("KVERS"):
+	if (mydo!="depend") or not ctx.settings.has_key("KVERS"):
 		myso=getstatusoutput("uname -r")
 		ctx.settings["KVERS"]=myso[1]
 
@@ -1480,7 +1533,7 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 			print myso[1]
 		return myso[0]
 
-	if settings.has_key("PORT_LOGDIR"):
+	if ctx.settings.has_key("PORT_LOGDIR"):
 		if os.access(ctx.settings["PORT_LOGDIR"]+"/",os.W_OK):
 			ctx.settings["LOG_COUNTER"]=str(counter_tick_core("/"))
 		else:
@@ -1586,7 +1639,6 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 		else:
 			return spawn("/usr/sbin/ebuild.sh setup unpack compile install package")
 
-expandcache={}
 
 def movefile(src,dest,newmtime=None,sstat=None):
 	"""moves a file from src to dest, preserving all permissions and attributes; mtime will
@@ -1699,6 +1751,7 @@ def unmerge(cat,pkg,myroot):
 
 def relparse(myver):
 	"converts last version part into three components"
+	global ctx
 	number=0
 	p1=0
 	p2=0
@@ -1707,11 +1760,11 @@ def relparse(myver):
 		#an endversion
 		number=string.atof(mynewver[0])
 		match=0
-		for x in endversion_keys:
+		for x in ctx.endversion_keys:
 			elen=len(x)
 			if mynewver[1][:elen] == x:
 				match=1
-				p1=endversion[x]
+				p1=ctx.endversion[x]
 				try:
 					p2=string.atof(mynewver[1][elen:])
 				except:
@@ -1737,14 +1790,14 @@ def relparse(myver):
 			number=string.atof(myver)  
 	return [number,p1,p2]
 
+
 #returns 1 if valid version string, else 0
 # valid string in format: <v1>.<v2>...<vx>[a-z,_{endversion}[vy]]
 # ververify doesn't do package rev.
-
-vercache={}
 def ververify(myorigval,silent=1):	
+	global ctx
 	try:
-		return vercache[myorigval]
+		return ctx.vercache[myorigval]
 	except KeyError:
 		pass
 	if len(myorigval)==0:
@@ -1755,30 +1808,30 @@ def ververify(myorigval,silent=1):
 	if len(myval)==0:
 		if not silent:
 			print "!!! Name error: empty version string."
-		vercache[myorigval]=0
+		ctx.vercache[myorigval]=0
 		return 0
 	#all but the last version must be a numeric
 	for x in myval[:-1]:
 		if not len(x):
 			if not silent:
 				print "!!! Name error in",myorigval+": two decimal points in a row"
-			vercache[myorigval]=0
+			ctx.vercache[myorigval]=0
 			return 0
 		try:
 			foo=string.atoi(x)
 		except:
 			if not silent:
 				print "!!! Name error in",myorigval+": \""+x+"\" is not a valid version component."
-			vercache[myorigval]=0
+			ctx.vercache[myorigval]=0
 			return 0
 	if not len(myval[-1]):
 			if not silent:
 				print "!!! Name error in",myorigval+": two decimal points in a row"
-			vercache[myorigval]=0
+			ctx.vercache[myorigval]=0
 			return 0
 	try:
 		foo=string.atoi(myval[-1])
-		vercache[myorigval]=1
+		ctx.vercache[myorigval]=1
 		return 1
 	except:
 		pass
@@ -1787,7 +1840,7 @@ def ververify(myorigval,silent=1):
 		try:
 			foo=string.atoi(myval[-1][:-1])
 			return 1
-			vercache[myorigval]=1
+			ctx.vercache[myorigval]=1
 			# 1a, 2.0b, etc.
 		except:
 			pass
@@ -1797,7 +1850,7 @@ def ververify(myorigval,silent=1):
 	if len(ep)!=2:
 		if not silent:
 			print "!!! Name error in",myorigval
-		vercache[myorigval]=0
+		ctx.vercache[myorigval]=0
 		return 0
 	try:
 		foo=string.atoi(ep[0])
@@ -1805,25 +1858,25 @@ def ververify(myorigval,silent=1):
 		#this needs to be numeric, i.e. the "1" in "1_alpha"
 		if not silent:
 			print "!!! Name error in",myorigval+": characters before _ must be numeric"
-		vercache[myorigval]=0
+		ctx.vercache[myorigval]=0
 		return 0
-	for mye in endversion_keys:
+	for mye in ctx.endversion_keys:
 		if ep[1][0:len(mye)]==mye:
 			if len(mye)==len(ep[1]):
 				#no trailing numeric; ok
-				vercache[myorigval]=1
+				ctx.vercache[myorigval]=1
 				return 1
 			else:
 				try:
 					foo=string.atoi(ep[1][len(mye):])
-					vercache[myorigval]=1
+					ctx.vercache[myorigval]=1
 					return 1
 				except:
 					#if no endversions work, *then* we return 0
 					pass	
 	if not silent:
 		print "!!! Name error in",myorigval
-	vercache[myorigval]=0
+	ctx.vercache[myorigval]=0
 	return 0
 
 def isjustname(mypkg):
@@ -1833,19 +1886,20 @@ def isjustname(mypkg):
 			return 0
 	return 1
 
-iscache={}
 def isspecific(mypkg):
 	"now supports packages with no category"
+	global ctx
 	try:
-		return iscache[mypkg]
+		return ctx.iscache[mypkg]
 	except:
 		pass
 	mysplit=string.split(mypkg,"/")
 	if not isjustname(mysplit[-1]):
-			iscache[mypkg]=1
+			ctx.iscache[mypkg]=1
 			return 1
-	iscache[mypkg]=0
+	ctx.iscache[mypkg]=0
 	return 0
+
 
 # This function can be used as a package verification function, i.e.
 # "pkgsplit("foo-1.2-1") will return None if foo-1.2-1 isn't a valid
@@ -1853,24 +1907,23 @@ def isspecific(mypkg):
 # return a list containing: [ pkgname, pkgversion(norev), pkgrev ].
 # For foo-1.2-1, this list would be [ "foo", "1.2", "1" ].  For 
 # Mesa-3.0, this list would be [ "Mesa", "3.0", "0" ].
-pkgcache={}
-
 def pkgsplit(mypkg,silent=1):
+	global ctx
 	try:
-		return pkgcache[mypkg]
+		return ctx.pkgcache[mypkg]
 	except KeyError:
 		pass
 	myparts=string.split(mypkg,'-')
 	if len(myparts)<2:
 		if not silent:
 			print "!!! Name error in",mypkg+": missing a version or name part." 
-		pkgcache[mypkg]=None
+		ctx.pkgcache[mypkg]=None
 		return None
 	for x in myparts:
 		if len(x)==0:
 			if not silent:
 				print "!!! Name error in",mypkg+": empty \"-\" part."
-			pkgcache[mypkg]=None
+			ctx.pkgcache[mypkg]=None
 			return None
 	#verify rev
 	revok=0
@@ -1884,46 +1937,46 @@ def pkgsplit(mypkg,silent=1):
 	if revok:
 		if ververify(myparts[-2]):
 			if len(myparts)==2:
-				pkgcache[mypkg]=None
+				ctx.pkgcache[mypkg]=None
 				return None
 			else:
 				for x in myparts[:-2]:
 					if ververify(x):
-						pkgcache[mypkg]=None
+						ctx.pkgcache[mypkg]=None
 						return None
 						#names can't have versiony looking parts
 				myval=[string.join(myparts[:-2],"-"),myparts[-2],myparts[-1]]
-				pkgcache[mypkg]=myval
+				ctx.pkgcache[mypkg]=myval
 				return myval
 		else:
-			pkgcache[mypkg]=None
+			ctx.pkgcache[mypkg]=None
 			return None
 
 	elif ververify(myparts[-1],silent):
 		if len(myparts)==1:
 			if not silent:
 				print "!!! Name error in",mypkg+": missing name part."
-			pkgcache[mypkg]=None
+			ctx.pkgcache[mypkg]=None
 			return None
 		else:
 			for x in myparts[:-1]:
 				if ververify(x):
 					if not silent:
 						print "!!! Name error in",mypkg+": multiple version parts."
-					pkgcache[mypkg]=None
+					ctx.pkgcache[mypkg]=None
 					return None
 			myval=[string.join(myparts[:-1],"-"),myparts[-1],"r0"]
-			pkgcache[mypkg]=myval
+			ctx.pkgcache[mypkg]=myval
 			return myval
 	else:
-		pkgcache[mypkg]=None
+		ctx.pkgcache[mypkg]=None
 		return None
 
-catcache={}
 def catpkgsplit(mydata,silent=1):
 	"returns [cat, pkgname, version, rev ]"
+	global ctx
 	try:
-		return catcache[mydata]
+		return ctx.catcache[mydata]
 	except KeyError:
 		pass
 	mysplit=mydata.split("/")
@@ -1935,25 +1988,25 @@ def catpkgsplit(mydata,silent=1):
 		retval=[mysplit[0]]
 		p_split=pkgsplit(mysplit[1],silent)
 	if not p_split:
-		catcache[mydata]=None
+		ctx.catcache[mydata]=None
 		return None
 	retval.extend(p_split)
-	catcache[mydata]=retval
+	ctx.catcache[mydata]=retval
 	return retval
 
 # vercmp:
 # This takes two version strings and returns an integer to tell you whether
 # the versions are the same, val1>val2 or val2>val1.
-vcmpcache={}
 def vercmp(val1,val2):
+	global ctx
 	if val1==val2:
 		#quick short-circuit
 		return 0
 	valkey=val1+" "+val2
 	try:
-		return vcmpcache[valkey]
+		return ctx.vcmpcache[valkey]
 		try:
-			return -vcmpcache[val2+" "+val1]
+			return -ctx.vcmpcache[val2+" "+val1]
 		except KeyError:
 			pass
 	except KeyError:
@@ -2009,9 +2062,9 @@ def vercmp(val1,val2):
 		for y in range(0,3):
 			myret=cmp1[y]-cmp2[y]
 			if myret != 0:
-				vcmpcache[valkey]=myret
+				ctx.vcmpcache[valkey]=myret
 				return myret
-	vcmpcache[valkey]=0
+	ctx.vcmpcache[valkey]=0
 	return 0
 
 
@@ -2050,7 +2103,7 @@ def dep_parenreduce(mysplit,mypos=0):
 
 def dep_opconvert(mysplit,myuse):
 	"Does dependency operator conversion"
-	
+	global ctx
 	mypos=0
 	newsplit=[]
 	while mypos<len(mysplit):
@@ -2078,7 +2131,7 @@ def dep_opconvert(mysplit,myuse):
 			if (len(myuse)==1) and (myuse[0]=="*"):
 				# enable it even if it's ! (for repoman) but kill it if it's
 				# an arch variable that isn't for this arch. XXX Sparc64?
-				if (mysplit[mypos][:-1] not in settings.usemask) or \
+				if (mysplit[mypos][:-1] not in ctx.settings.usemask) or \
 						(mysplit[mypos][:-1]==ctx.settings["ARCH"]):
 					enabled=1
 				else:
@@ -2306,12 +2359,13 @@ def dep_expand(mydep,mydb=None):
 
 def dep_check(depstring,mydbapi,use="yes",mode=None):
 	"""Takes a depend string and parses the condition."""
+	global ctx
 	if use=="all":
 		#enable everything (for repoman)
 		myusesplit=["*"]
 	elif use=="yes":
 		#default behavior
-		myusesplit=ctx.getUseSplit()
+		myusesplit=ctx.get_usesplit()
 	else:
 		#we are being run by autouse(), don't consult USE vars yet.
 		myusesplit=[]
@@ -2366,8 +2420,11 @@ def dep_wordreduce(mydeplist,mydbapi,mode):
 		mypos=mypos+1
 	return deplist
 
+
 class packagetree:
 	def __init__(self,virtual,clone=None):
+		global ctx
+		self.ctx = ctx
 		if clone:
 			self.tree=clone.tree.copy()
 			self.populated=clone.populated
@@ -2380,8 +2437,7 @@ class packagetree:
 			self.dbapi=None
 		
 	def resolve_key(self,mykey):
-		global ctx
-		return ctx.key_expand(mykey,self.dbapi)
+		return self.ctx.key_expand(mykey,self.dbapi)
 	
 	def dep_nomatch(self,mypkgdep):
 		mykey=dep_getkey(mypkgdep)
@@ -2402,9 +2458,9 @@ class packagetree:
 		populated=1
 		pass
 
+
 def best(mymatches):
 	"accepts None arguments; assumes matches are valid."
-	global bestcount
 	if mymatches==None:
 		return "" 
 	if not len(mymatches):
@@ -2421,14 +2477,15 @@ def best(mymatches):
 class portagetree:
 	def __init__(self,root="/",virtual=None,clone=None):
 		global ctx
+		self.ctx = ctx
 		if clone:
 			self.root=clone.root
 			self.portroot=clone.portroot
 		else:
 			self.root=root
-			self.portroot=ctx.settings["PORTDIR"]
+			self.portroot=self.ctx.settings["PORTDIR"]
 			self.virtual=virtual
-			self.dbapi=ctx.portdb
+			self.dbapi=self.ctx.portdb
 
 	def dep_bestmatch(self,mydep):
 		"compatibility method"
@@ -2461,11 +2518,10 @@ class portagetree:
 		return self.portroot+"/"+mysplit[0]+"/"+psplit[0]+"/"+mysplit[1]+".ebuild"
 
 	def resolve_specific(self,myspec):
-		global ctx
 		cps=catpkgsplit(myspec)
 		if not cps:
 			return None
-		mykey=ctx.key_expand(cps[0]+"/"+cps[1],self.dbapi)
+		mykey=self.ctx.key_expand(cps[0]+"/"+cps[1],self.dbapi)
 		mykey=mykey+"-"+cps[2]
 		if cps[3]!="r0":
 			mykey=mykey+"-"+cps[3]
@@ -2679,6 +2735,8 @@ def counter_tick_core(myroot):
 
 class vardbapi(dbapi):
 	def __init__(self,root):
+		global ctx
+		self.ctx = ctx
 		self.root=root
 		#cache for category directory mtimes
 		self.mtdircache={}
@@ -2723,10 +2781,9 @@ class vardbapi(dbapi):
 		return counter
 	
 	def cpv_inject(self,mycpv):
-		global ctx
 		"injects a real package into our on-disk database; assumes mycpv is valid and doesn't already exist"
 		os.makedirs(self.root+"var/db/pkg/"+mycpv)	
-		counter=ctx.db[self.root]["vartree"].dbapi.counter_tick()
+		counter=self.ctx.db[self.root]["vartree"].dbapi.counter_tick()
 		# write local package counter so that emerge clean does the right thing
 		lcfile=open(self.root+"var/db/pkg/"+mycpv+"/COUNTER","w")
 		lcfile.write(str(counter))
@@ -2783,7 +2840,7 @@ class vardbapi(dbapi):
 
 	def cp_all(self):
 		returnme=[]
-		for x in ctx.get_categories():
+		for x in self.ctx.get_categories():
 			try:
 				mylist=listdir(self.root+"var/db/pkg/"+x)
 			except OSError:
@@ -2820,6 +2877,8 @@ class vardbapi(dbapi):
 class vartree(packagetree):
 	"this tree will scan a var/db/pkg database located at root (passed to init)"
 	def __init__(self,root="/",virtual=None,clone=None):
+		global ctx
+		self.ctx = ctx
 		if clone:
 			self.root=clone.root
 			self.dbapi=clone.dbapi
@@ -2862,8 +2921,7 @@ class vartree(packagetree):
 		return self.dbapi.cp_all()
 
 	def exists_specific_cat(self,cpv):
-		global ctx
-		cpv=ctx.key_expand(cpv,self.dbapi)
+		cpv=self.ctx.key_expand(cpv,self.dbapi)
 		a=catpkgsplit(cpv)
 		if not a:
 			return 0
@@ -2885,8 +2943,7 @@ class vartree(packagetree):
 		return self.root+"var/db/pkg/"+fullpackage+"/"+package+".ebuild"
 
 	def getnode(self,mykey):
-		global ctx
-		mykey=ctx.key_expand(mykey,self.dbapi)
+		mykey=self.ctx.key_expand(mykey,self.dbapi)
 		if not mykey:
 			return []
 		mysplit=mykey.split("/")
@@ -2919,9 +2976,8 @@ class vartree(packagetree):
 		return ""
 	
 	def hasnode(self,mykey):
-		global ctx
 		"""Does the particular node (cat/pkg key) exist?"""
-		mykey=ctx.key_expand(mykey,self.dbapi)
+		mykey=self.ctx.key_expand(mykey,self.dbapi)
 		mysplit=mykey.split("/")
 		try:
 			mydirlist=listdir(self.root+"var/db/pkg/"+mysplit[0])
@@ -2955,8 +3011,8 @@ def eclass(myeclass=None,mycpv=None,mymtime=None):
 	if not ctx.mtimedb.has_key("packages") or type(ctx.mtimedb["packages"]) is not types.ListType:
 		ctx.mtimedb["packages"]=[]
 	
-	if not ctx.mtimedb.has_key("starttime") or (ctx.mtimedb["starttime"]!=starttime):
-		ctx.mtimedb["starttime"]=starttime
+	if not ctx.mtimedb.has_key("starttime") or (ctx.mtimedb["starttime"]!=ctx.starttime):
+		ctx.mtimedb["starttime"]=ctx.starttime
 		# Update the cache
 		for x in [ctx.settings["PORTDIR"]+"/eclass", ctx.settings["PORTDIR_OVERLAY"]+"/eclass"]:
 			if x and os.path.exists(x):
@@ -3108,7 +3164,7 @@ class portdbapi(dbapi):
 						mydir=os.path.dirname(mydbkey)
 						if not os.path.exists(mydir):
 							os.makedirs(mydir, 2775)
-							os.chown(mydir,uid,wheelgid)
+							os.chown(mydir,self.ctx.get_uid(),self.ctx.get_wheelgid())
 						shutil.copy2(mymdkey, mydbkey)
 						usingmdcache=1
 					except Exception,e:
@@ -3449,10 +3505,13 @@ class portdbapi(dbapi):
 			if match:
 				newlist.append(mycpv)
 		return newlist
+
 		
 class binarytree(packagetree):
 	"this tree scans for a list of all packages available in PKGDIR"
 	def __init__(self,root="/",virtual=None,clone=None):
+		global ctx
+		self.ctx = ctx
 		if clone:
 			self.root=clone.root
 			self.pkgdir=clone.pkgdir
@@ -3461,7 +3520,7 @@ class binarytree(packagetree):
 			self.tree=clone.tree
 		else:
 			self.root=root
-			self.pkgdir=ctx.settings["PKGDIR"]
+			self.pkgdir=self.ctx.settings["PKGDIR"]
 			self.dbapi=fakedbapi()
 			self.populated=0
 			self.tree={}
@@ -3517,6 +3576,8 @@ class dblink:
 	"this class provides an interface to the standard text package database"
 	def __init__(self,cat,pkg,myroot):
 		"create a dblink object for cat/pkg.  This dblink entry may or may not exist"
+		global ctx
+		self.ctx = ctx
 		self.cat=cat
 		self.pkg=pkg
 		self.dbdir=myroot+"/var/db/pkg/"+cat+"/"+pkg
@@ -3569,7 +3630,7 @@ class dblink:
 			# we do this so we can remove from non-root filesystems
 			# (use the ROOT var to allow maintenance on other partitions)
 			try:
-				mydat[1]=os.path.normpath(ctx.getRoot()+mydat[1][1:])
+				mydat[1]=os.path.normpath(self.ctx.getRoot()+mydat[1][1:])
 				if mydat[0]=="obj":
 					#format: type, mtime, md5sum
 					pkgfiles[string.join(mydat[1:-2]," ")]=[mydat[0], mydat[-1], mydat[-2]]
@@ -3604,13 +3665,13 @@ class dblink:
 	def updateprotect(self):
 		#do some config file management prep
 		self.protect=[]
-		for x in string.split(ctx.settings["CONFIG_PROTECT"]):
+		for x in string.split(self.ctx.settings["CONFIG_PROTECT"]):
 			ppath=os.path.normpath(self.myroot+"/"+x)+"/"
 			if os.path.isdir(ppath):
 				self.protect.append(ppath)
 			
 		self.protectmask=[]
-		for x in string.split(ctx.settings["CONFIG_PROTECT_MASK"]):
+		for x in string.split(self.ctx.settings["CONFIG_PROTECT_MASK"]):
 			ppath=os.path.normpath(self.myroot+"/"+x)+"/"
 			if os.path.isdir(ppath):
 				self.protectmask.append(ppath)
@@ -3632,7 +3693,6 @@ class dblink:
 		return (protected > masked)
 
 	def unmerge(self,pkgfiles=None,trimworld=1):
-		global ctx
 		if not pkgfiles:
 			print "No package files given... Grabbing a set."
 			pkgfiles=self.getcontents()
@@ -3796,14 +3856,14 @@ class dblink:
 		#step 5: well, removal of package objects is complete, now for package *meta*-objects....
 
 		#remove self from vartree database so that our own virtual gets zapped if we're the last node
-		ctx.db[self.myroot]["vartree"].zap(self.cat+"/"+self.pkg)
+		self.ctx.db[self.myroot]["vartree"].zap(self.cat+"/"+self.pkg)
 		#remove stale virtual entries (mappings for packages that no longer exist)
 		newvirts={}
 		myvirts=grabdict(self.myroot+"var/cache/edb/virtuals")
 		for myvirt in myvirts.keys():
 			newvirts[myvirt]=[]
 			for mykey in myvirts[myvirt]:
-				if ctx.db[self.myroot]["vartree"].hasnode(mykey):
+				if self.ctx.db[self.myroot]["vartree"].hasnode(mykey):
 					newvirts[myvirt].append(mykey)
 			if newvirts[myvirt]==[]:
 				del newvirts[myvirt]
@@ -3817,7 +3877,7 @@ class dblink:
 			newworldlist=[]
 			for x in worldlist:
 				if dep_getkey(x)==mykey:
-					matches=ctx.db[self.myroot]["vartree"].dbapi.match(x)
+					matches=self.ctx.db[self.myroot]["vartree"].dbapi.match(x)
 					if not matches:
 						#zap our world entry
 						pass
@@ -3840,7 +3900,6 @@ class dblink:
 			a=doebuild(myebuildpath,"postrm",self.myroot)
 
 	def treewalk(self,srcroot,destroot,inforoot,myebuild):
-		global ctx
 		# srcroot = ${D}; destroot=where to merge, ie. ${ROOT}, inforoot=root of db entry,
 		# secondhand = list of symlinks that have been skipped due to their target not existing (will merge later),
 		"this is going to be the new merge code"
@@ -3852,7 +3911,7 @@ class dblink:
 		# spawn("(cd "+srcroot+"; for x in `find`; do  touch -c $x 2>/dev/null; done)",free=1)
 		print ">>> Merging",self.cat+"/"+self.pkg,"to",destroot
 		# get current counter value (counter_tick also takes care of incrementing it)
-		counter=ctx.db[destroot]["vartree"].dbapi.counter_tick()
+		counter=self.ctx.db[destroot]["vartree"].dbapi.counter_tick()
 		# write local package counter for recording
 		lcfile=open(inforoot+"/COUNTER","w")
 		lcfile.write(str(counter))
@@ -3863,9 +3922,9 @@ class dblink:
 		if myebuild:
 			# if we are merging a new ebuild, use *its* pre/postinst rather than using the one in /var/db/pkg 
 			# (if any).
-			a=doebuild(myebuild,"preinst",ctx.getRoot())
+			a=doebuild(myebuild,"preinst",self.ctx.getRoot())
 		else:
-			a=doebuild(inforoot+"/"+self.pkg+".ebuild","preinst",ctx.getRoot())
+			a=doebuild(inforoot+"/"+self.pkg+".ebuild","preinst",self.ctx.getRoot())
 		# open CONTENTS file (possibly overwriting old one) for recording
 		outfile=open(inforoot+"/CONTENTS","w")
 
@@ -3876,7 +3935,7 @@ class dblink:
 			cfgfiledict=grabdict(destroot+"/var/cache/edb/config")
 		else:
 			cfgfiledict={}
-		if ctx.settings.has_key("NOCONFMEM"):
+		if self.ctx.settings.has_key("NOCONFMEM"):
 			cfgfiledict["IGNORE"]=1
 		else:
 			cfgfiledict["IGNORE"]=0
@@ -3948,9 +4007,9 @@ class dblink:
 		if myebuild:
 			# if we are merging a new ebuild, use *its* pre/postinst rather than using the one in /var/db/pkg 
 			# (if any).
-			a=doebuild(myebuild,"postinst",ctx.getRoot())
+			a=doebuild(myebuild,"postinst",self.ctx.getRoot())
 		else:
-			a=doebuild(inforoot+"/"+self.pkg+".ebuild","postinst",ctx.getRoot())
+			a=doebuild(inforoot+"/"+self.pkg+".ebuild","postinst",self.ctx.getRoot())
 	
 		#update environment settings, library paths. DO NOT change symlinks.
 		env_update(makelinks=0)
@@ -4035,7 +4094,7 @@ class dblink:
 						sys.stderr.write("\n!!! Cannot write to '"+mydest+"'.\n")
 						sys.stderr.write("!!! Please check permissions and directories for broken symlinks.\n")
 						sys.stderr.write("!!! You may start the merge process again by using ebuild:\n")
-						sys.stderr.write("!!! ebuild "+ctx.settings["PORTDIR"]+"/"+self.cat+"/"+pkgstuff[0]+"/"+self.pkg+".ebuild merge\n")
+						sys.stderr.write("!!! ebuild "+self.ctx.settings["PORTDIR"]+"/"+self.cat+"/"+pkgstuff[0]+"/"+self.pkg+".ebuild merge\n")
 						sys.stderr.write("!!! And finish by running this: env-update\n\n")
 						return 1
 
@@ -4240,7 +4299,9 @@ class dblink:
 		"Is this a regular package (does it have a CATEGORY file?  A dblink can be virtual *and* regular)"
 		return os.path.exists(self.dbdir+"/CATEGORY")
 
+
 def cleanup_pkgmerge(mypkg,origdir):
+	global ctx
 	shutil.rmtree(ctx.settings["PORTAGE_TMPDIR"]+"/portage-pkg/"+mypkg)
 	os.chdir(origdir)
 
@@ -4248,6 +4309,7 @@ def pkgmerge(mytbz2,myroot):
 	"""will merge a .tbz2 file, returning a list of runtime dependencies
 		that must be satisfied, or None if there was a merge error.	This
 		code assumes the package exists."""
+	global ctx
 	if mytbz2[-5:]!=".tbz2":
 		print "!!! Not a .tbz2 file"
 		return None
@@ -4302,8 +4364,6 @@ def pkgmerge(mytbz2,myroot):
 
 
 
-
-
 ##
 ## Set up our context -- all data used by this instance should be inside this context!
 ##
@@ -4314,14 +4374,6 @@ def pkgmerge(mytbz2,myroot):
 ##
 ctx = PortageContext()
 ctx.init()
-
-
-#### ALAIN: PROFILEDIR WAS SET HERE!
-
-## ALAIN: This is where portageexit() - the mtimedb write out stuff - was.
-
-
-
 
 
 
