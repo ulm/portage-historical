@@ -1,11 +1,17 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.66 2005/02/05 14:31:24 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.67 2005/02/06 02:48:43 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  06 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> bin/ebuild.sh: Completed
+  renaming of "maketest" to "test". RESTRICT supports both. #77446
+
+  06 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> pym/output.py: Added checking
+  of whether stderr is a tty before changing xterm titles. #73824
 
   05 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> bin/emerge: Added removal of
   --tree and --changelog upon a restart of emerge. Added --ask support to

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.22 2005/01/30 20:24:47 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.23 2005/02/06 02:48:43 jstubbs Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -563,14 +563,14 @@ src_test()
 	if make check -n &> /dev/null; then
 		echo ">>> Test phase [check]: ${CATEGORY}/${PF}"
 		if ! make check; then
-			hasq maketest $FEATURES && die "Make check failed. See above for details."
-			hasq maketest $FEATURES || eerror "Make check failed. See above for details."
+			hasq test $FEATURES && die "Make check failed. See above for details."
+			hasq test $FEATURES || eerror "Make check failed. See above for details."
 		fi
 	elif make test -n &> /dev/null; then
 		echo ">>> Test phase [test]: ${CATEGORY}/${PF}"
 		if ! make test; then
-			hasq maketest $FEATURES && die "Make test failed. See above for details."
-			hasq maketest $FEATURES || eerror "Make test failed. See above for details."
+			hasq test $FEATURES && die "Make test failed. See above for details."
+			hasq test $FEATURES || eerror "Make test failed. See above for details."
 		fi
 	else
 		echo ">>> Test phase [none]: ${CATEGORY}/${PF}"
@@ -984,10 +984,10 @@ dyn_test() {
 	if [ -d "${S}" ]; then
 		cd "${S}"
 	fi
-	if hasq maketest $RESTRICT; then
+	if hasq maketest $RESTRICT || hasq test $RESTRICT; then
 		ewarn "Skipping make test/check due to ebuild restriction."
 		echo ">>> Test phase [explicitly disabled]: ${CATEGORY}/${PF}"
-	elif ! hasq maketest $FEATURES; then
+	elif ! hasq test $FEATURES; then
 		echo ">>> Test phase [not enabled]: ${CATEGORY}/${PF}"
 	else
 		echo ">>> Test phase [enabled]: ${CATEGORY}/${PF}"
