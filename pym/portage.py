@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.425 2004/06/09 02:05:51 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.426 2004/06/10 00:57:08 genone Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -2292,7 +2292,7 @@ def digestCheckFiles(myfiles, mydigests, basedir, note="", strict=0):
 			print "!!! the following to generate a new digest:"
 			print "!!!   ebuild /usr/portage/category/package/package-version.ebuild digest"
 			return 0
-		myfile=basedir+"/"+x
+		myfile=os.path.normpath(basedir+"/"+x)
 		if not os.path.exists(myfile):
 			if strict:
 				print "!!! File does not exist:",myfile
