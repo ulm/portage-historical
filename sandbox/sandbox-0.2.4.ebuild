@@ -1,7 +1,7 @@
 # Copyright 1999-2001 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License, v2 or later
 # Author:  Martin Schlemmer <azarah@gentoo.org>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/Attic/sandbox-0.2.3.ebuild,v 1.1 2001/12/21 10:00:41 gbevin Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/Attic/sandbox-0.2.4.ebuild,v 1.1 2001/12/24 09:37:43 gbevin Exp $
 
 S=${WORKDIR}/sandbox
 DESCRIPTION="Portage SandBox System"
@@ -9,7 +9,7 @@ SRC_URI=""
 HOMEPAGE=""
 
 DEPEND="virtual/glibc
-	=sys-apps/portage-1.7.8"
+	=sys-apps/portage-1.8.0"
 	
 
 src_unpack() {
