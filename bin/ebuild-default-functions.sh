@@ -2,7 +2,7 @@
 # ebuild-default-functions.sh; default functions for ebuild env that aren't saved- specific to the portage instance.
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.6 2004/11/10 20:08:07 ferringb Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.7 2004/11/10 20:10:59 ferringb Exp $
 
 has_version() {
 	# if there is a predefined portageq call, use it.
@@ -382,6 +382,14 @@ dyn_test() {
 	trap SIGINT SIGQUIT
 }
 
+function stat_perms() {
+	local f
+	f=$(stat -c '%f' "$1")
+	f=$(printf %o ox$f)
+	f="${f:${#f}-4}"
+	echo $f
+}
+
 
 dyn_install() {
 	trap "abort_install" SIGINT SIGQUIT
@@ -399,7 +407,6 @@ dyn_install() {
 	#our libtool to create problematic .la files
 	export PWORKDIR="$WORKDIR"
 	src_install 
-	return
 	#|| abort_install "fail"
 	prepall
 	cd "${D}"
@@ -439,15 +446,9 @@ dyn_install() {
 		die "There are ${UNSAFE} unsafe files. Portage will not install them."
 	fi
 
-	function stat_perms() {
-		local f
-		f=$(stat -c '%f' "$1")
-		f=$(printf %o ox$f)
-		f="${f:${#f}-4}"
-		echo $f
-	}
 	local file
 	find "${D}/" -user  portage -print0 | while read file; do
+		ewarn "file $file was installed with user portage!"
 		s=$(stat_perms $file)
 		chown root "$file"
 		chmod "$s" "$file"
@@ -455,12 +456,14 @@ dyn_install() {
 
 	if [ "$USERLAND" == "BSD" ]; then
 		find "${D}/" -group portage -print0 | while read file; do
+			ewarn "file $file was installed with group portage!"
 			s=$(stat_perms "$file")
 			chgrp wheel "$file"
 			chmod "%s" "$file"
 		done
 	else
 		find "${D}/" -group portage -print0 | while read file; do
+			ewarn "file $file was installed with group portage!"
 			s=$(stat_perms "$file")
 			chgrp root "$file"
 			chmod "%s" "$file"
