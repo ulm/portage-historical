@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.49 2005/03/08 20:28:24 ferringb Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.49 2005/03/08 20:28:24 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.50 2005/03/09 08:37:15 ferringb Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.50 2005/03/09 08:37:15 ferringb Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.49 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.50 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -2417,8 +2417,8 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 		os.chmod(mysettings["T"],02770)
 
 		try: # XXX: negative RESTRICT
-			if not (("nouserpriv" in string.split(mysettings["RESTRICT"])) or \
-			   ("userpriv" in string.split(mysettings["RESTRICT"]))):
+			if not (("nouserpriv" in string.split(mysettings["PORTAGE_RESTRICT"])) or \
+			   ("userpriv" in string.split(mysettings["PORTAGE_RESTRICT"]))):
 				if ("userpriv" in features) and (portage_uid and portage_gid):
 					if (secpass==2):
 						if os.path.exists(mysettings["HOME"]):
@@ -2542,7 +2542,7 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 		return spawn(EBUILD_SH_BINARY+" "+mydo,mysettings,debug=debug,free=1,logfile=logfile)
 	
 	try: 
-		mysettings["SLOT"], mysettings["RESTRICT"] = db["/"]["porttree"].dbapi.aux_get(mycpv,["SLOT","RESTRICT"])
+		mysettings["SLOT"],mysettings["RESTRICT"] = db["/"]["porttree"].dbapi.aux_get(mycpv,["SLOT","RESTRICT"])
 	except (IOError,KeyError):
 		print red("doebuild():")+" aux_get() error reading "+mycpv+"; aborting."
 		sys.exit(1)
