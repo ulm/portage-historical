@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.542 2004/11/07 13:37:57 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.543 2004/11/07 15:37:36 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1728,7 +1728,7 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 								verbose=(verbosity==0))
 							if not myret:
 								writemsg(red("!!!")+"\n")
-								writemsg(red("!!!")+" FETCHCOMMAND/RESUMECOMMAND with exit code 127\n")
+								writemsg(red("!!!")+" FETCHCOMMAND/RESUMECOMMAND exited with code 127\n")
 								writemsg(red("!!!")+" This is indicative of missing libs for the fetch/resume binaries\n")
 								writemsg(red("!!!")+" Added, the independ BundledConnection succeeded\n")
 								writemsg(red("!!!")+" Please check your installation.\n")
