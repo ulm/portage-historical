@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.88 2004/08/18 22:55:24 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.89 2004/08/31 08:17:11 ferringb Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -703,7 +703,7 @@ for x in scanlist:
 			# current policy is no files over 20k, this is the check.
 			elif mystat.st_size > 20000:
 				stats["file.size"] += 1
-				fails["file.size"].append(x+"/files/"+y)
+				fails["file.size"].append("("+ str(mystat.st_size/1000) + "K) "+x+"/files/"+y)
 
 	if "ChangeLog" not in checkdirlist:
 		stats["changelog.missing"]+=1
