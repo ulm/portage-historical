@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.6 2004/11/02 15:29:57 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.7 2004/11/03 00:50:06 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1296,7 +1296,7 @@ class config:
 			myuse = self["USE"]
 		else:
 			myuse = mydbapi.aux_get(mycpv, ["USE"])[0]
-		virts = portage_dep.use_reduce(portage_dep.paren_reduce(provides), uselist=myuse.split())
+		virts = flatten(portage_dep.use_reduce(portage_dep.paren_reduce(provides), uselist=myuse.split()))
 
 		cp = dep_getkey(mycpv)
 		for virt in virts:
@@ -4665,7 +4665,7 @@ class vartree(packagetree):
 				myuse = grabfile(self.root+VDB_PATH+"/"+mycpv+"/USE")
 				myuse = string.split(string.join(myuse))
 				mylines = string.join(mylines)
-				mylines = portage_dep.use_reduce(portage_dep.paren_reduce(mylines), uselist=myuse)
+				mylines = flatten(portage_dep.use_reduce(portage_dep.paren_reduce(mylines), uselist=myuse))
 				for myprovide in mylines:
 					mys = catpkgsplit(myprovide)
 					if not mys:
