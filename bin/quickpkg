@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/quickpkg,v 1.13.2.1 2004/11/02 14:56:57 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/quickpkg,v 1.13.2.2 2004/11/17 02:46:33 vapier Exp $
 
 # This script tries to quickly create a Gentoo binary package using the
 # VDB_PATH/category/pkg/*  files
@@ -43,8 +43,11 @@ source /sbin/functions.sh
 # $1 = package-name w/version
 # $2 = category
 do_pkg() {
+	mkdir -p "${PORTAGE_TMPDIR}/portage-pkg"
+	chmod 0770 "${PORTAGE_TMPDIR}/portage-pkg"
 	MYDIR="${PORTAGE_TMPDIR}/portage-pkg/$1"
 	SRCDIR="${PORTAGE_DB}/$2/$1"
+	LOG="${PORTAGE_TMPDIR}/portage-pkg/$1-quickpkglog"
 
 	ebegin "Building package for $1"
 	(
@@ -79,14 +82,14 @@ do_pkg() {
 
 		# cleanup again
 		rm -rf ${MYDIR}
-	) >& ${PORTAGE_TMPDIR}/$1-quickpkglog
+	) >& ${LOG}
 
 	if [ -e ${PKGDIR}/All/$1.tbz2 ] ; then
-		rm -f ${PORTAGE_TMPDIR}/$1-quickpkglog
+		rm -f ${LOG}
 		PKGSTATS="${PKGSTATS}"$'\n'"$(einfo $1: `ls -alh ${PKGDIR}/All/$1.tbz2 | awk '{print $5}'`)"
 		eend 0
 	else
-		cat ${PORTAGE_TMPDIR}/$1-quickpkglog
+		cat ${LOG}
 		PKGSTATS="${PKGSTATS}"$'\n'"$(ewarn $1: not created)"
 		eend 1
 	fi
