@@ -1,6 +1,21 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.436 2003/03/12 10:02:39 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.437 2003/03/14 04:26:44 carpaski Exp $
+
+*portage-2.0.47-r10 (13 Mar 2003): Fixes -- Winding up 2.0 series.
+
+  13 Mar 2003; Nicholas Jones <carpaski@gentoo.org> portage.py: Less strict
+	check of permissions when fixing permissions for userpriv -- only requires
+	02070 and group portage instead of 02770 for check.
+
+  13 Mar 2003; Nicholas Jones <carpaski@gentoo.org> g-cpan.pl: Fix to the
+	call to portageq.
+	
+  13 Mar 2003; Nicholas Jones <carpaski@gentoo.org> etc-update: Fix for
+	deleted files in a CONFIG_PROTECT situation.
+
+  13 Mar 2003; Nicholas Jones <carpaski@gentoo.org> emerge: fix for keepwork
+	and keeptemp ** MUST ENSURE THAT CLEAN CLEANS BEFORE A FULL MERGE. 
 
   12 Mar 2003; Nicholas Jones <carpaski@gentoo.org> emerge: Added more
   conditions on rsync -- Proper error detection. Rsync failures will not

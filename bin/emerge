@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.199 2003/03/12 10:02:40 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.200 2003/03/14 04:26:44 carpaski Exp $
 
 import os,sys,portage,emergehelp,xpak,string,re,commands,time,threading,shutil,traceback
 from stat import *
@@ -1123,9 +1123,18 @@ class depgraph:
 						if retval==None:
 							sys.exit(1)
 				else:
+					# We need to yank the harmful-to-new-builds settings from features.
+					myorigfeat=portage.settings["FEATURES"]
+					myfeat=myorigfeat.split()
+					while ("keeptemp" in myfeat):
+						del myfeat[myfeat.index("keeptemp")]
+					while ("keepwork" in myfeat):
+						del myfeat[myfeat.index("keepwork")]
+					portage.settings["FEATURES"]=string.join(myfeat)
 					retval=portage.doebuild(y,"clean",myroot,edebug)
 					if retval:
 						sys.exit(1)
+					portage.settings["FEATURES"]=myorigfeat
 					retval=portage.doebuild(y,"merge",myroot,edebug)
 					if retval:
 						sys.exit(1)
