@@ -1,11 +1,17 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.13 2004/11/03 12:11:54 ferringb Exp $
+# $Id: ChangeLog,v 1.796.2.14 2004/11/05 13:49:22 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  05 Nov 2004; Jason Stubbs <jstubbs@gentoo.org> doins: Added vapier's fix
+  for doins changing existing directory permissions. #69896
+
+  04 Nov 2004; Jason Stubbs <jstubbs@gentoo.org> tbz2tool.c: Added vapier's
+  fix for tbz2tool on ia64. #70001
 
   03 Nov 2004; Brian Harring <ferringb@gentoo.org> portage_dep.py: Bug in
   paren_reduce where it was returning a tuple (supposed to return a list).
