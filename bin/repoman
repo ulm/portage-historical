@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.5 2005/01/02 04:24:39 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.6 2005/01/11 03:40:57 carpaski Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -19,13 +19,13 @@ import portage
 import portage_dep
 import portage_checksum
 import cvstree
+import time
 from output import *
 from commands import getstatusoutput
 from time import *
 from fileinput import input
 from grp import getgrnam
 from stat import *
-from datetime import datetime
 
 
 def err(txt):
@@ -841,6 +841,12 @@ for x in scanlist:
 			stats["ebuild.output"]=stats["ebuild.output"]+1
 			fails["ebuild.output"].append(x+"/"+y+".ebuild")
 			continue
+
+		# Test for negative logic and bad words in the RESTRICT var.
+		#for x in myaux[allvars.index("RESTRICT")].split():
+		#	if x.startswith("no"):
+		#		print "Bad RESTRICT value: %s" % x
+
 		for pos in range(0,len(missingvars)):
 			if portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y, [ missingvars[pos] ] )[0]=="":
 				if missingvars[pos]=="IUSE":
@@ -1013,7 +1019,7 @@ for x in scanlist:
 					fails["KEYWORDS.invalid"].append(x+"/"+y+".ebuild: %s (profile invalid)" % mykey)
 
 		#syntax checks
-		myear = datetime.fromtimestamp(os.stat(checkdir+"/"+y+".ebuild")[ST_MTIME]).year
+		myear = time.gmtime(os.stat(checkdir+"/"+y+".ebuild")[ST_MTIME])[0]
 		gentoo_copyright = re.compile(r'^# Copyright 1999-' + str(myear) + r' Gentoo Foundation')
 		gentoo_license = re.compile(r'^# Distributed under the terms of the GNU General Public License v2$')
 		cvs_header = re.compile(r'^#\s*\$Header.*\$$')

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.14 2005/01/08 03:08:34 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.15 2005/01/11 03:40:57 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -346,6 +346,8 @@ unpack() {
 	else
 		tarvars="--no-same-owner"	
 	fi	
+
+	[ -z "$*" ] && die "Nothing passed to the 'unpack' command"
 
 	for x in "$@"; do
 		myfail="failure unpacking ${x}"
@@ -1104,7 +1106,7 @@ dyn_preinst() {
 	# we don't want globbing for initial expansion, but afterwards, we do
 	local shopts=$-
 	set -o noglob
-	for no_inst in `echo "${INSTALL_MASK}"` ; do
+	for no_inst in ${INSTALL_MASK}; do
 		set +o noglob
 		einfo "Removing ${no_inst}"
 		# normal stuff
@@ -1564,7 +1566,7 @@ if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 	cd ${PORTAGE_TMPDIR} &> /dev/null
 	cd ${BUILD_PREFIX} &> /dev/null
 
-	if [ `id -nu` == "portage" ] ; then
+	if [ "$(id -nu)" == "portage" ] ; then
 		export USER=portage
 	fi
 

@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.23 2005/01/04 04:40:30 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.24 2005/01/11 03:40:57 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -133,7 +133,7 @@ except Exception, e:
 	sys.stderr.write("!!! portage and failure here indicates that you have a problem with your\n")
 	sys.stderr.write("!!! installation of portage. Please try a rescue portage located in the\n")
 	sys.stderr.write("!!! portage tree under '/usr/portage/sys-apps/portage/files/' (default).\n")
-	sys.stderr.write("!!! There is a README.rescue file that details the steps required to perform\n")
+	sys.stderr.write("!!! There is a README.RESCUE file that details the steps required to perform\n")
 	sys.stderr.write("!!! a recovery of portage.\n")
 	
 	sys.stderr.write("    "+str(e)+"\n\n")
@@ -1192,7 +1192,11 @@ class config:
 				self.features.remove("gpg")
 				self["FEATURES"] = string.join(self.features, " ")
 				self.backup_changes("FEATURES")
-		
+
+		if "maketest" in features:
+			features.append("test")
+			features.sort()
+
 		if mycpv:
 			self.setcpv(mycpv)
 
@@ -1520,9 +1524,11 @@ def spawn(mystring,mysettings,debug=0,free=0,droppriv=0,fd_pipes=None,**keywords
 		env=mysettings.environ()
 		keywords["opt_name"]="[%s]" % mysettings["PF"]
 
-
+	# XXX: Negative RESTRICT word
 	droppriv=(droppriv and ("userpriv" in features) and \
-		("nouserpriv" not in string.split(mysettings["RESTRICT"])))
+		(("nouserpriv" not in string.split(mysettings["RESTRICT"])) or \
+		 ("userpriv" not in string.split(mysettings["RESTRICT"]))))
+
 
 	if ("sandbox" in features) and (not free):
 		keywords["opt_name"] += " sandbox"
@@ -2385,9 +2391,9 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 		os.chown(mysettings["T"],portage_uid,portage_gid)
 		os.chmod(mysettings["T"],02770)
 
-
-		try:
-			if ("nouserpriv" not in string.split(mysettings["RESTRICT"])):
+		try: # XXX: negative RESTRICT
+			if ("nouserpriv" not in string.split(mysettings["RESTRICT"])) or \
+			   ("userpriv" not in string.split(mysettings["RESTRICT"])):
 				if ("userpriv" in features) and (portage_uid and portage_gid):
 					if (secpass==2):
 						if os.path.exists(mysettings["HOME"]):
@@ -4976,7 +4982,11 @@ class portdbapi(dbapi):
 		self.depcachedir = self.mysettings.depcachedir[:]
 
 		self.tmpfs = self.mysettings["PORTAGE_TMPFS"]
-		if not os.path.exists(self.tmpfs):
+		if self.tmpfs and not os.path.exists(self.tmpfs):
+			self.tmpfs = None
+		if self.tmpfs and not os.access(self.tmpfs, os.W_OK):
+			self.tmpfs = None
+		if self.tmpfs and not os.access(self.tmpfs, os.R_OK):
 			self.tmpfs = None
 		
 		self.eclassdb = eclass_cache(self.porttree_root, self.mysettings)

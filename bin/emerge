@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.9 2005/01/03 15:59:56 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.10 2005/01/11 03:40:57 carpaski Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -497,7 +497,8 @@ def getgccversion():
 	   
 	if os.path.isfile(gcc_config_config):
 		try:
-			gccver = gcc_ver_prefix + open(gcc_config_config).read().strip().split('-')[-1] 
+			gccver_str = open(gcc_config_config).read().strip()
+			gccver = gcc_ver_prefix + string.join(gccver_str.split('-')[4:], '-')
 		except IndexError:
 			gccver = fallback()
 
@@ -2300,13 +2301,6 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 		print "emerge: \"sync\" actions do not support \"--pretend.\""
 		sys.exit(1)
 
-	try:
-		os.close(sys.stdin.fileno())
-	except SystemExit, e:
-		raise # Needed else can't exit
-	except:
-		pass
-
 	emergelog(" === "+str(myaction))
 	myportdir=portage.settings["PORTDIR"]
 	if myportdir[-1]=="/":
@@ -2549,6 +2543,12 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 		print "!!! rsync setting: ",syncuri,"not recognized; exiting."
 		sys.exit(1)
 
+	try: # Prevent users from affecting ebuild.sh.
+		os.close(sys.stdin.fileno())
+	except SystemExit, e:
+		raise # Needed else can't exit
+	except:
+		pass
 
 	if os.path.exists(myportdir+"/metadata/cache") and updatecache_flg:
 		print "\n>>> Updating Portage cache:      ",

@@ -1,11 +1,36 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.43 2005/01/08 03:08:34 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.44 2005/01/11 03:40:57 carpaski Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+*portage-2.0.51-r10 (10 Jan 2004): Cleanup
+
+  10 Jan 2004; Nicholas Jones <carpaski@gentoo.org> portage.py: Made maketest
+  enable 'test' in features. Marked a couple more negative flags for restrict.
+  Made tmpfs checking a little smarter and let us enable /dev/shm by default.
+
+  10 Jan 2004; Nicholas Jones <carpaski@gentoo.org> output.py: Fixed the
+  colors and overscore problems. Added a larger section and better code
+  for generating colors and effects -- Unused at the moment. Added a patch
+  that included screen title handling.
+
+  10 Jan 2004; Nicholas Jones <carpaski@gentoo.org> repoman: Rewrite the
+  datetime code to use time.gmtime() instead so python2.2 works still.
+
+  10 Jan 2004; Nicholas Jones <carpaski@gentoo.org> regenworld: Made it work
+  with cascade profiles by using the proper system reference.
+
+  10 Jan 2004; Nicholas Jones <carpaski@gentoo.org> emerge: Fix for the gcc
+  hardened version printing. Moved the stdin close on rsync down below the
+  rsync part to allow --ask to work.
+
+  10 Jan 2004; Nicholas Jones <carpaski@gentoo.org> ebuild.sh: Die if unpack
+  is not given any files to unpack. Modification for the no_inst stuff to be
+  less crazy with the echo redirection stuff.
 
   08 Dec 2005; Jason Stubbs <jstubbs@gentoo.org> ebuild.sh: Moved the "true" to
   the end of the dyn_clean() function.
