@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.21 2004/12/01 22:14:09 carpaski Exp $
+# $Id: ChangeLog,v 1.796.2.22 2004/12/01 23:11:25 carpaski Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -8,9 +8,6 @@
     3. /etc/portage/profile/virtuals is _USER_ configs only.
 
 *portage-2.0.51-r7 (01 Dec 2004): Cleanup
-
-  01 Dec 2004; Nicholas Jones <carpaski@gentoo.org> repoman: Added jstubbs
-  profile/arch patch.
 
   01 Dec 2004; Nicholas Jones <carpaski@gentoo.org> sandbox: updated with
   ferringb's code for the pids file overrun issue.
