@@ -1,7 +1,7 @@
 # portage: Lock management code
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.15 2004/10/17 05:48:50 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.16 2004/10/17 09:15:08 jstubbs Exp $
 
 import atexit
 import errno
@@ -176,9 +176,12 @@ def unlockfile(mytuple):
 		raise IOError, "Failed to unlock file '%s'\n" % lockfilename
 
 	try:
-		# We add the very brief sleep here to force a preemption.
-		# This reduces the likelihood of us deleting the file. XXXX
-		time.sleep(0.0001)
+		# This sleep call was added to allow other processes that are
+		# waiting for a lock to be able to grab it before it is deleted.
+		# lockfile() already accounts for this situation, however, and
+		# the sleep here adds more time than is saved overall, so am
+		# commenting until it is proved necessary.
+		#time.sleep(0.0001)
 		locking_method(myfd,fcntl.LOCK_EX|fcntl.LOCK_NB)
 		# We won the lock, so there isn't competition for it.
 		# We can safely delete the file.

@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.340 2004/10/11 15:03:58 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.341 2004/10/17 09:15:08 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -371,8 +371,12 @@ if ("--debug" in myopts):
 if "inject" == myaction:
 	print
 	print red("*** --inject has been deprecated.")
-	print red("*** Please add package to /etc/portage/profile/package.provided")
-	print red("*** using its full name (eg foo/bar-1.0) instead.")
+	print red("*** If you manage a piece of software yourself, add it's name and")
+	print red("*** version (eg foo/bar-1.0) to /etc/portage/profile/package.provided.")
+	print red("*** If you want to prevent portage from upgrading a package, add it to")
+	print red("*** /etc/portage/package.mask prepending it with '>' (eg >foo/bar-1.0)")
+	print red("*** For more information on fine-grained portage control, please see")
+	print red("*** the portage man page.")
 	print
 
 def emergelog(mystr,short_msg=None):
