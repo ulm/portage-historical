@@ -18,7 +18,7 @@
    02111-1307 USA.  */
 
 /*
- * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/canonicalize.c,v 1.3 2002/08/20 10:08:33 azarah Exp $
+ * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/canonicalize.c,v 1.4 2002/08/21 21:53:29 azarah Exp $
  */
 
 #include <stdlib.h>
@@ -104,8 +104,6 @@ ecanonicalize (const char *name, char *resolved)
 
   for (start = end = name; *start; start = end)
     {
-      struct stat64 st;
-
       /* Skip sequence of multiple path-separators.  */
       while (*start == '/')
 	++start;
@@ -159,13 +157,12 @@ ecanonicalize (const char *name, char *resolved)
 	  dest = __mempcpy (dest, start, end - start);
 	  *dest = '\0';
 
-	  if (__lxstat64 (_STAT_VER, rpath, &st) < 0)
-	    goto error;
-
-	}
+	  }
     }
+#if 0
   if (dest > rpath + 1 && dest[-1] == '/')
     --dest;
+#endif
   *dest = '\0';
 
   return resolved ? memcpy (resolved, rpath, dest - rpath + 1) : rpath;
