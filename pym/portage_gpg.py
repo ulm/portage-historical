@@ -1,7 +1,7 @@
 # portage_gpg.py -- core Portage functionality
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_gpg.py,v 1.8 2004/11/15 05:19:20 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_gpg.py,v 1.9 2004/11/15 05:22:04 ferringb Exp $
 
 import os
 import copy
@@ -38,7 +38,12 @@ class FileChecker:
 		self.keyringStats     = None
 		self.keyringIsTrusted = False
 		if home==None:
-			home=os.environ("HOME")
+			try:
+				home=os.environ["HOME"]
+			except KeyError:
+				import traceback
+				traceback.print_stack()
+				raise Exception("no home var specified, and it ain't in the env. we're screwed")
 		self.home=home
 	
 		if (keydir != None):
