@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.6 2004/11/29 08:41:28 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.7 2005/01/02 06:01:35 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2726,7 +2726,10 @@ elif "info"==myaction:
 		          'PORTDIR_OVERLAY', 'USE', 'CHOST', 'CFLAGS', 'CXXFLAGS',
 		          'ACCEPT_KEYWORDS', 'SYNC', 'FEATURES']
 
-		myvars += portage_util.grabfile(portage.settings["PORTDIR"]+"/profiles/info_vars")
+		for x in portage_util.grabfile(portage.settings["PORTDIR"]+"/profiles/info_vars"):
+			# Only include these if the user has them set.
+			if portage.settings.has_key(x):
+				myvars.append(x)
 
 	myvars = portage_util.unique_array(myvars)		
 	myvars.sort()
