@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.24 2004/05/17 04:21:21 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.25 2004/06/10 04:14:03 genone Exp $
 
 import os,sys
 from output import *
@@ -269,6 +269,8 @@ def help(myaction,myopts,havecolor=1):
 		print "              Updates packages, but excludes updates that would result in a"
 		print "              lower version of the package being installed. SLOTs are"
 		print "              considered at a basic level."
+		print "              WARNING: This option is deprecated and shouldn't be used anymore."
+		print "              Please use the /etc/portage/package.* files from now on."
 		print
 		print "       "+green("--usepkg")+" ("+green("-k")+" short option)"
 		print "              Tell emerge to use binary packages (from $PKGDIR) if they are"
