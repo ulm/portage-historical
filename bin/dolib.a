@@ -1,7 +1,7 @@
 #!/bin/bash
-# Copyright 1999-2003 Gentoo Technologies, Inc.
+# Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dolib.a,v 1.6 2004/08/16 08:19:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dolib.a,v 1.7 2004/10/03 20:24:16 vapier Exp $
 
 if [ -z "${CONF_LIBDIR}" ]; then
 	# we need this to default to lib so that things dont break
