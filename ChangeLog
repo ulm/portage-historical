@@ -1,11 +1,23 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.819 2004/10/29 11:00:34 ferringb Exp $
+# $Id: ChangeLog,v 1.820 2004/10/29 14:45:35 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  29 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> emerge: Fixed issue where
+  emerge adds package to world when --onlydeps is specified. #69260
+  Fixed issue where emerge was adding packages to world when --uprade is
+  specified even if the package is already installed. #69287 Fixed logic
+  in path/to/ebuild check so that symlinks do not cause false positives.
+
+  29 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> dispatch-conf: Added usata's
+  fix for mac-os compatibility. #69304
+
+  29 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> getbinpkg.py: Reversed the
+  logic of ftp passive-mode selection. #69371
 
   28 Oct 2004; Brian Harring <ferringb@gentoo.org> portage.py: Closed out 
   an issue with config.reset() gradually nuking items out of backupenv- 
