@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.445 2004/07/26 13:43:44 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.446 2004/07/27 11:57:56 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1797,6 +1797,7 @@ class config:
 			user_profile_dir = myroot+USER_CONFIG_PATH
 
 		self.dirVirtuals = grab_multiple("virtuals", myvirtdirs, grabdict)
+		self.dirVirtuals.reverse()
 		self.userVirtuals = {}
 		if user_profile_dir and os.path.exists(user_profile_dir+"/virtuals"):
 			self.userVirtuals = grabdict(user_profile_dir+"/virtuals")
