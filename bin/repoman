@@ -2,7 +2,7 @@
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
 # Author: Daniel Robbins <drobbins@gentoo.org>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.9 2003/02/22 16:59:08 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.10 2003/02/24 14:48:13 alain Exp $
 
 # Next to do: dep syntax checking in ebuilds, mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -35,7 +35,7 @@ modeshelp={"scan":"Scan current directory tree for QA issues (default)",
 optionshelp={"--pretend":"Don't actually perform commit or fix steps; just show what would be done.",
 "--help":"Show this screen"
 }
-qacats=["digest.stray","digest.missing","ebuild.invalidname","ebuild.namenomatch","changelog.missing","ebuild.notadded","digest.notadded","ebuild.disjointed","digest.disjointed", "DEPEND.bad","RDEPEND.bad","DEPEND.badmasked","RDEPEND.badmasked","ebuild.syntax","ebuild.output"]
+qacats=["digest.stray","digest.missing","ebuild.invalidname","ebuild.namenomatch","changelog.missing","ebuild.notadded","digest.notadded","ebuild.disjointed","digest.disjointed", "DEPEND.bad","RDEPEND.bad","DEPEND.badmasked","RDEPEND.badmasked","ebuild.syntax","ebuild.output","ebuild.nesteddie"]
 qawarnings=["changelog.missing","ebuild.notadded","digest.notadded","DEPEND.badmasked","RDEPEND.badmasked"]
 missingvars=["KEYWORDS","LICENSE","DESCRIPTION","SLOT"]
 allvars=missingvars[:]
@@ -62,7 +62,8 @@ qahelp={
 	"DEPEND.badmasked":"Masked ebuilds with bad DEPEND settings (matched against *all* ebuilds)",
 	"RDEPEND.badmasked":"Masked ebuilds with RDEPEND settings (matched against *all* ebuilds)",
 	"ebuild.syntax":"Error generating cache entry for ebuild; typically caused by ebuild syntax error",
-	"ebuild.output":"A simple sourcing of the ebuild produces output; this breaks ebuild policy."
+	"ebuild.output":"A simple sourcing of the ebuild produces output; this breaks ebuild policy.",
+	"ebuild.nesteddie":"Placing 'die' inside ( ) prints an error, but doesn't stop the ebuild."
 }
 
 def err(txt):
@@ -312,6 +313,9 @@ for x in scanlist:
 			else:
 					stats[mykey]=stats[mykey]+1
 					fails[mykey].append(x+"/"+y+".ebuild: "+repr(mydep[1]))
+		if not os.system("egrep '\([^)]*\<die\>' "+checkdir+"/"+y+".ebuild >/dev/null 2>&1"):
+			stats["ebuild.nesteddie"]=stats["ebuild.nesteddie"]+1
+			fails["ebuild.nesteddie"].append(x+"/"+y+".ebuild")
 
 print
 #dofail will be set to 1 if we have failed in at least one non-warning category
