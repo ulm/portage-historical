@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/portageq,v 1.5 2003/03/03 21:35:54 alain Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/portageq,v 1.6 2003/03/26 17:36:29 alain Exp $
 
 import sys,portage,types,string
 
@@ -55,6 +55,21 @@ def best_version(argv):
 	try:
 		mylist=portage.db[argv[0]]["vartree"].dbapi.match(argv[1])
 		print portage.best(mylist)
+	except KeyError:
+		sys.exit(1)
+
+
+def mass_best_version(argv):
+	"""<root> [<category/package>]+
+	Returns category/package-version (without .ebuild).
+	"""
+	if (len(argv) < 2):
+		print "ERROR: insufficient parameters!"
+		sys.exit(2)
+	try:
+		for pack in argv[1:]:
+			mylist=portage.db[argv[0]]["vartree"].dbapi.match(pack)
+			print pack+":"+portage.best(mylist)
 	except KeyError:
 		sys.exit(1)
 
@@ -135,7 +150,7 @@ def envvar(argv):
 #
 
 def usage():
-	rev="$Revision: 1.5 $"
+	rev="$Revision: 1.6 $"
 	ver=string.split(rev, ' ')[1]
 	print ">>> Portage information query tool -- version "+ver
 	print ">>> Usage: portageq <command> [<option> ...]"

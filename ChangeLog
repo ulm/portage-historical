@@ -1,6 +1,9 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.441 2003/03/22 23:41:18 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.442 2003/03/26 17:36:29 alain Exp $
+
+  26 Mar 2003; Alain Penders <alain@gentoo.org> portageq: added
+  mass_best_version method to help GUIs resolve best versions.
 
 *portage-2.0.47-r11 (22 Mar 2003): Fixes & Security -- Winding up 2.0 series.
 
