@@ -18,7 +18,7 @@
    02111-1307 USA.  */
 
 /*
- * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/canonicalize.c,v 1.4 2003/07/27 12:31:06 azarah Exp $
+ * $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/canonicalize.c,v 1.5 2003/07/27 14:31:50 azarah Exp $
  */
 
 #include <stdlib.h>
@@ -29,8 +29,6 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <stddef.h>
-
-//#include <shlib-compat.h>
 
 #ifndef __set_errno
 # define __set_errno(val) errno = (val)
