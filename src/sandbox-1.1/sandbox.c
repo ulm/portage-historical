@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 Geert Bevin, Uwyn, http://www.uwyn.com
 **	Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@uwyn.com>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.c,v 1.5 2002/09/01 19:53:23 azarah Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.c,v 1.6 2002/09/24 17:13:45 azarah Exp $
 */
 
 #define _GNU_SOURCE
@@ -276,6 +276,9 @@ void setenv_sandbox_write(char *home_dir, char *portage_tmp_dir, char *var_tmp_d
     /* these should go into make.globals later on */
     strcpy(sandbox_write_var, "");
     strcat(sandbox_write_var, "/dev/zero:/dev/fd/:/dev/null:/dev/pts/:/dev/vc/:/dev/tty:/tmp/");
+    strcat(sandbox_write_var, ":");
+    /* NGPT support */
+    strcat(sandbox_write_var, "/dev/shm/ngpt");
     strcat(sandbox_write_var, ":");
     strcat(sandbox_write_var, "/var/log/scrollkeeper.log");
     strcat(sandbox_write_var, ":");
