@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.142 2003/09/29 18:13:42 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.143 2003/10/13 07:43:38 carpaski Exp $
 
 if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 	if [ -f ${T}/successful ]; then
@@ -45,6 +45,9 @@ fi
 # Prevent aliases from causing portage to act inappropriately.
 # Make sure it's before everything so we don't mess aliases that follow.
 unalias -a
+
+# Unset some variables that break things.
+unset GZIP BZIP BZIP2
 
 # We need this next line for "die" and "assert". It expands 
 # It _must_ preceed all the calls to die and assert.
@@ -99,13 +102,24 @@ use() {
 has() {
 	local x
 
-	local me
-	me=$1
+	local me=$1
 	shift
 	
+	# All the TTY checks really only help out depend. Which is nice.
+	# Logging kills all this anyway. Everything becomes a pipe. --NJ
 	for x in "$@"; do
 		if [ "${x}" == "${me}" ]; then
-			tty --quiet < /dev/stdout || echo "${x}"
+			if [ -r /proc/self/fd/1 ]; then
+				tty --quiet < /proc/self/fd/1 || echo "${x}"
+			elif [ -r /dev/fd/1 ]; then
+				echo "/dev/fd/1" >&2
+				tty --quiet < /dev/fd/1 || echo "${x}"
+			elif [ -r /dev/stdout ]; then
+				echo "/dev/stdout" >&2
+				tty --quiet < /dev/stdout || echo "${x}"
+			else
+				echo "${x}"
+			fi
 			return 0
 		fi
 	done

@@ -1,12 +1,13 @@
-#!/usr/bin/python2.2
+#!/usr/bin/python
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/db-update.py,v 1.3 2003/02/22 16:59:08 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/db-update.py,v 1.4 2003/10/13 07:43:38 carpaski Exp $
 
-import os
-import sys
+import os,sys,string
+sys.path += ["/usr/lib/portage/pym"]
+
 import portage
-import string
+
 os.chdir(portage.root+"var/db/pkg")
 myvirts=portage.grabdict(portage.root+"var/cache/edb/virtuals")
 mypvirts={}

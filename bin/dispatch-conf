@@ -7,7 +7,7 @@
 #  Distributed under the terms of the GNU Public License v2
 #
 #  Jeremy Wohl (http://igmus.org)
-#  $Id: dispatch-conf,v 1.2 2003/08/21 01:01:26 carpaski Exp $
+#  $Id: dispatch-conf,v 1.3 2003/10/13 07:43:38 carpaski Exp $
 #
 # TODO
 #  dialog menus
@@ -15,6 +15,8 @@
 
 from stat import *
 import os, sys, string, re, commands
+sys.path += ["/usr/lib/portage/pym"]
+
 import portage, dispatch_conf
 
 FIND_EXTANT_CONFIGS  = "find %s -iname '._cfg????_*'"

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepstrip,v 1.13 2003/06/11 06:44:03 drobbins Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepstrip,v 1.14 2003/10/13 07:43:38 carpaski Exp $
 
 if [ "${FEATURES//*nostrip*/tree}" == "true" ] || [ "${RESTRICT//*nostrip*/true}" == "true" ] ; then
 	echo "nostrip"
@@ -29,6 +29,14 @@ for x in "$@"; do # "$@" quotes each element... Plays nice with spaces.
 		if [ -z "${f/*SB shared object*/}" ]; then
 			echo "   ${x:${#D}:${#x}}"
 			${STRIP} --strip-debug "${x}"
+
+			# etdyn binaries are shared objects, but not really. Non-relocatable.
+			if [ -x /usr/bin/isetdyn ]; then
+				if [ "`/usr/bin/isetdyn '${x}'`" == "${x}" ]; then
+					${STRIP} "${x}"
+				fi
+			fi
+
 		fi
 	fi
 done

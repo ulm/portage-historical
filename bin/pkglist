@@ -1,7 +1,7 @@
-#! /usr/bin/env python2.2
+#!/usr/bin/python
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/pkglist,v 1.6 2003/02/22 16:59:08 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/pkglist,v 1.7 2003/10/13 07:43:38 carpaski Exp $
 
 # Very simple program that searches the /usr/portage tree for 
 # ebuilds that match a key provided by the user.
