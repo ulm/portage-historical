@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.196 2003/02/27 11:31:00 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.197 2003/02/28 06:26:08 carpaski Exp $
 
 import os,sys,portage,emergehelp,xpak,string,re,commands,time,threading,shutil,traceback
 from stat import *
@@ -1467,7 +1467,7 @@ def post_emerge(retval=0):
 						print " "+yellow("* IMPORTANT:")+"",len(files),"config files in",x,"need updating."
 		if procount:
 			#print " "+yellow("*")+" Type "+green("emerge --help config")+" to learn how to update config files."
-			print " "+yellow("*")+" Type "+green("emerge help config")+" to learn how to update config files."
+			print " "+yellow("*")+" Type "+green("emerge --help config")+" to learn how to update config files."
 		print
 	sys.exit(retval)
 
