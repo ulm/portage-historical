@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.430 2004/06/21 10:51:56 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.431 2004/06/21 13:53:04 nakano Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -3735,16 +3735,16 @@ def dep_wordreduce(mydeplist,mydbapi,mode,use_cache=1):
 			if mydep!=None:
 				tmp=(len(mydep)>=1)
 				if deplist[mypos][0]=="!":
-					tmp=not tmp
-
-				# This is ad-hoc code. We should rewrite this later.. (See #52377)
-				# The reason is that portage uses fakedb when --update option now.
-				# So portage considers that a block package doesn't exist even if it exists.
-				# Then, #52377 happens.
-				# ==== start
-				if mydbapi.__class__.__name__=="fakedbapi":
+					#tmp=not tmp
+					# This is ad-hoc code. We should rewrite this later.. (See #52377)
+					# The reason is that portage uses fakedb when --update option now.
+					# So portage considers that a block package doesn't exist even if it exists.
+					# Then, #52377 happens.
+					# ==== start
+					# emerge checks if it's block or not, so we can always set tmp=False.
+					# but it's not clean..
 					tmp=False
-				# ==== end
+					# ==== end
 				deplist[mypos]=tmp
 			else:
 				#encountered invalid string
