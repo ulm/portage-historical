@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.46 2005/03/01 01:17:54 carpaski Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.46 2005/03/01 01:17:54 carpaski Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.47 2005/03/02 00:04:03 ferringb Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.47 2005/03/02 00:04:03 ferringb Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.46 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.47 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -4896,6 +4896,8 @@ class eclass_cache:
 		# ordering is *exactly* the same
 		self.porttrees=[self.porttree_root]
 		self.porttrees.extend(self.settings["PORTDIR_OVERLAY"].split())
+		#normalize the path now, so it's not required later.
+		self.porttrees = [normpath(x) for x in self.porttrees]			
 		self.update_eclasses()
 
 	def close_caches(self):
