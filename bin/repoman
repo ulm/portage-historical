@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.43 2003/12/21 08:03:26 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.44 2004/01/04 10:41:35 nakano Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -717,7 +717,13 @@ for x in scanlist:
 				mykey=mytype+".bad"+suffix
 				myvalue=string.join(portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,[ mytype ]))
 
-				mydep=portage.dep_check(myvalue,portage.db["/"]["porttree"].dbapi,repoman_settings,use="all",mode=matchmode)
+				try:
+					mydep=portage.dep_check(myvalue,portage.db["/"]["porttree"].dbapi,repoman_settings,use="all",mode=matchmode)
+				except KeyError, e:
+					stats[mykey]=stats[mykey]+1
+					fails[mykey].append(x+"/"+y+".ebuild: "+keyword+" "+repr(e[0]))
+					continue
+
 				if mydep[0]==1:
 					if mydep[1]!=[]:
 						#we have some unsolvable deps

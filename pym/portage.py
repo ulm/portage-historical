@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.368 2004/01/02 10:37:01 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.369 2004/01/04 10:41:35 nakano Exp $
 
 VERSION="2.0.50_pre8"
 
@@ -2947,7 +2947,11 @@ def key_expand(mykey,mydb=None):
 def cpv_expand(mycpv,mydb=None):
 	myslash=mycpv.split("/")
 	mysplit=pkgsplit(myslash[-1])
-	if len(myslash)==2:
+	if len(myslash)>2:
+		# this is illegal case.
+		mysplit=[]
+		mykey=mycpv
+	elif len(myslash)==2:
 		if mysplit:
 			mykey=myslash[0]+"/"+mysplit[0]
 		else:

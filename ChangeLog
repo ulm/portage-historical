@@ -1,6 +1,9 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.512 2004/01/03 18:08:46 nakano Exp $
+# $Id: ChangeLog,v 1.513 2004/01/04 10:41:35 nakano Exp $
+
+  04 Jan 2004; Masatomo Nakano <nakano@gentoo.org> repoman, portage.py:
+  Added new dependency check to repoman. This closes #36887.
 
   03 Jan 2004; Masatomo Nakano <nakano@gentoo.org> emerge: Modified 
   to specific port number in emerge sync. This closes #36994
