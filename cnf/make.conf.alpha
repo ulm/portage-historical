@@ -1,6 +1,6 @@
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.alpha,v 1.40.2.3 2005/02/13 10:48:30 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.alpha,v 1.40.2.4 2005/02/15 23:27:44 jstubbs Exp $
 # Contains local system settings for Portage system
 
 # Please review 'man make.conf' for more information.
@@ -26,6 +26,7 @@
 # Host Setting
 # ============
 #
+# DO NOT CHANGE THIS SETTING UNLESS YOU ARE USING STAGE1!
 # The generic HOST setting on alpha is alpha-unknown-linux-gnu. If your machine
 # is an ev6 or ev67 based system you might want to use 
 # either alphaev6-unknown-linux-gnu or alphaev67-unknown-linux-gnu accordingly.

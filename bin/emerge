@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.16 2005/02/11 01:57:33 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.17 2005/02/15 23:27:44 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2456,12 +2456,14 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 						print
 						sys.exit(0)
 				emergelog(">>> starting rsync with "+dosyncuri)
-				print ">>> starting rsync with "+dosyncuri+"..."
+				if "--quiet" not in myopts:
+					print ">>> starting rsync with "+dosyncuri+"..."
 			else:
 				emergelog(">>> Starting retry %d of %d with %s" % (retries,maxretries,dosyncuri))
 				print "\n\n>>> Starting retry %d of %d with %s" % (retries,maxretries,dosyncuri)
 
-			print ">>> checking server timestamp ..."
+			if "--quiet" not in myopts:
+				print ">>> checking server timestamp ..."
 			mycommand=rsynccommand+" "+dosyncuri+"/metadata/timestamp.chk "+tmpservertimestampdir
 			exitcode=portage.spawn(mycommand,portage.settings,free=1)
 			if (exitcode==0):
@@ -2570,7 +2572,8 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 		pass
 
 	if os.path.exists(myportdir+"/metadata/cache") and updatecache_flg:
-		print "\n>>> Updating Portage cache:      ",
+		if "--quiet" not in myopts:
+			print "\n>>> Updating Portage cache:      ",
 		os.umask(0002)
 		cachedir = os.path.normpath(portage.settings.depcachedir)
 		if cachedir in ["/",    "/bin", "/dev",  "/etc",  "/home",
@@ -2626,9 +2629,10 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 			if current >= nextupdate:
 				pcnt += 1
 				nextupdate += pcntcount
-				pcntstr = str(pcnt)
-				sys.stdout.write("\b"*(len(pcntstr)+1)+pcntstr+"%")
-				sys.stdout.flush()
+				if "--quiet" not in myopts:
+					pcntstr = str(pcnt)
+					sys.stdout.write("\b"*(len(pcntstr)+1)+pcntstr+"%")
+					sys.stdout.flush()
 			myxsplit=x.split("/")
 			mymatches=portage.portdb.xmatch("match-all",x)
 			mymatches.sort()

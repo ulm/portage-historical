@@ -1,13 +1,19 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.70 2005/02/13 10:48:30 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.71 2005/02/15 23:27:44 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
 
-  13 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> make.conf: Added warning
+  15 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> emerge: Disabled the cache
+  update output when using --quiet.  #81678
+
+  15 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> make.conf*: Added
+  warning with regard to changing CHOST.  #81007
+
+  13 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> make.conf*: Added warning
   with regard to changing PORTDIR and /etc/make.profile.
 
   13 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> portage.py: Fixed the global
