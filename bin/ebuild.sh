@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.155 2004/02/10 01:24:56 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.156 2004/02/27 03:08:45 nakano Exp $
 
 SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym"
 SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -845,6 +845,11 @@ dyn_preinst() {
 	if has nodoc $FEATURES; then
 		rm -fR "${IMAGE}/usr/share/doc"
 	fi
+
+  # remove share dir if unnessesary
+  if has nodoc $FEATURES -o has noman $FEATURES -o has noinfo $FEATURES; then
+    rmdir "${IMAGE}/usr/share" &> /dev/null
+  fi
 
 	# Smart FileSystem Permissions
 	if has sfperms $FEATURES; then
