@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.296 2003/02/25 10:43:31 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.297 2003/02/26 11:24:15 carpaski Exp $
 
 VERSION="2.0.47-r4"
 
@@ -1337,8 +1337,12 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 				settings["CCACHE_DIR"]=settings["PORTAGE_TMPDIR"]+"/ccache"
 			if not os.path.exists(settings["CCACHE_DIR"]):
 				os.makedirs(settings["CCACHE_DIR"])
-				os.chown(settings["CCACHE_DIR"],portage_uid,portage_gid)
+			mystat=os.stat(settings["CCACHE_DIR"])
+			os.chown(settings["CCACHE_DIR"],portage_uid,portage_gid)
 			os.chmod(settings["CCACHE_DIR"],06770)
+			if mystat[ST_GID]!=portage_gid:
+				spawn("chgrp -R "+str(portage_gid)+" "+settings["CCACHE_DIR"], free=1)
+				spawn("chmod -R g+rw "+settings["CCACHE_DIR"], free=1)
 
 			if not os.path.exists(settings["HOME"]):
 				os.makedirs(settings["HOME"])
