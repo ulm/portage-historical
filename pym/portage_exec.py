@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.17 2004/11/07 20:38:56 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.18 2004/11/08 05:58:32 ferringb Exp $
 
 import os,types,string,sys
 import signal
@@ -128,7 +128,7 @@ def spawn(mycommand,env={},raw_exit_code=False,opt_name=None,fd_pipes=None,retur
 	fd_pipes controls which file descriptor numbers are left open in the forked process- it's a dict of
 	current fd's raw fd #, desired #.
 
-	func_call is a control for specifying to execute a python function- use spawn_func instead.
+	func_call is a boolean for specifying to execute a python function- use spawn_func instead.
 	raise_signals is questionable.  Basically throw an exception if signal'd.  No exception is thrown
 	if raw_input is on.
 
