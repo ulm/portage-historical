@@ -1,7 +1,7 @@
 # deps.py -- Portage dependency resolution functions
 # Copyright 2003 Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Id: portage_dep.py,v 1.11 2004/08/07 11:40:46 jstubbs Exp $
+# $Id: portage_dep.py,v 1.12 2004/08/07 11:44:04 jstubbs Exp $
 
 # DEPEND SYNTAX:
 #
@@ -59,7 +59,6 @@ def use_reduce(deparray, uselist=[], masklist=[], matchall=0, excludeall=[]):
 	"""Takes a paren_reduce'd array and reduces the use? conditionals out
 	leaving an array with subarrays
 	"""
-	print excludeall
 	# Quick validity checks
 	for x in range(1,len(deparray)):
 		if deparray[x] in ["||","&&"]:
