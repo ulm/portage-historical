@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.343 2003/10/31 06:07:33 drobbins Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.344 2003/10/31 06:12:31 drobbins Exp $
 
 VERSION="2.0.49-r13-2"
 
@@ -677,8 +677,8 @@ def env_update(makelinks=1):
 			continue
 		outfile.write("setenv "+x+" '"+env[x]+"'\n")
 	outfile.close()
-	
-	spawn("/sbin/depscan.sh",free=1)
+	if os.path.exists("/sbin/depscan.sh"):	
+		spawn("/sbin/depscan.sh",free=1)
 
 def grabfile(myfilename):
 	"""This function grabs the lines in a file, normalizes whitespace and returns lines in a list; if a line
