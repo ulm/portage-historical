@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.512 2004/09/26 13:31:45 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.513 2004/09/27 01:59:19 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -6263,13 +6263,21 @@ class dblink:
 							sys.exit(1)
 						print "bak",mydest,mydest+".backup"
 						#now create our directory
-						os.mkdir(mydest)
+						if selinux_enabled:
+							sid = selinux.get_sid(mysrc)
+							selinux.secure_mkdir(mydest,sid)
+						else:
+							os.mkdir(mydest)
 						os.chmod(mydest,mystat[0])
 						lchown(mydest,mystat[4],mystat[5])
 						print ">>>",mydest+"/"
 				else:
 					#destination doesn't exist
-					os.mkdir(mydest)
+					if selinux_enabled:
+						sid = selinux.get_sid(mysrc)
+						selinux.secure_mkdir(mydest,sid)
+					else:
+						os.mkdir(mydest)
 					os.chmod(mydest,mystat[0])
 					lchown(mydest,mystat[4],mystat[5])
 					print ">>>",mydest+"/"

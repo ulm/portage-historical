@@ -1,7 +1,7 @@
 # portage_data.py -- Calculated/Discovered Data Values
 # Copyright 2004-2004 Gentoo Foundation
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_data.py,v 1.3 2004/09/05 02:22:16 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_data.py,v 1.4 2004/09/27 01:59:19 carpaski Exp $
 
 import os,pwd,grp
 from portage_util import writemsg
@@ -9,24 +9,28 @@ from output import green,red
 
 ostype=os.uname()[0]
 
+lchown = None
 if ostype=="Linux":
 	userland="GNU"
-
-	if "lchown" in dir(os):
-		# Included in python-2.3
-		lchown=os.lchown
-	else:
-		import missingos
-		lchown=missingos.lchown
-
 	os.environ["XARGS"]="xargs -r"
 elif ostype in ["Darwin","FreeBSD","OpenBSD"]:
+	if ostype == "Darwin":
+		lchown=os.chown
 	userland="BSD"
-	lchown=os.chown
 	os.environ["XARGS"]="xargs"	
 else:
 	writemsg(red("Operating system")+" \""+ostype+"\" "+red("currently unsupported. Exiting.")+"\n")
 	sys.exit(1)
+
+if not lchown:
+	if "lchown" in dir(os):
+		# Included in python-2.3
+		lchown = os.lchown
+	else:
+		import missingos
+		lchown = missingos.lchown
+
+
 	
 os.environ["USERLAND"]=userland
 
