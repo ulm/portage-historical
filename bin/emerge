@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.272 2004/02/27 03:47:48 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.273 2004/02/27 04:37:14 nakano Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -1955,10 +1955,11 @@ def post_emerge(retval=0):
 				
 				if not os.path.isdir(inforoot):
 					continue
+				errmsg = ""
 				for x in os.listdir(inforoot):
 					if (x[0] == ".") or (x in ["dir","dir.old"]):
 						continue
-					myso=commands.getstatusoutput("LANG=C /usr/bin/install-info --dir-file="+inforoot+"/dir "+inforoot+"/"+x)[1]
+					myso=commands.getstatusoutput("LANG=C LANGUAGE=C /usr/bin/install-info --dir-file="+inforoot+"/dir "+inforoot+"/"+x)[1]
 					existsstr="already exists, for file `"
 					if myso!="":
 						if re.search(existsstr,myso):
@@ -1966,18 +1967,15 @@ def post_emerge(retval=0):
 							pass
 						else:
 							badcount=badcount+1
-							if "--verbose" in myopts:
-								print myso
+							errmsg += myso + "\n"
 					icount=icount+1
 					
 				#update mtime so we can potentially avoid regenerating.
 				portage.mtimedb["info"][inforoot]=os.stat(inforoot)[ST_MTIME]
 
 			if badcount:
-				if "--verbose" not in myopts:
-					print " "+yellow("*")+" Processed",icount,"info files:",badcount,"errors; run with "+green("emerge --verbose")+" to view errors."
-				else:
-					print " "+yellow("*")+" Processed",icount,"info files;",badcount,"errors."
+				print " "+yellow("*")+" Processed",icount,"info files;",badcount,"errors."
+				print errmsg
 			else:
 				print " "+green("*")+" Processed",icount,"info files."
 
