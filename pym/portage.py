@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.558 2004/11/15 05:19:19 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.559 2004/11/15 05:25:35 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -3877,12 +3877,12 @@ class portdbapi(dbapi):
 			self.manifestVerifyLevel   = portage_gpg.EXISTS
 			if "strict" in self.mysettings.features:
 				self.manifestVerifyLevel = portage_gpg.MARGINAL
-				self.manifestVerifier = portage_gpg.FileChecker(self.mysettings["PORTAGE_GPG_DIR"], "gentoo.gpg", minimumTrust=self.manifestVerifyLevel,home=mysettings["HOME"])
+				self.manifestVerifier = portage_gpg.FileChecker(self.mysettings["PORTAGE_GPG_DIR"], "gentoo.gpg", minimumTrust=self.manifestVerifyLevel,self.home=mysettings["HOME"])
 			elif "severe" in self.mysettings.features:
 				self.manifestVerifyLevel = portage_gpg.TRUSTED
-				self.manifestVerifier = portage_gpg.FileChecker(self.mysettings["PORTAGE_GPG_DIR"], "gentoo.gpg", requireSignedRing=True, minimumTrust=self.manifestVerifyLevel,home=mysettings["HOME"])
+				self.manifestVerifier = portage_gpg.FileChecker(self.mysettings["PORTAGE_GPG_DIR"], "gentoo.gpg", requireSignedRing=True, minimumTrust=self.manifestVerifyLevel,self.home=mysettings["HOME"])
 			else:
-				self.manifestVerifier = portage_gpg.FileChecker(self.mysettings["PORTAGE_GPG_DIR"], "gentoo.gpg", minimumTrust=self.manifestVerifyLevel,home=mysettings["HOME"])
+				self.manifestVerifier = portage_gpg.FileChecker(self.mysettings["PORTAGE_GPG_DIR"], "gentoo.gpg", minimumTrust=self.manifestVerifyLevel,self.home=mysettings["HOME"])
 
 		#self.root=settings["PORTDIR"]
 		self.porttree_root = porttree_root
