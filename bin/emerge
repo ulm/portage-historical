@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.178.2.6 2003/02/17 00:53:58 alain Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.178.2.7 2003/02/17 01:27:21 alain Exp $
 
 import os,sys,portage,emergehelp,xpak,string,re,commands,time,threading,shutil,traceback
 from stat import *
@@ -1056,7 +1056,7 @@ class depgraph:
 						print ">>> Recording",myfavkey,"in \"world\" favorites file..."
 						portage.writedict(myfavdict,myroot+"var/cache/edb/world",writekey=0)
 
-				if "noclean" not in portage.features:
+				if not ctx.has_feature("noclean"):
 					retval=portage.doebuild(ctx, y,"clean",myroot,edebug)
 					if retval:
 						sys.exit(1)

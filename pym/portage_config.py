@@ -342,7 +342,7 @@ class config:
 			myuse=mysplit[0]
 			mydep=x[len(mysplit[0]):]
 			#check dependencies; tell depcheck() to ignore settings["USE"] since we are still forming it.
-			myresult=portage.dep_check(mydep,myvartree.dbapi,use="no")
+			myresult=portage.dep_check(self.ctx, mydep,myvartree.dbapi,use="no")
 			if myresult[0]==1 and not myresult[1]:
 				#deps satisfied, add USE variable...
 				myusevars=myusevars+" "+myuse
