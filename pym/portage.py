@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.414 2004/04/26 17:21:01 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.415 2004/04/26 17:22:39 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1477,7 +1477,6 @@ class config:
 
 			self.pmaskdict = {}
 			for x in pkgmasklines:
-				print x
 				mycatpkg=dep_getkey(x)
 				if self.pmaskdict.has_key(mycatpkg):
 					self.pmaskdict[mycatpkg].append(x)
