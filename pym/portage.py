@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.12 2004/12/01 22:14:09 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.13 2004/12/03 04:15:29 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -752,6 +752,8 @@ def grabfile_package(myfilename,compatlevel=0):
 	pkgs=grabfile(myfilename,compatlevel)
 	for x in range(len(pkgs)-1,-1,-1):
 		pkg = pkgs[x]
+		if pkg[0] == "-":
+			pkg = pkg[1:]
 		if pkg[0] == "*":
 			pkg = pkg[1:]
 		if not isvalidatom(pkg):
@@ -5466,8 +5468,8 @@ class portdbapi(dbapi):
 			cp = dep_getkey(mycpv)
 			if pkgdict.has_key(cp):
 				matches = match_to_list(mycpv, pkgdict[cp].keys())
-				for match in matches:
-					pgroups.extend(pkgdict[cp][match])
+				for atom in matches:
+					pgroups.extend(pkgdict[cp][atom])
 			for gp in mygroups:
 				if gp=="*":
 					writemsg("--- WARNING: Package '%s' uses '*' keyword.\n" % mycpv)

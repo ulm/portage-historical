@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.5 2004/12/01 22:14:09 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.6 2004/12/03 04:15:29 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -1524,7 +1524,7 @@ if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 		addread "${CCACHE_DIR}"
 		addwrite "${CCACHE_DIR}"
 
-		[ -z "${CCACHE_SIZE}" ] && export CCACHE_SIZE="2G"
+		[ -z "${CCACHE_SIZE}" ] && export CCACHE_SIZE="500M"
 		ccache -M ${CCACHE_SIZE} &> /dev/null
 	fi
 

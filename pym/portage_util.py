@@ -1,6 +1,6 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.11.2.1 2004/10/27 14:39:30 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.11.2.2 2004/12/03 04:15:29 carpaski Exp $
 
 import sys,string,shlex,os.path
 
@@ -166,6 +166,8 @@ def grabfile_package(myfilename,compatlevel=0):
 	pkgs=grabfile(myfilename,compatlevel)
 	for x in range(len(pkgs)-1,-1,-1):
 		pkg = pkgs[x]
+		if pkg[0] == "-":
+			pkg = pkg[1:]
 		if pkg[0] == "*": # Kill this so we can deal the "packages" file too
 			pkg = pkg[1:]
 		if not isvalidatom(pkg):
