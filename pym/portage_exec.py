@@ -1,13 +1,19 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.16 2004/11/07 14:06:53 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.17 2004/11/07 20:38:56 ferringb Exp $
 
 import os,types,string,sys
 import signal
 import portage_data
 import portage_util
 import portage_const
+
+selinux_capable = False
+sandbox_capable = os.path.exists(portage_const.SANDBOX_BINARY)
+userpriv_capable = (os.getuid() == 0)
+fakeroot_capable = False
+
 
 try:
 	import resource
@@ -364,16 +370,12 @@ def spawn_fakeroot(mycommand, save_file, env={}, opt_name=None,**keywords):
 	myc.extend(mycl)
 	return spawn(myc,env=env,opt_name=opt_name,**keywords)
 
-sandbox_capable = os.path.exists(portage_const.SANDBOX_BINARY)
-userpriv_capable = (os.getuid() == 0)
-fakeroot_capable = False
-
 if os.path.exists(portage_const.FAKEROOT_PATH):
-	r,s=spawn_get_output((portage_const.FAKEROOT_PATH, "--version"),emulate_gso=False)
+	r,s=spawn_get_output((portage_const.FAKEROOT_PATH, "--version"),emulate_gso=False,
+		fd_pipes={1:1,2:2})
 	if r == 0:
 		if len(s) == 1 and "version 1." in s[0]:
 			fakeroot_capable = True
 		else:
 			print "fakeroot not available, need at least version 1.0"
 	
-selinux_capable = False
