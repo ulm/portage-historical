@@ -1,11 +1,18 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.879 2004/11/20 10:48:16 ferringb Exp $
+# $Id: ChangeLog,v 1.880 2004/11/20 14:18:32 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  20 Nov 2004; Brian Harring <ferringb@gentoo.org> bin/ebuild.sh:
+  filter-env is now in use.  In other words, you *will* have to do 
+  the configure/install to get the binary, since it *is* required for
+  correct env processing.  I tried a host of other solutions, so far 
+  I can't break this one (aside from dumb typos in the code).  Processing 
+  the envs from kdelibs/arts is now possible again.
 
   20 Nov 2004; Brian Harring <ferringb@gentoo.org> pym/portage_const.py:
   Added compatibility hack due to sandbox being moved.  Will remove it once 
