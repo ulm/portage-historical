@@ -11,7 +11,7 @@
 **  Copyright (C) 2001 The Leaf, http://www.theleaf.be
 **  Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@theleaf.be>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox/Attic/sandbox.c,v 1.1 2002/01/06 14:32:38 gbevin Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox/Attic/sandbox.c,v 1.2 2002/01/15 12:43:48 gbevin Exp $
 */
 
 #define _GNU_SOURCE
@@ -646,6 +646,12 @@ int main(int argc, char** argv)
 				strcpy(sandbox_predict_var, "");
 				strcat(sandbox_predict_var, home_dir);
 				strcat(sandbox_predict_var, "/.");
+				strcat(sandbox_predict_var, ":");
+				strcat(sandbox_predict_var, "/usr/lib/python2.0/");
+				strcat(sandbox_predict_var, ":");
+				strcat(sandbox_predict_var, "/usr/lib/python2.1/");
+				strcat(sandbox_predict_var, ":");
+				strcat(sandbox_predict_var, "/usr/lib/python2.2/");
 				setenv(ENV_SANDBOX_PREDICT, sandbox_predict_var, 1);
 				/* */
 			}
