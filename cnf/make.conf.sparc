@@ -1,6 +1,6 @@
 # Copyright 2000-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Contains local system settings for Portage system
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.sparc,v 1.20 2003/03/11 11:33:07 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.conf.sparc,v 1.21 2003/03/11 11:36:14 carpaski Exp $
 
 # Please review 'man make.conf' for more information.
 
@@ -201,7 +201,8 @@ CHOST="sparc-unknown-linux-gnu"
 #     that causes portage to enable full settings and USE flags in SRC_URI and
 #     has wide effects -- don't set this unless you're ready for it. 'keeptemp'
 #     prevents the clean phase from deleting the temp files ($T) from a merge.
-#FEATURES="sandbox buildpkg ccache distcc userpriv usersandbox noclean noauto cvs keeptemp"
+#     'keepwork' prevents the clean phase from deleting the $WORKDIR.
+#FEATURES="sandbox buildpkg ccache distcc userpriv usersandbox noclean noauto cvs keeptemp keepwork"
 #
 # CCACHE_SIZE sets the space use limitations for ccache. The default size is
 #     2G, and will be set if not defined otherwise and ccache is in features. 
