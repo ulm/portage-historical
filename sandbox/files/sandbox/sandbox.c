@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 The Leaf, http://www.theleaf.be
 **  Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@theleaf.be>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/files/sandbox/Attic/sandbox.c,v 1.5 2001/12/10 11:08:21 gbevin Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/files/sandbox/Attic/sandbox.c,v 1.6 2001/12/10 17:49:24 gbevin Exp $
 */
 
 #define _GNU_SOURCE
@@ -605,13 +605,17 @@ int main(int argc, char** argv)
 				strcpy(sandbox_write_var, "");
 				strcat(sandbox_write_var, "/dev/null:/dev/pts/:/dev/tty:/tmp/");
 				strcat(sandbox_write_var, ":");
-				strcat(sandbox_predict_var, "/var/log/scrollkeeper.log");
+				strcat(sandbox_write_var, "/var/log/scrollkeeper.log");
 				strcat(sandbox_write_var, ":");
 				strcat(sandbox_write_var, home_dir);
-				strcat(sandbox_predict_var, "/.gconfd/lock");
+				strcat(sandbox_write_var, "/.gconfd/lock");
 				strcat(sandbox_write_var, ":");
 				strcat(sandbox_write_var, home_dir);
 				strcat(sandbox_write_var, "/.bash_history");
+				strcat(sandbox_write_var, ":");
+				strcat(sandbox_write_var, "/usr/tmp/conftest");
+				strcat(sandbox_write_var, ":");
+				strcat(sandbox_write_var, "/usr/lib/conftest");
 				strcat(sandbox_write_var, ":");
 				if (NULL == portage_tmp_dir)
 				{
@@ -630,10 +634,6 @@ int main(int argc, char** argv)
 				strcpy(sandbox_predict_var, "");
 				strcat(sandbox_predict_var, home_dir);
 				strcat(sandbox_predict_var, "/.");
-				strcat(sandbox_predict_var, ":");
-				strcat(sandbox_predict_var, "/usr/tmp/conftest");
-				strcat(sandbox_predict_var, ":");
-				strcat(sandbox_predict_var, "/usr/lib/conftest");
 				setenv(ENV_SANDBOX_PREDICT, sandbox_predict_var, 1);
 				/* */
 			}
