@@ -1,6 +1,9 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.552 2004/02/22 09:36:15 nakano Exp $
+# $Id: ChangeLog,v 1.553 2004/02/26 00:37:07 nakano Exp $
+
+  26 Feb 2004; Masatomo Nakano <nakano@gentoo.org> emerge: Added new option
+  --newuse. This option is to rebuild a package whose USE has been changed.
 
   22 Feb 2004; Masatomo Nakano <nakano@gentoo.org> emerge, portage.py: speedup
   when /etc/portage/package.keywords is defined. Moved loading
