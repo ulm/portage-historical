@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.18 2005/01/17 20:14:37 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.19 2005/01/20 03:14:22 ferringb Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -408,8 +408,8 @@ econf() {
 			if [ -e /usr/share/gnuconfig/ -a -x /bin/basename ]; then
 				local x
 				for x in $(find ${WORKDIR} -type f -name config.guess -o -name config.sub) ; do
-					echo " * econf: updating ${x/${WORKDIR}\/} with /usr/share/gnuconfig/$(/bin/basename ${x})"
-					cp /usr/share/gnuconfig/$(/bin/basename ${x}) ${x}
+					echo " * econf: updating ${x/${WORKDIR}\/} with /usr/share/gnuconfig/${x##*/}"
+					cp /usr/share/gnuconfig/${x##*/} ${x}
 				done
 			fi
 		fi
