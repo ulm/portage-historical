@@ -25,7 +25,7 @@
  *  as some of the InstallWatch code was used.
  *
  *
- *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.11 2003/09/28 08:37:19 azarah Exp $
+ *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.12 2003/10/13 19:43:25 azarah Exp $
  *
  */
 
@@ -564,11 +564,11 @@ rename(const char *oldpath, const char *newpath)
 	canonicalize_int(oldpath, old_canonic);
 	canonicalize_int(newpath, new_canonic);
 
-	if FUNCTION_SANDBOX_SAFE
-		("rename", new_canonic) {
+	if (FUNCTION_SANDBOX_SAFE("rename", old_canonic) &&
+			FUNCTION_SANDBOX_SAFE("rename", new_canonic)) {
 		check_dlsym(rename);
 		result = true_rename(oldpath, newpath);
-		}
+	}
 
 	return result;
 }

@@ -1,9 +1,15 @@
 # ChangeLog for Path Sandbox
 # Copyright 2002 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/ChangeLog,v 1.23 2003/10/12 22:38:11 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/ChangeLog,v 1.24 2003/10/13 19:43:25 azarah Exp $
 
-  12 Oct 2003; Nicholas Jones <carpaski@gentoo.org> sandbox.c: Added python2.3
-	to the predict section/variable.
+  13 Oct 2003; Martin Schlemmer <azarah@gentoo.org> libsandbox.c :
+  Fix a bug in libsandbox.c 's checking in the rename wrapper - it basically
+  only checked the destination patch, and not the source, so we could move
+  a protected file to a unprotected directory, and then delete/modify it.
+  Thanks to Andrea Luzzardi (scox) <al@sig11.org>, bug #30992, for this fix.
+
+  12 Oct 2003; Nicholas Jones <carpaski@gentoo.org> sandbox.c :
+  Added python2.3 to the predict section/variable.
 
   28 Sep 2003; Martin Schlemmer <azarah@gentoo.org> libsandbox.c, sandbox.c,
   sandbox.h, sandbox_futils.c :
