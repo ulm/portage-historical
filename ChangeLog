@@ -1,11 +1,26 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.59 2005/01/24 14:17:07 carpaski Exp $
+# $Id: ChangeLog,v 1.796.2.60 2005/01/28 07:55:58 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  28 Jan 2005; Brian Harring <ferringb@gentoo.org> portage_db_flat.py: removed
+  the portage_locks locking that was added, using a different strategy reliant
+  on rename.  Basically, for a pull- you open the file.  If that fails, then
+  the cache lacks that entry.  If it succeeds, you do your stat calls (to get
+  mtime) against the -file handle-, via fstat.  You can read from that inode 
+  without issue, but do not assume that that inode is the still accessible via
+  another open call (it may've been updated since).  Pushes are accomplished 
+  via writing everything to a temp file, then renaming that file to the correct
+  name- chmod/chown/utime calls need to be done prior to the rename.
+  So, if a pull is ongoing while a push starts up and finishes, the pull still
+  is accessing the old cache entry- worst case scenario, it goes and reupdates
+  the cache entry.  This is acceptable, since the overhead from using a seperate
+  lockfile is much more costly (in some cases, a difference of 3m to 20m).
+  Normal cases, roughly 13% improvement.
 
   24 Jan 2005; Nicholas Jones <carpaski@gentoo.org> portage.py: Fixed the
   fetch/nofetch RESTRICT bug introduced in -r14. Completely disable overlay

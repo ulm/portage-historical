@@ -1,7 +1,7 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_flat.py,v 1.13.2.3 2005/01/16 02:35:33 carpaski Exp $
-cvs_id_string="$Id: portage_db_flat.py,v 1.13.2.3 2005/01/16 02:35:33 carpaski Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_flat.py,v 1.13.2.4 2005/01/28 07:55:58 ferringb Exp $
+cvs_id_string="$Id: portage_db_flat.py,v 1.13.2.4 2005/01/28 07:55:58 ferringb Exp $"[5:-2]
 
 import types
 import os
@@ -10,7 +10,6 @@ from copy import deepcopy
 from string import join
 
 import portage_db_template
-import portage_locks
 
 class database(portage_db_template.database):
 	def module_init(self):
@@ -41,7 +40,7 @@ class database(portage_db_template.database):
 		# return portage.listdir(self.fullpath,filesonly=1)
 		mykeys = []
 		for x in os.listdir(self.fullpath):
-			if os.path.isfile(self.fullpath+x):
+			if os.path.isfile(self.fullpath+x) and not x.beginswith(".update."):
 				mykeys += [x]
 		return mykeys
 
@@ -49,34 +48,33 @@ class database(portage_db_template.database):
 		if not key:
 			raise KeyError, "key is not set to a valid value"
 
-		mylock = None
-		if os.access(self.fullpath+key, os.W_OK):
-			# We cannot lock unless we can write. We do not need
-			# to update from a read call, so don't fail by trying.
-			mylock = portage_locks.lockfile(self.fullpath+key, wantnewlockfile=1)
+		try:
+			# give buffering a hint of the pretty much maximal cache size we deal with
+			myf = open(self.fullpath+key, "r", 8192)
+		except OSError, oe:
+			# either the file didn't exist, or it was removed under our feet.
+			return None 
+		
 
-		if self.has_key(key):
-			mtime = os.stat(self.fullpath+key)[stat.ST_MTIME]
-			myf = open(self.fullpath+key)
-			myl = myf.readlines()
+		# nuke the newlines right off the batt.
+		data = myf.read().splitlines()
+		mdict = {}
+		
+		# rely on exceptions to note differing line counts.
+		try:
+			for x in range(0, len(self.dbkeys)):
+				mdict[self.dbkeys[x]] = data[x]
+
+			# do this now, rather then earlier- possible that earlier it might have been wasted
+			# if key count mismatched
+			mdict["_mtime_"] = os.fstat(myf.fileno()).st_mtime
+
+		except IndexError:
 			myf.close()
-			portage_locks.unlockfile(mylock)
+			raise ValueError, "Key count mistmatch"
 
-			dict = {"_mtime_":mtime}
-			
-			if len(myl) != len(self.dbkeys):
-				raise ValueError, "Key count mismatch"
-			for x in range(0,len(myl)):
-				if myl[x] and myl[x][-1] == "\n":
-					dict[self.dbkeys[x]] = myl[x][:-1]
-				else:
-					dict[self.dbkeys[x]] = myl[x]
-				
-			return dict
-		else:
-			if mylock:
-				portage_locks.unlockfile(mylock)
-		return None
+		myf.close()
+		return mdict
 	
 	def set_values(self,key,val):
 		if not key:
@@ -84,35 +82,30 @@ class database(portage_db_template.database):
 		if not val:
 			raise ValueError, "No value provided. key:%s val:%s" % (key,val)
 			
-		data = ""
-		for x in self.dbkeys:
-			data += val[x]+"\n"
+		# XXX threaded cache updates won't play nice with this.
+		# need a synchronization primitive, or locking (of the fileno, not a seperate file)
+		# to correctly handle threading.
 
-		# We will fail here if we cannot write. It only makes sense.
-		mylock = portage_locks.lockfile(self.fullpath+key, wantnewlockfile=1)
-		if os.path.exists(self.fullpath+key):
-			os.unlink(self.fullpath+key)
-
-		myf = open(self.fullpath+key,"w")
-		myf.write(data)
-		myf.flush()
+		update_fp = self.fullpath + ".update." + str(os.getpid()) + "." + key
+		myf = open(update_fp,"w")
+		myf.writelines( [ val[x] +"\n" for x in self.dbkeys] )
 		myf.close()
 		
-		os.chown(self.fullpath+key, self.uid, self.gid)
-		os.chmod(self.fullpath+key, 0664)
-		os.utime(self.fullpath+key, (long(val["_mtime_"]),long(val["_mtime_"])))
-		portage_locks.unlockfile(mylock)
-	
+		os.chown(update_fp, self.uid, self.gid)
+		os.chmod(update_fp, 0664)
+		os.utime(update_fp, (-1,long(val["_mtime_"])))
+		os.rename(update_fp, self.fullpath+key)
+
 	def del_key(self,key):
-		mylock = portage_locks.lockfile(self.fullpath+key, wantnewlockfile=1)
-		if self.has_key(key):
+		try:
 			os.unlink(self.fullpath+key)
-			portage_locks.unlockfile(mylock)
+		except OSError, oe:
+			# just attempt it without checking, due to the fact that
+			# a cache update could be in progress.
 			self.lastkey = None
 			self.lastval = None
-			return 1
-		portage_locks.unlockfile(mylock)
-		return 0
+			return 0
+		return 1
 			
 	def sync(self):
 		return
