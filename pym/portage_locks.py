@@ -1,7 +1,7 @@
 # portage: Lock management code
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.13 2004/10/17 05:38:40 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.14 2004/10/17 05:42:56 ferringb Exp $
 
 import atexit
 import errno
@@ -102,7 +102,9 @@ def lockfile(mypath,wantnewlockfile=0,unlinkfile=0):
 				# try for the exclusive lock now.
 				lock(myfd,fcntl.LOCK_EX)
 				link_success = True
-			elif e.errno == errno.ENOLCK:
+
+			#einval should correct a mips n32 bug, bug # would be good here.
+			elif e.errno in (errno.ENOLCK, errno.EINVAL):
 				continue
 			else:
 				raise e
