@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.184 2004/08/10 18:41:05 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.185 2004/08/11 23:13:38 ferringb Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -411,6 +411,15 @@ unpack() {
 
 econf() {
 	if [ -x ./configure ]; then
+		if hasq autoconfig $FEATURES && ! hasq autoconfig $RESTRICT; then
+			if [ -e /usr/share/gnuconfig/ -a -x /bin/basename ]; then
+				local x
+				for x in $(find ${S} -type f -name config.guess -o -name config.sub) ; do
+					einfo "econf: updating $x with /usr/share/gnuconfig/$(/bin/basename ${x})"
+					cp /usr/share/gnuconfig/$(/bin/basename ${x}) ${x}
+				done
+			fi
+		fi
 		if [ ! -z "${CBUILD}" ]; then
 			EXTRA_ECONF="--build=${CBUILD} ${EXTRA_ECONF}"
 		fi
