@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.110 2003/02/23 23:10:02 alain Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.111 2003/02/23 23:51:31 carpaski Exp $
 
 cd ${PORTAGE_TMPDIR}
 
@@ -84,7 +84,7 @@ has() {
 has_version() {
 	# return shell-true/shell-false if exists.
 	# Takes single depend-type atoms.
-	if $(/usr/lib/portage/bin/portageq has_version ${ROOT} $1); then
+	if /usr/lib/portage/bin/portageq 'has_version' ${ROOT} $1; then
 		return 0
 	else
 		return 1
@@ -94,7 +94,7 @@ has_version() {
 best_version() {
 	# returns the best/most-current match.
 	# Takes single depend-type atoms.
-	echo $(/usr/lib/portage/bin/portageq best_version ${ROOT} $1)
+	/usr/lib/portage/bin/portageq 'best_version' ${ROOT} $1
 }
 
 use_with() {
@@ -269,11 +269,12 @@ if [ "$*" != "depend" ]; then
 		if [ -z "${PATH/*ccache*/}" ]; then
 			# Remove the other reference.
 			PATH="$(echo ${PATH} | sed 's/:[^:]*ccache[^:]*:/:/;s/^[^:]*ccache[^:]*://;s/:[^:]*ccache[^:]*$//')"
-			if [ -d /usr/lib/ccache/bin ]; then
-				export PATH="/usr/lib/ccache/bin:${PATH}"
-			elif [ -d /usr/bin/ccache ]; then
-				export PATH="/usr/bin/ccache:${PATH}"
-			fi
+		fi
+
+		if [ -d /usr/lib/ccache/bin ]; then
+			export PATH="/usr/lib/ccache/bin:${PATH}"
+		elif [ -d /usr/bin/ccache ]; then
+			export PATH="/usr/bin/ccache:${PATH}"
 		fi
 		[ -z "${CCACHE_DIR}" ] && export CCACHE_DIR=/root/.ccache
 		addread ${CCACHE_DIR}
