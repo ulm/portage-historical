@@ -1,10 +1,9 @@
 # cvstree.py -- cvs tree utilities
 # Copyright 1998-2003 Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# Author: Nicholas Jones <carpaski@gentoo.org>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/cvstree.py,v 1.4 2003/07/16 12:59:18 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/cvstree.py,v 1.5 2003/08/16 07:28:22 carpaski Exp $
 
-import string,os,time,sys
+import string,os,time,sys,re
 from stat import *
 
 # [D]/Name/Version/Date/Flags/Tags
@@ -38,6 +37,22 @@ def isadded(entries, path):
 	if mytarget:
 		if "cvs" in mytarget["status"]:
 			return 1
+
+	basedir=os.path.dirname(path)
+	filename=os.path.basename(path)
+
+	try:
+		myfile=open(basedir+"/CVS/Entries","r")
+	except IOError:
+		return 0
+	mylines=myfile.readlines()
+	myfile.close()
+
+	rep=re.compile("^\/"+filename+"\/");
+	for x in mylines:
+		if rep.search(x):
+			return 1
+
 	return 0
 
 def findnew(entries,recursive=0,basedir=""):

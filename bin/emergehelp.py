@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.15 2003/08/03 21:42:30 aether Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.16 2003/08/16 07:28:22 carpaski Exp $
 
 import os,sys
 from output import *
@@ -167,6 +167,18 @@ def help(myaction,myopts,havecolor=1):
 		print "              all packages (main package as well as all dependencies.) When"
 		print "              used in combination with --pretend all the SRC_URIs will be"
 		print "              displayed multiple mirrors per line, one line per file."
+		print
+		print "       "+green("--getbinpkg")+" ("+green("-g")+" short option)"
+		print "              Using the server and location defined in PORTAGE_BINHOST, portage"
+		print "              will download the information from each binary file there and it"
+		print "              will use that information to help build the dependency list. This"
+		print "              option implies '-k'. (Use -gK for binary-only merging.)"
+		print
+		print "       "+green("--getbinpkgonly")+" ("+green("-G")+" short option)"
+		print "              This option is identical to -g, as above, except it will not use"
+		print "              ANY information from the local machine. All binaries will be"
+		print "              downloaded from the remote server without consulting packages"
+		print "              existing in the packages directory."
 		print
 		print "       "+green("--noconfmem")
 		print "              Portage keeps track of files that have been placed into"
