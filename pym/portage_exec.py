@@ -1,9 +1,9 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.2 2004/08/26 09:16:14 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.3 2004/08/26 18:54:21 ferringb Exp $
 
-import os
+import os,types
 import portage_data
 import portage_util
 from portage_const import BASH_BINARY,SANDBOX_BINARY,SANDBOX_PIDS_FILE
@@ -11,7 +11,7 @@ from portage_const import BASH_BINARY,SANDBOX_BINARY,SANDBOX_PIDS_FILE
 # XXX fd_pipes should be a way for a process to communicate back.
 # XXX This would be to replace getstatusoutput completely.
 # XXX Issue: cannot block execution. Deadlock condition.
-def spawn(mystring,debug=0,free=0,droppriv=0,fd_pipes=None,returndpid=False):
+def spawn(mystring,debug=0,free=0,droppriv=0,fd_pipes=None,returnpid=False):
 	"""spawn a subprocess with optional sandbox protection, 
 	depending on whether sandbox is enabled.  The "free" argument,
 	when set to 1, will disable sandboxing.  This allows us to 
