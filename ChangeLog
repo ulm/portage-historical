@@ -1,6 +1,10 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.438 2003/03/14 04:42:05 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.439 2003/03/22 00:09:14 carpaski Exp $
+
+  21 Mar 2003; Nicholas Jones <carpaski@gentoo.org> xpak.py: Updates to make
+	the xpak code self-sustaining. Added basic documentation to the functions
+	and a description of the format in the comments at the top of the module.
 
 *portage-2.0.47-r10 (13 Mar 2003): Fixes -- Winding up 2.0 series.
 
