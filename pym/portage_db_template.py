@@ -1,4 +1,4 @@
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_template.py,v 1.7 2004/05/23 02:42:19 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_template.py,v 1.8 2004/09/25 13:07:55 carpaski Exp $
 
 import os.path,string
 from portage_util import getconfig, ReadOnlyConfig

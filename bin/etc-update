@@ -8,7 +8,7 @@
 # Leo Lipelis <aeoo@gentoo.org>
 # Karl Trygve Kalleberg <karltk@gentoo.org>
 #
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.20 2004/08/27 02:09:12 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.21 2004/09/25 13:07:54 carpaski Exp $
 
 export PORTAGE_CALLER="etc-update"
 
@@ -380,7 +380,7 @@ else
 	rm_opts=""
 	mv_opts=""
 	cp_opts=""
-	pager=""P
+	pager=""
 fi
 
 declare -i count=0

@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.327 2004/09/24 01:24:53 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.328 2004/09/25 13:07:54 carpaski Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -793,11 +793,7 @@ class depgraph:
 					self.mydbapi[portage.root].cpv_inject(pkg)
 			
 		if "--usepkg" in myopts:
-			try:
-				portage.db["/"]["bintree"].populate(("--getbinpkg" in myopts), ("--getbinpkgonly" in myopts))
-			except Exception, e:
-				sys.stderr.write(red("!!! Failed to get all metadata:\n")+"    "+str(e)+"\n")
-				sys.exit(1)
+			portage.db["/"]["bintree"].populate(("--getbinpkg" in myopts), ("--getbinpkgonly" in myopts))
 
 	def create(self,mybigkey,myparent=None,addme=1,myuse=None):
 		"""creates the actual digraph of packages to merge.  return 1 on success, 0 on failure
@@ -2339,7 +2335,7 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 					print
 				elif (servertimestamp == 0) or (servertimestamp > mytimestamp):
 					# actual sync
-					mycommand=rsynccommand+" "+dosyncuri+"/* "+myportdir
+					mycommand=rsynccommand+" "+dosyncuri+"/ "+myportdir
 					exitcode=portage.spawn(mycommand,portage.settings,free=1)
 					if exitcode in [0,1,2,3,4,11,14,20,21]:
 						break

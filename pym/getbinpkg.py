@@ -1,7 +1,7 @@
 # getbinpkg.py -- Portage binary-package helper functions
 # Copyright 2003 Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Id: getbinpkg.py,v 1.7 2004/08/05 04:06:26 carpaski Exp $
+# $Id: getbinpkg.py,v 1.8 2004/09/25 13:07:54 carpaski Exp $
 
 from output import *
 import htmllib,HTMLParser,string,formatter,sys,os,xpak,time,tempfile,cPickle,base64
@@ -189,7 +189,7 @@ def make_http_request(conn, address, params={}, headers={}, dest=None):
 				conn,ignore,ignore,ignore,ignore = create_conn(address)
 			conn.request("GET", address, params, headers)
 		except Exception, e:
-			return None,None,"Server request failed:",e[1]
+			return None,None,"Server request failed: "+str(e)
 		response = conn.getresponse()
 		rc = response.status
 
@@ -278,7 +278,7 @@ def dir_get_list(baseurl,conn=None):
 			del page
 			listing = parser.get_anchors()
 		else:
-			raise Exception, "Unable to get listing: %s" % (rc,msg)
+			raise Exception, "Unable to get listing: %s %s" % (rc,msg)
 	elif protocol in ["ftp"]:
 		if address[-1] == '/':
 			olddir = conn.pwd()
