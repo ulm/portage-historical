@@ -1,11 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.904 2004/12/14 12:56:29 jstubbs Exp $
+# $Id: ChangeLog,v 1.905 2004/12/15 11:50:21 genone Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  15 Dec 2004; Marius Mauch <genone@gentoo.org>
+  bin/ebuild-default-functions.sh:
+  Disabling the warning for GID=portage as it affects most/all packages and
+  gets really annoying.
 
   14 Dec 2004; Jason Stubbs <jstubbs@gentoo.org> bin/emerge pym/portage.py:
   Fixed emerge so that the "emerge by path" message is only shown when the
