@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.47 2004/01/12 21:11:46 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.48 2004/02/06 17:51:43 genone Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -1131,7 +1131,7 @@ else:
 					continue
 				mydone.append(xs[0])
 				repoman_settings["O"]="./"+xs[0]
-				portage.digestgen([],repomansettings,manifestonly=1)
+				portage.digestgen([],repoman_settings,manifestonly=1)
 				if "sign" in portage.features:
 					while(os.system(gpgcmd+repoman_settings["O"]+"/Manifest")):
 						portage.writemsg("!!! YOU MUST sign the Manifest.\n")
@@ -1147,7 +1147,7 @@ else:
 					continue
 				mydone.append(string.join(xs[:2],"/"))
 				repoman_settings["O"]="./"+string.join(xs[:2],"/")
-				portage.digestgen([],repomansettings,manifestonly=1)
+				portage.digestgen([],repoman_settings,manifestonly=1)
 				if "sign" in portage.features:
 					os.system(gpgcmd+repoman_settings["O"]+"/Manifest")
 					mysigs+=[sigfile]
