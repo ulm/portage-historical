@@ -1,11 +1,11 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.251 2004/01/20 01:54:37 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.252 2004/01/20 02:02:42 nakano Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
-#sys.path = ["/usr/lib/portage/pym"]+sys.path
+sys.path = ["/usr/lib/portage/pym"]+sys.path
 
 import emergehelp,xpak,string,re,commands,time,shutil,traceback,atexit,signal,socket,types
 from stat import *
