@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.260 2004/01/24 19:03:19 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.261 2004/01/31 02:15:49 nakano Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -1137,6 +1137,7 @@ class depgraph:
 			# -> let's see what's next, if anything
 			i += 1
 
+		display_overlays=False
 		for x in mylist:
 			fetch=" "
 			
@@ -1228,7 +1229,8 @@ class depgraph:
 					file_name=portage.portdb.findname(x[2])
 					dir_name=os.path.abspath(os.path.dirname(file_name)+"/../..")
 					if (overlays.count(dir_name)>0):
-						verboseadd+="*"+str(overlays.index(os.path.normpath(dir_name))+1)+" "
+						verboseadd+=teal("["+str(overlays.index(os.path.normpath(dir_name))+1)+"]")+" "
+						display_overlays=True
 
 				xs=portage.pkgsplit(x[2])
 				if xs[2]=="r0":
@@ -1304,12 +1306,12 @@ class depgraph:
 		if "--verbose" in myopts:
 			print
 			print "Total size of downloads: "+format_size(totalsize)
-			if (overlays):
-				print "OVERLAY:"
+			if overlays and display_overlays:
+				print "Portage overlays:"
 				y=0
 				for x in overlays:
 					y=y+1
-					print " *"+str(y)+":"+x
+					print " "+teal("["+str(y)+"]"),x
 		
 		if "--changelog" in myopts:
 			print
@@ -1389,6 +1391,7 @@ class depgraph:
 			emergelog(" *** Resuming merge...")
 			mymergelist=portage.mtimedb["resume"]["mergelist"][:]
 			if ("--skipfirst" in myopts) and mymergelist:
+				del portage.mtimedb["resume"]["mergelist"][0]
 				del mymergelist[0]
 		else:
 			myfavs=portage.grabfile(portage.root+"var/cache/edb/world")
