@@ -1,12 +1,22 @@
 #!/bin/bash
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/preplib.so,v 1.5 2002/11/23 19:21:59 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/preplib.so,v 1.6 2003/01/02 23:57:56 carpaski Exp $
 
 if [ -n "${DEBUGBUILD}" ] ; then
 	exit 0
 fi
 
 for x in $@ ; do
-	strip --strip-debug "${D}${x}"/*.so*
+    if [ -d "${D}${x}" ] ; then
+        for y in `find "${D}${x}"/ -type f \( -name "*.so" -or -name "*.so.*" \) 2>/dev/null` ; do
+            f="`file "${y}"`"
+            if [ "${f/*SB shared object*/1}" == "1" ] ; then
+                echo "${y}"
+                strip --strip-debug "${y}"
+            fi
+        done
+
+		ldconfig -n -N "${D}${x}"
+    fi
 done

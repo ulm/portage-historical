@@ -1,12 +1,24 @@
 #!/bin/bash
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepstrip,v 1.4 2002/11/23 19:21:59 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepstrip,v 1.5 2003/01/02 23:57:56 carpaski Exp $
 
 if [ -n "${DEBUGBUILD}" ] ; then
 	exit 0
 fi
 
-for x in "$@" ; do
-	strip "${D}${x}"/*
+for x in $@ ; do
+	if [ -d "${D}${x}" ] ; then
+		for y in `find "${D}${x}"/ -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 -or -name "*.so" -or -name "*.so.*" \) 2>/dev/null` ; do
+			f="`file "${y}"`"
+			if [ "${f/*SB executable*/1}" == "1"  ] ; then
+				echo "${y}"
+				strip "${y}"
+			fi
+			if [ "${f/*SB shared object*/1}" == "1" ] ; then
+				echo "${y}"
+				strip --strip-debug "${y}"
+			fi
+		done
+	fi
 done

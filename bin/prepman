@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepman,v 1.4 2002/12/03 09:14:42 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepman,v 1.5 2003/01/02 23:57:56 carpaski Exp $
 
 if [ -z "$1" ] ; then 
 	z="${D}usr/share/man"
@@ -9,16 +9,33 @@ else
 	z="${D}$1/man"
 fi
 
-for x in ${z}/* ; do
-	for y in ${x}/* ; do
-		if [ -h "${y}" ] ; then
-			#symlink
-			linkto=`ls -l ${y} | sed -e "s:${D}::" | awk '{ printf ("%s.gz",$11) } '`
-	        	echo "$linkto $y.gz"
-			ln -sf "${linkto}" "${y}.gz"
-			rm "${y}"
+[ ! -d "${z}" ] && exit 0
+
+for x in `find "${z}"/ -type d 2>/dev/null` ; do
+	for y in `find "${x}"/ \( -type f -or -type l \) -maxdepth 1 -mindepth 1 2>/dev/null` ; do
+		if [ -L "${y}" ] ; then
+			# Symlink ...
+			mylink="${y}"
+			linkto="`readlink "${y}"`"
+
+			if [ "${linkto##*.}" != "gz" ] ; then
+				linkto="${linkto}.gz"
+			fi
+			if [ "${mylink##*.}" != "gz" ] ; then
+				mylink="${mylink}.gz"
+			fi
+
+			echo "fixing man page symlink: ${mylink##*/}"
+			ln -snf "${linkto}" "${mylink}"
+			if [ "${y}" != "${mylink}" ] ; then
+				echo "removing old symlink: ${y##*/}"
+				rm -f "${y}"
+			fi
 		else
-			gzip -f -9 "${y}"
+			if [ "${y##*.}" != "gz" ] ; then
+				echo "gzipping man page: ${y##*/}"
+				gzip -f -9 "${y}"
+			fi
 		fi	
 	done
 done
