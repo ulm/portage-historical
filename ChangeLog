@@ -1,11 +1,14 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.929 2005/03/08 20:25:47 ferringb Exp $
+# $Id: ChangeLog,v 1.930 2005/03/09 02:46:20 genone Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  09 Mar 2005; Marius Mauch <genone@gentoo.org> bin/ebuild-daemon.sh:
+  portageq shouldn't prefix its output as it's used in variables.
 
   08 Mar 2005; Brian Harring <ferringb@gentoo.org> pym/ebuild.py: Revert part of 
   the restrict/portage_restrict changes so use conditionals in restrict work

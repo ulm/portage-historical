@@ -2,7 +2,7 @@
 # ebuild-daemon.sh; core ebuild processor handling code
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-daemon.sh,v 1.8 2004/11/28 09:09:01 ferringb Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-daemon.sh,v 1.9 2005/03/09 02:46:20 genone Exp $
  
 source /usr/lib/portage/bin/ebuild.sh daemonize
 
@@ -61,7 +61,7 @@ portageq() {
 		if [ "$line" == "stop_text" ]; then
 			alive=0
 		else
-			echo "portageq: $line"
+			echo "$line"
 		fi
 	done
 	return $e
