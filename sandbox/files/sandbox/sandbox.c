@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 The Leaf, http://www.theleaf.be
 **  Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@theleaf.be>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/files/sandbox/Attic/sandbox.c,v 1.2 2001/12/06 22:26:33 gbevin Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/files/sandbox/Attic/sandbox.c,v 1.3 2001/12/07 10:03:16 gbevin Exp $
 */
 
 #define _GNU_SOURCE
@@ -685,7 +685,7 @@ int main(int argc, char** argv)
 						}
 						else
 						{
-							sprintf(pid_string, "%d", getpid());
+							sprintf(pid_string, "%d\n", getpid());
 							if (write(pids_file, pid_string, strlen(pid_string)) != strlen(pid_string))
 							{
 								perror(">>> pids file write");

@@ -1,7 +1,7 @@
 # Copyright 1999-2000 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License, v2 or later
 # Author:  Martin Schlemmer <azarah@gentoo.org>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/Attic/sandbox-0.1.ebuild,v 1.2 2001/12/06 22:26:33 gbevin Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/Attic/sandbox-0.1.ebuild,v 1.3 2001/12/07 10:03:16 gbevin Exp $
 
 S=${WORKDIR}/sandbox
 DESCRIPTION="Portage SandBox System"
@@ -58,7 +58,8 @@ pkg_prerm() {
 	cp -f /usr/lib/portage/bin/ebuild.sh.orig /usr/lib/portage/bin/ebuild.sh
 	# Make the current ebuild use bash instead of sandbox further on
 	rm -f /usr/bin/sandbox
-	echo "#!/bin/bash\n/bin/bash -c \"\$@\"\n" > /usr/bin/sandbox
+	echo '#!/bin/bash' > /usr/bin/sandbox
+	echo '/bin/bash -c "$@"' >> /usr/bin/sandbox
 	chmod 755 /usr/bin/sandbox
 	
 }
