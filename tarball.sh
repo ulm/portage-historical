@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.176 2003/12/15 23:40:25 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.177 2003/12/21 08:03:26 carpaski Exp $
 
 if [ -z "$1" ]; then
 	echo
@@ -46,6 +46,8 @@ cp ChangeLog ${DEST}
 cd ${DEST}
 find -name CVS -exec rm -rf {} \;
 find -name '*~' -exec rm -rf {} \;
+find -name '*.pyc' -exec rm -rf {} \;
+find -name '*.pyo' -exec rm -rf {} \;
 chown -R root:root ${DEST}
 cd $TMP
 rm -f ${PKG}-${V}/bin/emerge.py ${PKG}-${V}/bin/{pmake,sandbox} ${PKG}-${V}/{bin,pym}/*.py[oc]
