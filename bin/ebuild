@@ -10,10 +10,6 @@ def getroot():
 	return os.path.normpath(a+"/")
 		
 
-if os.getuid()!=0:
-	print "!!! ebuild must be run by root."
-	sys.exit(1)
-
 if len(sys.argv)<=2:
 	print "expecting two arguments."
 	sys.exit(1)
@@ -22,11 +18,17 @@ import portage
 import getopt
 
 debug=0
+stayroot=0
 	
-opts,pargs=getopt.getopt(sys.argv[1:],'',['debug'])
+opts,pargs=getopt.getopt(sys.argv[1:],'',['debug','stayroot'])
 for opt in opts:
-  	 if opt[0]=='--debug':
+	if opt[0]=='--debug':
 		debug=1 
+	if opt[0]=='--stayroot':
+		stayroot=1 
+
+# apply --stayroot option
+portage.privs.stayroot(stayroot)
 
 for x in pargs[1:]:
 	try:
