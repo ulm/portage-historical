@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.353 2003/12/10 22:44:07 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.354 2003/12/15 23:40:25 carpaski Exp $
 
 VERSION="2.0.49-r17"
 
@@ -4476,9 +4476,13 @@ class portdbapi(dbapi):
 			pgroups=groups[:]
 			match=0
 			for mykey in pkgdict:
-				if db["/"]["porttree"].dbapi.xmatch("bestmatch-list", mykey, None, None, [mycpv]) \
-				   and (catpkgsplit(dep_getcpv(mykey))[:2] == catpkgsplit(mycpv)[:2]):
-					pgroups.extend(pkgdict[mykey])
+				if db["/"]["porttree"].dbapi.xmatch("bestmatch-list", mykey, None, None, [mycpv]):
+					dkey = catpkgsplit(dep_getcpv(mykey))
+					ckey = catpkgsplit(mycpv)
+					if not dkey:
+						writemsg("--- Invalid depend atom in package.keywords: %s\n" % mykey)
+					elif ckey and (dkey[:2] == ckey[:2]):
+						pgroups.extend(pkgdict[mykey])
 			for gp in mygroups:
 				if gp=="*":
 					writemsg("--- WARNING: Package '%s' uses '*' keyword.\n" % mycpv)

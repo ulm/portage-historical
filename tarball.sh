@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.175 2003/11/28 13:27:16 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.176 2003/12/15 23:40:25 carpaski Exp $
 
 if [ -z "$1" ]; then
 	echo
@@ -15,12 +15,12 @@ export V="$1"
 export DEST="${TMP}/${PKG}-${V}"
 export PREVEB="2.0.49_pre2"
 
+./tabcheck.py bin/emerge `find ./ -type f -name '*.py'`
+
 if [ -e $TMP/${PKG}-${V} ]; then
 	echo EXISTS ALREADY
 	exit 1
 fi
-
-tabcheck.py bin/emerge `find ./ -type f -name '*.py'`
 
 rm -rf ${DEST}
 install -d -m0755 ${DEST}
