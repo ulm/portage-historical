@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.50 2005/03/09 08:37:15 ferringb Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.50 2005/03/09 08:37:15 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.51 2005/04/02 14:16:55 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.51 2005/04/02 14:16:55 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.50 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.51 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -797,10 +797,14 @@ def ExtractKernelVersion(base_dir):
 	return (version,None)
 
 
+autouse_val = None
 def autouse(myvartree,use_cache=1):
 	"returns set of USE variables auto-enabled due to packages being installed"
-	global usedefaults
+	global usedefaults, autouse_val
+	if autouse_val is not None:
+		return autouse_val
 	if profiledir==None:
+		autouse_val = ""
 		return ""
 	myusevars=""
 	for myuse in usedefaults:
@@ -811,6 +815,7 @@ def autouse(myvartree,use_cache=1):
 				break
 		if dep_met:
 			myusevars += " "+myuse
+	autouse_val = myusevars
 	return myusevars
 
 def check_config_instance(test):
