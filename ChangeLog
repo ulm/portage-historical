@@ -1,12 +1,17 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.793 2004/10/20 12:40:01 jstubbs Exp $
+# $Id: ChangeLog,v 1.794 2004/10/20 13:38:04 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
 
+
+  20 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> emerge: Added support for
+  EMERGE_WARNING_DELAY defaulting it to 10. Changed all the hardcoded delays
+  to use it. Needed for the catalyst guys as it includes a number of unmerges
+  of system packages.
 
   20 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> emerge: Changed the
   /path/to/ebuild warning. Added a check on what ebuild is chosen and
