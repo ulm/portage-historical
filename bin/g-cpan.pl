@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.15 2004/10/04 13:58:03 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/g-cpan.pl,v 1.16 2004/10/20 17:40:54 carpaski Exp $
 
 # History: 
 
@@ -128,6 +128,11 @@ sub ebuild_exists {
       if ( ( -d File::Spec->catfile( $PORTAGE_DEV_PERL, $dir ) )
         || ( -d File::Spec->catfile( $perldev_overlay,  $dir ) )
         || ( -d File::Spec->catfile( $TMP_DEV_PERL_DIR, $dir ) ) );
+
+    # check for ebuilds that have be created by g-cpan.pl
+    for my $ebuild ( @ebuild_list ) {
+        return 1 if ( $ebuild eq $dir );
+    }
 
     return 0;
 }
