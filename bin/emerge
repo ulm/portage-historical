@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.239 2003/12/21 21:08:26 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.240 2003/12/24 09:29:04 carpaski Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2098,6 +2098,11 @@ elif "info"==myaction:
 		else:
 			print "[disabled]"
 
+	ac_vers = string.join(portage.db["/"]["vartree"].dbapi.match("sys-devel/autoconf"), ",")
+	am_vers = string.join(portage.db["/"]["vartree"].dbapi.match("sys-devel/automake"), ",")
+	print "Autoconf: " + ac_vers
+	print "Automake: " + am_vers
+	
 	if "--verbose" in myopts:
 		myvars=portage.settings.keys()
 	else:

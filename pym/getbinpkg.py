@@ -1,8 +1,7 @@
 # getbinpkg.py -- Portage binary-package helper functions
 # Copyright 2003 Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# Author: Nicholas Jones <carpaski@gentoo.org>
-# $Id: getbinpkg.py,v 1.2 2003/12/10 06:00:57 carpaski Exp $
+# $Id: getbinpkg.py,v 1.3 2003/12/24 09:29:04 carpaski Exp $
 
 from output import *
 import htmllib,HTMLParser,string,formatter,sys,os,xpak,time,tempfile,cPickle

@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.360 2003/12/22 18:40:23 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.361 2003/12/24 09:29:04 carpaski Exp $
 
 VERSION="2.0.50_pre5"
 
@@ -1891,7 +1891,7 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0):
 			mysettings["KV"]=""
 
 	if (mydo!="depend") or not mysettings.has_key("KVERS"):
-		myso=getstatusoutput("uname -r")
+		myso=os.uname()[2]
 		mysettings["KVERS"]=myso[1]
 
 	# get possible slot information from the deps file

@@ -1,7 +1,12 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.149 2003/12/22 18:40:23 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.150 2003/12/24 09:29:04 carpaski Exp $
+
+SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps"
+SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm"
+SANDBOX_READ="${SANDBOX_READ}:/dev/shm"
+
 
 if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 	if [ -f "${T}/successful" ]; then

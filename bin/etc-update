@@ -8,7 +8,7 @@
 # Leo Lipelis <aeoo@gentoo.org>
 # Karl Trygve Kalleberg <karltk@gentoo.org>
 #
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.13 2003/08/04 15:21:15 aether Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.14 2003/12/24 09:29:04 carpaski Exp $
 
 export PORTAGE_CALLER="etc-update"
 
@@ -298,7 +298,8 @@ function do_merge() {
 			echo -n "1) Replace ${ofile} with merged file
 2) Show differences between merged file and original
 3) Remerge original with update
-4) Return to the previous menu
+4) Edit merged file
+5) Return to the previous menu
 Please select from the menu above (-1 to exit, losing this merge): "
 			read my_input
 			case ${my_input} in
@@ -316,7 +317,10 @@ Please select from the menu above (-1 to exit, losing this merge): "
 				   ;;
 				3) break
 				   ;;
-				4) rm ${rm_opts} ${mfile}
+				4) ${EDITOR:-nano -w} "${mfile}"
+				   continue
+					 ;;
+				5) rm ${rm_opts} ${mfile}
 				   return 0
 				   ;;
 				*) continue
