@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.14 2003/05/20 09:15:59 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/emergehelp.py,v 1.15 2003/08/03 21:42:30 aether Exp $
 
 import os,sys
 from output import *
@@ -188,7 +188,7 @@ def help(myaction,myopts,havecolor=1):
 		print "              Note that Portage won't remerge dependencies by default."
 		print 
 		print "       "+green("--nospinner")
-		print "              Disables the spinner irregardless of terminal type."
+		print "              Disables the spinner regardless of terminal type."
 		print
 		print "       "+green("--oneshot")
 		print "              Emerge as normal, but don't add packages to the world profile for"
