@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.544 2004/11/08 05:58:32 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.545 2004/11/08 09:19:36 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -196,13 +196,8 @@ def prefix_array(array,prefix,doblanks=1):
 			newarray.append(x)
 	return newarray
 
-def listdir(mypath,
-			recursive=False,
-			filesonly=False,
-			ignorecvs=False,
-			ignorelist=[],
-			EmptyOnError=False, 
-			followSymlinks=True):
+def listdir(mypath, recursive=False, filesonly=False, ignorecvs=False, ignorelist=[], EmptyOnError=False, 
+	followSymlinks=True):
 
 	list, ftype = cacheddir(mypath, ignorecvs, ignorelist, EmptyOnError,followSymlinks=followSymlinks)
 
@@ -217,15 +212,9 @@ def listdir(mypath,
 	if recursive:
 		x=0
 		while x<len(ftype):
-			if ftype[x]==1 and \
-			   not (ignorecvs and (len(list[x])>=3) and (("/"+list[x][-3:])=="/CVS")) and \
-				 not (ignorecvs and (len(list[x])>=4) and (("/"+list[x][-4:])=="/.svn")):
-
-				l,f = cacheddir(mypath+"/"+list[x],
-								  ignorecvs,
-								  ignorelist,
-								  EmptyOnError,
-								  followSymlinks=followSymlinks)
+			if ftype[x]==1 and not (ignorecvs and os.path.basename(list[x]) in ('CVS','.svn')):
+				l,f = cacheddir(mypath+"/"+list[x], ignorecvs, ignorelist, EmptyOnError,
+					followSymlinks=followSymlinks)
 								  
 				l=l[:]
 				for y in range(0,len(l)):
