@@ -1,11 +1,22 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.8 2004/10/29 14:51:09 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.9 2004/11/02 14:56:56 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  02 Nov 2004; Jason Stubbs <jstubbs@gentoo.org> ebuild.sh: Turned off
+  shell option extglob as it interferes with the g++ QA interceptor. #69690
+
+  02 Nov 2004; Jason Stubbs <jstubbs@gentoo.org> portage.py: Fixed a bug
+  where a broken symlink blocking the installation of a regular file would
+  cause a traceback. #69672
+
+  02 Nov 2004; Jason Stubbs <jstubbs@gentoo.org> quickpkg: Applied vapier's
+  fix for processing file names that contain spaces. #36997  Applied
+  vapier's fix for parallel quickpkg's writing to a single log file. #37270
 
   29 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> emerge: Fixed issue where
   emerge adds package to world when --onlydeps is specified. #69260
