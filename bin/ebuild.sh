@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.195 2004/09/09 08:02:53 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.196 2004/09/13 07:36:00 ferringb Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -12,9 +12,6 @@ if [ ! -z "${PORTAGE_GPG_DIR}" ]; then
 fi
 
 if [ "$*" != "depend" ] && [ "$*" != "clean" ] && [ "$*" != "nofetch" ]; then
-	if [ -f "${T}/successful" ]; then
-		rm -f "${T}/successful"
-	fi
 	if [ -f "${T}/environment" ]; then
 		source "${T}/environment" &>/dev/null
 	fi
@@ -1720,8 +1717,5 @@ if [ "$myarg" != "clean" ]; then
 	chown portage:portage "${T}/environment" &>/dev/null
 	chmod g+w "${T}/environment" &>/dev/null
 fi
-touch "${T}/successful"  &>/dev/null
-chown portage:portage "${T}/successful" &>/dev/null
-chmod g+w "${T}/successful" &>/dev/null
 
 exit 0
