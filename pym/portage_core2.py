@@ -1,7 +1,7 @@
 # Copyright 1999-200 Gentoo Technologies, Inc. 
 # Distributed under the terms of the GNU General Public License, v2 or later 
 # Author: Daniel Robbins <drobbins@gentoo.org>
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_core2.py,v 1.3 2001/11/26 18:21:37 drobbins Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_core2.py,v 1.4 2001/11/26 19:23:51 drobbins Exp $
 
 import string
 import re
@@ -437,5 +437,21 @@ Support mirroring from a set of pre-defined mirrors:
 We need to take advantage of filesizes in digests to detect partial downloads, and restart them.
 We need a way of recording official mirrors (profiles/mirrors?) and selecting our preferred mirror
 from the set (/etc/make.conf?)
+
+Another thing that would be great to add is a way to auto-bind a shell variable
+to a particular filename.  Something like this:
+
+	A1~mirror://gnu/path
+or
+	A1=mirror://gnu/path
+
+Then, later in the build, you can do:
+
+src_unpack() {
+	unpack $A1
+}
+
+This would be a totally *gorgeous* feature.
+
 """
 
