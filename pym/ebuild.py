@@ -2,7 +2,7 @@
 # ebuild.py; Ebuild classes/abstraction of phase processing, and communicating with a ebuild-daemon.sh instance
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.17 2005/03/08 04:29:58 genone Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.18 2005/03/08 15:52:28 ferringb Exp $
 
 
 import os,sys,traceback
@@ -554,7 +554,7 @@ class ebuild_handler:
 		"""formerly portage.doebuild, since it's specific to ebuilds, it's now a method of ebuild handling.
 		severely gutted, and in need of cleansing/exorcism"""
 		from portage import db,ExtractKernelVersion,fetch,features, \
-			digestgen,digestcheck,root,flatten
+			digestgen,digestcheck,root,flatten, digestParseFile
 		from portage_data import portage_uid,portage_gid,secpass
 		import portage_dep
 		from portage_util import writemsg
