@@ -1,7 +1,7 @@
 # portage: Constants
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_const.py,v 1.3 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_const.py,v 1.4 2004/11/07 11:58:29 ferringb Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -23,6 +23,7 @@ PROFILE_PATH            = "/etc/make.profile"
 LOCALE_DATA_PATH        = PORTAGE_BASE_PATH+"/locale"
 
 EBUILD_SH_BINARY        = PORTAGE_BIN_PATH+"/ebuild.sh"
+EBUILD_DAEMON_PATH	= PORTAGE_BIN_PATH+"/ebuild-daemon.sh"
 SANDBOX_BINARY          = PORTAGE_BIN_PATH+"/sandbox"
 DEPSCAN_SH_BINARY       = "/sbin/depscan.sh"
 BASH_BINARY             = "/bin/bash"
@@ -40,3 +41,13 @@ CUSTOM_MIRRORS_FILE     = USER_CONFIG_PATH+"/mirrors"
 SANDBOX_PIDS_FILE       = "/tmp/sandboxpids.tmp"
 CONFIG_MEMORY_FILE      = PRIVATE_PATH + "/config"
 
+CONFCACHE_FILE		= CACHE_PATH+"/confcache"
+CONFCACHE_LIST		= CACHE_PATH+"/confcache_files.anydbm"
+
+LIBFAKEROOT_PATH	= "/usr/lib/libfakeroot.so"
+FAKEROOT_PATH		= "/usr/bin/fakeroot"
+
+RSYNC_BIN		= "/usr/bin/rsync"
+RSYNC_HOST		= "rsync.gentoo.org/gentoo-portage"
+
+CVS_BIN			= "/usr/bin/cvs"

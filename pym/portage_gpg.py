@@ -1,14 +1,14 @@
 # portage_gpg.py -- core Portage functionality
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_gpg.py,v 1.6 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_gpg.py,v 1.7 2004/11/07 11:58:29 ferringb Exp $
 
 import os
 import copy
 import types
-import commands
 import portage_exception
 import portage_checksum
+import portage_exec
 
 GPG_BINARY       = "/usr/bin/gpg"
 GPG_OPTIONS      = " --lock-never --no-random-seed-file --no-greeting --no-sig-cache "
@@ -112,7 +112,7 @@ class FileChecker:
 			command += " '"+sigfile+"'"
 		command += " '"+filename+"'"
 	
-		result,output = commands.getstatusoutput(command)
+		result,output = portage_exec.spawn_get_output(command,raw_exit_code=True)
 		
 		signal = result & 0xff
 		result = (result >> 8)

@@ -1,7 +1,7 @@
 # portage_data.py -- Calculated/Discovered Data Values
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_data.py,v 1.5 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_data.py,v 1.6 2004/11/07 11:58:29 ferringb Exp $
 
 import os,pwd,grp
 from portage_util import writemsg
@@ -74,9 +74,10 @@ except KeyError:
 	writemsg("\n")
 
 if (uid!=0) and (portage_gid not in os.getgroups()):
-	writemsg("\n")
-	writemsg(red("*** You are not in the portage group. You may experience cache problems\n"))
-	writemsg(red("*** due to permissions preventing the creation of the on-disk cache.\n"))
-	writemsg(red("*** Please add this user to the portage group if you wish to use portage.\n"))
-	writemsg("\n")
+	if not os.environ.has_key("PORTAGE_SCRIPT"):
+		writemsg("\n")
+		writemsg(red("*** You are not in the portage group. You may experience cache problems\n"))
+		writemsg(red("*** due to permissions preventing the creation of the on-disk cache.\n"))
+		writemsg(red("*** Please add this user to the portage group if you wish to use portage.\n"))
+		writemsg("\n")
 
