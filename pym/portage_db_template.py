@@ -1,6 +1,6 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_template.py,v 1.11 2004/10/11 04:12:02 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_template.py,v 1.12 2004/11/07 12:28:29 ferringb Exp $
 
 import os.path,string
 from portage_util import getconfig, ReadOnlyConfig
@@ -60,6 +60,15 @@ class database:
 	def flushCache(self):
 		self.__cacheArray = [None, None, None]
 		self.__cacheKeyArray = [None, None, None]
+
+	def get_timestamp(self,key):
+		if key in self.__cacheKeyArray:
+			return self.__cacheArray[self.__cacheKeyArray.index(key)]["_mtime_"]
+		try:
+			d = self.__getitem__(key)
+			return d["_mtime_"]
+		except KeyError:
+			return None
 
 	def __getitem__(self,key):
 		if key in self.__cacheKeyArray:

@@ -1,11 +1,17 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.836 2004/11/07 12:23:50 ferringb Exp $
+# $Id: ChangeLog,v 1.837 2004/11/07 12:28:29 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  07 Nov 2004; Brian Harring <ferringb@gentoo.org> portage_db_template.py,
+  portage_db_flat.py: Addition of get_timestamp, way of requesting -just- the
+  mtime.  Useful for speeding up checking if an entry is stale, if the mtime 
+  differs, no need to read the file in- you know it's stale already.  Cuts down
+  on a few syscalls.
 
   07 Nov 2004; Brian Harring <ferringb@gentoo.org> sync/__init__.py, 
   sync/parseuri.py, sync/cvs.py, sync/rsync.py, sync/snapshot.py, 

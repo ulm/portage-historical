@@ -1,6 +1,6 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_flat.py,v 1.14 2004/10/24 05:07:05 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_flat.py,v 1.15 2004/11/07 12:28:29 ferringb Exp $
 
 import types
 import os
@@ -44,12 +44,20 @@ class database(portage_db_template.database):
 				mykeys += [x]
 		return mykeys
 
+	def get_timestamp(self,key,locking=True):
+		lock=portage_locks.lockfile(self.fullpath+key,wantnewlockfile=1)
+		try:		x=os.stat(self.fullpath+key)[stat.ST_MTIME]
+		except OSError:	x=None
+		portage_locks.unlockfile(lock)
+		return x
+
 	def get_values(self,key):
 		if not key:
 			raise KeyError, "key is not set to a valid value"
 
 		mylock = portage_locks.lockfile(self.fullpath+key, wantnewlockfile=1)
 		if self.has_key(key):
+			self.get_timestamp(key,locking=False)
 			mtime = os.stat(self.fullpath+key)[stat.ST_MTIME]
 			myf = open(self.fullpath+key)
 			myl = myf.readlines()
