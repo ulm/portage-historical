@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.403 2004/03/31 23:30:49 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.404 2004/04/09 14:51:31 nakano Exp $
 
 VERSION="2.0.50_pre17"
 
@@ -6160,6 +6160,8 @@ class dblink:
 
 def cleanup_pkgmerge(mypkg,origdir):
 	shutil.rmtree(settings["PORTAGE_TMPDIR"]+"/portage-pkg/"+mypkg)
+	if os.path.exists(settings["PORTAGE_TMPDIR"]+"/portage/"+mypkg+"/temp/environment"):
+		os.unlink(settings["PORTAGE_TMPDIR"]+"/portage/"+mypkg+"/temp/environment")
 	os.chdir(origdir)
 
 def pkgmerge(mytbz2,myroot,mysettings):

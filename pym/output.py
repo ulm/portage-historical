@@ -1,8 +1,8 @@
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/output.py,v 1.17 2003/12/08 15:11:28 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/output.py,v 1.18 2004/04/09 14:51:31 nakano Exp $
 
-import os,sys
+import os,sys,re
 
 havecolor=1
 dotitles=1
@@ -28,6 +28,10 @@ codes["brown"]="\x1b[33;06m"
 
 codes["red"]="\x1b[31;01m"
 codes["darkred"]="\x1b[31;06m"
+
+def nc_len(mystr):
+	tmp = re.sub("\x1b[^m]+m", "", mystr);
+	return len(tmp)
 
 def xtermTitle(mystr):
 	if havecolor and dotitles and os.environ.has_key("TERM"):
