@@ -1,8 +1,8 @@
 # deps.py -- Portage dependency resolution functions
 # Copyright 2003-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.15.2.2 2005/01/16 02:35:33 carpaski Exp $
-cvs_id_string="$Id: portage_dep.py,v 1.15.2.2 2005/01/16 02:35:33 carpaski Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.15.2.3 2005/04/02 14:07:59 jstubbs Exp $
+cvs_id_string="$Id: portage_dep.py,v 1.15.2.3 2005/04/02 14:07:59 jstubbs Exp $"[5:-2]
 
 # DEPEND SYNTAX:
 #
@@ -44,7 +44,7 @@ def paren_reduce(mystr,tokenize=1):
 			subsec,tail = mystr.split(")",1)
 			if tokenize:
 				subsec = strip_empty(subsec.split(" "))
-				return mylist+subsec,tail
+				return [mylist+subsec,tail]
 			return mylist+[subsec],tail
 		mystr = tail
 		if freesec:
