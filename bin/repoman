@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.66 2004/06/27 03:15:17 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.67 2004/07/07 02:59:30 genone Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -728,7 +728,9 @@ for x in scanlist:
 					dep_settings["ARCH"]=arch
 					portage.do_vartree(dep_settings)
 					dep_settings.regenerate()
-					portage.portdb=portage.portdbapi(portdir, dep_settings)
+					# The next line results in a huge memory usage and doesn't seem
+					# to be used anywhere. Levaing it just in case it has a use.
+					#portage.portdb=portage.portdbapi(portdir, dep_settings)
 					arch_caches[arch]=[dep_settings, portage.portdb]
 
 				portage.db["/"]["porttree"]=portage.portagetree("/",dep_settings.getvirtuals("/"))
