@@ -731,6 +731,8 @@ def doebuild(myebuild,mydo,myroot,checkdeps=1,debug=0):
 	elif mydo=="compile":
 		return spawn("/usr/sbin/ebuild.sh fetch unpack compile")
 	elif mydo=="install":
+		if settings["MAINTAINER"]=="yes":
+			return spawn("/usr/sbin/ebuild.sh install")
 		return spawn("/usr/sbin/ebuild.sh fetch unpack compile install")
 	elif mydo in ["config","touch","clean","fetch","digest","batchdigest"]:
 		return spawn("/usr/sbin/ebuild.sh "+mydo)
@@ -820,19 +822,7 @@ def movefile(src,dest,unlink=1):
 	elif dest=="/bin/bash":
 		a=getstatusoutput("rm /bin/bash; /bin/cp -a "+"'"+src+"' '"+dest+"'")
 	else:
-		#Don't overwrite files... unlink them then copy in the new
-		# file.  This prevents corrupting libraries and binaries that
-		# are currently mmap'd.
-		try:
-			os.unlink(dest)
-		except:
-			pass
-		a=getstatusoutput("/bin/cp -af "+"'"+src+"' '"+dest+"'")	
-#	cp -a takes care of this
-#	mymode=os.lstat(src)[ST_MODE]
-#	os.chmod(dest,mymode)
-	if unlink:
-		os.unlink(src)
+		a=getstatusoutput("/bin/mv -f "+"'"+src+"' '"+dest+"'")	
 	if a[0]==0:
 		return 1
 	else:
