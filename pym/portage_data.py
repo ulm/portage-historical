@@ -1,7 +1,7 @@
 # portage_data.py -- Calculated/Discovered Data Values
 # Copyright 2004-2004 Gentoo Foundation
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_data.py,v 1.2 2004/08/18 02:12:20 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_data.py,v 1.3 2004/09/05 02:22:16 carpaski Exp $
 
 import os,pwd,grp
 from portage_util import writemsg
@@ -20,11 +20,7 @@ if ostype=="Linux":
 		lchown=missingos.lchown
 
 	os.environ["XARGS"]="xargs -r"
-elif ostype=="Darwin":
-	userland="BSD"
-	lchown=os.chown
-	os.environ["XARGS"]="xargs"	
-elif ostype=="OpenBSD":
+elif ostype in ["Darwin","FreeBSD","OpenBSD"]:
 	userland="BSD"
 	lchown=os.chown
 	os.environ["XARGS"]="xargs"	

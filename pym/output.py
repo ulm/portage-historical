@@ -1,6 +1,6 @@
 # Copyright 1998-2004 Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/output.py,v 1.20 2004/08/02 18:49:30 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/output.py,v 1.21 2004/09/05 02:22:16 carpaski Exp $
 
 import os,sys,re
 
@@ -37,7 +37,7 @@ def xtermTitle(mystr):
 	if havecolor and dotitles and os.environ.has_key("TERM"):
 		myt=os.environ["TERM"]
 		if myt in ["xterm","Eterm","aterm","rxvt","screen","kterm"]:
-			sys.stderr.write("\x1b]1;\x07\x1b]2;"+str(mystr)+"\x07")
+			sys.stderr.write("\x1b]2;"+str(mystr)+"\x07")
 			sys.stderr.flush()
 
 def xtermTitleReset():

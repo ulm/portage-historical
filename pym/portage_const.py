@@ -1,7 +1,7 @@
 # portage: Constants
 # Copyright 2004-2004 Gentoo Foundation
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_const.py,v 1.1 2004/08/15 05:33:57 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_const.py,v 1.2 2004/09/05 02:22:16 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -20,6 +20,7 @@ PORTAGE_BASE_PATH       = "/usr/lib/portage"
 PORTAGE_BIN_PATH        = PORTAGE_BASE_PATH+"/bin"
 PORTAGE_PYM_PATH        = PORTAGE_BASE_PATH+"/pym"
 PROFILE_PATH            = "/etc/make.profile"
+LOCALE_DATA_PATH        = PORTAGE_BASE_PATH+"/locale"
 
 EBUILD_SH_BINARY        = PORTAGE_BIN_PATH+"/ebuild.sh"
 SANDBOX_BINARY          = PORTAGE_BIN_PATH+"/sandbox"
