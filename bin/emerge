@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.254 2004/01/20 03:45:39 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.255 2004/01/21 02:22:33 nakano Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -1116,11 +1116,11 @@ class depgraph:
 			overlays = string.split(portage.settings['PORTDIR_OVERLAY'])
 			overlays = map(os.path.normpath, overlays)
 		
-		i = 0
 		if "--tree" in myopts:
 			mylist.reverse()
 			mygraph=self.digraph.copy()
 
+		i = 0
 		while i < len(mylist):
 			if mylist[i][-1]=="nomerge":
 				if not ("--tree" in myopts):
@@ -1221,11 +1221,11 @@ class depgraph:
 
 					# size verbose
 					mysize=0
-					if x[0] == "ebuild":
+					if x[0] == "ebuild" and x[-1]!="nomerge":
 						mysize=portage.portdb.getsize(x[2], debug=edebug)
 						if type(mysize) == types.IntType:
 							totalsize+=mysize
-					verboseadd+=format_size(mysize)+" "
+						verboseadd+=format_size(mysize)+" "
 
 					# overlay verbose
 					file_name=portage.portdb.findname(x[2])
