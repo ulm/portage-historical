@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.132 2003/06/30 06:43:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.133 2003/07/02 03:23:36 carpaski Exp $
 
 if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 	if [ -f ${T}/successful ]; then
@@ -277,7 +277,7 @@ unpack() {
 				tar ${tarvars} -xzf ${DISTDIR}/${x} || die "$myfail"
 				;;
 			tbz2) 
-				bzip2 -dc ${DISTDIR}/${x} | tar ${tarvars} -xf ${DISTDIR}/${x} || die "$myfail"
+				bzip2 -dc ${DISTDIR}/${x} | tar ${tarvars} -xf - || die "$myfail"
 				;;
 			ZIP|zip) 
 				unzip -qo ${DISTDIR}/${x} || die "$myfail"
@@ -291,7 +291,7 @@ unpack() {
 				;;
 			bz2) 
 				if [ "${y}" == "tar" ]; then
-					bzip2 -dc ${DISTDIR}/${x} | tar ${tarvars} -xf ${DISTDIR}/${x} || die "$myfail"
+					bzip2 -dc ${DISTDIR}/${x} | tar ${tarvars} -xf - || die "$myfail"
 				else
 					bzip2 -dc ${DISTDIR}/${x} > ${x%.*} || die "$myfail"
 				fi
@@ -931,6 +931,7 @@ inherit() {
 				if [ -e "$olocation" ]; then
 					location="${olocation}"
 					debug-print "  eclass exists: ${location}"
+					break
 				fi
 			done
 		fi

@@ -1,11 +1,10 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.214 2003/06/30 06:43:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.215 2003/07/02 03:23:36 carpaski Exp $
 
 import os
 os.environ["PORTAGE_CALLER"]="emerge"
-os.chdir("/")
 
 import sys,portage,emergehelp,xpak,string,re,commands,time,threading,shutil,traceback,atexit
 from stat import *
@@ -1458,6 +1457,7 @@ def unmerge(unmerge_action, unmerge_files):
 
 def post_emerge(retval=0):
 	auxpat=re.compile('^([^-]*)(-\d+)?\.info(-\d+)?(\.gz)?')	
+	os.chdir("/")
 	global myopts
 	print
 	if "--pretend" in myopts:
