@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.159 2004/04/11 10:27:56 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.160 2004/04/11 12:48:47 nakano Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -548,7 +548,6 @@ dyn_unpack() {
 
 dyn_clean() {
 	rm -rf "${BUILDDIR}/image"
-	rm -rf "${BUILDDIR}/build-info"
 
 	if ! has keeptemp $FEATURES; then
 		rm -rf "${T}"/*
@@ -559,6 +558,7 @@ dyn_clean() {
 	if ! has keepwork $FEATURES; then
 		rm -rf "${BUILDDIR}/.compiled"
 		rm -rf "${BUILDDIR}/.unpacked"
+		rm -rf "${BUILDDIR}/build-info"
 		rm -rf "${WORKDIR}"
 	fi
 
@@ -1240,7 +1240,7 @@ do_newdepend() {
 		# variable. This is a sneaky way to make this infinately expandable.
 		# The normal translation of this would look something like this:
 		# E_DEPEND="${E_DEPEND} $1"  ::::::  Cool, huh? :)
-		eval export ${TARGET}=\"\${${TARGET}} $1\"
+		eval export ${TARGET}=\"\${${TARGET}} \$1\"
 		shift
 	done
 }

@@ -8,7 +8,7 @@
 # Leo Lipelis <aeoo@gentoo.org>
 # Karl Trygve Kalleberg <karltk@gentoo.org>
 #
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.15 2003/12/25 03:06:09 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/etc-update,v 1.16 2004/04/11 12:48:47 nakano Exp $
 
 export PORTAGE_CALLER="etc-update"
 
@@ -186,6 +186,7 @@ function do_file() {
 			if (( ${my_input} == 0 )); then
 				my_input=1
 			elif (( ${my_input} == -1 )); then
+				input=0 
 				return
 			elif (( ${my_input} == ${fcount} )); then
 				break
