@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.610 2004/06/27 01:01:17 genone Exp $
+# $Id: ChangeLog,v 1.611 2004/06/27 03:15:16 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -8,6 +8,9 @@
     3. /etc/portage/virtuals is _USER_ configs only. Do not copy the old file.
     4. /etc/portage/sets/world is a symlink to /var/lib/portage/world
        It is for convenience. Do not mistake this for the actual file.
+
+  27 Jun 2004; Jason Stubbs <jstubbs@gentoo.org> bin/repoman.py:
+  Fixed year (2003 -> 2004) in copyright lines.
 
   27 Jun 2004; Marius Mauch <genone@gentoo.org> pym/portage.py:
   Added a check for symlinked dirs to the collision-protect code so it doesn't
