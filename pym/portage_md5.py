@@ -1,11 +1,12 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_md5.py,v 1.2 2004/08/16 20:06:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_md5.py,v 1.3 2004/08/17 01:12:56 carpaski Exp $
 
 from portage_const import PRIVATE_PATH,PRELINK_BINARY
 import os
 import shutil
+import portage_exec
 import portage_util
 import portage_locks
 import commands
@@ -15,6 +16,9 @@ results = commands.getstatusoutput(PRELINK_BINARY+" --version > /dev/null 2>&1")
 if (results[0] >> 8) == 0:
   prelink_capable=1
 del results
+
+def perform_md5(x, calc_prelink=0):
+	return perform_checksum(x, calc_prelink)[0]
 
 # We _try_ to load this module. If it fails we do the slow fallback.
 try:
@@ -31,7 +35,7 @@ try:
 				writemsg("!!! Unable to copy file '"+str(filename)+"'.\n")
 				writemsg("!!! "+str(e)+"\n")
 				sys.exit(1)
-			spawn(PRELINK_BINARY+" --undo "+prelink_tmpfile+" &>/dev/null", settings, free=1)
+			portage_exec.spawn(PRELINK_BINARY+" --undo "+prelink_tmpfile+" &>/dev/null", free=1)
 			retval = fchksum.fmd5t(prelink_tmpfile)
 			os.unlink(prelink_tmpfile)
 			portage_locks.unlockfile(mylock)
@@ -54,7 +58,7 @@ except ImportError:
 				writemsg("!!! Unable to copy file '"+str(filename)+"'.\n")
 				writemsg("!!! "+str(e)+"\n")
 				sys.exit(1)
-			spawn(PRELINK_BINARY+" --undo "+prelink_tmpfile+" &>/dev/null", settings, free=1)
+			portage_exec.spawn(PRELINK_BINARY+" --undo "+prelink_tmpfile+" &>/dev/null", free=1)
 			myfilename=prelink_tmpfile
 
 		f = open(myfilename, 'rb')
