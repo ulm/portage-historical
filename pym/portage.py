@@ -8,7 +8,7 @@ from stat import *
 from commands import *
 from select import *
 from output import *
-import string,os,types,sys,shlex,shutil,xpak,fcntl,signal,time,missingos,cPickle,atexit,grp,traceback,commands,pwd
+import string,os,re,types,sys,shlex,shutil,xpak,fcntl,signal,time,missingos,cPickle,atexit,grp,traceback,commands,pwd
 import portage_config
 import portage_files
 
@@ -366,6 +366,7 @@ def exithandler(foo,bar):
 #			if os.path.exists("/tmp/sandboxpids.tmp"):
 #				os.unlink("/tmp/sandboxpids.tmp")
 	# 0=send to *everybody* in process group
+	portageexit()
 	os.kill(0,signal.SIGKILL)
 	sys.exit(1)
 
@@ -983,7 +984,11 @@ def fetch(myuris, listonly=0):
 								html404=re.compile("<title>.*(not found|404).*</title>",re.I|re.M)
 								try:
 									if html404.search(open(ctx.config["DISTDIR"]+"/"+myfile).read()):
-										os.unlink(ctx.config["DISTDIR"]+"/"+myfile)
+										try:
+											os.unlink(ctx.config["DISTDIR"]+"/"+myfile)
+											print ">>> Deleting invalid distfile. (Improper 404 redirect from server.)"
+										except:
+											pass
 								except:
 									pass
 							continue
@@ -1064,12 +1069,12 @@ def digestcheck(myarchives):
 	for x in myarchives:
 		if not mydigests.has_key(x):
 			if "digest" in features:
-				print ">>> No message digest entry found for archive\""+x+".\""
+				print ">>> No message digest entry found for archive \""+x+".\""
 				print ">>> \"digest\" mode enabled; auto-generating new digest..."
 				digestgen(myarchives)
 				return 1
 			else:
-				print ">>> No message digest entry found for archive\""+x+".\""
+				print ">>> No message digest entry found for archive \""+x+".\""
 				print "!!! Most likely a temporary problem. Try 'emerge rsync' again later."
 				print "!!! If you are certain of the authenticity of the file then you may type"
 				print "!!! the following to generate a new digest:"
@@ -1195,16 +1200,25 @@ def doebuild(myebuild,mydo,myroot,debug=0,listonly=0):
 		myso=getstatusoutput("uname -r")
 		ctx.config["KVERS"]=myso[1]
 
-	# if any of these are being called, handle them -- running them out of the sandbox -- and stop now.
-	if mydo in ["help","clean","setup","prerm","postrm","preinst","postinst","config"]:
-		return spawn("/usr/sbin/ebuild.sh "+mydo,debug,free=1)
-	
 	# get possible slot information from the deps file
 	if mydo=="depend":
 		myso=getstatusoutput("/usr/sbin/ebuild.sh depend")
 		if debug:
 			print myso[1]
 		return myso[0]
+
+	if settings.has_key("PORT_LOGDIR"):
+		if os.access(ctx.config["PORT_LOGDIR"]+"/",os.W_OK):
+			ctx.config["LOG_COUNTER"]=str(counter_tick_core("/"))
+		else:
+			print "!!! Cannot create log... No write access / Does not exist"
+			print "!!! PORT_LOGDIR:",ctx.config["PORT_LOGDIR"]
+			ctx.config["PORT_LOGDIR"]=""
+	
+	# if any of these are being called, handle them -- running them out of the sandbox -- and stop now.
+	if mydo in ["help","clean","setup","prerm","postrm","preinst","postinst","config"]:
+		return spawn("/usr/sbin/ebuild.sh "+mydo,debug,free=1)
+	
 	try: 
 		ctx.config["SLOT"], ctx.config["RESTRICT"], myuris = ctx.db["/"]["porttree"].dbapi.aux_get(mykey,["SLOT","RESTRICT","SRC_URI"])
 	except (IOError,KeyError):
@@ -1320,15 +1334,28 @@ def movefile(src,dest,newmtime=None,sstat=None):
 	except:
 		dstat=os.lstat(os.path.dirname(dest))
 		destexists=0
+
 	if destexists:
 		if S_ISLNK(dstat[ST_MODE]):
-			# XXX Possibly preserve symlinks in config protect dirs here...?
 			try:
 				os.unlink(dest)
+				destexists=0
 			except Exception, e:
-				print "!!! Failed to unlink:",dest
-				print "!!!",e
-				return None
+				pass
+
+	if S_ISLNK(sstat[ST_MODE]):
+		try:
+			target=os.readlink(src)
+			if destexists and not S_ISDIR(dstat[ST_MODE]):
+				os.unlink(dest)
+			os.symlink(target,dest)
+			missingos.lchown(dest,sstat[ST_UID],sstat[ST_GID])
+			return os.lstat(dest)
+		except Exception, e:
+			print "!!! failed to properly create symlink:"
+			print "!!!",dest,"->",target
+			print "!!!",e
+			return None
 
 	renamefailed=1
 	if sstat[ST_DEV]==dstat[ST_DEV]:
@@ -1750,6 +1777,7 @@ def dep_parenreduce(mysplit,mypos=0):
 
 def dep_opconvert(mysplit,myuse):
 	"Does dependency operator conversion"
+	
 	mypos=0
 	newsplit=[]
 	while mypos<len(mysplit):
@@ -1777,9 +1805,11 @@ def dep_opconvert(mysplit,myuse):
 			if (len(myuse)==1) and (myuse[0]=="*"):
 				# enable it even if it's ! (for repoman) but kill it if it's
 				# an arch variable that isn't for this arch. XXX Sparc64?
-				if (mysplit[mypos][:-1] not in archkeys) or \
+				if (mysplit[mypos][:-1] not in settings.usemask) or \
 						(mysplit[mypos][:-1]==ctx.config["ARCH"]):
 					enabled=1
+				else:
+					enabled=0
 			else:
 				if mysplit[mypos][0]=="!":
 					myusevar=mysplit[mypos][1:-1]
@@ -2639,8 +2669,10 @@ class vartree(packagetree):
 
 # ----------------------------------------------------------------------------
 def eclass(myeclass=None,mycpv=None,mymtime=None):
-	"""Caches and retrieves information about ebuilds that use eclasses"""
+	"""Caches and retrieves information about ebuilds that use eclasses
+	Returns: Is the ebuild current with the eclass? (true/false)"""
 	global ctx
+	#print "eclass("+str(myeclass)+","+str(mycpv)+","+str(mymtime)+")"
 
 	if not ctx.mtimedb.has_key("eclass") or type(ctx.mtimedb["eclass"]) is not types.DictType:
 		ctx.mtimedb["eclass"]={}
@@ -2684,21 +2716,22 @@ def eclass(myeclass=None,mycpv=None,mymtime=None):
 				if ctx.mtimedb["eclass"][myeclass][2].has_key(mycpv):
 					# Check if the ebuild mtime changed OR if the mtime for the eclass
 					# has changed since it was last updated.
+					#print "test:",mymtime!=mtimedb["eclass"][myeclass][2][mycpv][1],mtimedb["eclass"][myeclass][0]!=mtimedb["eclass"][myeclass][2][mycpv][0]
 					if (mymtime!=ctx.mtimedb["eclass"][myeclass][2][mycpv][1]) or (ctx.mtimedb["eclass"][myeclass][0]!=ctx.mtimedb["eclass"][myeclass][2][mycpv][0]):
 						# Store the new mtime before we expire the cache so we don't
 						# repeatedly regen this entry.
+						#print " regen --",myeclass,"--",mymtime,mtimedb["eclass"][myeclass][2][mycpv][1],"--",mtimedb["eclass"][myeclass][0],mtimedb["eclass"][myeclass][2][mycpv][0]
 						ctx.mtimedb["eclass"][myeclass][2][mycpv]=[ctx.mtimedb["eclass"][myeclass][0],mymtime]
 						# Expire the cache. mtimes don't match.
-						#print " regen"
 						return 0
 					else:
 						# Matches
-						#print "!regen"
+						#print "!regen --",myeclass,"--",mymtime,mtimedb["eclass"][myeclass][2][mycpv][1],"--",mtimedb["eclass"][myeclass][0],mtimedb["eclass"][myeclass][2][mycpv][0]
 						return 1
 				else:
 					# Don't have an entry... Must be new.
+					#print "*regen --",myeclass,"--",mymtime,mtimedb["eclass"][myeclass][2][mycpv][1],"--",mtimedb["eclass"][myeclass][0],mtimedb["eclass"][myeclass][2][mycpv][0]
 					ctx.mtimedb["eclass"][myeclass][2][mycpv]=[ctx.mtimedb["eclass"][myeclass][0],mymtime]
-					#print "*regen"
 					return 0
 			else:
 				# We're missing some vital parts.
@@ -2709,8 +2742,10 @@ def eclass(myeclass=None,mycpv=None,mymtime=None):
 			for myeclass in ctx.mtimedb["eclass"].keys():
 				if ctx.mtimedb["eclass"][myeclass][2].has_key(mycpv):
 					if (mymtime!=ctx.mtimedb["eclass"][myeclass][2][mycpv][1]) or (ctx.mtimedb["eclass"][myeclass][0]!=ctx.mtimedb["eclass"][myeclass][2][mycpv][0]):
+						#print " regen mtime:",mymtime,mtimedb["eclass"][myeclass][2][mycpv][1],"--",mtimedb["eclass"][myeclass][0],mtimedb["eclass"][myeclass][2][mycpv][0]
 						#mtimes do not match
 						return 0
+		#print "!regen mtime"
 		return 1
 # ----------------------------------------------------------------------------
 
@@ -2742,7 +2777,7 @@ class portdbapi(dbapi):
 				pass
 		return self.root+"/"+mysplit[0]+"/"+psplit[0]+"/"+mysplit[1]+".ebuild"
 
-	def aux_get(self,mycpv,mylist,strict=0):
+	def aux_get(self,mycpv,mylist,strict=0,metacachedir=None):
 		"stub code for returning auxilliary db information, such as SLOT, DEPEND, etc."
 		'input: "sys-apps/foo-1.0",["SLOT","DEPEND","HOMEPAGE"]'
 		'return: ["0",">=sys-libs/bar-1.0","http://www.foo.com"] or raise KeyError if error'
@@ -2752,8 +2787,12 @@ class portdbapi(dbapi):
 		doregen2=0
 		mylines=[]
 		stale=0
-		mydbkey=dbcachedir+"/"+mycpv
+		usingmdcache=0
 		myebuild=self.findname(mycpv)
+		mydbkey=dbcachedir+"/"+mycpv
+		mymdkey=None
+		if metacachedir and os.access(metacachedir, os.R_OK):
+			mymdkey=metacachedir+"/"+mycpv
 
 		# first, we take a look at the size of the ebuild/cache entry to ensure we
 		# have a valid data, then we look at the mtime of the ebuild and the
@@ -2761,38 +2800,70 @@ class portdbapi(dbapi):
 		try:
 			mydbkeystat=os.stat(mydbkey)
 			if mydbkeystat[ST_SIZE] == 0:
-				doregen=1
+				doregen=2
 				dmtime=0
 			else:
 				dmtime=mydbkeystat[ST_MTIME]
 		except OSError:
-			doregen=1
+			doregen=4
 
 		emtime=0
+		#print "statusline1:",doregen,dmtime,emtime,mycpv
 		try:
 			emtime=os.stat(myebuild)[ST_MTIME]
 		except:
 			print "!!! Failed to stat ebuild:",myebuild
-			doregen=1
-		if dmtime<emtime:
-			doregen=1
-
-		if doregen or not eclass(None, mycpv, dmtime):
-			stale=1
-			if doebuild(myebuild,"depend","/"):
-				#depend returned non-zero exit code...
-				if strict:
-					print red("\naux_get():")+" (0) Error in",mycpv,"ebuild."
-					raise KeyError
+			return None
 		
+		if dmtime!=emtime:
+			doregen=doregen+1
+		#print "statusline2:",doregen,dmtime,emtime,mycpv
+		if (doregen>1) or (doregen and not eclass(None, mycpv, dmtime)):
+			stale=1
+			#print "doregen:",doregen,mycpv
+			if mymdkey and os.access(mymdkey, os.R_OK):
+					#sys.stderr.write("+")
+					#sys.stderr.flush()
+					try:
+						mydir=os.path.dirname(mydbkey)
+						if not os.path.exists(mydir):
+							os.makedirs(mydir, 2775)
+							os.chown(mydir,uid,wheelgid)
+						shutil.copy2(mymdkey, mydbkey)
+						usingmdcache=1
+					except Exception,e:
+						print "!!! Unable to copy '"+mymdkey+"' to '"+mydbkey+"'"
+						print "!!!",e
+			else:
+				if doebuild(myebuild,"depend","/"):
+					#depend returned non-zero exit code...
+					if strict:
+						sys.stderr.write(str(red("\naux_get():")+" (0) Error in",mycpv,"ebuild.\n"))
+						raise KeyError
+			try:
+				mydbkeystat=os.stat(mydbkey)
+				if mydbkeystat[ST_SIZE] == 0:
+					#print "!!! <-- Size 0 -->"
+					doregen2=1
+					dmtime=0
+				else:
+					dmtime=mydbkeystat[ST_MTIME]
+			except OSError:
+				#print "doregen1 failed."
+				pass
+			
+		#print "--doregen"
 		#Now, our cache entry is possibly regenerated.  It could be up-to-date, but it may not be...
 		#If we regenerated the cache entry or we don't have an internal cache entry or or cache entry
 		#is stale, then we need to read in the new cache entry.
 
+		#print "statusline3:",doregen,dmtime,emtime,mycpv
 		if (not self.auxcache.has_key(mycpv)) or (not self.auxcache[mycpv].has_key("mtime")) or (self.auxcache[mycpv]["mtime"]!=dmtime):
+			#print "stale auxcache"
 			stale=1
 
 		try:
+			#print "grab cent"
 			mycent=open(mydbkey,"r")
 			mylines=mycent.readlines()
 			mycent.close()
@@ -2809,9 +2880,9 @@ class portdbapi(dbapi):
 		if not mylines:
 			print "no mylines"
 			pass
-		elif len(mylines)<len(auxdbkeys):
+		elif len(mylines)<len(auxdbkeys) or doregen2:
 			doregen2=1
-			#print "too few auxdbkeys"
+			#print "too few auxdbkeys / invalid generation"
 		elif mylines[auxdbkeys.index("INHERITED")]!="\n":
 			#print "inherits"
 			#Verify if this ebuild is current against the eclasses it uses.
@@ -2821,22 +2892,26 @@ class portdbapi(dbapi):
 			for myeclass in myeclasses:
 				#print "PASS ONE:",myeclass
 				myret=eclass(myeclass,mycpv,dmtime)
+				#print "eclass '",myeclass,"':",myret,doregen,doregen2
 				#print myret
 				if myret==None:
 					print red("\n\naux_get():")+' eclass "'+myeclass+'" from',mydbkey,"not found."
-					# Eclass not found.
+					print "!!! Eclass '"+myeclass+"'not found."
 					doregen2=1
 					break
-				if myret==0:
+				if myret==0 and not usingmdcache:
 					#print "((( 002 0"
 					#we set doregen2 to regenerate this entry in case it was fixed
 					#in the ebuild/eclass since the cache entry was created.
 					#print "Old cache entry. Regen."
 					doregen2=1
+					break
 
 		#print "doregen2: pre"
 		if doregen2:	
-			#print "doregen2: in"
+			#sys.stderr.write("-")
+			#sys.stderr.flush()
+			#print "doregen2"
 			stale=1
 			#old cache entry, needs updating (this could raise IOError)
 			if doebuild(myebuild,"depend","/"):
@@ -2861,16 +2936,15 @@ class portdbapi(dbapi):
 			try:
 				mymtime=os.stat(mydbkey)[ST_MTIME]
 				self.auxcache[mycpv]={"mtime": mymtime}
-				#print "PASS TWO"
 				myeclasses=mylines[auxdbkeys.index("INHERITED")].split()
-				#print "))) 003"
-				for myeclass in myeclasses:
-					eclass(myeclass,mycpv,mymtime)
 			except Exception, e:
 				print red("\n\naux_get():")+" stale entry was not regenerated for"
-				print "           "+mycpv+"; exiting."
+				print "           "+mycpv+"; deleting and exiting."
 				print "!!!",e
+				os.unlink(mydbkey)
 				sys.exit(1)
+			for myeclass in myeclasses:
+				eclass(myeclass,mycpv,mymtime)
 			try:
 				for x in range(0,len(auxdbkeys)):
 					self.auxcache[mycpv][auxdbkeys[x]]=mylines[x][:-1]
@@ -3457,7 +3531,7 @@ class dblink:
 		writedict(newvirts,self.myroot+"var/cache/edb/virtuals")
 	
 		#new code to remove stuff from the world file when it's unmerged.
-		if not trimworld:
+		if trimworld:
 			worldlist=grabfile(self.myroot+"var/cache/edb/world")
 			mycpv=self.cat+"/"+self.pkg
 			mykey=cpv_getkey(mycpv)
@@ -3487,6 +3561,7 @@ class dblink:
 			a=doebuild(myebuildpath,"postrm",self.myroot)
 
 	def treewalk(self,srcroot,destroot,inforoot,myebuild):
+		global ctx
 		# srcroot = ${D}; destroot=where to merge, ie. ${ROOT}, inforoot=root of db entry,
 		# secondhand = list of symlinks that have been skipped due to their target not existing (will merge later),
 		"this is going to be the new merge code"
@@ -3522,6 +3597,11 @@ class dblink:
 			cfgfiledict=grabdict(destroot+"/var/cache/edb/config")
 		else:
 			cfgfiledict={}
+		if ctx.config.has_key("NOCONFMEM"):
+			cfgfiledict["IGNORE"]=1
+		else:
+			cfgfiledict["IGNORE"]=0
+
 		# set umask to 0 for merging; back up umask, save old one in prevmask (since this is a global change)
 		mymtime=long(time.time())
 		prevmask=os.umask(0)
@@ -3561,6 +3641,8 @@ class dblink:
 			self.copyfile(inforoot+"/"+x)
 
 		#write out our collection of md5sums
+		if cfgfiledict.has_key("IGNORE"):
+			del cfgfiledict["IGNORE"]
 		writedict(cfgfiledict,destroot+"/var/cache/edb/config")
 		
 		#create virtual links
@@ -3662,7 +3744,9 @@ class dblink:
 					print ">>>",mydest,"->",myto
 					outfile.write("sym "+myrealdest+" -> "+myto+" "+str(mymtime)+"\n")
 				else:
+					print "!!! Failed to move file."
 					print "!!!",mydest,"->",myto
+					sys.exit(1)
 			elif S_ISDIR(mymode):
 				# we are merging a directory
 				if mydmode!=None:
@@ -3723,6 +3807,7 @@ class dblink:
 							if cfgfiledict.has_key(myrealdest):
 								if destmd5 in cfgfiledict[myrealdest]:
 									#cycle
+									print "cycle"
 									del cfgfiledict[myrealdest]
 									cycled=1
 							if mymd5==destmd5:
@@ -3738,7 +3823,8 @@ class dblink:
 							elif cfgfiledict.has_key(myrealdest) and (mymd5 in cfgfiledict[myrealdest]):
 								#myd5!=destmd5, we haven't cycled, and the file we're merging has been already merged previously 
 								zing="-o-"
-								moveme=0
+								moveme=cfgfiledict["IGNORE"]
+								cfgprot=cfgfiledict["IGNORE"]
 							else:	
 								#mymd5!=destmd5, we haven't cycled, and the file we're merging hasn't been merged before
 								moveme=1
@@ -3783,13 +3869,16 @@ class dblink:
 									mydest=(mydestdir+"/"+mypfile)
 									cleanup=1
 							if not cleanup:
-								# md5sums didn't match, so we create a new filename for merging.
-								# we now have pnum set to the official 4-digit config that should be used for the file
-								# we need to install.  Set mydest to this new value.
+								# md5sums didn't match, so we create a new name for merging.
+								# we now have pnum set to the official 4-digit config that
+								# should be used for the file we need to install.  Set mydest
+								# to this new value.
 								mydest=os.path.normpath(mydestdir+"/._cfg"+string.zfill(pnum,4)+"_"+pmatch)
-							#add to our md5 list for future reference (will get written to /var/cache/edb/config)
+							# add to our md5 list for future reference
+							# (will get written to /var/cache/edb/config)
 
-				# whether config protection or not, we merge the new file the same way.  Unless moveme=0 (blocking directory)
+				# whether config protection or not, we merge the new file the
+				# same way.  Unless moveme=0 (blocking directory)
 				if moveme:
 					mymtime=movefile(mysrc,mydest,thismtime,mystat)
 					zing=">>>"
@@ -3807,11 +3896,12 @@ class dblink:
 				# we are merging a fifo or device node
 				zing="!!!"
 				if mydmode==None:
-					#destination doesn't exist
+					# destination doesn't exist
 					if movefile(mysrc,mydest,thismtime,mystat)!=None:
 						zing=">>>"
 						if S_ISFIFO(mymode):
-							#we don't record device nodes in CONTENTS, although we do merge them.
+							# we don't record device nodes in CONTENTS,
+							# although we do merge them.
 							outfile.write("fif "+myrealdest+"\n")
 				print zing+" "+mydest
 	
@@ -3876,9 +3966,9 @@ def cleanup_pkgmerge(mypkg,origdir):
 	os.chdir(origdir)
 
 def pkgmerge(mytbz2,myroot):
-	"""will merge a .tbz2 file, returning a list of runtime dependencies that must be
-		satisfied, or None if there was a merge error.	This code assumes the package
-		exists."""
+	"""will merge a .tbz2 file, returning a list of runtime dependencies
+		that must be satisfied, or None if there was a merge error.	This
+		code assumes the package exists."""
 	if mytbz2[-5:]!=".tbz2":
 		print "!!! Not a .tbz2 file"
 		return None
@@ -3901,7 +3991,8 @@ def pkgmerge(mytbz2,myroot):
 	os.makedirs(infloc)
 	print ">>> extracting info"
 	xptbz2.unpackinfo(infloc)
-	#run pkg_setup early, so we can bail out early (before extracting binaries) if there's a problem
+	# run pkg_setup early, so we can bail out early
+	# (before extracting binaries) if there's a problem
 	origdir=getcwd()
 	os.chdir(pkgloc)
 	print ">>> extracting",mypkg
@@ -3910,7 +4001,8 @@ def pkgmerge(mytbz2,myroot):
 		print "!!! Error extracting",mytbz2
 		cleanup_pkgmerge(mypkg,origdir)
 		return None
-	#the merge takes care of pre/postinst and old instance auto-unmerge, virtual/provides updates, etc.
+	# the merge takes care of pre/postinst and old instance
+	# auto-unmerge, virtual/provides updates, etc.
 	mylink=dblink(mycat,mypkg,myroot)
 	if not mylink.exists():
 		mylink.create()

@@ -22,7 +22,7 @@ class config:
 		self.usesplit=[]
 		self.cexpand={}
 
-		self.usemasks=[]
+		self.usemask=[]
 		self.configlist=[]
 		self.backupenv={}
 		# back up our incremental variables:
@@ -31,9 +31,9 @@ class config:
 
 		#get the masked use flags
 		if os.path.exists("/etc/make.profile/use.mask"):
-			usemasks=grabfile("/etc/make.profile/use.mask")
+			self.usemask=grabfile("/etc/make.profile/use.mask")
 		if os.path.exists("/etc/portage/use.mask"):
-			usemasks=usemasks+grabfile("/etc/portage/use.mask")
+			self.usemask=self.usemask+grabfile("/etc/portage/use.mask")
 
 		self.mygcfg=self.getconfig("/etc/make.globals")
 		if self.mygcfg==None:
@@ -132,7 +132,7 @@ class config:
 		#cache split-up USE var in a global
 		self.usesplit=[]
 		for x in string.split(self.configlist[-1]["USE"]):
-			if x not in self.usemasks:
+			if x not in self.usemask:
 				self.usesplit.append(x)
 		
 		# Pre-Pend ARCH variable to USE settings so '-*' in env doesn't kill arch.
