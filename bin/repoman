@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.110 2005/02/26 04:14:19 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.111 2005/03/07 04:14:36 ferringb Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -986,7 +986,7 @@ for x in scanlist:
 			if myuse[mypos] and (myuse[mypos] in uselist):
 				del myuse[mypos]
 		# uselist checks - local
-		mykey = portage.dep_getkey(catpkg)
+		mykey = portage.portage_dep.dep_getkey(catpkg)
 		if luselist.has_key(mykey):
 			for mypos in range(len(myuse)-1,-1,-1):
 				if myuse[mypos] and (myuse[mypos] in luselist[mykey]):
