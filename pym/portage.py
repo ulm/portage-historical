@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.355 2003/12/17 21:01:42 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.356 2003/12/19 00:26:07 carpaski Exp $
 
 VERSION="2.0.49-r17"
 
@@ -1113,6 +1113,8 @@ class config:
 		else:
 			del self.configdict["env"][x]
 		self.modifiedkeys = []
+		for x in self.configdict["pkg"].keys():
+			del self.configdict["pkg"][x]
 		self.regenerate()
 
 	def load_infodir(self,infodir):
