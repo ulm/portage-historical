@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.335 2004/10/05 12:46:36 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.336 2004/10/05 13:35:45 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -1416,7 +1416,7 @@ class depgraph:
 							addl+=turquoise("U")+" "
 					else:
 						# New slot, mark it new.
-						addl=" "+green("N")+" "+fetch+"  "
+						addl=" "+green("S")+" "+fetch+"  "
 
 					if "--changelog" in myopts:
 						changelogs.extend(self.calc_changelog(
