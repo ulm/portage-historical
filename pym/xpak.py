@@ -1,6 +1,6 @@
 # Copyright 2001-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/xpak.py,v 1.12 2004/10/04 14:07:41 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/xpak.py,v 1.13 2004/10/11 04:12:02 carpaski Exp $
 
 # The format for a tbz2/xpak:
 #
@@ -55,6 +55,8 @@ def xpak(rootdir,outfile=None):
 	xpak segment."""
 	try:
 		origdir=os.getcwd()
+	except SystemExit, e:
+		raise
 	except:
 		os.chdir("/")
 		origdir="/"
@@ -193,6 +195,8 @@ def xpand(myid,mydest):
 	mydata=myid[1]
 	try:
 		origdir=os.getcwd()
+	except SystemExit, e:
+		raise
 	except:
 		os.chdir("/")
 		origdir="/"
@@ -298,6 +302,8 @@ class tbz2:
 			self.datapos=a.tell()
 			a.close()
 			return 2
+		except SystemExit, e:
+			raise
 		except:
 			return 0
 
@@ -333,6 +339,8 @@ class tbz2:
 			return 0
 		try:
 			origdir=os.getcwd()
+		except SystemExit, e:
+			raise
 		except:
 			os.chdir("/")
 			origdir="/"

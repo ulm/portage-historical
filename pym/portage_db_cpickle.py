@@ -1,6 +1,6 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_cpickle.py,v 1.7 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_cpickle.py,v 1.8 2004/10/11 04:12:02 carpaski Exp $
 
 import anydbm,cPickle,types
 from os import chown,access,R_OK,unlink
@@ -23,6 +23,8 @@ class database(portage_db_template.database):
 				mypickle=cPickle.Unpickler(open(self.filename,"r"))
 				mypickle.find_global=None
 				self.db = mypickle.load()
+			except SystemExit, e:
+				raise
 			except:
 				self.db = {}
 		else:
@@ -65,6 +67,8 @@ class database(portage_db_template.database):
 				cPickle.dump(self.db,open(self.filename,"w"))
 				os.chown(self.filename,self.uid,self.gid)
 				os.chmod(self.filename, 0664)
+			except SystemExit, e:
+				raise
 			except:
 				pass
 	

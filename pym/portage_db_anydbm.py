@@ -1,6 +1,6 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_anydbm.py,v 1.9 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_anydbm.py,v 1.10 2004/10/11 04:12:02 carpaski Exp $
 
 import anydbm,cPickle,types,os
 
@@ -21,6 +21,8 @@ class database(portage_db_template.database):
 		try:
 			# open it read/write
 			self.db = anydbm.open(self.filename, "c", 0664)
+		except SystemExit, e:
+			raise
 		except:
 			# Create a new db... DB type not supported anymore?
 			self.db = anydbm.open(self.filename, "n", 0664)

@@ -1,6 +1,6 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_template.py,v 1.10 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_template.py,v 1.11 2004/10/11 04:12:02 carpaski Exp $
 
 import os.path,string
 from portage_util import getconfig, ReadOnlyConfig
@@ -33,6 +33,8 @@ class database:
 		try:
 			if self.__template_init_called:
 				pass
+		except SystemExit, e:
+			raise
 		except:
 			raise NotImplementedError("db_template.__init__ was overridden")
 
@@ -70,6 +72,8 @@ class database:
 				values = self.get_values(key)
 				self.__addCache(key,values)
 				return values
+			except SystemExit, e:
+				raise
 			except Exception, e:
 				raise CorruptionError("Corruption detected when reading key '%s': %s" % (key,str(e)))
 		raise KeyError("Key not in db: '%s'" % (key))

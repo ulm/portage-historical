@@ -1,7 +1,7 @@
 # cvstree.py -- cvs tree utilities
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/cvstree.py,v 1.11 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/cvstree.py,v 1.12 2004/10/11 04:12:02 carpaski Exp $
 
 import string,os,time,sys,re
 from stat import *
@@ -179,6 +179,8 @@ def getentries(mydir,recursive=0):
 		myfile=open(myfn, "r")
 		mylines=myfile.readlines()
 		myfile.close()
+	except SystemExit, e:
+		raise
 	except:
 		mylines=[]
 	for line in mylines:
@@ -263,6 +265,8 @@ def getentries(mydir,recursive=0):
 					print "stat done"
 				
 				del mystat
+			except SystemExit, e:
+				raise
 			except Exception, e:
 				print "failed to stat",file
 				print e

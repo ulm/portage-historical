@@ -1,7 +1,7 @@
 # portage_checksum.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_checksum.py,v 1.7 2004/10/05 07:11:26 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_checksum.py,v 1.8 2004/10/11 04:12:02 carpaski Exp $
 
 from portage_const import PRIVATE_PATH,PRELINK_BINARY
 import os
@@ -112,6 +112,8 @@ def perform_checksum(filename, hash_function=md5hash, calc_prelink=0):
 		# Non-prelinks are just returned.
 		try:
 			shutil.copy2(filename,prelink_tmpfile)
+		except SystemExit, e:
+			raise
 		except Exception,e:
 			portage_util.writemsg("!!! Unable to copy file '"+str(filename)+"'.\n")
 			portage_util.writemsg("!!! "+str(e)+"\n")

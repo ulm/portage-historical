@@ -1,7 +1,7 @@
 # portage_data.py -- Calculated/Discovered Data Values
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_file.py,v 1.2 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_file.py,v 1.3 2004/10/11 04:12:02 carpaski Exp $
 
 import os
 import portage_data
@@ -40,6 +40,8 @@ def makedirs(path, perms=0755, uid=None, gid=None, must_chown=False):
 			os.mkdir(mypath, perm)
 			try:
 				os.chown(mypath, uid, gid)
+			except SystemExit, e:
+				raise
 			except:
 				if must_chown:
 					os.umask(old_umask)

@@ -1,6 +1,6 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_flat.py,v 1.12 2004/10/04 14:07:40 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_flat.py,v 1.13 2004/10/11 04:12:02 carpaski Exp $
 
 import types
 import os
@@ -25,6 +25,8 @@ class database(portage_db_template.database):
 			try:
 				os.chown(self.fullpath, self.uid, self.gid)
 				os.chmod(self.fullpath, 02775)
+			except SystemExit, e:
+				raise
 			except:
 				pass
 		
