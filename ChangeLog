@@ -1,11 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.866 2004/11/10 16:21:33 ferringb Exp $
+# $Id: ChangeLog,v 1.867 2004/11/10 18:05:09 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  10 Nov 2004; Brian Harring <ferringb@gentoo.org> bin/ebuild.sh:
+  Dropping all support for reloading env attributes from a .51 dump.
+  It wasn't implemented correctly, and it's not worth the duct tape
+  and questionable code to try and half-ass support it.
 
   10 Nov 2004; Brian Harring <ferringb@gentoo.org> bin/etc-update:
   Fixed etc-update so it actually runs; long story short, the portageq
