@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.179 2004/08/02 18:49:30 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.180 2004/08/03 01:13:38 ferringb Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -49,12 +49,11 @@ declare -rx EBUILD_PHASE="$*"
 # Make sure it's before everything so we don't mess aliases that follow.
 unalias -a
 
-if [ "$USERLAND" == "BSD" ]; then
-	alias make=gmake
-	alias tar=gtar
-	alias patch=gpatch
-	alias sed=gsed
-fi
+for dir in ${PROFILE_PATHS}; do
+	if [ -f "${dir}/profile.bashrc" ]; then
+		source "${dir}/profile.bashrc"
+	fi
+done
 
 # Unset some variables that break things.
 unset GZIP BZIP BZIP2 CDPATH GREP_OPTIONS GREP_COLOR GLOBIGNORE
