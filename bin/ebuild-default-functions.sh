@@ -2,7 +2,7 @@
 # ebuild-default-functions.sh; default functions for ebuild env that aren't saved- specific to the portage instance.
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.7 2004/11/10 20:10:59 ferringb Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.8 2004/11/10 20:16:34 ferringb Exp $
 
 has_version() {
 	# if there is a predefined portageq call, use it.
@@ -446,7 +446,8 @@ dyn_install() {
 		die "There are ${UNSAFE} unsafe files. Portage will not install them."
 	fi
 
-	local file
+	local file s
+
 	find "${D}/" -user  portage -print0 | while read file; do
 		ewarn "file $file was installed with user portage!"
 		s=$(stat_perms $file)
