@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.449 2003/04/27 21:16:46 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.450 2003/04/27 21:55:50 carpaski Exp $
 
   27 Apr 2003; Nicholas Jones <carpaski@gentoo.org> portage.py: Fix for
 	listdir() running on a non-existant dir -- returns None. Sets generated
@@ -12,7 +12,8 @@
 	code for package.mask added in -- works just like mask, and can override
 	specific versions or ranges -- One per line: /etc/portage/package.unmask.
 	Security fix for python cPickle code -- mtimedb could create arbitrary
-	execution of code bug. Global update notices/info.
+	execution of code bug. Global update notices/info. Fixes for loops over
+	listdir() that depended upon raised errors to determine code flow.
 
   27 Apr 2003; Nicholas Jones <carpaski@gentoo.org> cvstree.py: Added in
 	'removed' status checks.
