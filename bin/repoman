@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.87 2004/08/17 07:08:32 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.88 2004/08/18 22:55:24 genone Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -927,7 +927,7 @@ for x in scanlist:
 		ignore_line = re.compile(r'(^$)|(^(\t)*#)')
 		leading_spaces = re.compile(r'^[\S\t]')
 		trailing_whitespace = re.compile(r'.*([\S]$)')
-		readonly_assignment = re.compile(r'^\s*(export\s+)?(A|P|PV|PN|PR|PVR|PF|D|WORKDIR|FILESDIR)=')
+		readonly_assignment = re.compile(r'^\s*(export\s+)?(A|P|PV|PN|PR|PVR|PF|D|WORKDIR|FILESDIR|FEATURES|USE)=')
 		continuation_symbol = re.compile(r'(.*[ ]+[\\][ ].*)')
 		line_continuation_quoted = re.compile(r'(\"|\')(([\w ,:;#\[\]\.`=/|\$\^\*{}()\'-])|(\\.))*\1')
 		line_continuation = re.compile(r'([^#]*\S)(\s+|\t)\\$')
