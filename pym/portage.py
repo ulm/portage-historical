@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.384 2004/01/24 19:03:19 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.385 2004/01/27 14:37:53 nakano Exp $
 
 VERSION="2.0.50_pre17"
 
@@ -1066,13 +1066,8 @@ def autouse(myvartree):
 	if profiledir==None:
 		return ""
 	myusevars=""
-	for x in usedefaults:
-		mysplit=string.split(x)
-		if len(mysplit)<2:
-			#invalid line
-			continue
-		myuse=mysplit[0]
-		mydep=x[len(mysplit[0]):]
+	for myuse in usedefaults:
+		mydep = string.join(usedefaults[myuse])
 		#check dependencies; tell depcheck() to ignore settings["USE"] since we are still forming it.
 		myresult=dep_check(mydep,myvartree.dbapi,None,use="no")
 		if myresult[0]==1 and not myresult[1]:
