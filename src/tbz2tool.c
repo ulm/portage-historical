@@ -1,3 +1,5 @@
+/* $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/tbz2tool.c,v 1.2 2003/02/16 02:49:57 carpaski Exp $ */
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
