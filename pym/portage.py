@@ -2,6 +2,8 @@
 # Copyright 1998-2002 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
 
+# $Id: portage.py,v 1.269.2.8 2003/02/15 14:55:06 alain Exp $
+
 VERSION="2.0.47-r1"
 
 from stat import *
@@ -2422,7 +2424,6 @@ class portagetree:
 		if clone:
 			self.root=clone.root
 			self.portroot=clone.portroot
-			self.pkglines=clone.pkglines
 		else:
 			self.root=root
 			self.portroot=ctx.settings["PORTDIR"]

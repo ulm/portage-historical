@@ -24,7 +24,7 @@ class LastModifiedDB:
 
 		#grab mtimes for eclasses and upgrades
 		self.mtimedb={}
-		self.mtimedbkeys=["updates","eclass","packages","info","version","starttime"]
+		self.mtimedbkeys=["updates","eclass","packages","info","version","starttime","resume"]
 		self.mtimedbfile=ctx.getRoot()+"var/cache/edb/mtimedb"
 		try:
 			self.mtimedb=cPickle.load(open(self.mtimedbfile))
@@ -42,7 +42,7 @@ class LastModifiedDB:
 
 		for x in self.mtimedb.keys():
 			if x not in self.mtimedbkeys:
-				#print "Deleting invalid mtimedb key: "+str(x)
+				print "Deleting invalid mtimedb key: "+str(x)
 				del self.mtimedb[x]
 
 		atexit.register(self.store_db)
@@ -65,6 +65,7 @@ class LastModifiedDB:
 				if self.mtimedb and not os.environ.has_key("SANDBOX_ACTIVE"):
 					self.mtimedb["version"]=portage.VERSION
 					cPickle.dump(self.mtimedb,open(self.mtimedbfile,"w"))
+					print "*** Wrote out LastModifiedDB data successfully."
 					os.chown(self.mtimedbfile,portage.uid,portage.wheelgid)
 					os.chmod(self.mtimedbfile,0664)
 			except Exception, e:
