@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.169 2004/06/05 18:31:29 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.170 2004/06/20 06:58:39 nakano Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -529,6 +529,11 @@ pkg_prerm()
 pkg_postrm()
 {
 	return
+}
+
+pkg_config()
+{
+	eerror "This ebuild does not have a config function."
 }
 
 # Used to generate the /lib/cpp and /usr/bin/cc wrappers
