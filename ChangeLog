@@ -1,11 +1,17 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796 2004/10/20 17:40:54 carpaski Exp $
+# $Id: ChangeLog,v 1.797 2004/10/21 14:29:15 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  20 Oct 2004; Jason Stubbs <jstubbs@gentoo.org> emerge: Fixed a bug where
+  users were warned against emerging by path when a file/dir exists of the
+  same name of the package to be merged. #68372  Added an warning with delay
+  when emerging an ebuild that is masked.  Added a check on PORTAGE_GPG_DIR
+  which removes "gpg" from FEATURES on an invalid settings. #68387
 
 *portage-2.0.51 (20 Oct 2004): Everyone loves stable!
 
