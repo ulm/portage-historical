@@ -1,7 +1,7 @@
 # cvstree.py -- cvs tree utilities
-# Copyright 1998-2003 Gentoo Technologies, Inc.
+# Copyright 1998-2004 Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/cvstree.py,v 1.7 2004/08/13 22:56:52 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/cvstree.py,v 1.8 2004/08/14 19:43:25 carpaski Exp $
 
 import string,os,time,sys,re
 from stat import *
