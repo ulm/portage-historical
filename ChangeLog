@@ -1,11 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.925 2005/03/08 10:02:20 ferringb Exp $
+# $Id: ChangeLog,v 1.926 2005/03/08 10:14:13 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  06 Mar 2005; Brian Harring <ferringb@gentoo.org> pym/portage.py: Harring's law 
+  in effect- stupid one line bugs do not rear their head till the delta hits the 
+  repository... :/
+  Fix for the INHERITED auto-determination in portdbapi.aux_get
 
   08 Mar 2005; Brian Harring <ferringb@gentoo.org> pym/portage.py, bin/emerge, 
   cache/*, pym/eclass_cache.py :  Cache refactoring.  Eclass_cache is now just 

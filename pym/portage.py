@@ -2,10 +2,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.580 2005/03/08 10:02:20 ferringb Exp $
-cvs_id_string="$Id: portage.py,v 1.580 2005/03/08 10:02:20 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.581 2005/03/08 10:14:13 ferringb Exp $
+cvs_id_string="$Id: portage.py,v 1.581 2005/03/08 10:14:13 ferringb Exp $"[5:-2]
 
-VERSION="$Revision: 1.580 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.581 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -3324,6 +3324,8 @@ class portdbapi(dbapi):
 					mydata["_eclasses_"] = self.eclassdb.get_eclass_data( \
 						mydata["INHERITED"].split() )
 					del mydata["INHERITED"]
+				else:
+					mydata["_eclasses_"] = {}
 
 				self.auxdb[mylocation][mycpv] = mydata
 #				if not self.eclassdb.update_package(mylocation, cat, pkg, mydata.get("INHERITED","").split()):
@@ -3334,7 +3336,7 @@ class portdbapi(dbapi):
 		returnme = []
 		for x in mylist:
 			if x == "INHERITED":
-				returnme.append(mydata.get("_eclasses_",{}).keys())
+				returnme.append(' '.join(mydata.get("_eclasses_",{}).keys()))
 			else:
 				returnme.append(mydata.get(x,""))
 		return returnme
