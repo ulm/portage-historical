@@ -1,7 +1,11 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2003 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.430 2003/02/26 16:35:24 alain Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/ChangeLog,v 1.431 2003/02/27 05:14:24 jhhudso Exp $
 
+  26 Feb 2003; Jared Hudson <jhhudso@gentoo.org> pym/portage.py : Removed
+  warning about /etc/make.profile being missing that showed up when you
+  ran any portage program, such as env-update.
+	
 *portage-2.0.47-r6 (26 Feb 2003): Drop deprecated warnings for new syntax.
 
   26 Feb 2003; Alain Penders <alain@gentoo.org> emerge: Drop deprecated
