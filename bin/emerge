@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.212 2003/05/29 08:34:55 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.213 2003/06/11 06:44:03 drobbins Exp $
 
 import os
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -1541,7 +1541,7 @@ def post_emerge(retval=0):
 		procount=0
 		for x in string.split(portage.settings["CONFIG_PROTECT"]):
 			if os.path.isdir(x):
-				a=commands.getstatusoutput("cd "+x+"; find -iname '._cfg????_*'")
+				a=commands.getstatusoutput("cd "+x+"; find . -iname '._cfg????_*'")
 				if a[0]!=0:
 					print " "+red("*")+" error scanning",x
 				else:

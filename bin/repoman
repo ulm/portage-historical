@@ -1,7 +1,7 @@
 #!/usr/bin/python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.24 2003/05/29 08:34:55 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.25 2003/06/11 06:44:03 drobbins Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -218,7 +218,11 @@ if myreporootpath=="/space/cvsroot":
 	print "rm -Rf [a-z]*"
 	print "cvs up"
 	print
-	print "find ./ -type f -regex '.*/CVS/Root$' -print0 | xargs -0r sed \\"
+	if portage.userland=="BSD":
+		print "find ./ -type f -regex '.*/CVS/Root$' -print0 | xargs -0 sed \\"
+	else:
+		print "find ./ -type f -regex '.*/CVS/Root$' -print0 | xargs -0r sed \\"
+	fi
 	print "  -i 's:/space/cvsroot$:/home/cvsroot:'"
 	print
 	print red("You must clear and re-update your tree as all header tags will cause")

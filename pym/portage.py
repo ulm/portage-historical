@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality 
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.322 2003/05/29 08:34:55 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.323 2003/06/11 06:44:03 drobbins Exp $
 
 VERSION="2.0.48_pre6"
 
@@ -9,7 +9,25 @@ from stat import *
 from commands import *
 from select import *
 from output import *
-import string,os,re,types,sys,shlex,shutil,xpak,fcntl,signal,time,missingos,cPickle,atexit,grp,traceback,commands,pwd,cvstree
+import string,sys,os
+
+ostype=os.uname()[0]
+if ostype=="Linux":
+	userland="GNU"
+	import missingos
+	lchown=missingos.lchown
+	os.environ["XARGS"]="xargs -r"
+elif ostype=="Darwin":
+	userland="BSD"
+	lchown=os.chown
+	os.environ["XARGS"]="xargs"	
+else:
+	print "Operating system \""+ostype+"\" currently unsupported. Exiting." 
+	sys.exit(1)
+	
+os.environ["USERLAND"]=userland
+
+import re,types,sys,shlex,shutil,xpak,fcntl,signal,time,cPickle,atexit,grp,traceback,commands,pwd,cvstree
 
 #Secpass will be set to 1 if the user is root or in the portage group.
 uid=os.getuid()
@@ -624,7 +642,11 @@ def writedict(mydict,myfilename,writekey=1):
 
 def getconfig(mycfg,tolerant=0):
 	mykeys={}
-	f=open(mycfg,'r')
+	try:
+		f=open(mycfg,'r')
+	except IOError:
+		print "Could not open \""+mycfg+"\"; exiting."
+		sys.exit(1)
 	lex=shlex.shlex(f)
 	lex.wordchars=string.digits+string.letters+"~!@#$%*_\:;?,./-+{}"     
 	lex.quotes="\"'"
@@ -1721,6 +1743,7 @@ def movefile(src,dest,newmtime=None,sstat=None):
 	be preserved even when moving across filesystems.  Returns true on success and false on
 	failure.  Move is atomic."""
 	#print "movefile("+src+","+dest+","+str(newmtime)+","+str(sstat)+")"
+	global lchown 	
 	try:
 		if not sstat:
 			sstat=os.lstat(src)
@@ -1750,7 +1773,7 @@ def movefile(src,dest,newmtime=None,sstat=None):
 			if destexists and not S_ISDIR(dstat[ST_MODE]):
 				os.unlink(dest)
 			os.symlink(target,dest)
-			missingos.lchown(dest,sstat[ST_UID],sstat[ST_GID])
+			lchown(dest,sstat[ST_UID],sstat[ST_GID])
 			return os.lstat(dest)
 		except Exception, e:
 			print "!!! failed to properly create symlink:"
@@ -1793,7 +1816,7 @@ def movefile(src,dest,newmtime=None,sstat=None):
 				return None # failure
 		try:
 			if didcopy:
-				missingos.lchown(dest,sstat[ST_UID],sstat[ST_GID])
+				lchown(dest,sstat[ST_UID],sstat[ST_GID])
 				os.chmod(dest, S_IMODE(sstat[ST_MODE])) # Sticky is reset on chown
 				os.unlink(src)
 		except Exception, e:
