@@ -1,9 +1,9 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.361 2003/12/24 09:29:04 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.362 2003/12/25 03:06:09 carpaski Exp $
 
-VERSION="2.0.50_pre5"
+VERSION="2.0.50_pre8"
 
 import sys,string,os,re,types,shlex,shutil,xpak,fcntl,signal
 import time,cPickle,atexit,grp,traceback,commands,pwd,cvstree,copy
@@ -3007,7 +3007,7 @@ def dep_check(depstring,mydbapi,mysettings,use="yes",mode=None,myuse=None):
 	#up until here, we haven't needed to look at the database tree
 	
 	if mysplit==None:
-		return [0,"Parse Error (parenthesis mismatch?)"]
+		return [0,"Parse Error (parentheses mismatch?)"]
 	elif mysplit==[]:
 		#dependencies were reduced to nothing
 		return [1,[]]
