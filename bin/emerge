@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.2
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.211 2003/05/20 09:15:59 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.212 2003/05/29 08:34:55 carpaski Exp $
 
 import os
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -199,7 +199,7 @@ def emergeexit():
 	any other atexit's we have setup, we need to call them ourself."""
 	portage.portageexit()
 	emergelog(" *** terminating.")
-	xtermTitle(os.environ["TERM"])
+	xtermTitleReset()
 atexit.register(emergeexit)
 
 def countdown(secs=5, doing="Starting"):
