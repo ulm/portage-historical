@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.6 2004/12/03 04:15:29 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.7 2004/12/09 05:52:10 genone Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -982,7 +982,7 @@ dyn_install() {
 						#UNSAFE=$(($UNSAFE + 1))
 						echo -ne '\a'
 						echo "QA Notice: ${x:${#D}:${#x}} is setXid, dynamically linked and using lazy bindings."
-						echo "This combination is generally discouraged. Try: LDFLAGS='-Wl,-z,now' emerge ${PN}"
+						echo "This combination is generally discouraged. Try: CFLAGS='-Wl,-z,now' emerge ${PN}"
 						echo -ne '\a'
 						sleep 1
 					fi
