@@ -2,7 +2,7 @@
 # ebuild.sh; ebuild phase processing, env handling
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.210 2004/11/22 11:59:32 ferringb Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.211 2005/02/26 04:14:19 jstubbs Exp $
 
 # general phase execution path-
 # execute_phases is called, which sets EBUILD_PHASE, and then depending on the phase, 
@@ -299,8 +299,11 @@ load_environ() {
 source_profiles() {
 	local dir
 	save_IFS
+	# XXX: Given the following unset, is this set needed?
 	IFS=$'\n'
 	for dir in ${PROFILE_PATHS}; do
+		# Must unset it so that it doesn't mess up assumptions in the RCs.
+		unset IFS
 		if [ -f "${dir}/profile.bashrc" ]; then
 			source "${dir}/profile.bashrc"
 		fi
@@ -560,7 +563,7 @@ execute_phases() {
 					addread "${CCACHE_DIR}"
 					addwrite "${CCACHE_DIR}"
 
-					[ -z "${CCACHE_SIZE}" ] && export CCACHE_SIZE="2G"
+					[ -z "${CCACHE_SIZE}" ] && export CCACHE_SIZE="500M"
 					ccache -M ${CCACHE_SIZE} &> /dev/null
 				fi
 			fi
@@ -700,7 +703,7 @@ fi
 set +f
 
 export XARGS
-if [ `id -nu` == "portage" ] ; then
+if [ "$(id -nu)" == "portage" ] ; then
 	export USER=portage
 fi
 set +H -h

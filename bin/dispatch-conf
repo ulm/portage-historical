@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dispatch-conf,v 1.13 2004/11/07 06:28:59 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dispatch-conf,v 1.14 2005/02/26 04:14:19 jstubbs Exp $
 
 #
 # dispatch-conf -- Integrate modified configs, post-emerge
@@ -49,7 +49,7 @@ os.umask(oldmask)
 
 # Ensure the scratch dir is deleted
 def cleanup(mydir=SCRATCH_DIR):
-    shutil.rmtree(SCRATCH_DIR)
+    shutil.rmtree(mydir)
 atexit.register(cleanup)
 
 MANDATORY_OPTS  = [ 'archive-dir', 'diff', 'pager', 'replace-cvs', 'replace-wscomments' ]
@@ -60,7 +60,6 @@ class dispatch:
     def grind (self, config_paths):
         confs = []
         count = 0
-
 
         self.options = dispatch_conf.read_config(MANDATORY_OPTS)
 
