@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.33 2005/01/17 16:38:22 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.33 2005/01/17 16:38:22 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.34 2005/01/24 14:17:07 carpaski Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.34 2005/01/24 14:17:07 carpaski Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.33 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.34 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -1154,6 +1154,10 @@ class config:
 				else:
 					writemsg(red("!!! Invalid PORTDIR_OVERLAY (not a dir): "+ov+"\n"))
 			self["PORTDIR_OVERLAY"] = string.join(new_ov)
+			self.backup_changes("PORTDIR_OVERLAY")
+
+		if os.environ.get("PORTAGE_CALLER", "") == "repoman":
+			self["PORTDIR_OVERLAY"] = ""
 			self.backup_changes("PORTDIR_OVERLAY")
 
 		self.regenerate()
