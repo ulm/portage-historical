@@ -490,12 +490,9 @@ proven to be "stable", are masked with a tilde (\fB~\fR) in front of the
 architecture name.  \fBemerge\fR examines the \fBACCEPT_KEYWORDS\fR environment 
 variable to allow or disallow the emerging of a package masked by \fBKEYWORDS\fR.  
 To inform \fBemerge\fR that it should build these 'testing' versions 
-of packages, you may set \fBACCEPT_KEYWORDS\fR to "\fB~arch\fR", where 
-\fBarch\fR is one of: \fIx86 ppc sparc mips alpha arm hppa\fR.  For example, 
-\fBACCEPT_KEYWORDS="~x86" emerge xfree\fR will cause \fBemerge\fR to consider 
-\fBKEYWORDS\fR\-masked versions of XFree as potentional upgrade 
-candidates.  \fBWARNING:\fR Do \fInot\fR set this variable to anything 
-other than the value corresponding to your architecture.
+of packages, you should update your \fI/etc/portage/package.keywords\fR file 
+to list the packages you want the 'testing' version.  See \fBportage\fR(5) for 
+more information.
 .SH "REPORTING BUGS"
 Please report any bugs you encounter through our website:
 .LP
@@ -569,4 +566,4 @@ Mike Frysinger <vapier@gentoo.org>
 Marius Mauch <genone@gentoo.org>
 .br 
 .SH "CVS HEADER"
-$Id: emerge.1,v 1.70.2.5 2005/02/06 19:38:59 vapier Exp $
+$Id: emerge.1,v 1.70.2.6 2005/02/06 19:41:26 vapier Exp $
