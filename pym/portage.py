@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.396 2004/02/22 09:36:15 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.397 2004/02/25 09:04:17 nakano Exp $
 
 VERSION="2.0.50_pre17"
 
@@ -3472,26 +3472,29 @@ def getmaskingstatus(mycpv):
 		if portdb.xmatch("bestmatch-list", mykey, None, None, [mycpv]):
 			pgroups.extend(pkgdict[mykey])
 
-	kmask = "missing "
-	for gp in mygroups:
-		if gp=="*":
-			kmask = None
-			break
-		if gp=="-*":
-			kmask = "-*"
-			break
-		elif "-"+gp in pgroups:
-			kmask = "-"
-			break
-		elif gp in pgroups:
-			kmask = None
-			break
-		elif "~"+myarch==gp:
-			kmask = "~"
-			break
+	kmask = "missing"
+
+	for keyword in pgroups:
+		if keyword in mygroups:
+			kmask=None
 
 	if kmask:
-		rValue.append(kmask+"keyword")
+		for gp in mygroups:
+			if gp=="*":
+				kmask=None
+				break
+			elif gp=="-*":
+				kmask="-*"
+				break
+			elif gp=="-"+myarch:
+				kmask="-"+myarch
+				break
+			elif gp=="~"+myarch:
+				kmask="~"+myarch
+				break
+
+	if kmask:
+		rValue.append(kmask+" keyword")
 	return rValue
 
 def fixdbentries(old_value, new_value, dbdir):
