@@ -1,7 +1,7 @@
 # portage: Lock management code
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.16 2004/10/17 09:15:08 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_locks.py,v 1.17 2004/10/17 13:05:19 ferringb Exp $
 
 import atexit
 import errno
@@ -182,15 +182,15 @@ def unlockfile(mytuple):
 		# the sleep here adds more time than is saved overall, so am
 		# commenting until it is proved necessary.
 		#time.sleep(0.0001)
-		locking_method(myfd,fcntl.LOCK_EX|fcntl.LOCK_NB)
-		# We won the lock, so there isn't competition for it.
-		# We can safely delete the file.
-		portage_util.writemsg("Got the lockfile...\n",1)
 		if unlinkfile:
+			locking_method(myfd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+			# We won the lock, so there isn't competition for it.
+			# We can safely delete the file.
+			portage_util.writemsg("Got the lockfile...\n",1)
 			#portage_util.writemsg("Unlinking...\n")
 			os.unlink(lockfilename)
 			portage_util.writemsg("Unlinked lockfile...\n",1)
-		locking_method(myfd,fcntl.LOCK_UN)
+			locking_method(myfd,fcntl.LOCK_UN)
 	except SystemExit, e:
 		raise
 	except Exception, e:
