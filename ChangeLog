@@ -1,11 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.939 2005/03/13 12:14:39 ferringb Exp $
+# $Id: ChangeLog,v 1.940 2005/03/16 04:07:27 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  15 Mar 2005; Brian Harring <ferringb@gentoo.org> pym/cache/*;
+  Cache updates moving _eclasses_ handling up into the template layer, 
+  added delayed sync'ing support (see database.autocommit) which is relevant 
+  for rdbms backends.
 
   13 Mar 2005; Brian Harring <ferringb@gentoo.org> pym/portage_dep.py:
   Addded a traversed cache dict to __traversed per call, the slowdown was 
