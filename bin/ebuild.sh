@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.17 2005/01/12 02:07:15 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.18 2005/01/17 20:14:37 carpaski Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -90,6 +90,8 @@ addpredict()
 save_IFS
 IFS=$'\n'
 for dir in ${PROFILE_PATHS}; do
+	# Must unset it so that it doesn't mess up assumptions in the RCs.
+	unset IFS
 	if [ -f "${dir}/profile.bashrc" ]; then
 		source "${dir}/profile.bashrc"
 	fi
