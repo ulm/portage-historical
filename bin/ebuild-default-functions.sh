@@ -2,7 +2,7 @@
 # ebuild-default-functions.sh; default functions for ebuild env that aren't saved- specific to the portage instance.
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.14 2004/12/07 15:06:41 jstubbs Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.15 2004/12/09 05:46:55 genone Exp $
 
 has_version() {
 	# if there is a predefined portageq call, use it.
@@ -432,7 +432,7 @@ dyn_install() {
 						#UNSAFE=$(($UNSAFE + 1))
 						echo -ne '\a'
 						echo "QA Notice: ${x:${#D}:${#x}} is setXid, dynamically linked and using lazy bindings."
-						echo "This combination is generally discouraged. Try: LDFLAGS='-Wl,-z,now' emerge ${PN}"
+						echo "This combination is generally discouraged. Try: CFLAGS='-Wl,-z,now' emerge ${PN}"
 						echo -ne '\a'
 						sleep 1
 					fi
