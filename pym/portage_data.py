@@ -1,7 +1,7 @@
 # portage_data.py -- Calculated/Discovered Data Values
-# Copyright 2004-2004 Gentoo Foundation
-# Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_data.py,v 1.4 2004/09/27 01:59:19 carpaski Exp $
+# Copyright 1998-2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_data.py,v 1.5 2004/10/04 14:07:40 vapier Exp $
 
 import os,pwd,grp
 from portage_util import writemsg

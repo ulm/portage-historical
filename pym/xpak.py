@@ -1,7 +1,6 @@
-#
-#
-#
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/xpak.py,v 1.11 2003/12/25 03:06:09 carpaski Exp $
+# Copyright 2001-2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/xpak.py,v 1.12 2004/10/04 14:07:41 vapier Exp $
 
 # The format for a tbz2/xpak:
 #

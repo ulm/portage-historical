@@ -1,4 +1,6 @@
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_cpickle.py,v 1.6 2004/05/23 02:42:19 carpaski Exp $
+# Copyright 2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_cpickle.py,v 1.7 2004/10/04 14:07:40 vapier Exp $
 
 import anydbm,cPickle,types
 from os import chown,access,R_OK,unlink

@@ -1,7 +1,7 @@
 # portage_localization.py -- Code to manage/help portage localization.
-# Copyright 2004-2004 Gentoo Foundation
-# Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_localization.py,v 1.1 2004/09/25 13:07:55 carpaski Exp $
+# Copyright 2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_localization.py,v 1.2 2004/10/04 14:07:40 vapier Exp $
 
 
 # We define this to make the transition easier for us.

@@ -1,3 +1,7 @@
+# Copyright 2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.8 2004/10/04 14:07:40 vapier Exp $
+
 import sys,string,shlex,os.path
 
 noiselimit = 0

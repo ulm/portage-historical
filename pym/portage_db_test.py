@@ -1,5 +1,7 @@
 #!/usr/bin/python -O
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_test.py,v 1.2 2004/03/22 01:40:58 carpaski Exp $
+# Copyright 2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_test.py,v 1.3 2004/10/04 14:07:40 vapier Exp $
 
 import portage
 import portage_db_template

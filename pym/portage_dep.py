@@ -1,7 +1,7 @@
 # deps.py -- Portage dependency resolution functions
 # Copyright 2003-2004 Gentoo Foundation
-# Distributed under the GNU Public License v2
-# $Id: portage_dep.py,v 1.14 2004/08/14 19:49:47 carpaski Exp $
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.15 2004/10/04 14:07:40 vapier Exp $
 
 # DEPEND SYNTAX:
 #

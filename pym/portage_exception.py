@@ -1,4 +1,6 @@
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exception.py,v 1.5 2004/09/14 19:48:40 carpaski Exp $
+# Copyright 1998-2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exception.py,v 1.6 2004/10/04 14:07:40 vapier Exp $
 
 class PortageException(Exception):
 	"""General superclass for portage exceptions"""
