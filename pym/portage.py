@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.356 2003/12/19 00:26:07 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.357 2003/12/19 02:03:42 nakano Exp $
 
 VERSION="2.0.49-r17"
 
@@ -2787,7 +2787,13 @@ def getvirtuals(myroot):
 	myvirtfiles=[]
 	if profiledir:
 		myvirtfiles=[profiledir+"/virtuals"]
-	myvirtfiles.append(root+"/var/cache/edb/virtuals")
+
+	# repoman doesn't need local virtuals.
+	if os.environ.has_key("PORTAGE_CALLER") and os.environ["PORTAGE_CALLER"] == "repoman":
+		pass
+	else:
+		myvirtfiles.append(root+"/var/cache/edb/virtuals")
+
 	for myvirtfn in myvirtfiles:
 		if not os.path.exists(myvirtfn):
 			continue
