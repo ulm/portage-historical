@@ -2,7 +2,7 @@
 # ebuild.py; Ebuild classes/abstraction of phase processing, and communicating with a ebuild-daemon.sh instance
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.16 2005/03/02 06:46:04 ferringb Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.17 2005/03/08 04:29:58 genone Exp $
 
 
 import os,sys,traceback
@@ -625,11 +625,11 @@ class ebuild_handler:
 
 		if mydo!="depend":
 			try:
-				mysettings["INHERITED"],mysettings["PORTAGE_RESTRICT"] = db[root][tree].dbapi.aux_get(
+				mysettings["INHERITED"],mysettings["RESTRICT"] = db[root][tree].dbapi.aux_get(
 					mycpv,["INHERITED","RESTRICT"])
 
-				mysettings["PORTAGE_RESTRICT"]=string.join(flatten(portage_dep.use_reduce(
-					portage_dep.paren_reduce(mysettings["PORTAGE_RESTRICT"]), 
+				mysettings["RESTRICT"]=string.join(flatten(portage_dep.use_reduce(
+					portage_dep.paren_reduce(mysettings["RESTRICT"]), 
 					uselist=mysettings["USE"].split() )),' ')
 
 			except SystemExit, e:
