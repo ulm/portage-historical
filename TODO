@@ -1,0 +1,5 @@
+# TODO list for Portage; the Gentoo Linux ports system 
+# $Id: TODO,v 1.1 2003/05/12 09:10:27 carpaski Exp $
+
+* Determine file lock status before starting downloads -- Prevent races.
+

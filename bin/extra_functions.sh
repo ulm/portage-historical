@@ -1,6 +1,6 @@
 # Copyright 2002-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/extra_functions.sh,v 1.3 2003/04/28 10:19:46 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/Attic/extra_functions.sh,v 1.4 2003/05/12 09:10:30 carpaski Exp $
 
 # ============================================================================
 # Extracted from flag-o-matic -- March 10, 2003
@@ -29,19 +29,19 @@
 
 ALLOWED_FLAGS="-O -mcpu -march -pipe -g"
 
-filter-flags () {
+filter-flags() {
 	for x in $1; do
 		export CFLAGS="${CFLAGS/${x}}"
 		export CXXFLAGS="${CXXFLAGS/${x}}"
 	done
 }
 
-append-flags () {
+append-flags() {
 	CFLAGS="${CFLAGS} $1"
 	CXXFLAGS="${CXXFLAGS} $1"
 }
 
-replace-flags () {
+replace-flags() {
 	CFLAGS="${CFLAGS/${1}/${2} }"
 	CXXFLAGS="${CXXFLAGS/${1}/${2} }"
 }
