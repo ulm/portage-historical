@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.7 2005/01/02 06:01:35 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.8 2005/01/02 08:05:35 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2175,20 +2175,14 @@ def unmerge(unmerge_action, unmerge_files):
 		return 1
 
 
-def post_emerge(retval=0):
-	os.chdir("/")
-	global myopts
-	print
-	if "--pretend" in myopts:
-		sys.exit(retval)
-
-	emergelog(" *** exiting successfully.")
+def chk_updated_info_files(retval):
 	root=portage.root
 
 	infodirs=[]
 	infodirs.extend(string.split(portage.settings["INFOPATH"], ":"))
 	infodirs.extend(string.split(portage.settings["INFODIR"], ":"))
 
+	print
 	if os.path.exists("/usr/bin/install-info"):
 		regen_infodirs=[]
 		for z in infodirs:
@@ -2262,8 +2256,21 @@ def post_emerge(retval=0):
 			else:
 				print " "+green("*")+" Processed",icount,"info files."
 
+
+def post_emerge(retval=0):
+	global myopts
+	os.chdir("/")
+	if "--pretend" in myopts:
+		sys.exit(retval)
+
+	emergelog(" *** exiting successfully.")
+
+	if "noinfo" not in portage.settings.features:
+		chk_updated_info_files(retval)
+
 	chk_updated_cfg_files()
 	sys.exit(retval)
+
 
 def chk_updated_cfg_files():
 	if portage.settings["CONFIG_PROTECT"]:

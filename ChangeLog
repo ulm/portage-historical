@@ -1,11 +1,20 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.32 2005/01/02 06:01:35 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.33 2005/01/02 08:05:35 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  02 Dec 2005; Jason Stubbs <jstubbs@gentoo.org> ebuild.sh: Adjusted autoconfig
+  to work on ${WORKDIR} instead of ${S} and modified output. #72360
+  Added notice on econf failure to include config.log (if it exists) into any
+  bug report. #75268  Don't prepend "/" to CONF_LIBDIR if it already begins
+  with "/" #75523
+
+  02 Dec 2005; Jason Stubbs <jstubbs@gentoo.org> emerge: Don't update info dirs
+  if noinfo FEATURE is enabled. #76378
 
   02 Dec 2005; Jason Stubbs <jstubbs@gentoo.org> emerge: Set the processing of
   profiles/info_vars to only include those which have been set to some value.

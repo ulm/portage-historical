@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.8 2004/12/17 22:25:13 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.9 2005/01/02 08:05:35 jstubbs Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -395,8 +395,8 @@ econf() {
 		if hasq autoconfig $FEATURES && ! hasq autoconfig $RESTRICT; then
 			if [ -e /usr/share/gnuconfig/ -a -x /bin/basename ]; then
 				local x
-				for x in $(find ${S} -type f -name config.guess -o -name config.sub) ; do
-					einfo "econf: updating $x with /usr/share/gnuconfig/$(/bin/basename ${x})"
+				for x in $(find ${WORKDIR} -type f -name config.guess -o -name config.sub) ; do
+					echo " * econf: updating ${x/${WORKDIR}\/} with /usr/share/gnuconfig/$(/bin/basename ${x})"
 					cp /usr/share/gnuconfig/$(/bin/basename ${x}) ${x}
 				done
 			fi
@@ -419,9 +419,11 @@ econf() {
 				local args="$(echo $*)"
 				local -a pref=($(echo ${args/*--prefix[= ]}))
 				CONF_PREFIX=${pref}
+				[ "${CONF_PREFIX:0:1}" != "/" ] && CONF_PREFIX="/${CONF_PREFIX}"
 			fi
 			export CONF_PREFIX
-			EXTRA_ECONF="--libdir=/${CONF_PREFIX}/${CONF_LIBDIR} ${EXTRA_ECONF}"
+			[ "${CONF_LIBDIR:0:1}" != "/" ] && CONF_LIBDIR="/${CONF_LIBDIR}"
+			EXTRA_ECONF="--libdir=${CONF_PREFIX}${CONF_LIBDIR} ${EXTRA_ECONF}"
 		fi
 		
 		echo "${ECONF_SOURCE}/configure" \
@@ -435,7 +437,7 @@ econf() {
 			${EXTRA_ECONF} \
 			"$@"
 
-		"${ECONF_SOURCE}/configure" \
+		if ! "${ECONF_SOURCE}/configure" \
 			--prefix=/usr \
 			--host=${CHOST} \
 			--mandir=/usr/share/man \
@@ -444,7 +446,15 @@ econf() {
 			--sysconfdir=/etc \
 			--localstatedir=/var/lib \
 			${EXTRA_ECONF} \
-			"$@" || die "econf failed"
+			"$@" ; then
+
+			if [ -s config.log ]; then
+				echo
+				echo "!!! Please attach the config.log to your bug report:"
+				echo "!!! ${PWD}/config.log"
+			fi
+			die "econf failed"
+		fi
 	else
 		die "no configure script found"
 	fi
