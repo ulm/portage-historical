@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.745 2004/09/15 06:40:34 carpaski Exp $
+# $Id: ChangeLog,v 1.746 2004/09/15 07:03:08 carpaski Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -12,16 +12,16 @@
 *portage-2.0.51_rc1 (15 Sep 2004): And we have Release Candidate!
 
   15 Sep 2004; Nicholas Jones <carpaski@gentoo.org> ebuild: On merge, disable
-	the noauto feature explicitly.
+  the noauto feature explicitly.
 
   15 Sep 2004; Nicholas Jones <carpaski@gentoo.org> portage.py: Fixed the
-	'missing ebuild' for uninstalls of packages not in the tree.
+  'missing ebuild' for uninstalls of packages not in the tree.
 
   15 Sep 2004; Nicholas Jones <carpaski@gentoo.org> man/*: Started adding
-	to the documentation in order to break it an make it look funny. Added a
-	couple entries for missing concepts like 'inherit' and 'useq' and 'hasq'.
-	Cleared up a few things here and there with usage. Added in the metadata
-	target for emerge.
+  to the documentation in order to break it an make it look funny. Added a
+  couple entries for missing concepts like 'inherit' and 'useq' and 'hasq'.
+  Cleared up a few things here and there with usage. Added in the metadata
+  target for emerge.
 
 *portage-2.0.51_pre24 (14 Sep 2004): Last _pre before docs and rc/stable.
 
