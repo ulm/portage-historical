@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.326 2004/09/24 01:19:29 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.327 2004/09/24 01:24:53 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -1800,13 +1800,14 @@ class depgraph:
 									myr+=1
 								emergelog(" *** RESTARTING emerge via exec() after change of portage version.")
 								portage.portageexit()
+								# Remove --ask from options before restarting
 								mynewargv=[]
 								for arg in myargv:
 									if arg[0:2] == "--":
 										if arg != "--ask":
 											mynewargv += [arg]
 									elif arg[0] == "-":
-										myarg = "-":
+										myarg = "-"
 										for ch in myarg[1:]:
 											if ch != "a":
 												myarg += ch
