@@ -1,11 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2004 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.898 2004/12/07 15:12:38 jstubbs Exp $
+# $Id: ChangeLog,v 1.899 2004/12/08 05:53:52 genone Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  08 Dec 2004; Marius Mauch <genone@gentoo.org> pym/portage.py:
+  Changing CWD back to the original value broke verify-rdepend, fixing it with
+  the same code as used for collision-protect. Also made the time displays in
+  treewalk more readable.
 
   08 Dec 2004; Jason Stubbs <jstubbs@gentoo.org> portage_syntax.py: Inital
   commit. Refactors all of portage_versions.py and some functions from
