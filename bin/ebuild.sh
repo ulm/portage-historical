@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.104 2003/02/11 20:49:07 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.105 2003/02/13 17:13:53 carpaski Exp $
 
 cd ${PORT_TMPDIR}
 
@@ -295,7 +295,7 @@ unpack() {
 	for x in $@
 	do
 		myfail="failure unpacking ${x}"
-		echo ">>> Unpacking ${x}"
+		echo ">>> Unpacking ${x} to $(pwd)"
 		y="$(echo $x | sed 's:.*\.\(tar\)\.[a-zA-Z0-9]*:\1:')"
 		case "${x##*.}" in
 		tar) 
