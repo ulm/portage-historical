@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.32 2005/01/17 01:34:36 carpaski Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.32 2005/01/17 01:34:36 carpaski Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.33 2005/01/17 16:38:22 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.33 2005/01/17 16:38:22 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.32 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.33 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -824,7 +824,6 @@ class config:
 		self.userVirtuals = {}
 		# Virtual negatives from user specifications.
 		self.negVirtuals  = {}
-		self.negVirtualsWarned = False
 
 		self.user_profile_dir = None
 
@@ -844,7 +843,6 @@ class config:
 			self.treeVirtuals = copy.deepcopy(clone.treeVirtuals)
 			self.userVirtuals = copy.deepcopy(clone.userVirtuals)
 			self.negVirtuals  = copy.deepcopy(clone.negVirtuals)
-			self.negVirtualsWarned = clone.negVirtualsWarned
 
 			self.use_defs = copy.deepcopy(clone.use_defs)
 			self.usemask  = copy.deepcopy(clone.usemask)
@@ -1278,7 +1276,7 @@ class config:
 			# XXX: Is this bad? -- It's a permanent modification
 			self.treeVirtuals[virt] = portage_util.unique_array(self.treeVirtuals[virt]+[cp])
 
-		return self.__getvirtuals_compile()
+		self.virtuals = self.__getvirtuals_compile()
 
 	
 	def regenerate(self,useonly=0,use_cache=1):
@@ -1401,22 +1399,13 @@ class config:
 			self.negVirtuals[x] = []
 			for y in self.userVirtuals[x]:
 				if y[0] == '-':
-					if not self.negVirtualsWarned:
-						self.negVirtualsWarned = True
-						print
-						print "!!! Negated virtuals are not supported at this time."
-						print "!!! Please unmerge the undesirable package or preference"
-						print "!!! another package instead of using the negated virtual."
-						print
-					continue
 					self.negVirtuals[x].append(y[:])
 
 		# Collapse the user virtuals so that we don't deal with negatives.
 		self.userVirtuals = stack_dictlist([self.userVirtuals],incremental=1)
 
-		# Collapse all the profile virtuals. Negatives don't apply outside
-		# as negatives in profiles only affect profile virtuals.
-		self.dirVirtuals = stack_dictlist(self.dirVirtuals,incremental=1)
+		# Collapse all the profile virtuals including user negations.
+		self.dirVirtuals = stack_dictlist([self.negVirtuals]+self.dirVirtuals,incremental=1)
 
 		# Repoman does not use user or tree virtuals.
 		if os.environ.get("PORTAGE_CALLER","") != "repoman":
@@ -1436,10 +1425,10 @@ class config:
 		# Virtuals by user+tree preferences.
 		utVirtuals   = {}
 
-		# If a user virtuals is already installed, we preference it.
+		# If a user virtual is already installed, we preference it.
 		for x in self.userVirtuals.keys():
 			utVirtuals[x] = []
-			if x in self.treeVirtuals.keys():
+			if self.treeVirtuals.has_key(x):
 				for y in self.userVirtuals[x]:
 					if y in self.treeVirtuals[x]:
 						utVirtuals[x].append(y)
@@ -1447,24 +1436,17 @@ class config:
 			#utVirtuals[x].reverse()
 			#print "R:",utVirtuals
 
-		# If a tree virtual is also a profile virtual, we preference it.
+		# If a profile virtual is already installed, we preference it.
 		for x in self.dirVirtuals.keys():
 			ptVirtuals[x] = []
-			if x in self.treeVirtuals.keys():
+			if self.treeVirtuals.has_key(x):
 				for y in self.dirVirtuals[x]:
 					if y in self.treeVirtuals[x]:
 						ptVirtuals[x].append(y)
 
-		# Apply the negations to all but userVirtuals-spawned virtuals.
-		NptVirtuals   = stack_dictlist([self.negVirtuals,ptVirtuals],incremental=1)
-		NtreeVirtuals = stack_dictlist([self.negVirtuals,self.treeVirtuals],incremental=1)
-		NdirVirtuals  = stack_dictlist([self.negVirtuals,self.dirVirtuals],incremental=1)
-
-		uVirtuals      = copy.deepcopy(self.userVirtuals)
-
 		# UserInstalled, ProfileInstalled, Installed, User, Profile
-		biglist = [utVirtuals, NptVirtuals, NtreeVirtuals,
-		           uVirtuals, NdirVirtuals]
+		biglist = [utVirtuals, ptVirtuals, self.treeVirtuals,
+		           self.userVirtuals, self.dirVirtuals]
 
 		# We reverse each dictlist so that the order matches everything
 		# else in portage. [-*, a, b] [b, c, d] ==> [b, a]

@@ -1,44 +1,49 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.54 2005/01/17 01:34:36 carpaski Exp $
+# $Id: ChangeLog,v 1.796.2.55 2005/01/17 16:38:22 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
 
-  17 Jan 2004; Nicholas Jones <carpaski@gentoo.org> portage.py: Prevented
+  18 Jan 2005; Jason Stubbs <jstubbs@gentoo.org> portage.py emerge-webrsync:
+  Fixed the bash syntax error in emerge-webrsync as per #77941. Fixed the
+  blocking virtuals bug as per #78201. Removed the warning about negations
+  and reapplied negations to profile virtuals.
+
+  17 Jan 2005; Nicholas Jones <carpaski@gentoo.org> portage.py: Prevented
   negations from applying in virtuals and provided a warning.
 
-  16 Jan 2004; Nicholas Jones <carpaski@gentoo.org> repoman: Fix to match up
+  16 Jan 2005; Nicholas Jones <carpaski@gentoo.org> repoman: Fix to match up
   to the namespace changes in portage.
 
-  16 Jan 2004; Nicholas Jones <carpaski@gentoo.org> portage.py: Patch from a
+  16 Jan 2005; Nicholas Jones <carpaski@gentoo.org> portage.py: Patch from a
   bug report on a traceback that occurs when re-digesting a file without any
   distfiles but with a preexisting digest.
 
-  16 Jan 2004; Nicholas Jones <carpaski@gentoo.org> *.py: Added a cvs_id_str
+  16 Jan 2005; Nicholas Jones <carpaski@gentoo.org> *.py: Added a cvs_id_str
   to each portage module so we can account for them easily. Added printing
   of those versions on a 'emerge -d info'. Cleaned up the * imports in the
   modules so there shouldn't be any namespace pollution left.
 
 *portage-2.0.51-r13 (15 Jan 2004): Testing for virtuals changes
 
-  15 Jan 2004; Nicholas Jones <carpaski@gentoo.org> portage.py: Adjusted the
+  15 Jan 2005; Nicholas Jones <carpaski@gentoo.org> portage.py: Adjusted the
   virtuals handling into an advanced for of what Jason started using promotion
   instead of blanket settings. Removed the user_profile dir completely when
   using repoman via a new user_profile_dir variable that is stored on creation.
   Split the getvirtuals() call into two pieces so that setinst() can also
   recreate the virtuals properly when modifying the vartree.
 
-  15 Jan 2004; Nicholas Jones <carpaski@gentoo.org> portage_util.py: Modified
+  15 Jan 2005; Nicholas Jones <carpaski@gentoo.org> portage_util.py: Modified
   the stack_dictlist function to handle '-*' and do it in the proper order.
 
-  13 Jan 2004; Nicholas Jones <carpaski@gentoo.org> portage.py, emerge:
+  13 Jan 2005; Nicholas Jones <carpaski@gentoo.org> portage.py, emerge:
   Adjusted the version handling for portage so that we can use CVS versions
   and ignore the restarts when using livecvsportage.
 
-  13 Jan 2004; Nicholas Jones <carpaski@gentoo.org> repoman: Added the
+  13 Jan 2005; Nicholas Jones <carpaski@gentoo.org> repoman: Added the
   portage/repoman version used to the commit messages.
 
   13 Jan 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Fixed the
