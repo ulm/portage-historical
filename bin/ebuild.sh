@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 1999-2002 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.99 2003/02/03 13:13:43 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.100 2003/02/04 10:07:24 carpaski Exp $
 
 cd ${PORT_TMPDIR}
 
@@ -260,22 +260,32 @@ addpredict()
 	export SANDBOX_PREDICT="$SANDBOX_PREDICT:$1"
 }
 
-if [ "${FEATURES/-ccache/}" = "${FEATURES}" -a "${FEATURES/ccache/}" != "${FEATURES}" -a -d /usr/bin/ccache ]
-then
-	#We can enable compiler cache support
-	export PATH="/usr/bin/ccache:${PATH}"
-	if [ -z "${CCACHE_DIR}" ]
-	then
-		CCACHE_DIR=/root/.ccache
+if [ "$*" != "depend" ]; then
+	if has distcc ${FEATURES} &>/dev/null; then
+		if [ -d /usr/lib/distcc/bin ]; then
+			#We can enable distributed compile support
+			export PATH="/usr/lib/distcc/bin:${PATH}"
+			[ -z "${DISTCC_HOSTS}" ] && DISTCC_HOSTS="localhost"
+			[ ! -z "${DISTCC_LOG}" ] && addwrite "$(dirname ${DISTCC_LOG})"
+			export DISTCC_HOSTS
+		elif which distcc &>/dev/null; then
+			export CC="distcc $CC"
+			export CXX="distcc $CXX"
+		fi
 	fi
-	addread ${CCACHE_DIR}
-	addwrite ${CCACHE_DIR}
-fi
 
-if which distcc &>/dev/null && has distcc ${FEATURES}; then
-	export CC="distcc $CC"
-	export CXX="distcc $CXX"
-fi
+	if has ccache ${FEATURES} &>/dev/null; then
+		#We can enable compiler cache support
+		if   [ -d /usr/lib/ccache/bin ]; then
+			export PATH="/usr/lib/ccache/bin:${PATH}"
+		elif [ -d /usr/bin/ccache ]; then
+			export PATH="/usr/bin/ccache:${PATH}"
+		fi
+		[ -z "${CCACHE_DIR}" ] && export CCACHE_DIR=/root/.ccache
+		addread ${CCACHE_DIR}
+		addwrite ${CCACHE_DIR}
+	fi
+fi # $*==depend
 
 unpack() {
 	local x
@@ -698,18 +708,21 @@ dyn_compile() {
 		mkdir build-info
 	fi
 	cd build-info
-	echo "$CFLAGS" > CFLAGS
+	echo "$CFLAGS"   > CFLAGS
 	echo "$CXXFLAGS" > CXXFLAGS
-	echo "$CHOST" > CHOST
-	echo "$USE" > USE
-	echo "$LICENSE" > LICENSE
+	echo "$CC"       > CC
+	echo "$CXX"      > CXX
+	echo "$CHOST"    > CHOST
+	echo "$CBUILD"   > CBUILD
+	echo "$USE"      > USE
+	echo "$LICENSE"  > LICENSE
 	echo "$CATEGORY" > CATEGORY
-	echo "$PF" > PF
-	echo "$SLOT" > SLOT
-	echo "$RDEPEND" > RDEPEND
-	echo "$CDEPEND" > CDEPEND
-	echo "$PDEPEND" > PDEPEND
-	echo "$PROVIDE" > PROVIDE
+	echo "$PF"       > PF
+	echo "$SLOT"     > SLOT
+	echo "$RDEPEND"  > RDEPEND
+	echo "$CDEPEND"  > CDEPEND
+	echo "$PDEPEND"  > PDEPEND
+	echo "$PROVIDE"  > PROVIDE
 	cp ${EBUILD} ${PF}.ebuild
 	if [ -n "$DEBUGBUILD" ]
 	then
