@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.20 2005/01/02 13:03:24 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.21 2005/01/02 13:12:49 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -5998,7 +5998,6 @@ class dblink:
 			mydirs=[]
 			mysyms=[]
 			modprotect="/lib/modules/"
-			confunmerge = ("conf-unmerge" in settings.features)
 			for obj in mykeys:
 				obj=os.path.normpath(obj)
 				if obj[:2]=="//":
@@ -6015,7 +6014,7 @@ class dblink:
 				# upgraded. We effectively only want one half of the config protection
 				# functionality for /lib/modules. For portage-ng both capabilities
 				# should be able to be independently specified.
-				if (not confunmerge and self.isprotected(obj)) or ((len(obj) > len(modprotect)) and (obj[0:len(modprotect)]==modprotect)):
+				if self.isprotected(obj) or ((len(obj) > len(modprotect)) and (obj[0:len(modprotect)]==modprotect)):
 					print "--- cfgpro "+str(pkgfiles[obj][0]), obj
 					continue
 

@@ -1,15 +1,11 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.36 2005/01/02 13:03:24 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.37 2005/01/02 13:12:49 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
-
-  02 Dec 2005; Jason Stubbs <jstubbs@gentoo.org> portage.py: Added new feature
-  "conf-unmerge" that will cause CONFIG_PROTECT to be ignored when unmerging.
-  (mtime and md5 sums still apply) #8423
 
   02 Dec 2005; Jason Stubbs <jstubbs@gentoo.org> dolib ebuild.sh preplib:
   Applied eradicator's libdir patch for multilib support. #75420
