@@ -1,6 +1,12 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 2000-2004 Gentoo Technologies, Inc.; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.557 2004/03/01 14:51:24 genone Exp $
+# $Id: ChangeLog,v 1.558 2004/03/03 19:24:44 genone Exp $
+
+  03 Mar 2004; Marius Mauch <genone@gentoo.org> tarball.sh, bin/repoman,
+  pym/portage.py:
+  Fixing the "letter before endversion" bug (#17172). Replacing
+  keywords.desc with arch.list in repoman (#35398). FEATURES=strict
+  is now sufficient for Manifest validation (#41292).
 
   01 Mar 2004; Marius Mauch <genone@gentoo.org> bin/emerge,
   bin/emergehelp.py, man/emerge.1:
