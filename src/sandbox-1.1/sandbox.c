@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 Geert Bevin, Uwyn, http://www.uwyn.com
 **	Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@uwyn.com>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.c,v 1.7 2002/12/21 12:35:51 carpaski Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/sandbox.c,v 1.8 2003/01/10 05:54:46 jrray Exp $
 */
 
 #define _GNU_SOURCE
@@ -618,6 +618,10 @@ int main(int argc, char** argv)
     setenv(ENV_SANDBOX_DEBUG_LOG, sandbox_debug_log, 1);
 
     home_dir = getenv("HOME");
+    if (!home_dir) {
+            home_dir = "/";
+            setenv("HOME", "/", 1);
+    }
 
     /* drobbins: we need to expand these paths using realpath() so that PORTAGE_TMPDIR
      * can contain symlinks (example, /var is a symlink, /var/tmp is a symlink.)  Without
