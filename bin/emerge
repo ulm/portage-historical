@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.270 2004/02/26 00:37:08 nakano Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.271 2004/02/27 02:48:16 nakano Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -777,7 +777,7 @@ class depgraph:
 			if (merging==0 and "--newuse" in myopts and vardbapi.cpv_exists(mykey)):
 				iuses=string.split(portage.portdb.aux_get(mykey, ["IUSE"])[0])
 				old_use=string.split(vardbapi.aux_get(mykey, ["USE"])[0])
-				now_use=self.pkgsettings["USE"]
+				now_use=string.split(self.pkgsettings["USE"])
 				for x in iuses:
 					if (old_use.count(x) and not now_use.count(x)) or (not old_use.count(x) and now_use.count(x)):
 						merging=1
