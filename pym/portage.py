@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.456 2004/08/03 01:33:52 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.457 2004/08/03 08:35:18 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -3857,7 +3857,7 @@ def dep_check(depstring,mydbapi,mysettings,use="yes",mode=None,myuse=None,use_ca
 		mysplit = portage_dep.use_reduce(mysplit,myusesplit,masklist=mymasks)
 	else:
 		mysplit = portage_dep.use_reduce(mysplit,myusesplit)
-
+	
 	#convert virtual dependencies to normal packages.
 	mysplit=dep_virtual(mysplit)
 	#if mysplit==None, then we have a parse error (paren mismatch or misplaced ||)

@@ -1,7 +1,7 @@
 # deps.py -- Portage dependency resolution functions
 # Copyright 2003 Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Id: portage_dep.py,v 1.5 2004/08/02 20:59:08 carpaski Exp $
+# $Id: portage_dep.py,v 1.6 2004/08/03 08:35:19 carpaski Exp $
 
 # DEPEND SYNTAX:
 #
@@ -64,6 +64,14 @@ def use_reduce(deparray, uselist=[], masklist=[], matchall=0):
 	rlist = []
 	while mydeparray:
 		head = mydeparray.pop(0)
+
+		# Hack in management of the weird || for dep_wordreduce, etc.
+		# dep_opconvert: [stuff, ["||", list, of, things]]
+		# At this point: [stuff, "||", [list, of, things]]
+		if head == "||" and (type(mydeparray[0]) == types.ListType):
+			mydeparray[0].insert(0,"||")
+			head = mydeparray.pop(0)
+
 		if type(head) == types.ListType:
 			rlist = rlist + [use_reduce(head, uselist, masklist, matchall)]
 		else:
@@ -111,4 +119,5 @@ def use_reduce(deparray, uselist=[], masklist=[], matchall=0):
 						raise ValueError, "Conditional with no target."
 			else:
 				rlist = rlist + [head]
+
 	return rlist
