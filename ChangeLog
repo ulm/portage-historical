@@ -1,11 +1,14 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.83 2005/03/08 20:28:24 ferringb Exp $
+# $Id: ChangeLog,v 1.796.2.84 2005/03/23 12:27:26 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  23 Mar 2005; Jason Stubbs <jstubbs@gentoo.org> bin/dispatch-conf:
+  Removed the -a argument from all diff usage.
 
   08 Mar 2005; Brian Harring <ferringb@gentoo.org> pym/portage.py: 
   Tweak to ensure restrict is dumped to the env, with PORTAGE_RESTRICT 
