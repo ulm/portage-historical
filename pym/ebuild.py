@@ -2,7 +2,7 @@
 # ebuild.py; Ebuild classes/abstraction of phase processing, and communicating with a ebuild-daemon.sh instance
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.14 2005/03/02 06:29:44 ferringb Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.15 2005/03/02 06:30:59 ferringb Exp $
 
 
 import os,sys,traceback
@@ -900,7 +900,7 @@ class ebuild_handler:
 						# touch the file.
 						open(mysettings["PORTAGE_LOGFILE"], "w").close()
 					os.chmod(mysettings["PORTAGE_LOGFILE"], 0664)
-					os.chown(mysettings["PORtAGE_LOGFILE"], -1,portage_gid)
+					os.chown(mysettings["PORTAGE_LOGFILE"], -1,portage_gid)
 				except ValueError, e:
 					mysettings["PORT_LOGDIR"]=""
 					print "!!! Unable to chown/chmod PORT_LOGDIR. Disabling logging."
