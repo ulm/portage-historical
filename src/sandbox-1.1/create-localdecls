@@ -8,7 +8,7 @@
 #
 # Uhm... time to learn GNU autoconf :-)
 #
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/create-localdecls,v 1.6 2003/02/23 13:13:36 azarah Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/create-localdecls,v 1.7 2003/06/22 20:01:20 azarah Exp $
 
 OUTFILE='localdecls.h'
 
@@ -91,6 +91,20 @@ if test "$VERSION" = 'libc.so.6' ; then
 		;;
 	esac
 fi
+
+echo '
+#ifdef PATH_MAX
+# define SB_PATH_MAX PATH_MAX * 2
+# if (SB_PATH_MAX >= INT_MAX)
+#  undef SB_PATH_MAX
+#  define SB_PATH_MAX PATH_MAX + 25
+#  if (SB_PATH_MAX >= INT_MAX)
+#   error PATH_MAX too big!
+#  endif
+# endif
+#else
+# error PATH_MAX not defined!
+#endif' >> $OUTFILE
 
 echo >> $OUTFILE
 echo '#endif' >> $OUTFILE

@@ -8,7 +8,7 @@
 # Modified 19 Aug 2002; Martin Schlemmer <azarah@gentoo.org>
 #  Major rewrite to support new stuff
 #
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/Makefile,v 1.3 2003/02/22 13:40:38 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/Makefile,v 1.4 2003/06/22 20:01:20 azarah Exp $
 
 CC = gcc
 LD = ld
@@ -37,7 +37,7 @@ libsandbox.so: libsandbox.o sandbox_futils.o canonicalize.o
 libsandbox.o: libsandbox.c localdecls.h
 	$(CC) $(CFLAGS) -Wall -c $(OBJ_DEFINES) libsandbox.c
 
-canonicalize.o: canonicalize.c
+canonicalize.o: canonicalize.c localdecls.h
 	$(CC) $(CFLAGS) -Wall -c $(OBJ_DEFINES) canonicalize.c
 
 localdecls.h: create-localdecls libctest.c
