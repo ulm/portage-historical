@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2003 Daniel Robbins, Gentoo Technologies, Inc.
 # Distributed under the GNU Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.417 2004/05/18 06:31:06 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.418 2004/05/18 08:13:47 jstubbs Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -1604,9 +1604,12 @@ class config:
 		self.mycpv = mycpv
 		self.pusekey = best_match_to_list(self.mycpv, self.pusedict.keys())
 		if self.pusekey:
-			self.puse = string.join(self.pusedict[self.pusekey])
+			newpuse = string.join(self.pusedict[self.pusekey])
 		else:
-			self.puse = ""
+			newpuse = ""
+		if newpuse == self.puse:
+			return
+		self.puse = newpuse
 		self.configdict["pkg"]["PKGUSE"] = self.puse[:] # For saving to PUSE file
 		self.configdict["pkg"]["USE"]    = self.puse[:] # this gets appended to USE
 		self.reset(keeping_pkg=1,use_cache=use_cache)
