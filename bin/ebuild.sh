@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2003 Gentoo Technologies, Inc.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.113 2003/02/26 11:24:14 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.114 2003/02/27 11:31:00 carpaski Exp $
 
 if [ -n "$#" ]
 then
@@ -987,8 +987,8 @@ if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 			if [ -z "${PATH/*distcc*/}" ]; then
 				# Remove the other reference.
 				PATH="$(echo ${PATH} | sed 's/:[^:]*distcc[^:]*:/:/;s/^[^:]*distcc[^:]*://;s/:[^:]*distcc[^:]*$//')"
-				export PATH="/usr/lib/distcc/bin:${PATH}"
 			fi
+			export PATH="/usr/lib/distcc/bin:${PATH}"
 			[ -z "${DISTCC_HOSTS}" ] && DISTCC_HOSTS="localhost"
 			[ ! -z "${DISTCC_LOG}" ] && addwrite "$(dirname ${DISTCC_LOG})"
 			export DISTCC_HOSTS
