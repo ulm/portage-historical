@@ -5,7 +5,10 @@
 # Modified 15 Apr 2002 Jon Nelson <jnelson@gentoo.org>
 #  Clean up Makefile somewhat, and use make's implicit rules
 #
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/Makefile,v 1.1 2002/08/18 21:25:23 azarah Exp $
+# Modified 19 Aug 2002; Martin Schlemmer <azarah@gentoo.org>
+#  Major rewrite to support new stuff
+#
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox.new/Attic/Makefile,v 1.2 2002/08/18 22:40:05 azarah Exp $
 
 CC = gcc
 LD = ld
@@ -27,11 +30,14 @@ sandbox.o: sandbox.c sandbox.h
 sandbox_futils.o: sandbox_futils.c sandbox.h
 	$(CC) $(CFLAGS) -Wall -c sandbox_futils.c
 
-libsandbox.so: libsandbox.o sandbox_futils.o
-	$(LD) -shared -o libsandbox.so libsandbox.o sandbox_futils.o -ldl -lc
+libsandbox.so: libsandbox.o sandbox_futils.o canonicalize.o
+	$(LD) -shared -o libsandbox.so libsandbox.o sandbox_futils.o canonicalize.o -ldl -lc
 
 libsandbox.o: libsandbox.c localdecls.h
 	$(CC) $(CFLAGS) -Wall -c -D_GNU_SOURCE -DPIC -fPIC -D_REENTRANT libsandbox.c
+
+canonicalize.o: canonicalize.c
+	$(CC) $(CFLAGS) -Wall -c -D_GNU_SOURCE -DPIC -fPIC -D_REENTRANT canonicalize.c
 
 localdecls.h: create-localdecls libctest.c
 	./create-localdecls
