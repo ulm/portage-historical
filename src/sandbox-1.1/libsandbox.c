@@ -25,7 +25,7 @@
  *  as some of the InstallWatch code was used.
  *
  *
- *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.18 2004/04/12 00:27:51 carpaski Exp $
+ *  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/src/sandbox-1.1/Attic/libsandbox.c,v 1.19 2004/04/14 01:47:36 carpaski Exp $
  *
  */
 
@@ -468,7 +468,7 @@ int
 mkdir(const char *pathname, mode_t mode)
 // returns 0 success, or -1 if an error occurred
 {
-	int result = -1;
+	int result = -1, my_errno = errno;
 	char canonic[SB_PATH_MAX];
 	struct stat st;
 
@@ -479,6 +479,7 @@ mkdir(const char *pathname, mode_t mode)
 		errno = EEXIST;
 		return -1; 
 	}
+	errno = my_errno;
 
 	if FUNCTION_SANDBOX_SAFE
 		("mkdir", canonic) {
