@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.180 2004/10/19 04:58:42 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/Attic/tarball.sh,v 1.181 2004/10/20 01:24:49 carpaski Exp $
 
 if [ -z "$1" ]; then
 	echo
@@ -50,7 +50,7 @@ find -name '*.pyc' -exec rm -rf {} \;
 find -name '*.pyo' -exec rm -rf {} \;
 chown -R root:root ${DEST}
 cd $TMP
-rm -f ${PKG}-${V}/bin/emerge.py ${PKG}-${V}/bin/{pmake,sandbox} ${PKG}-${V}/{bin,pym}/*.{orig,diff} ${PKG}-${V}/{bin,pym}/*.py[oc]
+rm -f ${PKG}-${V}/bin/emerge.py ${PKG}-${V}/bin/{pmake,sandbox} ${PKG}-${V}/{bin,pym}/'.#'* ${PKG}-${V}/{bin,pym}/*.{orig,diff} ${PKG}-${V}/{bin,pym}/*.py[oc]
 tar cjvf ${TMP}/${PKG}-${V}.tar.bz2 ${PKG}-${V}
 
 scp ${TMP}/${PKG}-${V}.tar.bz2 carpaski@twobit.net:/home/html/gentoo/portage/

@@ -1,7 +1,7 @@
 # getbinpkg.py -- Portage binary-package helper functions
 # Copyright 2003-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/getbinpkg.py,v 1.11 2004/10/11 04:12:02 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/getbinpkg.py,v 1.12 2004/10/20 01:24:49 carpaski Exp $
 
 from output import *
 import htmllib,HTMLParser,string,formatter,sys,os,xpak,time,tempfile,cPickle,base64
@@ -518,7 +518,7 @@ def dir_get_metadata(baseurl, conn=None, chunk_size=3000, verbose=1, usingcache=
 	sys.stderr.write("\n")
 	
 	try:
-		if metadata[baseurl]["modified"]:
+		if metadata[baseurl].has_key("modified") and metadata[baseurl]["modified"]:
 			metadata[baseurl]["timestamp"] = int(time.time())
 			metadatafile = open("/var/cache/edb/remote_metadata.pickle", "w+")
 			cPickle.dump(metadata,metadatafile)

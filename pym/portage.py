@@ -1,7 +1,7 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.523 2004/10/19 04:58:42 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524 2004/10/20 01:24:49 carpaski Exp $
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -7087,12 +7087,17 @@ def portageexit():
 				mtimedb["version"]=VERSION
 				cPickle.dump(mtimedb, open(mymfn,"w"), cPickle.HIGHEST_PROTOCOL)
 				#print "*** Wrote out mtimedb data successfully."
+			except SystemExit, e:
+				raise
+			except Exception, e:
+				writemsg("Failed to write to mtimedb: %(reason)s\n" % {"reason":str(e)})
+
+			try:
 				os.chown(mymfn,uid,portage_gid)
 				os.chmod(mymfn,0664)
 			except SystemExit, e:
 				raise
 			except Exception, e:
-				print "MTIMEDB:",e
 				pass
 
 atexit.register(portageexit)

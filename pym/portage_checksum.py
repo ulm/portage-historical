@@ -1,7 +1,7 @@
 # portage_checksum.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_checksum.py,v 1.9 2004/10/19 04:58:42 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_checksum.py,v 1.10 2004/10/20 01:24:49 carpaski Exp $
 
 from portage_const import PRIVATE_PATH,PRELINK_BINARY
 import os
@@ -105,7 +105,7 @@ def sha1hash(filename):
 
 def perform_checksum(filename, hash_function=md5hash, calc_prelink=0):
 	myfilename      = filename[:]
-	prelink_tmpfile = PRIVATE_PATH+"/prelink-checksum.tmp"
+	prelink_tmpfile = PRIVATE_PATH+"/prelink-checksum.tmp."+str(os.getpid())
 	mylock          = None
 	
 	if calc_prelink and prelink_capable:
