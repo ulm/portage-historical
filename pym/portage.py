@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.38 2005/02/05 14:31:25 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.38 2005/02/05 14:31:25 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.39 2005/02/06 12:56:39 carpaski Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.39 2005/02/06 12:56:39 carpaski Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.38 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.39 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -50,6 +50,16 @@ except:
 	sys.stderr.write("!!! You might consider starting python with verbose flags to see what has\n")
 	sys.stderr.write("!!! gone wrong. The exception was non-standard and we were unable to catch it.\n\n")
 	sys.exit(127)
+
+try:
+	# XXX: This should get renamed to bsd_chflags, I think.
+	import chflags
+	bsd_chflags = chflags
+except SystemExit, e:
+	raise
+except:
+	# XXX: This should get renamed to bsd_chflags, I think.
+	bsd_chflags = None
 
 try:
 	import cvstree
@@ -2650,10 +2660,18 @@ def movefile(src,dest,newmtime=None,sstat=None,mysettings=None):
 	be preserved even when moving across filesystems.  Returns true on success and false on
 	failure.  Move is atomic."""
 	#print "movefile("+str(src)+","+str(dest)+","+str(newmtime)+","+str(sstat)+")"
-	global lchown 	
+	global lchown
+	
 	try:
 		if not sstat:
 			sstat=os.lstat(src)
+		if bsd_chflags:
+			sflags=bsd_chflags.lgetflags(src)
+			if sflags < 0:
+				# Problem getting flags...
+				writemsg("!!! Couldn't get flags for "+dest+"\n")
+				return None
+			
 	except SystemExit, e:
 		raise
 	except Exception, e:
@@ -2669,6 +2687,24 @@ def movefile(src,dest,newmtime=None,sstat=None,mysettings=None):
 	except:
 		dstat=os.lstat(os.path.dirname(dest))
 		destexists=0
+
+	if bsd_chflags:
+		# Check that we can actually unset schg etc flags...
+		# Clear the flags on source and destination; we'll reinstate them after merging
+		if(destexists):
+			if bsd_chflags.lchflags(dest, 0) < 0:
+				writemsg("!!! Couldn't clear flags on file being merged: \n ")
+		# We might have an immutable flag on the parent dir; save and clear.
+		pflags=bsd_chflags.lgetflags(os.path.dirname(dest))
+		bsd_chflags.lchflags(os.path.dirname(dest), 0)
+			
+		# Don't bother checking the return value here; if it fails then the next line will catch it.
+		bsd_chflags.lchflags(src, 0)
+		
+		if bsd_chflags.lhasproblems(src)>0 or (destexists and bsd_chflags.lhasproblems(dest)>0) or bsd_chflags.lhasproblems(os.path.dirname(dest))>0:
+			# This is bad: we can't merge the file with these flags set.
+			writemsg("!!! Can't merge file "+dest+" because of flags set\n")
+			return None		
 
 	if destexists:
 		if stat.S_ISLNK(dstat[stat.ST_MODE]):
@@ -2694,6 +2730,12 @@ def movefile(src,dest,newmtime=None,sstat=None,mysettings=None):
 			else:
 				os.symlink(target,dest)
 			lchown(dest,sstat[stat.ST_UID],sstat[stat.ST_GID])
+			if bsd_chflags:
+				# Restore the flags we saved before moving
+				if bsd_chflags.lchflags(dest, sflags) < 0 or bsd_chflags.lchflags(os.path.dirname(dest), pflags) < 0:
+					writemsg("!!! Couldn't restore flags ("+str(flags)+") on " + dest+":\n")
+					writemsg("!!! %s\n" % str(e))
+					return None
 			return os.lstat(dest)[stat.ST_MTIME]
 		except SystemExit, e:
 			raise
@@ -2767,6 +2809,13 @@ def movefile(src,dest,newmtime=None,sstat=None,mysettings=None):
 	else:
 		os.utime(dest, (sstat[stat.ST_ATIME], sstat[stat.ST_MTIME]))
 		newmtime=sstat[stat.ST_MTIME]
+
+	if bsd_chflags:
+		# Restore the flags we saved before moving
+		if bsd_chflags.lchflags(dest, sflags) < 0 or bsd_chflags.lchflags(os.path.dirname(dest), pflags) < 0:
+			writemsg("!!! Couldn't restore flags ("+str(sflags)+") on " + dest+":\n")
+			return None
+		
 	return newmtime
 
 def merge(mycat,mypkg,pkgloc,infloc,myroot,mysettings,myebuild=None):
@@ -6593,6 +6642,13 @@ class dblink:
 				# we are merging a directory
 				if mydmode!=None:
 					# destination exists
+
+					if bsd_chflags:
+						# Save then clear flags on dest.
+						dflags=bsd_chflags.lgetflags(mydest)
+						if(bsd_chflags.lchflags(mydest, 0)<0):
+							writemsg("!!! Couldn't clear flags on '"+mydest+"'.\n")
+					
 					if not os.access(mydest, os.W_OK):
 						pkgstuff = pkgsplit(self.pkg)
 						writemsg("\n!!! Cannot write to '"+mydest+"'.\n")
@@ -6605,6 +6661,8 @@ class dblink:
 					if stat.S_ISLNK(mydmode) or stat.S_ISDIR(mydmode):
 						# a symlink to an existing directory will work for us; keep it:
 						print "---",mydest+"/"
+						if bsd_chflags:
+							bsd_chflags.lchflags(mydest, dflags)
 					else:
 						# a non-directory and non-symlink-to-directory.  Won't work for us.  Move out of the way.
 						if movefile(mydest,mydest+".backup", mysettings=self.settings) == None:
@@ -6616,6 +6674,8 @@ class dblink:
 							selinux.secure_mkdir(mydest,sid)
 						else:
 							os.mkdir(mydest)
+						if bsd_chflags:
+							bsd_chflags.lchflags(mydest, dflags)
 						os.chmod(mydest,mystat[0])
 						lchown(mydest,mystat[4],mystat[5])
 						print ">>>",mydest+"/"
@@ -6627,6 +6687,8 @@ class dblink:
 					else:
 						os.mkdir(mydest)
 					os.chmod(mydest,mystat[0])
+					if bsd_chflags:
+						bsd_chflags.lchflags(mydest, bsd_chflags.lgetflags(mysrc))
 					lchown(mydest,mystat[4],mystat[5])
 					print ">>>",mydest+"/"
 				outfile.write("dir "+myrealdest+"\n")
