@@ -11,7 +11,7 @@
 **	Copyright (C) 2001 The Leaf, http://www.theleaf.be
 **  Distributed under the terms of the GNU General Public License, v2 or later 
 **	Author : Geert Bevin <gbevin@theleaf.be>
-**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/files/sandbox/Attic/libsandbox.c,v 1.3 2001/12/07 15:14:49 gbevin Exp $
+**  $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/sandbox/files/sandbox/Attic/libsandbox.c,v 1.4 2001/12/07 16:11:29 gbevin Exp $
 */
 
 #define _GNU_SOURCE
@@ -636,7 +636,7 @@ int check_syscall(const char* func, const char* file)
 			
 			if (NULL != log_path)
 			{
-				log_file = open(log_path, O_APPEND|O_WRONLY|O_CREAT, 640);
+				log_file = open(log_path, O_APPEND|O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
 				if(log_file >= 0)
 				{
 					sprintf(buffer, "%s:%*s%s\n", func, (int)(10-strlen(func)), "", absolute_path);
