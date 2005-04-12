@@ -2,10 +2,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.585 2005/03/10 19:17:09 genone Exp $
-cvs_id_string="$Id: portage.py,v 1.585 2005/03/10 19:17:09 genone Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.586 2005/04/12 22:37:12 vapier Exp $
+cvs_id_string="$Id: portage.py,v 1.586 2005/04/12 22:37:12 vapier Exp $"[5:-2]
 
-VERSION="$Revision: 1.585 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.586 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -4908,7 +4908,7 @@ class dblink:
 		return os.path.exists(self.dbdir+"/CATEGORY")
 
 def cleanup_pkgmerge(mypkg,origdir=None):
-	shutil.rmtree(settings["PORTAGE_TMPDIR"]+"/portage-pkg/"+mypkg)
+	shutil.rmtree(settings["PORTAGE_TMPDIR"]+"/binpkgs/"+mypkg)
 	if os.path.exists(settings["PORTAGE_TMPDIR"]+"/portage/"+mypkg+"/temp/environment"):
 		os.unlink(settings["PORTAGE_TMPDIR"]+"/portage/"+mypkg+"/temp/environment")
 	if origdir:
@@ -4930,7 +4930,7 @@ def pkgmerge(mytbz2,myroot,mysettings):
 		return None
 	mycat=mycat.strip()
 	mycatpkg=mycat+"/"+mypkg
-	tmploc=mysettings["PORTAGE_TMPDIR"]+"/portage-pkg/"
+	tmploc=mysettings["PORTAGE_TMPDIR"]+"/binpkgs/"
 	pkgloc=tmploc+"/"+mypkg+"/bin/"
 	infloc=tmploc+"/"+mypkg+"/inf/"
 	myebuild=tmploc+"/"+mypkg+"/inf/"+os.path.basename(mytbz2)[:-4]+"ebuild"

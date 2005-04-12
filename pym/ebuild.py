@@ -2,7 +2,7 @@
 # ebuild.py; Ebuild classes/abstraction of phase processing, and communicating with a ebuild-daemon.sh instance
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.21 2005/03/09 09:06:12 ferringb Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.22 2005/04/12 22:37:12 vapier Exp $
 
 
 import os,sys,traceback
@@ -659,7 +659,7 @@ class ebuild_handler:
 			mysettings["BUILD_PREFIX"] += "-pkg"
 
 		mysettings["HOME"]         = mysettings["BUILD_PREFIX"]+"/homedir"
-		mysettings["PKG_TMPDIR"]   = mysettings["PORTAGE_TMPDIR"]+"/portage-pkg"
+		mysettings["PKG_TMPDIR"]   = mysettings["PORTAGE_TMPDIR"]+"/binpkgs"
 
 		if cleanup and os.path.exists(mysettings["BUILDDIR"]):
 			print "cleansing builddir"+mysettings["BUILDDIR"]
