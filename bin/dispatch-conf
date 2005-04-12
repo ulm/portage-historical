@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dispatch-conf,v 1.7.2.6 2005/03/23 12:27:27 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dispatch-conf,v 1.7.2.7 2005/04/12 12:23:41 jstubbs Exp $
 
 #
 # dispatch-conf -- Integrate modified configs, post-emerge
@@ -66,7 +66,8 @@ class dispatch:
 
         if self.options.has_key("log-file"):
             if os.path.exists(self.options["log-file"]):
-                shutil.move(self.options["log-file"], self.options["log-file"] + '.old')
+                shutil.copyfile(self.options["log-file"], self.options["log-file"] + '.old')
+                os.remove(self.options["log-file"])
         else:
             self.options["log-file"] = "/dev/null"
 
@@ -187,7 +188,8 @@ class dispatch:
                     merged = SCRATCH_DIR+"/"+os.path.basename(conf['current'])
                     print
                     os.system (MERGE % (merged, conf ['current'], newconf))
-                    shutil.move (merged, mrgconf)
+                    shutil.copyfile(merged, mrgconf)
+                    os.remove(merged)
                     mystat = os.lstat(conf['new'])
                     os.chmod(mrgconf, mystat[ST_MODE])
                     os.chown(mrgconf, mystat[ST_UID], mystat[ST_GID])
@@ -221,7 +223,8 @@ class dispatch:
         the diff of what changed into the configured log file."""
         os.system((DIFF_CONTENTS % (curconf, newconf)) + '>>' + self.options["log-file"])
         try:
-            shutil.move(newconf, curconf)
+            shutil.copyfile(newconf, curconf)
+            os.remove(newconf)
         except (IOError, os.error), why:
             print >> sys.stderr, 'dispatch-conf: Error renaming %s to %s: %s; fatal' % \
                   (newconf, curconf, str(why))

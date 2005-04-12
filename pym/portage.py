@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.51 2005/04/02 14:16:55 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.51 2005/04/02 14:16:55 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.52 2005/04/12 12:23:41 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.52 2005/04/12 12:23:41 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.51 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.52 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -4011,7 +4011,7 @@ def match_from_list(mydep,candidate_list):
 	if ver and rev:
 		operator = get_operator(mydep)
 		if not operator:
-			writemsg("!!! Invanlid atom: %s\n" % mydep)
+			writemsg("!!! Invalid atom: %s\n" % mydep)
 			return []
 	else:
 		operator = None
@@ -5113,10 +5113,6 @@ class portdbapi(dbapi):
 		if not mycpv:
 			return "",0
 		mysplit=mycpv.split("/")
-		if mysplit[0]=="virtual":
-			print "!!! Cannot resolve a virtual package name to an ebuild."
-			print "!!! This is a bug, please report it. ("+mycpv+")"
-			sys.exit(1)
 		
 		psplit=pkgsplit(mysplit[1])
 		ret=None
@@ -5595,17 +5591,6 @@ class portdbapi(dbapi):
 				elif gp in pgroups:
 					match=1
 					break
-			else:
-				if "*" in pgroups:
-					for gp in mygroups:
-						if not gp[0] in "~-":
-							match=1
-							break
-				if "~*" in pgroups:
-					for gp in mygroups:
-						if gp[0] != "-":
-							match=1
-							break
 			if match:
 				newlist.append(mycpv)
 		return newlist
@@ -6991,7 +6976,7 @@ if not os.path.exists(root+"var/tmp"):
 
 os.umask(022)
 profiledir=None
-if os.path.isdir(PROFILE_PATH):
+if "PORTAGE_CALLER" in os.environ and os.environ["PORTAGE_CALLER"] == "emerge" and os.path.isdir(PROFILE_PATH):
 	profiledir = PROFILE_PATH
 	if os.access(DEPRECATED_PROFILE_FILE, os.R_OK):
 		deprecatedfile = open(DEPRECATED_PROFILE_FILE, "r")

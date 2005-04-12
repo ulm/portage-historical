@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.14 2005/04/03 07:00:30 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.15 2005/04/12 12:23:41 jstubbs Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -68,7 +68,7 @@ optionshelp={
 qahelp={
 	"CVS/Entries.IO_error":"Attempting to commit, and an IO error was encountered access the Entries file",
 	"digest.partial":"Digest files do not contain all corresponding URI elements",
-	"digest.assumed":"Existing digest must be assumed correct",
+	"digest.assumed":"Existing digest must be assumed correct (Package level only)",
 	"digest.unused":"Digest entry has no matching SRC_URI entry",
 	"digest.fail":"Digest does not match the specified local file",
 	"digest.stray":"Digest files that do not have a corresponding ebuild",
@@ -87,7 +87,6 @@ qahelp={
 	"file.size":"Files in the files directory must be under 20k",
 	"KEYWORDS.missing":"Ebuilds that have a missing KEYWORDS variable",
 	"LICENSE.missing":"Ebuilds that have a missing LICENSE variable",
-	"IUSE.missing":"Ebuilds that have a missing IUSE variable",
 	"DESCRIPTION.missing":"Ebuilds that have a missing DESCRIPTION variable",
 	"SLOT.missing":"Ebuilds that have a missing SLOT variable",
 	"DEPEND.bad":"User-visible ebuilds with bad DEPEND settings (matched against *visible* ebuilds)",
@@ -114,7 +113,7 @@ qahelp={
 	"LICENSE.invalid":"This ebuild is listing a license that doesnt exist in portages license/ dir.",
 	"KEYWORDS.invalid":"This ebuild contains KEYWORDS that are not listed in profiles/arch.list or for which no valid profile was found",
 	"ebuild.nostable":"There are no ebuilds that are marked as stable for your ARCH",
-	"ebuild.allmasked":"All ebuilds are masked for this package",
+	"ebuild.allmasked":"All ebuilds are masked for this package (Package level only)",
 	"ebuild.majorsyn":"This ebuild has a major syntax error that may cause the ebuild to fail partially or fully",
 	"ebuild.minorsyn":"This ebuild has a minor syntax error that contravenes gentoo coding style",
 	"ebuild.badheader":"This ebuild has a malformed header",
@@ -147,13 +146,16 @@ qawarnings=[
 "metadata.bad"
 ]
 
-missingvars=["KEYWORDS","LICENSE","DESCRIPTION","SLOT","IUSE"]
+missingvars=["KEYWORDS","LICENSE","DESCRIPTION","SLOT"]
 allvars=portage.auxdbkeys
 commitmessage=None
 commitmessagefile=None
 for x in missingvars:
-	qacats.append(x+".missing")
-	qawarnings.append(x+".missing")
+	x += ".missing"
+	if x not in qacats:
+		print "* missingvars values need to be added to qahelp ("+x+")"
+		qacats.append(x)
+		qawarnings.append(x)
 
 
 def err(txt):
@@ -764,7 +766,7 @@ for x in scanlist:
 								if not portage_checksum.verify_all(myff, mydigests[myf]):
 									stats["digest.fail"] += 1
 									fails["digest.fail"].append(y+"::"+myf)
-							else:
+							elif repolevel == 3:
 								stats["digest.assumed"] += 1
 								fails["digest.assumed"].append(y+"::"+myf)
 
@@ -784,9 +786,9 @@ for x in scanlist:
 				for z in os.listdir(checkdir+"/files/"+y):
 					filesdirlist.append(y+"/"+z)
 			# current policy is no files over 20k, this is the check.
-			elif mystat.st_size > 20000:
+			elif mystat.st_size > 20480:
 				stats["file.size"] += 1
-				fails["file.size"].append("("+ str(mystat.st_size/1000) + "K) "+x+"/files/"+y)
+				fails["file.size"].append("("+ str(mystat.st_size/1024) + "K) "+x+"/files/"+y)
 
 	if "ChangeLog" not in checkdirlist:
 		stats["changelog.missing"]+=1
@@ -806,6 +808,8 @@ for x in scanlist:
 					print red("!!! ")+z
 				stats["metadata.bad"]+=1
 				fails["metadata.bad"].append(x+"/metadata.xml")
+
+	allmasked = True
 
 	for y in ebuildlist:
 		if os.stat(checkdir+"/"+y+".ebuild")[0] & 0x0248:
@@ -859,10 +863,6 @@ for x in scanlist:
 
 		for pos in range(0,len(missingvars)):
 			if portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y, [ missingvars[pos] ] )[0]=="":
-				if missingvars[pos]=="IUSE":
-					# We should rewrite here later. See #21544
-					if not os.system("egrep '^IUSE=' "+repodir+"/"+x+"/"+y+".ebuild > /dev/null 2>&1"):
-						continue
 				myqakey=missingvars[pos]+".missing"
 				stats[myqakey]=stats[myqakey]+1
 				fails[myqakey].append(x+"/"+y+".ebuild")
@@ -878,6 +878,7 @@ for x in scanlist:
 					arches.append([keyword, keyword[1:], [keyword[1:], keyword]])
 				else:
 					arches.append([keyword, keyword, [keyword]])
+					allmasked = False
 
 		baddepsyntax = False
 		badlicsyntax = False
@@ -922,7 +923,7 @@ for x in scanlist:
 					os.environ["ACCEPT_KEYWORDS"]="-~"+arch
 	
 					if arch_caches.has_key(prof[0]):
-						dep_settings, portage.portdb = arch_caches[prof[0]]
+						dep_settings, portage.portdb, portage.db["/"]["porttree"] = arch_caches[prof[0]]
 						#portage.do_vartree(dep_settings)
 						#dep_settings.regenerate()
 					else:
@@ -931,9 +932,9 @@ for x in scanlist:
 						#portage.do_vartree(dep_settings)
 						#dep_settings.regenerate()
 						portage.portdb=portage.portdbapi(portdir, dep_settings)
-						arch_caches[prof[0]]=[dep_settings, portage.portdb]
+						portage.db["/"]["porttree"]=portage.portagetree("/",dep_settings.getvirtuals("/"))
+						arch_caches[prof[0]]=[dep_settings, portage.portdb, portage.db["/"]["porttree"]]
 	
-					portage.db["/"]["porttree"]=portage.portagetree("/",dep_settings.getvirtuals("/"))
 
 					ismasked = (catdir+"/"+y not in portage.db["/"]["porttree"].dbapi.xmatch("list-visible",x))
 					if ismasked:
@@ -1115,8 +1116,7 @@ for x in scanlist:
 	#if not portage.portdb.xmatch("bestmatch-visible",x):
 	#    stats["ebuild.nostable"]+=1
 	#    fails["ebuild.nostable"].append(x)
-	portage.groups=["*"]
-	if not portage.portdb.xmatch("list-visible",x):
+	if allmasked and repolevel == 3:
 		stats["ebuild.allmasked"]+=1
 		fails["ebuild.allmasked"].append(x)
 
@@ -1148,8 +1148,7 @@ for x in qacats:
 		if x not in qawarnings:
 			dofail=1
 	else:
-		if mymode!="full":
-			continue
+		continue
 	print "  "+string.ljust(x,30),
 	if stats[x]==0:
 		print green(`stats[x]`)
