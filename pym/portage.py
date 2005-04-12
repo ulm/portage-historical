@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.52 2005/04/12 12:23:41 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.52 2005/04/12 12:23:41 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.53 2005/04/12 13:50:59 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.53 2005/04/12 13:50:59 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.52 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.53 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -1047,8 +1047,13 @@ class config:
 			else:
 				locations = [self["PORTDIR"] + "/profiles", USER_CONFIG_PATH]
 
-				# Never set anything in this. It's for non-originals.
-				self.pusedict=grabdict_package(USER_CONFIG_PATH+"/package.use")
+				pusedict=grabdict_package(USER_CONFIG_PATH+"/package.use")
+				self.pusedict = {}
+				for key in pusedict.keys():
+					cp = dep_getkey(key)
+					if not self.pusedict.has_key(cp):
+						self.pusedict[cp] = {}
+					self.pusedict[cp][key] = pusedict[key]
 
 				#package.keywords
 				pkgdict=grabdict_package(USER_CONFIG_PATH+"/package.keywords")
@@ -1256,11 +1261,12 @@ class config:
 	def setcpv(self,mycpv,use_cache=1):
 		self.modifying()
 		self.mycpv = mycpv
-		self.pusekey = best_match_to_list(self.mycpv, self.pusedict.keys())
-		if self.pusekey:
-			newpuse = string.join(self.pusedict[self.pusekey])
-		else:
-			newpuse = ""
+		cp = dep_getkey(mycpv)
+		newpuse = ""
+		if self.pusedict.has_key(cp):
+			self.pusekey = best_match_to_list(self.mycpv, self.pusedict[cp].keys())
+			if self.pusekey:
+				newpuse = string.join(self.pusedict[cp][self.pusekey])
 		if newpuse == self.puse:
 			return
 		self.puse = newpuse
