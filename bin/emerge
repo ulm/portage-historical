@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.21 2005/04/12 13:29:35 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.22 2005/04/12 14:41:56 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -151,7 +151,7 @@ options=[
 "--fetchonly",    "--fetch-all-uri",
 "--getbinpkg",    "--getbinpkgonly",
 "--help",         "--noconfmem",
-"--newuse",
+"--newuse",       "--nocolor",
 "--nodeps",       "--noreplace",
 "--nospinner",    "--oneshot",
 "--onlydeps",     "--pretend",
@@ -370,6 +370,10 @@ if ("--debug" in myopts):
 	portage.settings.backup_changes("PORTAGE_DEBUG")
 	portage.debug=1
 	portage.settings.lock()
+
+# Set color output
+if ("--nocolor" in myopts) and (sys.stdout.isatty()):
+	nocolor()
 
 CLEAN_DELAY = 5
 EMERGE_WARNING_DELAY = 10
