@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.53 2005/04/12 13:50:59 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.53 2005/04/12 13:50:59 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.54 2005/04/13 15:28:38 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.54 2005/04/13 15:28:38 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.53 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.54 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -132,6 +132,7 @@ def exithandler(signum,frame):
 signal.signal(signal.SIGCHLD, signal.SIG_DFL)
 signal.signal(signal.SIGINT, exithandler)
 signal.signal(signal.SIGTERM, exithandler)
+signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
 def load_mod(name):
 	modname = string.join(string.split(name,".")[:-1],".")
@@ -560,6 +561,8 @@ def env_update(makelinks=1):
 				x=x+"/"
 			plmasked=0
 			for y in specials["PRELINK_PATH_MASK"]:
+				if not y:
+					continue
 				if y[-1]!='/':
 					y=y+"/"
 				if y==x[0:len(y)]:
@@ -1107,6 +1110,11 @@ class config:
 
 			pkgprovidedlines = grab_multiple("package.provided", self.profiles, grabfile)
 			pkgprovidedlines = stack_lists(pkgprovidedlines, incremental=1)
+			for x in range(len(pkgprovidedlines)-1, -1, -1):
+				cpvr = catpkgsplit(pkgprovidedlines[x])
+				if not cpvr or cpvr[0] == "null":
+					writemsg("Invalid package name in package.provided: "+pkgprovidedlines[x]+"\n")
+					del pkgprovidedlines[x]
 
 			self.pprovideddict = {}
 			for x in pkgprovidedlines:
@@ -2472,13 +2480,20 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 			return 1
 
 		try:
-			if ("userpriv" in features) and ("ccache" in features):
+			if ("ccache" in features):
 				if (not mysettings.has_key("CCACHE_DIR")) or (mysettings["CCACHE_DIR"]==""):
 					mysettings["CCACHE_DIR"]=mysettings["PORTAGE_TMPDIR"]+"/ccache"
 				if not os.path.exists(mysettings["CCACHE_DIR"]):
 					os.makedirs(mysettings["CCACHE_DIR"])
-				os.chown(mysettings["CCACHE_DIR"],portage_uid,portage_gid)
-				os.chmod(mysettings["CCACHE_DIR"],02770)
+				mystat = os.stat(settings["CCACHE_DIR"])
+				if ("userpriv" in features):
+					if mystat[ST_GID] != portage_gid:
+						spawn("chown -R "+str(portage_uid)+":"+str(portage_gid)+" "+settings["CCACHE_DIR"], free=1)
+						spawn("chmod -R ug+rw "+settings["CCACHE_DIR"], free=1)
+				else:
+					if mystat[ST_GID] != 0:
+						spawn("chown -R 0:0 "+settings["CCACHE_DIR"], free=1)
+						spawn("chmod -R ug+rw "+settings["CCACHE_DIR"], free=1)
 		except OSError, e:
 			print "!!! File system problem. (ReadOnly? Out of space?)"
 			print "!!! Perhaps: rm -Rf",mysettings["BUILD_PREFIX"]
@@ -5633,17 +5648,20 @@ class binarytree(packagetree):
 		if not origmatches:
 			return
 		for mycpv in origmatches:
+			
 			mycpsplit=catpkgsplit(mycpv)
 			mynewcpv=newcp+"-"+mycpsplit[2]
-			mynewcat=newcp.split("/")[0]
-			mynewpkg=mynewcpv.split("/")[1]
-			myoldpkg=mycpv.split("/")[1]
 			if mycpsplit[3]!="r0":
 				mynewcpv += "-"+mycpsplit[3]
+			
+			myoldpkg=mycpv.split("/")[1]
+			mynewpkg=mynewcpv.split("/")[1]
+			
 			if (mynewpkg != myoldpkg) and os.path.exists(self.getname(mynewcpv)):
 				writemsg("!!! Cannot update binary: Destination exists.\n")
 				writemsg("!!! "+mycpv+" -> "+mynewcpv+"\n")
 				continue
+			
 			tbz2path=self.getname(mycpv)
 			if os.path.exists(tbz2path) and not os.access(tbz2path,os.W_OK):
 				writemsg("!!! Cannot update readonly binary: "+mycpv+"\n")
@@ -6970,6 +6988,23 @@ if not os.path.exists(root+"var/tmp"):
 		pass
 	try:
 		os.mkdir(root+"var/tmp",01777)
+	except SystemExit, e:
+		raise
+	except:
+		writemsg("portage: couldn't create /var/tmp; exiting.\n")
+		sys.exit(1)
+if not os.path.exists(root+"var/lib/portage"):
+	writemsg(">>> "+root+"var/lib/portage doesn't exist, creating it...\n")
+	try:
+		os.mkdir(root+"var",0755)
+	except (OSError,IOError):
+		pass
+	try:
+		os.mkdir(root+"var/lib",0755)
+	except (OSError,IOError):
+		pass
+	try:
+		os.mkdir(root+"var/lib/portage",02750)
 	except SystemExit, e:
 		raise
 	except:

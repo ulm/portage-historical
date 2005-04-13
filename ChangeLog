@@ -1,11 +1,30 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.92 2005/04/12 14:41:56 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.93 2005/04/13 15:28:37 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  13 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> bin/repoman: Downgraded
+  the nesteddie check to a warning as it sometimes has false positives.
+
+  13 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> cnf/make.conf*: Removed
+  size estimation of PORTDIR.
+
+  13 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Added
+  verification of package.provided contents. Fixed a bug with an incorrect
+  error on binary package category moves. Fixed a small bug that would
+  cause a crash on an invalid PRELINK_PATH_MASK. Added signal handling of
+  SIGPIPE. Added deep fixing of permissions on CCACHE_DIR when changing
+  between userpriv states.
+
+  13 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> bin/emerge: Added sorting to
+  versions listed in emerge info output.
+
+  13 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> man/emerge.1: Removed --inject
+  documentation.
 
   12 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> bin/emerge: Added --nocolor
   option courtesy of Jason Cooper on gentoo-user@g.o.
