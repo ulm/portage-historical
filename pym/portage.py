@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.54 2005/04/13 15:28:38 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.54 2005/04/13 15:28:38 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.55 2005/04/16 23:49:19 ferringb Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.55 2005/04/16 23:49:19 ferringb Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.54 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.55 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -5006,25 +5006,10 @@ class eclass_cache:
 		if not (self.packages[location][cat].has_key(pkg) and self.packages[location][cat][pkg] and eclass_list):
 			return 0
 
-#		eclass_list.sort()
-#		eclass_list = portage_util.unique_array(eclass_list)
-		
-#		ec_data = self.packages[location][cat][pkg].keys()
-#		ec_data.sort()
-#		if eclass_list != ec_data:
-#			return 0
-
 		myp = self.packages[location][cat][pkg]
 		for x in eclass_list:
-			if not (x in self.eclasses and x in myp and myp[x][:1] == self.eclasses[x][:1]):
+			if not (x in self.eclasses and x in myp and myp[x] == self.eclasses[x]):
 				return 0
-#			if x not in self.eclasses:
-#				return 0
-#			data = self.packages[location][cat][pkg][x]
-#			if data[1] != self.eclasses[x][1]:
-#				return 0
-#			if data[0] != self.eclasses[x][0]:
-#				return 0
 
 		return 1			
 				

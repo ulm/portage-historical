@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.93 2005/04/13 15:28:37 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.94 2005/04/16 23:49:19 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  17 Apr 2005; Brian Harring <ferringb@gentoo.org> pym/portage.py: eclass cache
+  touche up, mtime wasn't being properly checked (thanks to swegener for catching
+  it).
 
   13 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> bin/repoman: Downgraded
   the nesteddie check to a warning as it sometimes has false positives.
