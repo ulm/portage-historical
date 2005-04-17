@@ -1,7 +1,7 @@
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/output.py,v 1.24.2.3 2005/02/06 02:48:44 jstubbs Exp $
-cvs_id_string="$Id: output.py,v 1.24.2.3 2005/02/06 02:48:44 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/output.py,v 1.24.2.4 2005/04/17 09:01:55 jstubbs Exp $
+cvs_id_string="$Id: output.py,v 1.24.2.4 2005/04/17 09:01:55 jstubbs Exp $"[5:-2]
 
 import os,sys,re
 
@@ -96,12 +96,11 @@ def xtermTitle(mystr):
 	if havecolor and dotitles and os.environ.has_key("TERM") and sys.stderr.isatty():
 		myt=os.environ["TERM"]
 		legal_terms = ["xterm","Eterm","aterm","rxvt","screen","kterm","rxvt-unicode"]
-		if (myt in legal_terms) or myt.startswith("xterm") or myt.startswith("screen"):
-			sys.stderr.write("\x1b]2;"+str(mystr)+"\x07")
-			sys.stderr.flush()
-		if (myt.startswith("screen")):
-			sys.stderr.write("\x1bk"+str(mystr)+"\x1b\\")
-			sys.stderr.flush()
+		for term in legal_terms:
+			if myt.startswith(term):
+				sys.stderr.write("\x1b]2;"+str(mystr)+"\x07")
+				sys.stderr.flush()
+				break
 
 def xtermTitleReset():
 	if havecolor and dotitles and os.environ.has_key("TERM"):

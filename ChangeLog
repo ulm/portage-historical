@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.94 2005/04/16 23:49:19 ferringb Exp $
+# $Id: ChangeLog,v 1.796.2.95 2005/04/17 09:01:54 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -10,6 +10,36 @@
   17 Apr 2005; Brian Harring <ferringb@gentoo.org> pym/portage.py: eclass cache
   touche up, mtime wasn't being properly checked (thanks to swegener for catching
   it).
+
+  17 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage_exec.py
+  pym/portage.py: Added checks to see if the sandbox is executable and disabled
+  when it isn't.
+
+  17 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> bin/dispatch-conf
+  cnf/dispatch-conf.conf pym/dispatch-conf.py: Made the merge command
+  configurable. Fixed a bug that caused conflicts to make their way into the
+  final configuration file. Made the config archive dir automatically created
+  if there is nothing in the way.
+
+  17 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> pym/output.py: Reverted the
+  feature to make use of screen titles.
+
+  17 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> bin/emerge: Made detection
+  of --ask capability use stdin instead of stdout.
+
+  15 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Removed
+  ChangeLog and metadata.xml from Manifest creation and checking. Quietened
+  failed mtimedb writes. Added patch to allow fetching to read-only DISTDIR.
+  Added logic to detect changing between userpriv and non-userpriv and
+  update the ccache permissions at each change.
+
+  15 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> cnf/make.globals*: Removed
+  vars not directly related to portage. Architecture specific ones are going
+  into the relevant profiles. USE_ORDER and CONFIG_PROTECT* will likely be
+  going into base.
+
+  14 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Applied
+  patch from #69763 to allow fetching to a read-only distfiles dir.
 
   13 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> bin/repoman: Downgraded
   the nesteddie check to a warning as it sometimes has false positives.

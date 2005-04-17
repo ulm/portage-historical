@@ -1,8 +1,8 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.13.2.3 2005/01/16 02:35:33 carpaski Exp $
-cvs_id_string="$Id: portage_exec.py,v 1.13.2.3 2005/01/16 02:35:33 carpaski Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_exec.py,v 1.13.2.4 2005/04/17 09:01:56 jstubbs Exp $
+cvs_id_string="$Id: portage_exec.py,v 1.13.2.4 2005/04/17 09:01:56 jstubbs Exp $"[5:-2]
 
 import os,types,atexit,string,stat
 import signal
@@ -33,6 +33,8 @@ atexit.register(cleanup)
 
 from portage_const import BASH_BINARY,SANDBOX_BINARY,SANDBOX_PIDS_FILE
 
+sandbox_capable = (os.path.exists(SANDBOX_BINARY) and os.access(SANDBOX_BINARY, os.X_OK))
+
 def spawn_bash(mycommand,env={},debug=False,opt_name=None,**keywords):
 	args=[BASH_BINARY]
 	if not opt_name:
@@ -46,6 +48,8 @@ def spawn_bash(mycommand,env={},debug=False,opt_name=None,**keywords):
 	return spawn(args,env=env,opt_name=opt_name,**keywords)
 
 def spawn_sandbox(mycommand,uid=None,opt_name=None,**keywords):
+	if not sandbox_capable:
+		return spawn_bash(mycommand,opt_name=opt_name,**keywords)
 	args=[SANDBOX_BINARY]
 	if not opt_name:
 		opt_name=mycommand.split()[0]

@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.23 2005/04/13 15:28:37 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.24 2005/04/17 09:01:55 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -363,7 +363,7 @@ if ("--pretend" in myopts) and ("--ask" in myopts):
 
 # forbid --ask when not in a terminal
 # note: this breaks `emerge --ask | tee logfile`, but that doesn't work anyway.
-if ("--ask" in myopts) and (not sys.stdout.isatty()):
+if ("--ask" in myopts) and (not sys.stdin.isatty()):
 	portage.writemsg("!!! \"--ask\" should only be used in a terminal. Exiting.\n")
 	sys.exit(1)
 
@@ -1050,7 +1050,7 @@ class depgraph:
 					myfavorites.append(mykey)
 			else:
 				try:
-					mykey=portage.dep_expand(x,portage.portdb)
+					mykey=portage.dep_expand(x,mydb=portage.portdb)
 				except ValueError, errpkgs:
 					print "\n\n!!! The short ebuild name \"" + x + "\" is ambiguous.  Please specify"
 					print "!!! one of the following fully-qualified ebuild names instead:\n"

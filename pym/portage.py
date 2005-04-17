@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.55 2005/04/16 23:49:19 ferringb Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.55 2005/04/16 23:49:19 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.56 2005/04/17 09:01:55 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.56 2005/04/17 09:01:55 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.55 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.56 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -1192,6 +1192,13 @@ class config:
 		if "maketest" in self.features and "test" not in self.features:
 			self.features.append("test")
 
+		if not portage_exec.sandbox_capable and "sandbox" in self.features or "usersandbox" in self.features:
+			writemsg(red("!!! Problem with sandbox binary. Disabling...\n\n"))
+			if "sandbox" in self.features:
+				self.features.remove("sandbox")
+			if "usersandbox" in self.features:
+				self.features.remove("usersandbox")
+
 		self.features.sort()
 		self["FEATURES"] = " ".join(["-*"]+self.features)
 		self.backup_changes("FEATURES")
@@ -1610,6 +1617,16 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 	if listonly or ("distlocks" not in features):
 		use_locks = 0
 
+	fetch_to_ro = 0
+	if "skiprocheck" in features:
+		fetch_to_ro = 1
+
+	if not os.access(mysettings["DISTDIR"],os.W_OK) and fetch_to_ro:
+		if use_locks:
+			writemsg(red("!!! You are fetching to a read-only filesystem, you should turn locking off"));
+			writemsg("!!! This can be done by adding -distlocks to FEATURES in /etc/make.conf");
+#			use_locks = 0
+
 	# local mirrors are always added
 	if custommirrors.has_key("local"):
 		mymirrors += custommirrors["local"]
@@ -1739,8 +1756,9 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 
 	can_fetch=True
 	if not os.access(mysettings["DISTDIR"]+"/",os.W_OK):
-		print "!!! No write access to %s" % mysettings["DISTDIR"]+"/"
-		can_fetch=False
+		if not fetch_to_ro:
+			print "!!! No write access to %s" % mysettings["DISTDIR"]+"/"
+			can_fetch=False
 	else:
 		mystat=os.stat(mysettings["DISTDIR"]+"/")
 		if mystat.st_gid != portage_gid:
@@ -1852,7 +1870,7 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 		
 				# check if we can actually write to the directory/existing file.
 				if fetched!=2 and os.path.exists(mysettings["DISTDIR"]+"/"+myfile) != \
-					os.access(mysettings["DISTDIR"]+"/"+myfile, os.W_OK):
+					os.access(mysettings["DISTDIR"]+"/"+myfile, os.W_OK) and not fetch_to_ro:
 					writemsg(red("***")+" Lack write access to %s, failing fetch\n" % str(mysettings["DISTDIR"]+"/"+myfile))
 					fetched=0
 					break
@@ -1880,7 +1898,8 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 							myret=spawn(myfetch,mysettings,free=1)
 					finally:
 						#if root, -always- set the perms.
-						if os.path.exists(mysettings["DISTDIR"]+"/"+myfile) and (fetched != 1 or os.getuid() == 0):
+						if os.path.exists(mysettings["DISTDIR"]+"/"+myfile) and (fetched != 1 or os.getuid() == 0) \
+							and os.access(mysettings["DISTDIR"]+"/",os.W_OK):
 							if os.stat(mysettings["DISTDIR"]+"/"+myfile).st_gid != portage_gid:
 								try:
 									os.chown(mysettings["DISTDIR"]+"/"+myfile,-1,portage_gid)
@@ -2068,8 +2087,8 @@ def digestgen(myarchives,mysettings,overwrite=1,manifestonly=0):
 	print green(">>> Generating manifest file...")
 	mypfiles=listdir(pbasedir,recursive=1,filesonly=1,ignorecvs=1,EmptyOnError=1)
 	mypfiles=cvstree.apply_cvsignore_filter(mypfiles)
-	if "Manifest" in mypfiles:
-		del mypfiles[mypfiles.index("Manifest")]
+	for x in ["Manifest", "ChangeLog", "metadata.xml"]:
+		mypfiles.remove(x)
 
 	mydigests=digestCreate(mypfiles, pbasedir)
 	if mydigests==None: # There was a problem, exit with an errorcode.
@@ -2229,10 +2248,12 @@ def digestcheck(myfiles, mysettings, strict=0):
 		# Check the portage-related files here.
 		mymfiles=listdir(pbasedir,recursive=1,filesonly=1,ignorecvs=1,EmptyOnError=1)
 		manifest_files = mymdigests.keys()
+		for x in ["Manifest", "ChangeLog", "metadata.xml"]:
+			while x in mymfiles:
+				mymfiles.remove(x)
+			while x in manifest_files:
+				manifest_files.remove(x)
 		for x in range(len(mymfiles)-1,-1,-1):
-			if mymfiles[x]=='Manifest': # We don't want the manifest in out list.
-				del mymfiles[x]
-				continue
 			if mymfiles[x] in manifest_files:
 				manifest_files.remove(mymfiles[x])
 			elif len(cvstree.apply_cvsignore_filter([mymfiles[x]]))==0:
@@ -2485,33 +2506,37 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 					mysettings["CCACHE_DIR"]=mysettings["PORTAGE_TMPDIR"]+"/ccache"
 				if not os.path.exists(mysettings["CCACHE_DIR"]):
 					os.makedirs(mysettings["CCACHE_DIR"])
-				mystat = os.stat(settings["CCACHE_DIR"])
+				mystat = os.stat(mysettings["CCACHE_DIR"])
 				if ("userpriv" in features):
-					if mystat[ST_GID] != portage_gid:
-						spawn("chown -R "+str(portage_uid)+":"+str(portage_gid)+" "+settings["CCACHE_DIR"], free=1)
-						spawn("chmod -R ug+rw "+settings["CCACHE_DIR"], free=1)
+					if mystat[stat.ST_UID] != portage_gid or ((mystat[stat.ST_MODE]&02070)!=02070):
+						spawn("chgrp -R "+str(portage_gid)+" "+mysettings["CCACHE_DIR"], mysettings, free=1)
+						spawn("chown "+str(portage_uid)+":"+str(portage_gid)+" "+mysettings["CCACHE_DIR"], mysettings, free=1)
+						spawn("chmod -R u+rw "+mysettings["CCACHE_DIR"], mysettings, free=1)
+						spawn("chmod -R g+rw "+mysettings["CCACHE_DIR"], mysettings, free=1)
 				else:
-					if mystat[ST_GID] != 0:
-						spawn("chown -R 0:0 "+settings["CCACHE_DIR"], free=1)
-						spawn("chmod -R ug+rw "+settings["CCACHE_DIR"], free=1)
+					if mystat[stat.ST_UID] != 0 or ((mystat[stat.ST_MODE]&02070)!=02070):
+						spawn("chgrp -R "+str(portage_gid)+" "+mysettings["CCACHE_DIR"], mysettings, free=1)
+						spawn("chown 0:"+str(portage_gid)+" "+mysettings["CCACHE_DIR"], mysettings, free=1)
+						spawn("chmod -R u+rw "+mysettings["CCACHE_DIR"], mysettings, free=1)
+						spawn("chmod -R g+rw "+mysettings["CCACHE_DIR"], mysettings, free=1)
 		except OSError, e:
 			print "!!! File system problem. (ReadOnly? Out of space?)"
 			print "!!! Perhaps: rm -Rf",mysettings["BUILD_PREFIX"]
 			print "!!!",str(e)
 			return 1
 
-		try:
-			mystat=os.stat(mysettings["CCACHE_DIR"])
-			if (mystat[stat.ST_GID]!=portage_gid) or ((mystat[stat.ST_MODE]&02070)!=02070):
-				print "*** Adjusting ccache permissions for portage user..."
-				os.chown(mysettings["CCACHE_DIR"],portage_uid,portage_gid)
-				os.chmod(mysettings["CCACHE_DIR"],02770)
-				spawn("chown -R "+str(portage_uid)+":"+str(portage_gid)+" "+mysettings["CCACHE_DIR"],mysettings, free=1)
-				spawn("chmod -R g+rw "+mysettings["CCACHE_DIR"],mysettings, free=1)
-		except SystemExit, e:
-			raise
-		except:
-			pass
+		#try:
+		#	mystat=os.stat(mysettings["CCACHE_DIR"])
+		#	if (mystat[stat.ST_GID]!=portage_gid) or ((mystat[stat.ST_MODE]&02070)!=02070):
+		#		print "*** Adjusting ccache permissions for portage user..."
+		#		os.chown(mysettings["CCACHE_DIR"],portage_uid,portage_gid)
+		#		os.chmod(mysettings["CCACHE_DIR"],02770)
+		#		spawn("chown -R "+str(portage_uid)+":"+str(portage_gid)+" "+mysettings["CCACHE_DIR"],mysettings, free=1)
+		#		spawn("chmod -R g+rw "+mysettings["CCACHE_DIR"],mysettings, free=1)
+		#except SystemExit, e:
+		#	raise
+		#except:
+		#	pass
 			
 		if "distcc" in features:
 			try:
@@ -7286,7 +7311,7 @@ def portageexit():
 			except SystemExit, e:
 				raise
 			except Exception, e:
-				writemsg("Failed to write to mtimedb: %(reason)s\n" % {"reason":str(e)})
+				pass
 
 			try:
 				os.chown(mymfn,uid,portage_gid)
