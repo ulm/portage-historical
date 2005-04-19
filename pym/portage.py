@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.56 2005/04/17 09:01:55 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.56 2005/04/17 09:01:55 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.57 2005/04/19 05:00:22 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.57 2005/04/19 05:00:22 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.56 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.57 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -2088,7 +2088,8 @@ def digestgen(myarchives,mysettings,overwrite=1,manifestonly=0):
 	mypfiles=listdir(pbasedir,recursive=1,filesonly=1,ignorecvs=1,EmptyOnError=1)
 	mypfiles=cvstree.apply_cvsignore_filter(mypfiles)
 	for x in ["Manifest", "ChangeLog", "metadata.xml"]:
-		mypfiles.remove(x)
+		if x in mypfiles:
+			mypfiles.remove(x)
 
 	mydigests=digestCreate(mypfiles, pbasedir)
 	if mydigests==None: # There was a problem, exit with an errorcode.
