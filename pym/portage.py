@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.57 2005/04/19 05:00:22 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.57 2005/04/19 05:00:22 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.58 2005/04/20 15:19:03 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.58 2005/04/20 15:19:03 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.57 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.58 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -1202,6 +1202,10 @@ class config:
 		self.features.sort()
 		self["FEATURES"] = " ".join(["-*"]+self.features)
 		self.backup_changes("FEATURES")
+
+		if not len(self["CBUILD"]):
+			self["CBUILD"] = self["CHOST"]
+			self.backup_changes("CBUILD")
 
 		if mycpv:
 			self.setcpv(mycpv)
@@ -3902,19 +3906,21 @@ def getmaskingstatus(mycpv):
 			kmask=None
 
 	if kmask:
+		fallback = None
 		for gp in mygroups:
 			if gp=="*":
 				kmask=None
 				break
 			elif gp=="-*":
-				kmask="-*"
-				break
+				fallback="-*"
 			elif gp=="-"+myarch:
 				kmask="-"+myarch
 				break
 			elif gp=="~"+myarch:
 				kmask="~"+myarch
 				break
+		if kmask == "missing" and fallback:
+			kmask = fallback
 
 	if kmask:
 		rValue.append(kmask+" keyword")

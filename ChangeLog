@@ -1,11 +1,18 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.97 2005/04/19 07:14:17 ferringb Exp $
+# $Id: ChangeLog,v 1.796.2.98 2005/04/20 15:19:02 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  21 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Adding
+  setting of CBUILD to CHOST if it is not set. Fixed getmaskingstatus to
+  choose an arch-based keyword over -*.
+
+  21 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> bin/ebuild.sh: Removed
+  stale code from dyn_setup.
 
   19 Apr 2005; Brian Harring <ferringb@gentoo.org> pym/portage_db_flat.py: 
   Correction for string method name, again, danke to swegener.
