@@ -2,7 +2,7 @@
 # ebuild.py; Ebuild classes/abstraction of phase processing, and communicating with a ebuild-daemon.sh instance
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.22 2005/04/12 22:37:12 vapier Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.23 2005/04/23 14:05:28 genone Exp $
 
 
 import os,sys,traceback
@@ -767,9 +767,9 @@ class ebuild_handler:
 
 			elif mydo=="digest":
 				#since we are calling "digest" directly, recreate the digest even if it already exists
-				return (not digestgen(checkme,mysettings,overwrite=1,verbosity=verbosity))
+				return (not digestgen(aalist,mysettings,overwrite=1,verbosity=verbosity))
 			if mydo=="manifest":
-				return (not digestgen(checkme,mysettings,overwrite=1,manifestonly=1,verbosity=verbosity))
+				return (not digestgen(aalist,mysettings,overwrite=1,manifestonly=1,verbosity=verbosity))
 	
 			if not digestcheck(checkme, mysettings, ("strict" in features),verbosity=verbosity):
 				return 1
