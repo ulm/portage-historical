@@ -1,11 +1,13 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.100 2005/04/23 07:30:54 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.101 2005/04/23 08:37:38 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+*portage-2.0.51.20 (23 Apr 2005): Maintainence Release
 
   23 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage_const.py:
   Adjusted sandbox path to match the external sandbox.
@@ -140,7 +142,7 @@
   to make sure the file exists before working with it, when called with an
   ebuild path. #84102
 
-*portage-2.0.51.19 (04 Mar 2004): Maintainence Release
+*portage-2.0.51.19 (04 Mar 2005): Maintainence Release
 
   02 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Fixing
   ferringb's fix by adding the full scope of normpath.
@@ -159,7 +161,7 @@
   syslist during the unmerge phase so that all packages listed in system
   are correctly checked and warned against.  #83670
 
-*portage-2.0.51.18 (28 Feb 2004): Maintainence Release
+*portage-2.0.51.18 (28 Feb 2005): Maintainence Release
   
   28 Feb 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Added a
   -* to updated FEATURES before saving back to the env.  #79566
@@ -168,7 +170,7 @@
   sorting of the final list from portdbapi.cp_all() so that emerge regen
   is ordered correctly.
 
-*portage-2.0.51.17 (26 Feb 2004): Maintainence Release
+*portage-2.0.51.17 (26 Feb 2005): Maintainence Release
 
   26 Feb 2005; Nicholas Jones <carpaski@gentoo.org> *: Darwin userland patch
   from Kito (bug 82312). Adjusted a couple bits like the file was installed
@@ -202,7 +204,7 @@
   call with an lstat call in lhasproblems as the calling code expects the
   function to operate directly on symlinks.
 
-*portage-2.0.51.16 (06 Feb 2004): Maintainence Release + BSD chflags
+*portage-2.0.51.16 (06 Feb 2005): Maintainence Release + BSD chflags
 
   06 Feb 2005; Nicholas Jones <carpaski@gentoo.org> portage.py, src/chflags:
   Addition of BSD chflags support (from spb@gentoo.org). Wrapped all the
@@ -288,7 +290,7 @@
   19 Jan 2005; Brian Harring <ferringb@gentoo.org> ebuild.sh: Quick change to
   features=autoconfig, avoiding an extra subshell.
 
-*portage-2.0.51-r14 (15 Jan 2004): Stable Candidate
+*portage-2.0.51-r14 (15 Jan 2005): Stable Candidate
 
   18 Jan 2005; Nicholas Jones <carpaski@gentoo.org> ebuild.sh: Unset IFS
   after entering the for loop for bashrc's. The IFS setting applies to the
@@ -314,7 +316,7 @@
   of those versions on a 'emerge -d info'. Cleaned up the * imports in the
   modules so there shouldn't be any namespace pollution left.
 
-*portage-2.0.51-r13 (15 Jan 2004): Testing for virtuals changes
+*portage-2.0.51-r13 (15 Jan 2005): Testing for virtuals changes
 
   15 Jan 2005; Nicholas Jones <carpaski@gentoo.org> portage.py: Adjusted the
   virtuals handling into an advanced for of what Jason started using promotion
@@ -339,7 +341,7 @@
   not include files that were already fetched previously. Added information
   about which package is causing an error to some aux_get() errors.
 
-*portage-2.0.51-r11 (13 Jan 2004): Cleanup
+*portage-2.0.51-r11 (13 Jan 2005): Cleanup
 
   13 Jan 2005; Nicholas Jones <carpaski@gentoo.org> cnf/*: Updates for the
   OSUOSL -> distfiles.gentoo.org changeover. Addition of PORTAGE_TMPFS to
@@ -348,7 +350,7 @@
   13 Jan 2005; Nicholas Jones <carpaski@gentoo.org> portage.py: Fix for a
   typo in the primaryuri index.
 
-*portage-2.0.51-r10 (11 Jan 2004): Cleanup
+*portage-2.0.51-r10 (11 Jan 2005): Cleanup
 
   12 Jan 2005; Nicholas Jones <carpaski@gentoo.org> repoman: Fixed the
   namespace collision in the time module and calls.
