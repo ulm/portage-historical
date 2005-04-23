@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.58 2005/04/20 15:19:03 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.58 2005/04/20 15:19:03 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.59 2005/04/23 07:26:04 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.59 2005/04/23 07:26:04 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.58 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.59 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -2091,7 +2091,7 @@ def digestgen(myarchives,mysettings,overwrite=1,manifestonly=0):
 	print green(">>> Generating manifest file...")
 	mypfiles=listdir(pbasedir,recursive=1,filesonly=1,ignorecvs=1,EmptyOnError=1)
 	mypfiles=cvstree.apply_cvsignore_filter(mypfiles)
-	for x in ["Manifest", "ChangeLog", "metadata.xml"]:
+	for x in ["Manifest"]:
 		if x in mypfiles:
 			mypfiles.remove(x)
 
@@ -7025,7 +7025,7 @@ if not os.path.exists(root+"var/lib/portage"):
 	except SystemExit, e:
 		raise
 	except:
-		writemsg("portage: couldn't create /var/tmp; exiting.\n")
+		writemsg("portage: couldn't create /var/lib/portage; exiting.\n")
 		sys.exit(1)
 
 
@@ -7313,8 +7313,7 @@ def portageexit():
 			mymfn=mtimedbfile
 			try:
 				mtimedb["version"]=VERSION
-				cPickle.dump(mtimedb, open(mymfn,"w"), cPickle.HIGHEST_PROTOCOL)
-				#print "*** Wrote out mtimedb data successfully."
+				cPickle.dump(mtimedb, open(mymfn,"w"), -1)
 			except SystemExit, e:
 				raise
 			except Exception, e:

@@ -1,7 +1,7 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_cpickle.py,v 1.9.2.1 2005/01/16 02:35:33 carpaski Exp $
-cvs_id_string="$Id: portage_db_cpickle.py,v 1.9.2.1 2005/01/16 02:35:33 carpaski Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/Attic/portage_db_cpickle.py,v 1.9.2.2 2005/04/23 07:26:04 jstubbs Exp $
+cvs_id_string="$Id: portage_db_cpickle.py,v 1.9.2.2 2005/04/23 07:26:04 jstubbs Exp $"[5:-2]
 
 import anydbm,cPickle,types
 from os import chown,access,R_OK,unlink
@@ -65,7 +65,7 @@ class database(portage_db_template.database):
 			try:
 				if os.path.exists(self.filename):
 					unlink(self.filename)
-				cPickle.dump(self.db, open(self.filename,"w"), cPickle.HIGHEST_PROTOCOL)
+				cPickle.dump(self.db, open(self.filename,"w"), -1)
 				os.chown(self.filename,self.uid,self.gid)
 				os.chmod(self.filename, 0664)
 			except SystemExit, e:
