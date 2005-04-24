@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.951 2005/04/23 14:05:28 genone Exp $
+# $Id: ChangeLog,v 1.952 2005/04/24 12:49:01 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  24 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> bin/emerge pym/portage.py:
+  Removed support for --inject and --upgradeonly as well as the now unused
+  digraph class.
 
   23 Apr 2005; Marius Mauch <genone@gentoo.org> pym/ebuild.py:
   forward port fix for bug 77794.

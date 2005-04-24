@@ -2,10 +2,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.586 2005/04/12 22:37:12 vapier Exp $
-cvs_id_string="$Id: portage.py,v 1.586 2005/04/12 22:37:12 vapier Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.587 2005/04/24 12:49:01 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.587 2005/04/24 12:49:01 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.586 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.587 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -232,92 +232,6 @@ def tokenize(mystring):
 		return None
 	return newtokens
 
-#beautiful directed graph object
-
-class digraph:
-	"""
-	beautiful directed graph object
-	"""
-	
-	def __init__(self):
-		self.dict={}
-		#okeys = keys, in order they were added (to optimize firstzero() ordering)
-		self.okeys=[]
-	
-	def addnode(self,mykey,myparent):
-		dico = self.dict
-		if mykey not in dico:
-			self.okeys.append(mykey)
-			if myparent==None:
-				dico[mykey]=[0,[]]
-			else:
-				dico[mykey]=[0,[myparent]]
-				dico[myparent][0] += 1
-			return
-		if myparent and (not myparent in dico[mykey][1]):
-			dico[mykey][1].append(myparent)
-			dico[myparent][0] += 1
-	
-	def delnode(self,mykey):
-		dico = self.dict
-		if mykey not in dico:
-			return
-		for parent in dico[mykey][1]:
-			dico[parent][0] -= 1
-		del dico[mykey]
-		self.okeys.remove(mykey)	
-	
-	def allnodes(self):
-		"returns all nodes in the dictionary"
-		return self.dict.keys()
-	
-	def firstzero(self):
-		"returns first node with zero references, or NULL if no such node exists"
-		for x in self.okeys:
-			if self.dict[x][0]==0:
-				return x
-		return None
-
-	def depth(self, mykey):
-		depth=0
-		dico = self.dict
-		while dico[mykey][1]:
-			depth=depth+1
-			mykey=dico[mykey][1][0]
-		return depth
-
-	def allzeros(self):
-		"returns all nodes with zero references, or NULL if no such node exists"
-		zerolist = []
-		dico = self.dict
-		for node in dico:
-			mys = node.split()
-			if mys[0] != "blocks" and dico[node][0]==0:
-				zerolist.append( node )
-		return zerolist
-
-	def hasallzeros(self):
-		"returns 0/1, Are all nodes zeros? 1 : 0"
-		dico = self.dict
-		for node in dico:
-			if dico[node][0]!=0:
-				return 0
-		return 1
-
-	def empty(self):
-		if self.dict:
-			return 0
-		return 1
-
-	def hasnode(self,mynode):
-		return mynode in self.dict
-
-	def copy(self):
-		mygraph=digraph()
-		for x in self.dict:
-			mygraph.dict[x] = [ self.dict[x][0], self.dict[x][1][:] ]
-		mygraph.okeys=self.okeys[:]
-		return mygraph
 
 def elog_process(cpv, mysettings):
 	mylogfiles = listdir(mysettings["T"]+"/logging/")
