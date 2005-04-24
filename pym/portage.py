@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.59 2005/04/23 07:26:04 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.59 2005/04/23 07:26:04 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.60 2005/04/24 05:43:50 nakano Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.60 2005/04/24 05:43:50 nakano Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.59 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.60 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -5670,7 +5670,7 @@ class binarytree(packagetree):
 			mynewcpv=newcp+"-"+mycpsplit[2]
 			if mycpsplit[3]!="r0":
 				mynewcpv += "-"+mycpsplit[3]
-			
+			mynewcat=newcp.split("/")[0]
 			myoldpkg=mycpv.split("/")[1]
 			mynewpkg=mynewcpv.split("/")[1]
 			
