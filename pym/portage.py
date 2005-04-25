@@ -2,10 +2,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.587 2005/04/24 12:49:01 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.587 2005/04/24 12:49:01 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.588 2005/04/25 04:10:37 genone Exp $
+cvs_id_string="$Id: portage.py,v 1.588 2005/04/25 04:10:37 genone Exp $"[5:-2]
 
-VERSION="$Revision: 1.587 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.588 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -2821,7 +2821,6 @@ class portdbapi(dbapi):
 					kmask=None
 					break
 				elif gp=="-*":
-					kmask="-*"
 					break
 				elif gp=="-"+myarch:
 					kmask="-"+myarch

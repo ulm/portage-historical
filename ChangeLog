@@ -1,11 +1,14 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.953 2005/04/24 16:28:51 jstubbs Exp $
+# $Id: ChangeLog,v 1.954 2005/04/25 04:10:37 genone Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  25 Apr 2005; Marius Mauch <genone@gentoo.org> pym/portage.py:
+  remove the stupid "masked by -* keyword" message.
 
   24 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage_syntax.py:
   Added a class called DependSpec which handles parsing *DEPEND and SRC_URI
