@@ -1,6 +1,6 @@
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.globals.sh,v 1.2 2004/11/14 05:45:57 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/cnf/make.globals.sh,v 1.3 2005/04/26 09:40:59 genone Exp $
 # System-wide defaults for the Portage system
 
 #            *****************************
@@ -41,7 +41,7 @@ CXXFLAGS=${CFLAGS}
 # Default maintainer options
 #FEATURES="digest sandbox noclean noauto buildpkg usersandbox"
 # Default user options
-FEATURES="sandbox distlocks ccache autoaddcvs"
+FEATURES="sandbox distlocks ccache autoaddcvs strict"
 
 # By default output colored text where possible, set to "true" to output only
 #black&white text

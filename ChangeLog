@@ -1,11 +1,14 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.955 2005/04/26 01:19:16 vapier Exp $
+# $Id: ChangeLog,v 1.956 2005/04/26 09:40:59 genone Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  26 Apr 2005; Marius Mauch <genone@gentoo.org> cnf/make.globals*:
+  Add FEATURES=strict.
 
   25 Apr 2005; Mike Frysinger <vapier@gentoo.org> bin/ebuild-functions.sh:
   Remove autoconfig FEATURE and make it always run Bug #81822.
