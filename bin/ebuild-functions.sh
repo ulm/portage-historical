@@ -2,7 +2,7 @@
 # ebuild-functions.sh; ebuild env functions, saved with the ebuild (not specific to the portage version).
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-functions.sh,v 1.8 2005/03/29 00:22:28 ferringb Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-functions.sh,v 1.9 2005/04/26 01:19:16 vapier Exp $
 
 use() {
 	if useq ${1}; then
@@ -73,15 +73,14 @@ econf() {
 	local ret
 	ECONF_SOURCE="${ECONF_SOURCE:-.}"
 	if [ -x "${ECONF_SOURCE}/configure" ]; then
-		if hasq autoconfig $FEATURES && ! hasq autoconfig $RESTRICT; then
-			if [ -e /usr/share/gnuconfig/ ]; then
-				local x
-				for x in $(find ${WORKDIR} -type f -name config.guess -o -name config.sub); do
-					echo " * econf: updating ${x/${WORKDIR}\/} with /usr/share/gnuconfig/${x##*/}"
-					cp -f "/usr/share/gnuconfig/${x##*/}" "${x}"
-				done
-			fi
+		if [ -e /usr/share/gnuconfig/ ]; then
+			local x
+			for x in $(find "${WORKDIR}" -type f -name config.guess -o -name config.sub) ; do
+				echo " * econf: updating ${x/${WORKDIR}\/} with /usr/share/gnuconfig/${x##*/}"
+				cp -f "/usr/share/gnuconfig/${x##*/}" "${x}"
+			done
 		fi
+
 		if [ ! -z "${CBUILD}" ]; then
 			EXTRA_ECONF="--build=${CBUILD} ${EXTRA_ECONF}"
 		fi
