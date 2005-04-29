@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.63 2005/04/29 03:59:03 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.63 2005/04/29 03:59:03 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.64 2005/04/29 04:56:35 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.64 2005/04/29 04:56:35 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.63 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.64 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -77,7 +77,7 @@ try:
 	from portage_const import VDB_PATH, PRIVATE_PATH, CACHE_PATH, DEPCACHE_PATH, \
 	  USER_CONFIG_PATH, MODULES_FILE_PATH, CUSTOM_PROFILE_PATH, PORTAGE_BASE_PATH, \
 	  PORTAGE_BIN_PATH, PORTAGE_PYM_PATH, PROFILE_PATH, LOCALE_DATA_PATH, \
-	  EBUILD_SH_BINARY, SANDBOX_BINARY, DEPSCAN_SH_BINARY, BASH_BINARY, \
+	  EBUILD_SH_BINARY, SANDBOX_BINARY, BASH_BINARY, \
 	  MOVE_BINARY, PRELINK_BINARY, WORLD_FILE, MAKE_CONF_FILE, MAKE_DEFAULTS_FILE, \
 	  DEPRECATED_PROFILE_FILE, USER_VIRTUALS_FILE, EBUILD_SH_ENV_FILE, \
 	  INVALID_ENV_FILE, CUSTOM_MIRRORS_FILE, SANDBOX_PIDS_FILE, CONFIG_MEMORY_FILE,\
@@ -662,8 +662,6 @@ def env_update(makelinks=1):
 			continue
 		outfile.write("setenv "+x+" '"+env[x]+"'\n")
 	outfile.close()
-	if os.path.exists(DEPSCAN_SH_BINARY):
-		spawn(DEPSCAN_SH_BINARY,settings,free=1)
 
 def new_protect_filename(mydest, newmd5=None):
 	"""Resolves a config-protect filename for merging, optionally
@@ -7388,7 +7386,12 @@ db["/"]["bintree"]=binarytree("/",settings["PKGDIR"],virts)
 if root!="/":
 	db[root]["porttree"]=portagetree(root,virts)
 	db[root]["bintree"]=binarytree(root,settings["PKGDIR"],virts)
-thirdpartymirrors=grabdict(settings["PORTDIR"]+"/profiles/thirdpartymirrors")
+
+profileroots = [settings["PORTDIR"]+"/profiles/"]
+for x in settings["PORTDIR_OVERLAY"].split():
+	profileroots.insert(0, x+"/profiles/")
+thirdparty_lists = grab_multiple("thirdpartymirrors", profileroots, grabdict)
+thirdpartymirrors = stack_dictlist(thirdparty_lists, incremental=True)
 
 if not os.path.exists(settings["PORTAGE_TMPDIR"]):
 	writemsg("portage: the directory specified in your PORTAGE_TMPDIR variable, \""+settings["PORTAGE_TMPDIR"]+",\"\n")
