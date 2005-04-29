@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.26 2005/04/29 03:37:30 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.27 2005/04/29 04:58:41 jstubbs Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -406,14 +406,12 @@ econf() {
 		ECONF_SOURCE="."
 	fi
 	if [ -x "${ECONF_SOURCE}/configure" ]; then
-		if hasq autoconfig $FEATURES && ! hasq autoconfig $RESTRICT; then
-			if [ -e /usr/share/gnuconfig/ ]; then
-				local x
-				for x in $(find ${WORKDIR} -type f -name config.guess -o -name config.sub) ; do
-					echo " * econf: updating ${x/${WORKDIR}\/} with /usr/share/gnuconfig/${x##*/}"
-					cp /usr/share/gnuconfig/${x##*/} ${x}
-				done
-			fi
+		if [ -e /usr/share/gnuconfig/ ]; then
+			local x
+			for x in $(find ${WORKDIR} -type f -name config.guess -o -name config.sub) ; do
+				echo " * econf: updating ${x/${WORKDIR}\/} with /usr/share/gnuconfig/${x##*/}"
+				cp /usr/share/gnuconfig/${x##*/} ${x}
+			done
 		fi
 
 		if [ ! -z "${CBUILD}" ]; then
