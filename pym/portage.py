@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.62 2005/04/29 03:51:00 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.62 2005/04/29 03:51:00 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.63 2005/04/29 03:59:03 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.63 2005/04/29 03:59:03 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.62 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.63 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -2448,8 +2448,9 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 
 		if not os.path.exists(mysettings["BUILD_PREFIX"]):
 			os.makedirs(mysettings["BUILD_PREFIX"])
-		os.chown(mysettings["BUILD_PREFIX"],portage_uid,portage_gid)
-		os.chmod(mysettings["BUILD_PREFIX"],00775)
+		if (os.getuid() == 0):
+			os.chown(mysettings["BUILD_PREFIX"],portage_uid,portage_gid)
+			os.chmod(mysettings["BUILD_PREFIX"],00775)
 
 		# Should be ok again to set $T, as sandbox does not depend on it
 		mysettings["T"]=mysettings["BUILDDIR"]+"/temp"
@@ -2458,8 +2459,9 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 				shutil.rmtree(mysettings["T"])
 		if not os.path.exists(mysettings["T"]):
 			os.makedirs(mysettings["T"])
-		os.chown(mysettings["T"],portage_uid,portage_gid)
-		os.chmod(mysettings["T"],02770)
+		if (os.getuid() == 0):
+			os.chown(mysettings["T"],portage_uid,portage_gid)
+			os.chmod(mysettings["T"],02770)
 
 		try: # XXX: negative RESTRICT
 			if not (("nouserpriv" in string.split(mysettings["PORTAGE_RESTRICT"])) or \
@@ -2484,10 +2486,12 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 			# no reason to check for depend since depend returns above.
 			if not os.path.exists(mysettings["BUILD_PREFIX"]):
 				os.makedirs(mysettings["BUILD_PREFIX"])
-			os.chown(mysettings["BUILD_PREFIX"],portage_uid,portage_gid)
+			if (os.getuid() == 0):
+				os.chown(mysettings["BUILD_PREFIX"],portage_uid,portage_gid)
 			if not os.path.exists(mysettings["BUILDDIR"]):
 				os.makedirs(mysettings["BUILDDIR"])
-			os.chown(mysettings["BUILDDIR"],portage_uid,portage_gid)
+			if (os.getuid() == 0):
+				os.chown(mysettings["BUILDDIR"],portage_uid,portage_gid)
 		except OSError, e:
 			print "!!! File system problem. (ReadOnly? Out of space?)"
 			print "!!! Perhaps: rm -Rf",mysettings["BUILD_PREFIX"]
@@ -2497,8 +2501,9 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 		try:
 			if not os.path.exists(mysettings["HOME"]):
 				os.makedirs(mysettings["HOME"])
-			os.chown(mysettings["HOME"],portage_uid,portage_gid)
-			os.chmod(mysettings["HOME"],02770)
+			if (os.getuid() == 0):
+				os.chown(mysettings["HOME"],portage_uid,portage_gid)
+				os.chmod(mysettings["HOME"],02770)
 		except OSError, e:
 			print "!!! File system problem. (ReadOnly? Out of space?)"
 			print "!!! Failed to create fake home directory in BUILDDIR"
