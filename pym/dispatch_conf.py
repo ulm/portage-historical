@@ -1,8 +1,8 @@
 # archive_conf.py -- functionality common to archive-conf and dispatch-conf
 # Copyright 2003-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/dispatch_conf.py,v 1.3.2.2 2005/04/17 09:01:55 jstubbs Exp $
-cvs_id_string="$Id: dispatch_conf.py,v 1.3.2.2 2005/04/17 09:01:55 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/dispatch_conf.py,v 1.3.2.3 2005/04/29 03:37:30 jstubbs Exp $
+cvs_id_string="$Id: dispatch_conf.py,v 1.3.2.3 2005/04/29 03:37:30 jstubbs Exp $"[5:-2]
 
 # Library by Wayne Davison <gentoo@blorf.net>, derived from code
 # written by Jeremy Wohl (http://igmus.org)
@@ -33,7 +33,10 @@ def read_config(mandatory_opts):
 
     for key in mandatory_opts:
         if not opts.has_key(key):
-            print >> sys.stderr, 'dispatch-conf: Missing option "%s" in /etc/dispatch-conf.conf; fatal' % (key,)
+            if key == "merge":
+                opts["merge"] = "sdiff --suppress-common-lines --output=%s %s %s"
+            else:
+                print >> sys.stderr, 'dispatch-conf: Missing option "%s" in /etc/dispatch-conf.conf; fatal' % (key,)
 
     if not os.path.exists(opts['archive-dir']):
         os.mkdir(opts['archive-dir'])

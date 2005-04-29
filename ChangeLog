@@ -1,11 +1,36 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.102 2005/04/24 05:43:50 nakano Exp $
+# $Id: ChangeLog,v 1.796.2.103 2005/04/29 03:37:30 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  29 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> bin/dispatch-conf
+  pym/dispatch-conf.py: Fixed a typo with the added merge option. Added
+  hard-coded default merge option so that dispatch-conf can be used to do
+  a line by line of dispatch-conf.conf.
+
+  29 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> bin/ebuild.sh: Updated econf
+  to use LOCAL_EXTRA_ECONF rather than EXTRA_ECONF directly, as noted by
+  eradicator. Removed the forced resizing of ccache when CCACHE_SIZE is
+  undefined.
+
+  29 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> bin/emerge: Fixed bug in
+  --info during sorting when two versions have only differing -r component.
+  Ported Brian's regen method to --metadata for faster updates.
+
+  29 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> bin/repoman: Fixed an
+  off-by-one indexing into a list during scanning for Manfiest commits.
+
+  29 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Fixed a bug
+  in the checking of whether sandbox is usable when usersandbox is enabled.
+  Combined u+w and g+w mods on ccache dir into the one exec. Added missing g+s
+  mods on ccache dir, which was causing mods at each check. Moved mtime check
+  in aux_get so that it applies to updating from the metadata cache as well.
+  Relocated the fix for mynewcat outside of the loop to prevent needless
+  re-calculation. Added debugging code for bug #71787.
 
   24 Apr 2005; Masatomo Nakano <nakano@gentoo.org> pym/portage.py
   Fixed undefined value causing traceback when moving package in binarytree.

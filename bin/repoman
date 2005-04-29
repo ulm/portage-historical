@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.18 2005/04/23 07:26:04 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.19 2005/04/29 03:37:30 jstubbs Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -1399,7 +1399,7 @@ else:
 	mysigs=[]
 	if myheaders or myupdates or myremoved or mynew:
 		myfiles=myheaders+myupdates+myremoved+mynew
-		for x in range(len(myfiles), -1, -1):
+		for x in range(len(myfiles)-1, -1, -1):
 			if not os.path.exists(myfiles[x]) or not os.path.isdir(myfiles[x]):
 				del myfiles[x]
 		mydone=[]

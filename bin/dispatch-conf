@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dispatch-conf,v 1.7.2.8 2005/04/17 09:01:55 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/dispatch-conf,v 1.7.2.9 2005/04/29 03:37:30 jstubbs Exp $
 
 #
 # dispatch-conf -- Integrate modified configs, post-emerge
@@ -186,7 +186,7 @@ class dispatch:
                 elif c == 'm':
                     merged = SCRATCH_DIR+"/"+os.path.basename(conf['current'])
                     print
-                    os.system (conf['merge'] % (merged, conf ['current'], newconf))
+                    os.system (self.options['merge'] % (merged, conf ['current'], newconf))
                     shutil.copyfile(merged, mrgconf)
                     os.remove(merged)
                     mystat = os.lstat(conf['new'])

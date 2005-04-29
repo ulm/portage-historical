@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.24 2005/04/17 09:01:55 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.25 2005/04/29 03:37:30 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -119,10 +119,24 @@ def userquery(prompt, responses=None, colours=None):
 def sorted_versions(verlist):
 	ret = []
 	for ver in verlist:
+		verparts = ver.split("-")
+		if len(verparts) == 2:
+			verrev = int(verparts[1][1:])
+		else:
+			verrev = 0
 		x = 0
 		while x < len(ret):
-			if portage.vercmp(ret[x], ver) >= 0:
+			retparts = ret[x].split("-")
+			verdiff = portage.vercmp(retparts[0], verparts[0])
+			if verdiff > 0:
 				break
+			elif verdiff == 0:
+				if len(retparts) == 2:
+					retrev = int(retparts[1][1:])
+				else:
+					retrev = 0
+				if retrev >= verrev:
+					break
 			x += 1
 		ret.insert(x, ver)
 	return ret
@@ -2601,8 +2615,8 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 			portage.spawn("rm -Rf "+cachedir+"/*",portage.settings,free=1)
 
 		# Potentially bad
-		if os.path.exists(cachedir+"/"+myportdir):
-			portage.spawn("rm -Rf "+cachedir+"/"+myportdir+"/*",portage.settings,free=1)
+		#if os.path.exists(cachedir+"/"+myportdir):
+		#	portage.spawn("rm -Rf "+cachedir+"/"+myportdir+"/*",portage.settings,free=1)
 
 		# save timestamp.chk for next timestamp check.
 		try:
@@ -2626,15 +2640,30 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 			pass
 		# we don't make overlay trees cache here.
 		backup_porttrees=portage.portdb.porttrees
-		portage.portdb.porttrees=[portage.portdb.porttree_root]
-		mynodes=portage.portdb.cp_all()
-		mynodes.sort()
+		porttree_root = portage.portdb.porttree_root
+		portage.portdb.porttrees=[porttree_root]
+		cp_list=portage.portdb.cp_all()
+		cp_list.sort()
 		pcnt=0
 		pcntstr=""
-		pcntcount=len(mynodes)/100.0
+		pcntcount=len(cp_list)/100.0
 		nextupdate=pcntcount
 		current=1
-		for x in mynodes:
+		def cleanse_cache(cat, saves, porttree_root=porttree_root):
+			if len(saves):
+				d={}
+				for v in saves:
+					d[portage.catsplit(v)[1]] = True
+				for pv in portage.db["/"]["porttree"].dbapi.auxdb[porttree_root][cat].keys():
+					if pv not in d:
+						portage.db["/"]["porttree"].dbapi.auxdb[porttree_root][cat].del_key(pv)
+			else:
+				portage.db["/"]["porttree"].dbapi.auxdb[porttree_root][cat].clear()
+				del portage.db["/"]["porttree"].dbapi.auxdb[porttree_root][cat]
+		savelist = []
+		catlist = []
+		oldcat = portage.catsplit(cp_list[0])[0]
+		for cp in cp_list:
 			current += 1
 			if current >= nextupdate:
 				pcnt += 1
@@ -2643,16 +2672,32 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 					pcntstr = str(pcnt)
 					sys.stdout.write("\b"*(len(pcntstr)+1)+pcntstr+"%")
 					sys.stdout.flush()
-			myxsplit=x.split("/")
-			mymatches=portage.portdb.xmatch("match-all",x)
-			mymatches.sort()
-			for y in mymatches:
-				try:
-					ignored=portage.portdb.aux_get(y,[],metacachedir=myportdir+"/metadata/cache",debug=("cachedebug" in portage.features))
-				except SystemExit, e:
-					raise # Needed else can't exit
-				except Exception, e:
-					print "\nFailed cache update:",y,e
+			cat = portage.catsplit(cp)[0]
+			if cat != oldcat:
+				catlist.append(oldcat)
+				cleanse_cache(oldcat, savelist)
+				savelist = []
+				oldcat = cat
+			mymatches = portage.db["/"]["porttree"].dbapi.xmatch("match-all", cp)
+			savelist.extend(mymatches)
+			for cpv in mymatches:
+				try: portage.db["/"]["porttree"].dbapi.aux_get(cpv, ["IUSE"],metacachedir=myportdir+"/metadata/cache",debug=("cachedebug" in portage.features))
+				except SystemExit: raise
+				except Exception, e: print "\nFailed cache update:",cpv,e
+		catlist.append(oldcat)
+		catlist.append("local")
+		cleanse_cache(oldcat, savelist)
+		filelist = portage.listdir(cachedir+"/"+myportdir)
+		for x in filelist:
+			found = False
+			for y in catlist:
+				if x.startswith(y):
+					found = True
+					break
+			if not found:
+				portage.spawn("rm -Rf "+cachedir+"/"+myportdir+"/"+x,portage.settings,free=1)
+
+
 		portage.portdb.porttrees=backup_porttrees
 		sys.stdout.write("\n\n")
 		sys.stdout.flush()

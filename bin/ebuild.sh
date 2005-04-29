@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.25 2005/04/20 15:19:03 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.26 2005/04/29 03:37:30 jstubbs Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -400,6 +400,8 @@ strip_duplicate_slashes () {
 }
 
 econf() {
+	local LOCAL_EXTRA_ECONF="${EXTRA_ECONF}"
+
 	if [ -z "${ECONF_SOURCE}" ]; then
 		ECONF_SOURCE="."
 	fi
@@ -415,11 +417,11 @@ econf() {
 		fi
 
 		if [ ! -z "${CBUILD}" ]; then
-			EXTRA_ECONF="--build=${CBUILD} ${EXTRA_ECONF}"
+			LOCAL_EXTRA_ECONF="--build=${CBUILD} ${LOCAL_EXTRA_ECONF}"
 		fi
 
 		if [ ! -z "${CTARGET}" ]; then
-			EXTRA_ECONF="--target=${CTARGET} ${EXTRA_ECONF}"
+			LOCAL_EXTRA_ECONF="--target=${CTARGET} ${LOCAL_EXTRA_ECONF}"
 		fi
 		
 		# if the profile defines a location to install libs to aside from default, pass it on.
@@ -452,7 +454,7 @@ econf() {
 				CONF_LIBDIR_RESULT="${CONF_LIBDIR_RESULT//\/\///}"
 			done
 
-			EXTRA_ECONF="--libdir=${CONF_LIBDIR_RESULT} ${EXTRA_ECONF}"
+			LOCAL_EXTRA_ECONF="--libdir=${CONF_LIBDIR_RESULT} ${LOCAL_EXTRA_ECONF}"
 		fi
 		
 		echo "${ECONF_SOURCE}/configure" \
@@ -463,7 +465,7 @@ econf() {
 			--datadir=/usr/share \
 			--sysconfdir=/etc \
 			--localstatedir=/var/lib \
-			${EXTRA_ECONF} \
+			${LOCAL_EXTRA_ECONF} \
 			"$@"
 
 		if ! "${ECONF_SOURCE}/configure" \
@@ -474,7 +476,7 @@ econf() {
 			--datadir=/usr/share \
 			--sysconfdir=/etc \
 			--localstatedir=/var/lib \
-			${EXTRA_ECONF} \
+			${LOCAL_EXTRA_ECONF} \
 			"$@" ; then
 
 			if [ -s config.log ]; then
@@ -916,7 +918,7 @@ dyn_compile() {
 	echo "$DEPEND"         > DEPEND
 	echo "$EXTRA_ECONF"    > EXTRA_ECONF
 	echo "$EXTRA_EINSTALL" > EXTRA_EINSTALL
-	echo "$EXTRA_ECONF"    > EXTRA_EMAKE
+	echo "$EXTRA_EMAKE"    > EXTRA_MAKE
 	echo "$FEATURES"       > FEATURES
 	echo "$INHERITED"      > INHERITED
 	echo "$IUSE"           > IUSE
@@ -1627,8 +1629,7 @@ if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 		addread "${CCACHE_DIR}"
 		addwrite "${CCACHE_DIR}"
 
-		[ -z "${CCACHE_SIZE}" ] && export CCACHE_SIZE="500M"
-		ccache -M ${CCACHE_SIZE} &> /dev/null
+		[ -z "${CCACHE_SIZE}" ] && ccache -M ${CCACHE_SIZE} &> /dev/null
 	fi
 
 	# XXX: Load up the helper functions.

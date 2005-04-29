@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.60 2005/04/24 05:43:50 nakano Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.60 2005/04/24 05:43:50 nakano Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.61 2005/04/29 03:37:30 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.61 2005/04/29 03:37:30 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.60 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.61 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -38,7 +38,7 @@ except Exception, e:
 
 	sys.stderr.write("!!! You might consider starting python with verbose flags to see what has\n")
 	sys.stderr.write("!!! gone wrong. Here is the information we got for this exception:\n")
-	
+
 	sys.stderr.write("    "+str(e)+"\n\n");
 	sys.exit(127)
 except:
@@ -85,7 +85,7 @@ try:
 
 	from portage_data import ostype, lchown, userland, secpass, uid, wheelgid, \
 	                         portage_uid, portage_gid
-	
+
 	import portage_util
 	from portage_util import grab_multiple, grabdict, grabdict_package, grabfile, grabfile_package, \
 		grabints, map_dictlist_vals, pickle_read, pickle_write, stack_dictlist, stack_dicts, stack_lists, \
@@ -108,7 +108,7 @@ except Exception, e:
 	sys.stderr.write("!!! portage tree under '/usr/portage/sys-apps/portage/files/' (default).\n")
 	sys.stderr.write("!!! There is a README.RESCUE file that details the steps required to perform\n")
 	sys.stderr.write("!!! a recovery of portage.\n")
-	
+
 	sys.stderr.write("    "+str(e)+"\n\n")
 	sys.exit(127)
 
@@ -207,7 +207,7 @@ def normalize_path(mypath):
 	return newpath
 
 dircache = {}
-cacheHit=0 
+cacheHit=0
 cacheMiss=0
 cacheStale=0
 def cacheddir(my_original_path, ignorecvs, ignorelist, EmptyOnError, followSymlinks=True):
@@ -242,7 +242,7 @@ def cacheddir(my_original_path, ignorecvs, ignorelist, EmptyOnError, followSymli
 					pathstat = os.stat(mypath+"/"+x)
 				else:
 					pathstat = os.lstat(mypath+"/"+x)
-				
+
 				if stat.S_ISREG(pathstat[stat.ST_MODE]):
 					ftype.append(0)
 				elif stat.S_ISDIR(pathstat[stat.ST_MODE]):
@@ -269,9 +269,9 @@ def cacheddir(my_original_path, ignorecvs, ignorelist, EmptyOnError, followSymli
 
 	writemsg("cacheddirStats: H:%d/M:%d/S:%d\n" % (cacheHit, cacheMiss, cacheStale),10)
 	return ret_list, ret_ftype
-		
 
-def listdir(mypath, recursive=False, filesonly=False, ignorecvs=False, ignorelist=[], followSymlinks=True, 
+
+def listdir(mypath, recursive=False, filesonly=False, ignorecvs=False, ignorelist=[], followSymlinks=True,
 	EmptyOnError=False):
 
 	list, ftype = cacheddir(mypath, ignorecvs, ignorelist, EmptyOnError, followSymlinks)
@@ -290,7 +290,7 @@ def listdir(mypath, recursive=False, filesonly=False, ignorecvs=False, ignorelis
 			if ftype[x]==1 and not (ignorecvs and os.path.basename(list[x]) in ('CVS','.svn')):
 				l,f = cacheddir(mypath+"/"+list[x], ignorecvs, ignorelist, EmptyOnError,
 					followSymlinks)
-								  
+
 				l=l[:]
 				for y in range(0,len(l)):
 					l[y]=list[x]+"/"+l[y]
@@ -304,7 +304,7 @@ def listdir(mypath, recursive=False, filesonly=False, ignorecvs=False, ignorelis
 				rlist=rlist+[list[x]]
 	else:
 		rlist=list
-			
+
 	return rlist
 
 starttime=long(time.time())
@@ -372,7 +372,7 @@ class digraph:
 		self.dict={}
 		#okeys = keys, in order they were added (to optimize firstzero() ordering)
 		self.okeys=[]
-	
+
 	def addnode(self,mykey,myparent):
 		if not self.dict.has_key(mykey):
 			self.okeys.append(mykey)
@@ -385,7 +385,7 @@ class digraph:
 		if myparent and (not myparent in self.dict[mykey][1]):
 			self.dict[mykey][1].append(myparent)
 			self.dict[myparent][0]=self.dict[myparent][0]+1
-	
+
 	def delnode(self,mykey):
 		if not self.dict.has_key(mykey):
 			return
@@ -394,14 +394,14 @@ class digraph:
 		del self.dict[mykey]
 		while 1:
 			try:
-				self.okeys.remove(mykey)	
+				self.okeys.remove(mykey)
 			except ValueError:
 				break
-	
+
 	def allnodes(self):
 		"returns all nodes in the dictionary"
 		return self.dict.keys()
-	
+
 	def firstzero(self):
 		"returns first node with zero references, or NULL if no such node exists"
 		for x in self.okeys:
@@ -491,7 +491,7 @@ def env_update(makelinks=1):
 		"PATH",              "PRELINK_PATH",
 		"PRELINK_PATH_MASK", "PYTHON_PATH"
 	]
-	
+
 	env={}
 
 	for x in fns:
@@ -514,7 +514,7 @@ def env_update(makelinks=1):
 		# process all other variables
 		for myenv in myconfig.keys():
 			env[myenv]=varexpand(myconfig[myenv])
-			
+
 	if os.path.exists(root+"etc/ld.so.conf"):
 		myld=open(root+"etc/ld.so.conf")
 		myldlines=myld.readlines()
@@ -534,7 +534,7 @@ def env_update(makelinks=1):
 	if os.environ.has_key("PORTAGE_CALLER") and \
 	   os.environ["PORTAGE_CALLER"] == "env-update":
 		ld_cache_update = True
-							 
+
 	newld=specials["LDPATH"]
 	if (oldld!=newld):
 		#ld.so.conf needs updating and ldconfig needs to be run
@@ -551,7 +551,7 @@ def env_update(makelinks=1):
 		newprelink=open(root+"etc/prelink.conf","w")
 		newprelink.write("# prelink.conf autogenerated by env-update; make all changes to\n")
 		newprelink.write("# contents of /etc/env.d directory\n")
-	
+
 		for x in ["/bin","/sbin","/usr/bin","/usr/sbin","/lib","/usr/lib"]:
 			newprelink.write("-l "+x+"\n");
 		for x in specials["LDPATH"]+specials["PATH"]+specials["PRELINK_PATH"]:
@@ -604,7 +604,7 @@ def env_update(makelinks=1):
 			commands.getstatusoutput("cd / ; /sbin/ldconfig -r "+root)
 		else:
 			commands.getstatusoutput("cd / ; /sbin/ldconfig -X -r "+root)
-			
+
 	del specials["LDPATH"]
 
 	penvnotice  = "# THIS FILE IS AUTOMATICALLY GENERATED BY env-update.\n"
@@ -629,18 +629,18 @@ def env_update(makelinks=1):
 				outstring=outstring+x+":"
 		outstring=outstring+specials[path][-1]+"'"
 		outfile.write(outstring+"\n")
-	
+
 	#create /etc/profile.env
 	for x in env.keys():
 		if type(env[x])!=types.StringType:
 			continue
 		outfile.write("export "+x+"='"+env[x]+"'\n")
 	outfile.close()
-	
+
 	#create /etc/csh.env for (t)csh support
 	outfile=open(root+"/etc/csh.env","w")
 	outfile.write(cenvnotice)
-	
+
 	for path in specials.keys():
 		if len(specials[path])==0:
 			continue
@@ -655,14 +655,14 @@ def env_update(makelinks=1):
 		outfile.write(outstring+"\n")
 		#get it out of the way
 		del specials[path]
-	
+
 	#create /etc/csh.env
 	for x in env.keys():
 		if type(env[x])!=types.StringType:
 			continue
 		outfile.write("setenv "+x+" '"+env[x]+"'\n")
 	outfile.close()
-	if os.path.exists(DEPSCAN_SH_BINARY):	
+	if os.path.exists(DEPSCAN_SH_BINARY):
 		spawn(DEPSCAN_SH_BINARY,settings,free=1)
 
 def new_protect_filename(mydest, newmd5=None):
@@ -677,14 +677,14 @@ def new_protect_filename(mydest, newmd5=None):
 	# 0123456789012
 	prot_num=-1
 	last_pfile=""
-		
+
 	if (len(mydest) == 0):
 		raise ValueError, "Empty path provided where a filename is required"
 	if (mydest[-1]=="/"): # XXX add better directory checking
 		raise ValueError, "Directory provided but this function requires a filename"
 	if not os.path.exists(mydest):
 		return mydest
-		
+
 	real_filename = os.path.basename(mydest)
 	real_dirname  = os.path.dirname(mydest)
 	for pfile in listdir(real_dirname):
@@ -761,7 +761,7 @@ def ExtractKernelVersion(base_dir):
 		return (None, str(details))
 	except IOError, details:
 		return (None, str(details))
-		
+
 	lines = map(string.strip, lines)
 
 	version = ''
@@ -834,7 +834,7 @@ class config:
 		self.mycpv    = None
 		self.puse     = []
 		self.modifiedkeys = []
-	
+
 		self.virtuals = {}
 		self.v_count  = 0
 
@@ -854,7 +854,7 @@ class config:
 
 			self.module_priority = copy.deepcopy(clone.module_priority)
 			self.modules         = copy.deepcopy(clone.modules)
-			
+
 			self.depcachedir = copy.deepcopy(clone.depcachedir)
 
 			self.packages = copy.deepcopy(clone.packages)
@@ -891,7 +891,7 @@ class config:
 			self.treeVirtuals = copy.deepcopy(clone.treeVirtuals)
 		else:
 			self.depcachedir = DEPCACHE_PATH
-			
+
 			if not config_profile_path:
 				global profiledir
 				writemsg("config_profile_path not specified to class config\n")
@@ -904,7 +904,7 @@ class config:
 				self.incrementals = copy.deepcopy(portage_const.INCREMENTALS)
 			else:
 				self.incrementals = copy.deepcopy(config_incrementals)
-			
+
 			self.module_priority    = ["user","default"]
 			self.modules            = {}
 			self.modules["user"]    = getconfig(MODULES_FILE_PATH)
@@ -915,7 +915,7 @@ class config:
 				"portdbapi.auxdbmodule":  "portage_db_flat.database",
 				"eclass_cache.dbmodule":  "portage_db_cpickle.database",
 			}
-			
+
 			self.usemask=[]
 			self.configlist=[]
 			self.backupenv={}
@@ -1013,7 +1013,7 @@ class config:
 				writemsg("!!! %s\n" % (e))
 				writemsg("!!! Incorrect multiline literals can cause this. Do not use them.\n")
 				sys.exit(1)
-			
+
 
 			self.configlist.append(self.mygcfg)
 			self.configdict["conf"]=self.configlist[-1]
@@ -1095,7 +1095,7 @@ class config:
 
 			# get virtuals -- needs categories
 			self.loadVirtuals('/')
-					
+
 			#package.mask
 			pkgmasklines = grab_multiple("package.mask", self.profiles + locations, grabfile_package)
 			pkgmasklines = stack_lists(pkgmasklines, incremental=1)
@@ -1129,7 +1129,7 @@ class config:
 
 		self.lookuplist=self.configlist[:]
 		self.lookuplist.reverse()
-	
+
 		useorder=self["USE_ORDER"]
 		if not useorder:
 			# reasonable defaults; this is important as without USE_ORDER,
@@ -1143,7 +1143,7 @@ class config:
 				if "PKGUSE" in self.configdict[x].keys():
 					del self.configdict[x]["PKGUSE"] # Delete PkgUse, Not legal to set.
 				#prepend db to list to get correct order
-				self.uvlist[0:0]=[self.configdict[x]]		
+				self.uvlist[0:0]=[self.configdict[x]]
 
 		self.configdict["env"]["PORTAGE_GID"]=str(portage_gid)
 		self.backupenv["PORTAGE_GID"]=str(portage_gid)
@@ -1180,7 +1180,7 @@ class config:
 			self.backup_changes("PORTDIR_OVERLAY")
 
 		self.regenerate()
-		
+
 		self.features = portage_util.unique_array(self["FEATURES"].split())
 
 		#XXX: Should this be temporary? Is it possible at all to have a default?
@@ -1192,7 +1192,7 @@ class config:
 		if "maketest" in self.features and "test" not in self.features:
 			self.features.append("test")
 
-		if not portage_exec.sandbox_capable and "sandbox" in self.features or "usersandbox" in self.features:
+		if not portage_exec.sandbox_capable and ("sandbox" in self.features or "usersandbox" in self.features):
 			writemsg(red("!!! Problem with sandbox binary. Disabling...\n\n"))
 			if "sandbox" in self.features:
 				self.features.remove("sandbox")
@@ -1216,23 +1216,23 @@ class config:
 	def load_best_module(self,property_string):
 		best_mod = best_from_dict(property_string,self.modules,self.module_priority)
 		return load_mod(best_mod)
-			
+
 	def lock(self):
 		self.locked = 1
 
 	def unlock(self):
 		self.locked = 0
-	
+
 	def modifying(self):
 		if self.locked:
 			raise Exception, "Configuration is locked."
-	
+
 	def backup_changes(self,key=None):
 		if key and self.configdict["env"].has_key(key):
 			self.backupenv[key] = copy.deepcopy(self.configdict["env"][key])
 		else:
 			raise KeyError, "No such key defined in environment: %s" % key
-	
+
 	def reset(self,keeping_pkg=0,use_cache=1):
 		"reset environment to original settings"
 		for x in self.configlist[-1].keys():
@@ -1254,7 +1254,7 @@ class config:
 		else:
 			writemsg("No pkg setup for settings instance?\n")
 			sys.exit(17)
-		
+
 		if os.path.exists(infodir):
 			if os.path.exists(infodir+"/environment"):
 				self.configdict["pkg"]["PORT_ENV_FILE"] = infodir+"/environment"
@@ -1312,10 +1312,10 @@ class config:
 
 		self.virtuals = self.__getvirtuals_compile()
 
-	
+
 	def regenerate(self,useonly=0,use_cache=1):
 		global usesplit,profiledir
-		
+
 		if self.already_in_regenerate:
 			# XXX: THIS REALLY NEEDS TO GET FIXED. autouse() loops.
 			writemsg("!!! Looping in regenerate.\n",1)
@@ -1344,7 +1344,7 @@ class config:
 					continue
 				#variables are already expanded
 				mysplit=curdb[mykey].split()
-				
+
 				for x in mysplit:
 					if x=="-*":
 						# "-*" is a special "minus" var that means "unset all settings".
@@ -1408,7 +1408,7 @@ class config:
 		while self.user_profile_dir in myvirtdirs:
 			myvirtdirs.remove(self.user_profile_dir)
 
-		
+
 		# Rules
 		# R1: Collapse profile virtuals
 		# R2: Extract user-negatives.
@@ -1491,15 +1491,15 @@ class config:
 
 		# User settings and profile settings take precedence over tree.
 		val = stack_dictlist(biglist,incremental=1)
-		
+
 		return val
-	
+
 	def __delitem__(self,mykey):
 		for x in self.lookuplist:
 			if x != None:
 				if mykey in x:
 					del x[mykey]
-	
+
 	def __getitem__(self,mykey):
 		match = ''
 		for x in self.lookuplist:
@@ -1522,7 +1522,7 @@ class config:
 			except:
 				writemsg("Failed to fix %s using urllib, attempting to continue.\n"  % (mykey))
 				pass
-			
+
 		elif mykey == "CONFIG_PROTECT_MASK":
 			match += " /etc/env.d"
 
@@ -1531,9 +1531,9 @@ class config:
 	def has_key(self,mykey):
 		for x in self.lookuplist:
 			if x.has_key(mykey):
-				return 1 
+				return 1
 		return 0
-	
+
 	def keys(self):
 		mykeys=[]
 		for x in self.lookuplist:
@@ -1549,11 +1549,11 @@ class config:
 		self.modifying()
 		self.modifiedkeys += [mykey]
 		self.configdict["env"][mykey]=myvalue
-	
+
 	def environ(self):
 		"return our locally-maintained environment"
 		mydict={}
-		for x in self.keys(): 
+		for x in self.keys():
 			mydict[x]=self[x]
 		if not mydict.has_key("HOME") and mydict.has_key("BUILD_PREFIX"):
 			writemsg("*** HOME not set. Setting to "+mydict["BUILD_PREFIX"]+"\n")
@@ -1565,9 +1565,9 @@ class config:
 # XXX This would be to replace getstatusoutput completely.
 # XXX Issue: cannot block execution. Deadlock condition.
 def spawn(mystring,mysettings,debug=0,free=0,droppriv=0,fd_pipes=None,**keywords):
-	"""spawn a subprocess with optional sandbox protection, 
+	"""spawn a subprocess with optional sandbox protection,
 	depending on whether sandbox is enabled.  The "free" argument,
-	when set to 1, will disable sandboxing.  This allows us to 
+	when set to 1, will disable sandboxing.  This allows us to
 	spawn processes that are supposed to modify files outside of the
 	sandbox.  We can't use os.system anymore because it messes up
 	signal handling.  Using spawn allows our Portage signal handler
@@ -1611,13 +1611,13 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 			return 1
 
 	global thirdpartymirrors
-	
+
 	check_config_instance(mysettings)
 
 	custommirrors=grabdict(CUSTOM_MIRRORS_FILE)
 
 	mymirrors=[]
-	
+
 	if listonly or ("distlocks" not in features):
 		use_locks = 0
 
@@ -1647,7 +1647,7 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 						mymirrors += [x[:-1]]
 					else:
 						mymirrors += [x]
-	
+
 	mydigests = {}
 	digestfn  = mysettings["FILESDIR"]+"/digest-"+mysettings["PF"]
 	if os.path.exists(digestfn):
@@ -1773,7 +1773,7 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 					print red("!!!")+" Unable to chgrp of %s to portage, continuing\n" % mysettings["DISTDIR"]
 				else:
 					raise oe
-	
+
 		# writable by portage_gid?  This is specific to root, adjust perms if needed automatically.
 		if not stat.S_IMODE(mystat.st_mode) & 020:
 			try:
@@ -1783,7 +1783,7 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 					print red("!!!")+" Unable to chmod %s to perms 0755.  Non-root users will experience issues.\n" % mysettings["DISTDIR"]
 				else:
 					raise oe
- 		
+
 		if use_locks and locks_in_subdir:
 			if os.path.exists(mysettings["DISTDIR"]+"/"+locks_in_subdir):
 				if not os.access(mysettings["DISTDIR"]+"/"+locks_in_subdir,os.W_OK):
@@ -1801,7 +1801,7 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 						pass
 				os.umask(old_umask)
 
-	
+
 	for myfile in filedict.keys():
 		fetched=0
 		file_lock = None
@@ -1828,10 +1828,10 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 					resumecommand=mysettings["RESUMECOMMAND_"+protocol.upper()]
 				else:
 					resumecommand=mysettings["RESUMECOMMAND"]
-				
+
 				fetchcommand=string.replace(fetchcommand,"${DISTDIR}",mysettings["DISTDIR"])
 				resumecommand=string.replace(resumecommand,"${DISTDIR}",mysettings["DISTDIR"])
-	
+
 				try:
 					mystat=os.stat(mysettings["DISTDIR"]+"/"+myfile)
 					if mydigests.has_key(myfile):
@@ -1861,7 +1861,7 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 				except (OSError,IOError),e:
 					writemsg("An exception was caught(1)...\nFailing the download: %s.\n" % (str(e)),1)
 					fetched=0
-	
+
 				if not can_fetch:
 					if fetched != 2:
 						if fetched == 0:
@@ -1871,7 +1871,7 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 						return 0
 					else:
 						continue
-		
+
 				# check if we can actually write to the directory/existing file.
 				if fetched!=2 and os.path.exists(mysettings["DISTDIR"]+"/"+myfile) != \
 					os.access(mysettings["DISTDIR"]+"/"+myfile, os.W_OK) and not fetch_to_ro:
@@ -1912,7 +1912,7 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 								except:
 									portage_util.writemsg("chown failed on distfile: " + str(myfile))
 							os.chmod(mysettings["DISTDIR"]+"/"+myfile,0664)
-	
+
 					if mydigests!=None and mydigests.has_key(myfile):
 						try:
 							mystat=os.stat(mysettings["DISTDIR"]+"/"+myfile)
@@ -1966,7 +1966,7 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 		finally:
 			if use_locks and file_lock:
 				portage_locks.unlockfile(file_lock)
-		
+
 		if listonly:
 			writemsg("\n")
 		if (fetched!=2) and not listonly:
@@ -1999,7 +1999,7 @@ def digestCreate(myfiles,basedir,oldDigest={}):
 				print "!!! We have a source URI, but no file..."
 				print "!!! File:",myfile
 				return None
-			
+
 		if mydigests[x].has_key("size") and (mydigests[x]["size"] != mysize):
 			raise portage_exception.DigestException, "Size mismatch during checksums"
 		mydigests[x]["size"] = copy.deepcopy(mysize)
@@ -2058,7 +2058,7 @@ def digestgen(myarchives,mysettings,overwrite=1,manifestonly=0):
 			return 1
 
 		print green(">>> Generating digest file...")
-		
+
 		# Track the old digest so we can assume checksums without requiring
 		# all files to be downloaded. 'Assuming'
 		myolddigest = {}
@@ -2196,7 +2196,7 @@ def digestCheckFiles(myfiles, mydigests, basedir, note="", strict=0):
 				print "!!! File does not exist:",myfile
 				return 0
 			continue
-		
+
 		ok,reason = portage_checksum.verify_all(myfile,mydigests[x])
 		if not ok:
 			print
@@ -2286,7 +2286,7 @@ def digestcheck(myfiles, mysettings, strict=0):
 			else:
 				print "--- Manifest check failed. 'strict' not enabled; ignoring."
 				print
-	
+
 	# Just return the status, as it's the last check.
 	return digestCheckFiles(myfiles, mydigests, basedir, note="src_uri", strict=strict)
 
@@ -2316,7 +2316,7 @@ def spawnebuild(mydo,actionmap,mysettings,debug,alwaysdep=0,logfile=None):
 
 def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,cleanup=0,dbkey=None,use_cache=1,fetchall=0,tree="porttree"):
 	global db
-	
+
 	ebuild_path = os.path.abspath(myebuild)
 	pkg_dir     = os.path.dirname(ebuild_path)
 
@@ -2370,7 +2370,7 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 	mysettings["CATEGORY"] = cat
 	mysettings["FILESDIR"] = pkg_dir+"/files"
 	mysettings["PF"]       = mypv
-	
+
 	mysettings["ECLASSDIR"]   = mysettings["PORTDIR"]+"/eclass"
 	mysettings["SANDBOX_LOG"] = mycpv.replace("/", "_-_")
 
@@ -2390,7 +2390,7 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 			raise
 		except:
 			pass
-	
+
 	if mysplit[2] == "r0":
 		mysettings["PVR"]=mysplit[1]
 	else:
@@ -2425,7 +2425,7 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 	if (mydo!="depend") or not mysettings.has_key("KVERS"):
 		myso=os.uname()[2]
 		mysettings["KVERS"]=myso[1]
-	
+
 
 	# get possible slot information from the deps file
 	if mydo=="depend":
@@ -2441,7 +2441,7 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 
 		retval = spawn(EBUILD_SH_BINARY+" depend",mysettings)
 		return retval
-		
+
 	logfile=None
 	# Build directory creation isn't required for any of these.
 	if mydo not in ["fetch","digest","manifest"]:
@@ -2516,14 +2516,14 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 					if mystat[stat.ST_UID] != portage_gid or ((mystat[stat.ST_MODE]&02070)!=02070):
 						spawn("chgrp -R "+str(portage_gid)+" "+mysettings["CCACHE_DIR"], mysettings, free=1)
 						spawn("chown "+str(portage_uid)+":"+str(portage_gid)+" "+mysettings["CCACHE_DIR"], mysettings, free=1)
-						spawn("chmod -R u+rw "+mysettings["CCACHE_DIR"], mysettings, free=1)
-						spawn("chmod -R g+rw "+mysettings["CCACHE_DIR"], mysettings, free=1)
+						spawn("chmod -R ug+rw "+mysettings["CCACHE_DIR"], mysettings, free=1)
+						spawn("find "+mysettings["CCACHE_DIR"]+" -type d -exec chmod g+s \{\} \;", mysettings, free=1)
 				else:
 					if mystat[stat.ST_UID] != 0 or ((mystat[stat.ST_MODE]&02070)!=02070):
 						spawn("chgrp -R "+str(portage_gid)+" "+mysettings["CCACHE_DIR"], mysettings, free=1)
 						spawn("chown 0:"+str(portage_gid)+" "+mysettings["CCACHE_DIR"], mysettings, free=1)
-						spawn("chmod -R u+rw "+mysettings["CCACHE_DIR"], mysettings, free=1)
-						spawn("chmod -R g+rw "+mysettings["CCACHE_DIR"], mysettings, free=1)
+						spawn("chmod -R ug+rw "+mysettings["CCACHE_DIR"], mysettings, free=1)
+						spawn("find "+mysettings["CCACHE_DIR"]+" -type d -exec chmod g+s \{\} \;", mysettings, free=1)
 		except OSError, e:
 			print "!!! File system problem. (ReadOnly? Out of space?)"
 			print "!!! Perhaps: rm -Rf",mysettings["BUILD_PREFIX"]
@@ -2542,7 +2542,7 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 		#	raise
 		#except:
 		#	pass
-			
+
 		if "distcc" in features:
 			try:
 				if (not mysettings.has_key("DISTCC_DIR")) or (mysettings["DISTCC_DIR"]==""):
@@ -2596,8 +2596,8 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 	elif mydo in ["prerm","postrm","preinst","postinst","config"]:
 		mysettings.load_infodir(pkg_dir)
 		return spawn(EBUILD_SH_BINARY+" "+mydo,mysettings,debug=debug,free=1,logfile=logfile)
-	
-	try: 
+
+	try:
 		mysettings["SLOT"],mysettings["RESTRICT"] = db["/"]["porttree"].dbapi.aux_get(mycpv,["SLOT","RESTRICT"])
 	except (IOError,KeyError):
 		print red("doebuild():")+" aux_get() error reading "+mycpv+"; aborting."
@@ -2665,10 +2665,10 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 		return (not digestgen(aalist,mysettings,overwrite=1))
 	if mydo=="manifest":
 		return (not digestgen(aalist,mysettings,overwrite=1,manifestonly=1))
-	
+
 	if not digestcheck(checkme, mysettings, ("strict" in features)):
 		return 1
-	
+
 	if mydo=="fetch":
 		return 0
 
@@ -2685,15 +2685,15 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 			    "rpm":  {"dep":"install", "args":(0,0)},         # sandbox  / root
     	"package":  {"dep":"install", "args":(0,0)},         # sandbox  / root
 	}
-	
-	if mydo in actionmap.keys():	
+
+	if mydo in actionmap.keys():
 		if mydo=="package":
 			for x in ["","/"+mysettings["CATEGORY"],"/All"]:
 				if not os.path.exists(mysettings["PKGDIR"]+x):
 					os.makedirs(mysettings["PKGDIR"]+x)
 		# REBUILD CODE FOR TBZ2 --- XXXX
 		return spawnebuild(mydo,actionmap,mysettings,debug,logfile=logfile)
-	elif mydo=="qmerge": 
+	elif mydo=="qmerge":
 		#check to ensure install was run.  this *only* pops up when users forget it and are using ebuild
 		if not os.path.exists(mysettings["BUILDDIR"]+"/.installed"):
 			print "!!! mydo=qmerge, but install phase hasn't been ran"
@@ -2717,7 +2717,7 @@ def movefile(src,dest,newmtime=None,sstat=None,mysettings=None):
 	failure.  Move is atomic."""
 	#print "movefile("+str(src)+","+str(dest)+","+str(newmtime)+","+str(sstat)+")"
 	global lchown
-	
+
 	try:
 		if not sstat:
 			sstat=os.lstat(src)
@@ -2727,7 +2727,7 @@ def movefile(src,dest,newmtime=None,sstat=None,mysettings=None):
 				# Problem getting flags...
 				writemsg("!!! Couldn't get flags for "+dest+"\n")
 				return None
-			
+
 	except SystemExit, e:
 		raise
 	except Exception, e:
@@ -2753,14 +2753,14 @@ def movefile(src,dest,newmtime=None,sstat=None,mysettings=None):
 		# We might have an immutable flag on the parent dir; save and clear.
 		pflags=bsd_chflags.lgetflags(os.path.dirname(dest))
 		bsd_chflags.lchflags(os.path.dirname(dest), 0)
-			
+
 		# Don't bother checking the return value here; if it fails then the next line will catch it.
 		bsd_chflags.lchflags(src, 0)
-		
+
 		if bsd_chflags.lhasproblems(src)>0 or (destexists and bsd_chflags.lhasproblems(dest)>0) or bsd_chflags.lhasproblems(os.path.dirname(dest))>0:
 			# This is bad: we can't merge the file with these flags set.
 			writemsg("!!! Can't merge file "+dest+" because of flags set\n")
-			return None		
+			return None
 
 	if destexists:
 		if stat.S_ISLNK(dstat[stat.ST_MODE]):
@@ -2871,13 +2871,13 @@ def movefile(src,dest,newmtime=None,sstat=None,mysettings=None):
 		if bsd_chflags.lchflags(dest, sflags) < 0 or bsd_chflags.lchflags(os.path.dirname(dest), pflags) < 0:
 			writemsg("!!! Couldn't restore flags ("+str(sflags)+") on " + dest+":\n")
 			return None
-		
+
 	return newmtime
 
 def merge(mycat,mypkg,pkgloc,infloc,myroot,mysettings,myebuild=None):
 	mylink=dblink(mycat,mypkg,myroot,mysettings)
 	return mylink.merge(pkgloc,infloc,myroot,myebuild)
-	
+
 def unmerge(cat,pkg,myroot,mysettings,mytrimworld=1):
 	mylink=dblink(cat,pkg,myroot,mysettings)
 	if mylink.exists():
@@ -2890,7 +2890,7 @@ def relparse(myver):
 	suffix=0
 	endtype=0
 	endnumber=0
-	
+
 	mynewver=string.split(myver,"_")
 	myver=mynewver[0]
 
@@ -2901,7 +2901,7 @@ def relparse(myver):
 		suffix=ord(myver[divider:])
 		number=string.atof(myver[0:divider])
 	else:
-		number=string.atof(myver)  
+		number=string.atof(myver)
 
 	if len(mynewver)==2:
 		#an endversion
@@ -3022,7 +3022,7 @@ def ververify(myorigval,silent=1):
 					raise
 				except:
 					#if no endversions work, *then* we return 0
-					pass	
+					pass
 	if not silent:
 		print "!!! Name error in",myorigval
 	vercache[myorigval]=0
@@ -3034,7 +3034,7 @@ def isvalidatom(atom):
 	if operator:
 		if mycpv_cps and mycpv_cps[0] != "null":
 			# >=cat/pkg-1.0
-			return 1 
+			return 1
 		else:
 			# >=cat/pkg or >=pkg-1.0 (no category)
 			return 0
@@ -3075,7 +3075,7 @@ def isspecific(mypkg):
 # "pkgsplit("foo-1.2-1") will return None if foo-1.2-1 isn't a valid
 # package (with version) name.	If it is a valid name, pkgsplit will
 # return a list containing: [ pkgname, pkgversion(norev), pkgrev ].
-# For foo-1.2-1, this list would be [ "foo", "1.2", "1" ].  For 
+# For foo-1.2-1, this list would be [ "foo", "1.2", "1" ].  For
 # Mesa-3.0, this list would be [ "Mesa", "3.0", "0" ].
 pkgcache={}
 
@@ -3107,7 +3107,7 @@ def pkgsplit(mypkg,silent=1):
 			revok=1
 		except SystemExit, e:
 			raise
-		except: 
+		except:
 			pass
 	if revok:
 		if ververify(myparts[-2]):
@@ -3192,7 +3192,7 @@ def vercmp(val1,val2):
 			pass
 	except KeyError:
 		pass
-	
+
 	# consider 1_p2 vc 1.1
 	# after expansion will become (1_p2,0) vc (1,1)
 	# then 1_p2 is compared with 1 before 0 is compared with 1
@@ -3268,7 +3268,7 @@ def pkgcmp(pkg1,pkg2):
 
 def dep_parenreduce(mysplit,mypos=0):
 	"Accepts a list of strings, and converts '(' and ')' surrounded items to sub-lists"
-	while (mypos<len(mysplit)): 
+	while (mypos<len(mysplit)):
 		if (mysplit[mypos]=="("):
 			firstpos=mypos
 			mypos=mypos+1
@@ -3286,9 +3286,9 @@ def dep_parenreduce(mysplit,mypos=0):
 
 def dep_opconvert(mysplit,myuse,mysettings):
 	"Does dependency operator conversion"
-	
+
 	#check_config_instance(mysettings)
-	
+
 	mypos=0
 	newsplit=[]
 	while mypos<len(mysplit):
@@ -3723,7 +3723,7 @@ def dep_check(depstring,mydbapi,mysettings,use="yes",mode=None,myuse=None,use_ca
 		#we are being run by autouse(), don't consult USE vars yet.
 		# WE ALSO CANNOT USE SETTINGS
 		myusesplit=[]
-		
+
 	#convert parenthesis to sublists
 	mysplit = portage_dep.paren_reduce(depstring)
 
@@ -3740,10 +3740,10 @@ def dep_check(depstring,mydbapi,mysettings,use="yes",mode=None,myuse=None,use_ca
 		mysplit = portage_dep.use_reduce(mysplit,uselist=myusesplit,masklist=mymasks,matchall=(use=="all"),excludeall=[mysettings["ARCH"]])
 	else:
 		mysplit = portage_dep.use_reduce(mysplit,uselist=myusesplit,matchall=(use=="all"))
-	
+
 	# Do the || conversions
 	mysplit=portage_dep.dep_opconvert(mysplit)
-	
+
 	#convert virtual dependencies to normal packages.
 	mysplit=dep_virtual(mysplit, mysettings)
 	#if mysplit==None, then we have a parse error (paren mismatch or misplaced ||)
@@ -3758,13 +3758,13 @@ def dep_check(depstring,mydbapi,mysettings,use="yes",mode=None,myuse=None,use_ca
 	mysplit2=dep_wordreduce(mysplit2,mysettings,mydbapi,mode,use_cache=use_cache)
 	if mysplit2==None:
 		return [0,"Invalid token"]
-	
+
 	writemsg("\n\n\n", 1)
 	writemsg("mysplit:  %s\n" % (mysplit), 1)
 	writemsg("mysplit2: %s\n" % (mysplit2), 1)
 	myeval=dep_eval(mysplit2)
 	writemsg("myeval:   %s\n" % (myeval), 1)
-	
+
 	if myeval:
 		return [1,[]]
 	else:
@@ -3857,7 +3857,7 @@ def getmaskingstatus(mycpv):
 	if not portdb.cpv_exists(mycpv):
 		raise KeyError("CPV %s does not exist" % mycpv)
 	mycp=mysplit[0]+"/"+mysplit[1]
-	
+
 	rValue = []
 
 	# profile checking
@@ -3927,7 +3927,7 @@ def getmaskingstatus(mycpv):
 	return rValue
 
 def fixdbentries(old_value, new_value, dbdir):
-	"""python replacement for the fixdbentries script, replaces old_value 
+	"""python replacement for the fixdbentries script, replaces old_value
 	with new_value for package names in files in dbdir."""
 	for myfile in [f for f in os.listdir(dbdir) if not f == "CONTENTS"]:
 		f = open(dbdir+"/"+myfile, "r")
@@ -3956,10 +3956,10 @@ class packagetree:
 			self.populated=0
 			self.virtual=virtual
 			self.dbapi=None
-		
+
 	def resolve_key(self,mykey):
 		return key_expand(mykey,mydb=self.dbapi)
-	
+
 	def dep_nomatch(self,mypkgdep):
 		mykey=dep_getkey(mypkgdep)
 		nolist=self.dbapi.cp_list(mykey)
@@ -3983,9 +3983,9 @@ def best(mymatches):
 	"accepts None arguments; assumes matches are valid."
 	global bestcount
 	if mymatches==None:
-		return "" 
+		return ""
 	if not len(mymatches):
-		return "" 
+		return ""
 	bestmatch=mymatches[0]
 	p2=catpkgsplit(bestmatch)[1:]
 	for x in mymatches[1:]:
@@ -3993,7 +3993,7 @@ def best(mymatches):
 		if pkgcmp(p1,p2)>0:
 			bestmatch=x
 			p2=catpkgsplit(bestmatch)[1:]
-	return bestmatch		
+	return bestmatch
 
 def match_to_list(mypkg,mylist):
 	"""(pkgname,list)
@@ -4022,7 +4022,7 @@ def best_match_to_list(mypkg,mylist):
 
 def catsplit(mydep):
 	return mydep.split("/", 1)
-	
+
 def get_operator(mydep):
 	"""
 	returns '~', '=', '>', '<', '=*', '>=', or '<='
@@ -4084,7 +4084,7 @@ def match_from_list(mydep,candidate_list):
 	elif operator == "=": # Exact match
 		if mycpv in candidate_list:
 			mylist = [mycpv]
-	
+
 	elif operator == "=*": # glob match
 		# The old verion ignored _tag suffixes... This one doesn't.
 		for x in candidate_list:
@@ -4127,10 +4127,10 @@ def match_from_list(mydep,candidate_list):
 				raise KeyError, "Unknown operator: %s" % mydep
 	else:
 		raise KeyError, "Unknown operator: %s" % mydep
-	
+
 
 	return mylist
-				
+
 
 def match_from_list_original(mydep,mylist):
 	"""(dep,list)
@@ -4162,7 +4162,7 @@ def match_from_list_original(mydep,mylist):
 				raise
 			except:
 				#erp, error.
-				return [] 
+				return []
 			mynodes=[]
 			cmp1=cp_key[1:]
 			cmp1[1]=cmp1[1]+"_alpha0"
@@ -4175,7 +4175,7 @@ def match_from_list_original(mydep,mylist):
 				#skip entries in our list that do not have matching categories
 				if cp_key[0]!=cp_x[0]:
 					continue
-				# ok, categories match. Continue to next step.	
+				# ok, categories match. Continue to next step.
 				if ((pkgcmp(cp_x[1:],cmp1)>=0) and (pkgcmp(cp_x[1:],cmp2)<0)):
 					# entry is >= the version in specified in our dependency, and <= the version in our dep + 1; add it:
 					mynodes.append(x)
@@ -4318,7 +4318,7 @@ class portagetree:
 class dbapi:
 	def __init__(self):
 		pass
-	
+
 	def close_caches(self):
 		pass
 
@@ -4402,7 +4402,7 @@ class dbapi:
 			changed = 1
 
 		if incrementing or changed:
-			
+
 			#increment counter
 			counter += 1
 			# update new global counter file
@@ -4438,7 +4438,7 @@ class fakedbapi(dbapi):
 
 	def cpv_exists(self,mycpv):
 		return self.cpvdict.has_key(mycpv)
-	
+
 	def cp_list(self,mycp,use_cache=1):
 		if not self.cpdict.has_key(mycp):
 			return []
@@ -4521,7 +4521,7 @@ class vardbapi(dbapi):
 		#cache for dependency checks
 		self.matchcache = {}
 		#cache for cp_list results
-		self.cpcache    = {}	
+		self.cpcache    = {}
 		self.blockers   = None
 		self.categories = copy.deepcopy(categories)
 
@@ -4584,10 +4584,10 @@ class vardbapi(dbapi):
 			# now move global counter file into place
 			os.rename(newcpath,cpath)
 		return counter
-	
+
 	def cpv_inject(self,mycpv):
 		"injects a real package into our on-disk database; assumes mycpv is valid and doesn't already exist"
-		os.makedirs(self.root+VDB_PATH+"/"+mycpv)	
+		os.makedirs(self.root+VDB_PATH+"/"+mycpv)
 		counter=db[self.root]["vartree"].dbapi.counter_tick(self.root,mycpv=mycpv)
 		# write local package counter so that emerge clean does the right thing
 		lcfile=open(self.root+VDB_PATH+"/"+mycpv+"/COUNTER","w")
@@ -4621,7 +4621,7 @@ class vardbapi(dbapi):
 			writemsg("@")
 			if not os.path.exists(self.root+VDB_PATH+"/"+mynewcat):
 				#create the directory
-				os.makedirs(self.root+VDB_PATH+"/"+mynewcat)	
+				os.makedirs(self.root+VDB_PATH+"/"+mynewcat)
 			newpath=self.root+VDB_PATH+"/"+mynewcpv
 			if os.path.exists(newpath):
 				#dest already exists; keep this puppy where it is.
@@ -4636,7 +4636,7 @@ class vardbapi(dbapi):
 				new_eb_path += "-"+mycpsplit[3]
 			if os.path.exists(old_eb_path+".ebuild"):
 				os.rename(old_eb_path+".ebuild", new_eb_path+".ebuild")
-			
+
 			catfile=open(newpath+"/CATEGORY", "w")
 			catfile.write(mynewcat+"\n")
 			catfile.close()
@@ -4649,7 +4649,7 @@ class vardbapi(dbapi):
 					pkgdir = catdir+"/"+pkgdir
 					if os.path.isdir(pkgdir):
 						fixdbentries(origcp, newcp, pkgdir)
-	
+
 	def move_slot_ent(self,mylist):
 		pkg=mylist[1]
 		origslot=mylist[2]
@@ -4712,12 +4712,12 @@ class vardbapi(dbapi):
 	def cpv_all(self,use_cache=1):
 		returnme=[]
 		basepath = self.root+VDB_PATH+"/"
-		
+
 		mycats = self.categories
 		if mycats == None:
 			# XXX: CIRCULAR DEP! This helps backwards compat. --NJ (10 Sept 2004)
 			mycats = settings.categories
-		
+
 		for x in mycats:
 			for y in listdir(basepath+x,EmptyOnError=1):
 				subpath = x+"/"+y
@@ -4767,7 +4767,7 @@ class vardbapi(dbapi):
 			mymatch=match_from_list(mydep,self.cp_list(mykey,use_cache=use_cache))
 			self.matchcache[mycat][mydep]=mymatch
 		return self.matchcache[mycat][mydep][:]
-	
+
 	def aux_get(self, mycpv, wants):
 		global auxdbkeys
 		results = []
@@ -4786,7 +4786,7 @@ class vardbapi(dbapi):
 				myd = ""
 			results.append(myd)
 		return results
-		
+
 
 class vartree(packagetree):
 	"this tree will scan a var/db/pkg database located at root (passed to init)"
@@ -4805,7 +4805,7 @@ class vartree(packagetree):
 
 	def inject(self,mycpv):
 		return
-		
+
 	def get_provide(self,mycpv):
 		myprovides=[]
 		try:
@@ -4840,7 +4840,7 @@ class vartree(packagetree):
 				else:
 					myprovides[mykey]  = [node]
 		return myprovides
-	
+
 	def dep_bestmatch(self,mydep,use_cache=1):
 		"compatibility method -- all matches, not just visible ones"
 		#mymatch=best(match(dep_expand(mydep,self.dbapi),self.dbapi))
@@ -4849,7 +4849,7 @@ class vartree(packagetree):
 			return ""
 		else:
 			return mymatch
-			
+
 	def dep_match(self,mydep,use_cache=1):
 		"compatibility method -- we want to see all matches, not just visible ones"
 		#mymatch=match(mydep,self.dbapi)
@@ -4866,7 +4866,7 @@ class vartree(packagetree):
 		"""temporary function, probably to be renamed --- Gets a list of all
 		category/package-versions installed on the system."""
 		return self.dbapi.cpv_all()
-	
+
 	def getallnodes(self):
 		"""new behavior: these are all *unmasked* nodes.  There may or may not be available
 		masked package for nodes in this nodes list."""
@@ -4886,7 +4886,7 @@ class vartree(packagetree):
 			if a[1]==b[0]:
 				return 1
 		return 0
-			
+
 	def getebuildpath(self,fullpackage):
 		cat,package=fullpackage.split("/")
 		return self.root+VDB_PATH+"/"+fullpackage+"/"+package+".ebuild"
@@ -4908,7 +4908,7 @@ class vartree(packagetree):
 				returnme.append(appendme)
 		return returnme
 
-	
+
 	def getslot(self,mycatpkg):
 		"Get a slot for a catpkg; assume it exists."
 		myslot = ""
@@ -4919,7 +4919,7 @@ class vartree(packagetree):
 		except Exception, e:
 			pass
 		return myslot
-	
+
 	def hasnode(self,mykey,use_cache):
 		"""Does the particular node (cat/pkg key) exist?"""
 		mykey=key_expand(mykey,mydb=self.dbapi,use_cache=use_cache)
@@ -4933,7 +4933,7 @@ class vartree(packagetree):
 			if mypsplit[0]==mysplit[1]:
 				return 1
 		return 0
-	
+
 	def populate(self):
 		self.populated=1
 
@@ -4949,13 +4949,13 @@ class eclass_cache:
 
 		self.packages = {} # {"PV": {"eclass1": ["location", "_mtime_"]}}
 		self.eclasses = {} # {"Name": ["location","_mtime_"]}
-		
+
 		# don't fool with porttree ordering unless you *ensure* that ebuild.sh's inherit
 		# ordering is *exactly* the same
 		self.porttrees=[self.porttree_root]
 		self.porttrees.extend(self.settings["PORTDIR_OVERLAY"].split())
 		#normalize the path now, so it's not required later.
-		self.porttrees = [os.path.normpath(x) for x in self.porttrees]			
+		self.porttrees = [os.path.normpath(x) for x in self.porttrees]
 		self.update_eclasses()
 
 	def close_caches(self):
@@ -4991,7 +4991,7 @@ class eclass_cache:
 						except:
 							continue
 						self.eclasses[ys] = [x, ymtime]
-	
+
 	def setup_package(self, location, cat, pkg):
 		if not self.packages.has_key(location):
 			self.packages[location] = {}
@@ -5008,11 +5008,11 @@ class eclass_cache:
 				writemsg("!!! Dirname:  "+str(self.depcachedir+"/"+location)+"\n")
 				writemsg("!!! Basename: "+str(cat+"-eclass")+"\n\n")
 				sys.exit(123)
-	
+
 	def sync(self, location, cat, pkg):
 		if self.packages[location].has_key(cat):
 			self.packages[location][cat].sync()
-	
+
 	def update_package(self, location, cat, pkg, eclass_list):
 		self.setup_package(location, cat, pkg)
 		if not eclass_list:
@@ -5024,7 +5024,7 @@ class eclass_cache:
 				writemsg("Eclass '%s' does not exist for '%s'\n" % (x, cat+"/"+pkg))
 				return 0
 			data[x] = [self.eclasses[x][0],self.eclasses[x][1]]
-		
+
 		self.packages[location][cat][pkg] = data
 		self.sync(location,cat,pkg)
 		return 1
@@ -5043,8 +5043,8 @@ class eclass_cache:
 			if not (x in self.eclasses and x in myp and myp[x] == self.eclasses[x]):
 				return 0
 
-		return 1			
-				
+		return 1
+
 # ----------------------------------------------------------------------------
 
 auxdbkeys=[
@@ -5091,7 +5091,7 @@ class portdbapi(dbapi):
 
 		#self.root=settings["PORTDIR"]
 		self.porttree_root = porttree_root
-		
+
 		self.depcachedir = self.mysettings.depcachedir[:]
 
 		self.tmpfs = self.mysettings["PORTAGE_TMPFS"]
@@ -5101,12 +5101,12 @@ class portdbapi(dbapi):
 			self.tmpfs = None
 		if self.tmpfs and not os.access(self.tmpfs, os.R_OK):
 			self.tmpfs = None
-		
+
 		self.eclassdb = eclass_cache(self.porttree_root, self.mysettings)
 
 		self.metadb       = {}
 		self.metadbmodule = self.mysettings.load_best_module("portdbapi.metadbmodule")
-		
+
 		self.auxdb        = {}
 		self.auxdbmodule  = self.mysettings.load_best_module("portdbapi.auxdbmodule")
 
@@ -5129,7 +5129,7 @@ class portdbapi(dbapi):
 		self.metadb = {}
 		self.auxdb  = {}
 		self.eclassdb.flush_cache()
-		
+
 	def finddigest(self,mycpv):
 		try:
 			mydig   = self.findname2(mycpv)[0]
@@ -5151,7 +5151,7 @@ class portdbapi(dbapi):
 		if not mycpv:
 			return "",0
 		mysplit=mycpv.split("/")
-		
+
 		psplit=pkgsplit(mysplit[1])
 		ret=None
 		if psplit:
@@ -5171,7 +5171,7 @@ class portdbapi(dbapi):
 					print "!!! error:  ",e
 					print
 					sys.exit(17)
-					
+
 				if os.access(file, os.R_OK):
 					# when found
 					ret=[file, x]
@@ -5215,7 +5215,7 @@ class portdbapi(dbapi):
 				if ("severe" in self.mysettings.features) and \
 				   (mys != portage_gpg.fileStats(myManifestPath)):
 					raise portage_exception.SecurityViolation, "Manifest changed: %(manifest)s" % {"manifest":myManifestPath}
-				
+
 			except portage_exception.InvalidSignature, e:
 				if ("strict" in self.mysettings.features) or \
 				   ("severe" in self.mysettings.features):
@@ -5247,105 +5247,101 @@ class portdbapi(dbapi):
 			writemsg("!!!            %s\n" % myebuild)
 			raise KeyError
 
+		try:
+			auxdb_is_valid = self.auxdb[mylocation][cat].has_key(pkg) and \
+			                 self.auxdb[mylocation][cat][pkg].has_key("_mtime_") and \
+			                 self.auxdb[mylocation][cat][pkg]["_mtime_"] == emtime
+		except SystemExit, e:
+			raise
+		except Exception, e:
+			auxdb_is_valid = 0
+			writemsg("auxdb exception: [%(loc)s]: %(exception)s\n" % {"loc":mylocation+"::"+cat+"/"+pkg, "exception":str(e)})
+			if self.auxdb[mylocation][cat].has_key(pkg):
+				self.auxdb[mylocation][cat].del_key(pkg)
+				self.auxdb[mylocation][cat].sync()
+
+		writemsg("auxdb is valid: "+str(auxdb_is_valid)+" "+str(pkg)+"\n", 2)
+		doregen = not (auxdb_is_valid and self.eclassdb.is_current(mylocation,cat,pkg,self.auxdb[mylocation][cat][pkg]["INHERITED"].split()))
+
 		# when mylocation is not overlay directorys and metacachedir is set,
 		# we use cache files, which is usually on /usr/portage/metadata/cache/.
-		if mylocation==self.mysettings["PORTDIR"] and metacachedir and self.metadb[cat].has_key(pkg):
+		if doregen and mylocation==self.mysettings["PORTDIR"] and metacachedir and self.metadb[cat].has_key(pkg):
 			metadata=self.metadb[cat][pkg]
 			self.eclassdb.update_package(mylocation,cat,pkg,metadata["INHERITED"].split())
 			self.auxdb[mylocation][cat][pkg] = metadata
 			self.auxdb[mylocation][cat].sync()
-		else:
+		elif doregen:
 
-			try:
-				auxdb_is_valid = self.auxdb[mylocation][cat].has_key(pkg) and \
-				                 self.auxdb[mylocation][cat][pkg].has_key("_mtime_") and \
-				                 self.auxdb[mylocation][cat][pkg]["_mtime_"] == emtime
-			except SystemExit, e:
-				raise
-			except Exception, e:
-				auxdb_is_valid = 0
-				writemsg("auxdb exception: [%(loc)s]: %(exception)s\n" % {"loc":mylocation+"::"+cat+"/"+pkg, "exception":str(e)})
-				if self.auxdb[mylocation][cat].has_key(pkg):
-					self.auxdb[mylocation][cat].del_key(pkg)
-					self.auxdb[mylocation][cat].sync()
+			writemsg("doregen: %s %s\n" % (doregen,mycpv), 2)
+			writemsg("Generating cache entry(0) for: "+str(myebuild)+"\n",1)
 
-			writemsg("auxdb is valid: "+str(auxdb_is_valid)+" "+str(pkg)+"\n", 2)
-			if auxdb_is_valid:
-				doregen=0
+			if self.tmpfs:
+				mydbkey = self.tmpfs+"/aux_db_key_temp"
 			else:
-				doregen=1
+				mydbkey = self.depcachedir+"/aux_db_key_temp"
 
-			if doregen or not self.eclassdb.is_current(mylocation,cat,pkg,self.auxdb[mylocation][cat][pkg]["INHERITED"].split()):
-				writemsg("doregen: %s %s\n" % (doregen,mycpv), 2)
-				writemsg("Generating cache entry(0) for: "+str(myebuild)+"\n",1)
+			# XXX: Part of the gvisible hack/fix to prevent deadlock
+			# XXX: through doebuild. Need to isolate this somehow...
+			self.mysettings.reset()
 
-				if self.tmpfs:
-					mydbkey = self.tmpfs+"/aux_db_key_temp"
-				else:
-					mydbkey = self.depcachedir+"/aux_db_key_temp"
+			if self.lock_held:
+				raise "Lock is already held by me?"
+			self.lock_held = 1
+			mylock = portage_locks.lockfile(mydbkey, wantnewlockfile=1)
 
-				# XXX: Part of the gvisible hack/fix to prevent deadlock
-				# XXX: through doebuild. Need to isolate this somehow...
-				self.mysettings.reset()
-
-				if self.lock_held:
-					raise "Lock is already held by me?"
-				self.lock_held = 1
-				mylock = portage_locks.lockfile(mydbkey, wantnewlockfile=1)
-
-				if os.path.exists(mydbkey):
-					try:
-						os.unlink(mydbkey)
-					except SystemExit, e:
-						raise
-					except Exception, e:
-						portage_locks.unlockfile(mylock)
-						self.lock_held = 0
-						writemsg("Uncaught handled exception: %(exception)s\n" % {"exception":str(e)})
-						raise
-
-				myret=doebuild(myebuild,"depend","/",self.mysettings,dbkey=mydbkey)
-				if myret:
-					portage_locks.unlockfile(mylock)
-					self.lock_held = 0
-					#depend returned non-zero exit code...
-					writemsg(str(red("\naux_get():")+" (0) Error in "+mycpv+" ebuild. ("+str(myret)+")\n"
-         	   "               Check for syntax error or corruption in the ebuild. (--debug)\n\n"))
-					raise KeyError
-
+			if os.path.exists(mydbkey):
 				try:
-					mycent=open(mydbkey,"r")
 					os.unlink(mydbkey)
-					mylines=mycent.readlines()
-					mycent.close()
 				except SystemExit, e:
 					raise
-				except (IOError, OSError):
-					portage_locks.unlockfile(mylock)
-					self.lock_held = 0
-					writemsg(str(red("\naux_get():")+" (1) Error in "+mycpv+" ebuild.\n"
-					  "               Check for syntax error or corruption in the ebuild. (--debug)\n\n"))
-					raise KeyError
 				except Exception, e:
 					portage_locks.unlockfile(mylock)
 					self.lock_held = 0
 					writemsg("Uncaught handled exception: %(exception)s\n" % {"exception":str(e)})
 					raise
 
+			myret=doebuild(myebuild,"depend","/",self.mysettings,dbkey=mydbkey)
+			if myret:
 				portage_locks.unlockfile(mylock)
 				self.lock_held = 0
+				#depend returned non-zero exit code...
+				writemsg(str(red("\naux_get():")+" (0) Error in "+mycpv+" ebuild. ("+str(myret)+")\n"
+         	   "               Check for syntax error or corruption in the ebuild. (--debug)\n\n"))
+				raise KeyError
 
-				mydata = {}
-				for x in range(0,len(mylines)):
-					if mylines[x][-1] == '\n':
-						mylines[x] = mylines[x][:-1]
-					mydata[auxdbkeys[x]] = mylines[x]
-				mydata["_mtime_"] = emtime
+			try:
+				mycent=open(mydbkey,"r")
+				os.unlink(mydbkey)
+				mylines=mycent.readlines()
+				mycent.close()
+			except SystemExit, e:
+				raise
+			except (IOError, OSError):
+				portage_locks.unlockfile(mylock)
+				self.lock_held = 0
+				writemsg(str(red("\naux_get():")+" (1) Error in "+mycpv+" ebuild.\n"
+				  "               Check for syntax error or corruption in the ebuild. (--debug)\n\n"))
+				raise KeyError
+			except Exception, e:
+				portage_locks.unlockfile(mylock)
+				self.lock_held = 0
+				writemsg("Uncaught handled exception: %(exception)s\n" % {"exception":str(e)})
+				raise
 
-				self.auxdb[mylocation][cat][pkg] = mydata
-				self.auxdb[mylocation][cat].sync()
-				if not self.eclassdb.update_package(mylocation, cat, pkg, mylines[auxdbkeys.index("INHERITED")].split()):
-					sys.exit(1)
+			portage_locks.unlockfile(mylock)
+			self.lock_held = 0
+
+			mydata = {}
+			for x in range(0,len(mylines)):
+				if mylines[x][-1] == '\n':
+					mylines[x] = mylines[x][:-1]
+				mydata[auxdbkeys[x]] = mylines[x]
+			mydata["_mtime_"] = emtime
+
+			self.auxdb[mylocation][cat][pkg] = mydata
+			self.auxdb[mylocation][cat].sync()
+			if not self.eclassdb.update_package(mylocation, cat, pkg, mylines[auxdbkeys.index("INHERITED")].split()):
+				sys.exit(1)
 
 		#finally, we look at our internal cache entry and return the requested data.
 		mydata   = self.auxdb[mylocation][cat][pkg]
@@ -5368,7 +5364,7 @@ class portdbapi(dbapi):
 			sys.exit(1)
 
 		useflags = string.split(mysettings["USE"])
-		
+
 		myurilist = portage_dep.paren_reduce(myuris)
 		myurilist = portage_dep.use_reduce(myurilist,uselist=useflags,matchall=all)
 		newuris = flatten(myurilist)
@@ -5410,7 +5406,7 @@ class portdbapi(dbapi):
 		myuri, myfiles = self.getfetchlist(mypkg, useflags=useflags, mysettings=mysettings, all=all)
 		mydigest       = self.finddigest(mypkg)
 		mysums         = digestParseFile(mydigest)
-		
+
 		failures = {}
 		for x in myfiles:
 			if not mysums or x not in mysums:
@@ -5460,7 +5456,7 @@ class portdbapi(dbapi):
 		l = d.keys()
 		l.sort()
 		return l
-	
+
 	def p_list(self,mycp):
 		d={}
 		for oroot in self.porttrees:
@@ -5501,7 +5497,7 @@ class portdbapi(dbapi):
 			#create mydep, mykey from origdep
 			mydep=dep_expand(origdep,mydb=self)
 			mykey=dep_getkey(mydep)
-	
+
 		if level=="list-visible":
 			#a list of all visible packages, not called directly (just by xmatch())
 			#myval=self.visible(self.cp_list(mykey))
@@ -5511,7 +5507,7 @@ class portdbapi(dbapi):
 			myval=best(self.xmatch("match-visible",None,mydep=mydep,mykey=mykey))
 			#get all visible matches (from xmatch()), then choose the best one
 		elif level=="bestmatch-list":
-			#dep match -- find best match but restrict search to sublist 
+			#dep match -- find best match but restrict search to sublist
 			myval=best(match_from_list(mydep,mylist))
 			#no point is calling xmatch again since we're not caching list deps
 		elif level=="match-list":
@@ -5632,11 +5628,11 @@ class portdbapi(dbapi):
 			if match:
 				newlist.append(mycpv)
 		return newlist
-		
+
 class binarytree(packagetree):
 	"this tree scans for a list of all packages available in PKGDIR"
 	def __init__(self,root,pkgdir,virtual=None,clone=None):
-		
+
 		if clone:
 			# XXX This isn't cloning. It's an instance of the same thing.
 			self.root=clone.root
@@ -5661,36 +5657,36 @@ class binarytree(packagetree):
 			self.populate()
 		origcp=mylist[1]
 		newcp=mylist[2]
+		mynewcat=newcp.split("/")[0]
 		origmatches=self.dbapi.cp_list(origcp)
 		if not origmatches:
 			return
 		for mycpv in origmatches:
-			
+
 			mycpsplit=catpkgsplit(mycpv)
 			mynewcpv=newcp+"-"+mycpsplit[2]
 			if mycpsplit[3]!="r0":
 				mynewcpv += "-"+mycpsplit[3]
-			mynewcat=newcp.split("/")[0]
 			myoldpkg=mycpv.split("/")[1]
 			mynewpkg=mynewcpv.split("/")[1]
-			
+
 			if (mynewpkg != myoldpkg) and os.path.exists(self.getname(mynewcpv)):
 				writemsg("!!! Cannot update binary: Destination exists.\n")
 				writemsg("!!! "+mycpv+" -> "+mynewcpv+"\n")
 				continue
-			
+
 			tbz2path=self.getname(mycpv)
 			if os.path.exists(tbz2path) and not os.access(tbz2path,os.W_OK):
 				writemsg("!!! Cannot update readonly binary: "+mycpv+"\n")
 				continue
-			
+
 			#print ">>> Updating data in:",mycpv
 			sys.stdout.write("%")
 			sys.stdout.flush()
 			mytmpdir=settings["PORTAGE_TMPDIR"]+"/tbz2"
 			mytbz2=xpak.tbz2(tbz2path)
 			mytbz2.decompose(mytmpdir, cleanup=1)
-			
+
 			fixdbentries(origcp, newcp, mytmpdir)
 
 			catfile=open(mytmpdir+"/CATEGORY", "w")
@@ -5702,9 +5698,9 @@ class binarytree(packagetree):
 				raise
 			except Exception, e:
 				pass
-				
+
 			mytbz2.recompose(mytmpdir, cleanup=1)
-			
+
 			self.dbapi.cpv_remove(mycpv)
 			if (mynewpkg != myoldpkg):
 				os.rename(tbz2path,self.getname(mynewcpv))
@@ -5729,7 +5725,7 @@ class binarytree(packagetree):
 			if os.path.exists(tbz2path) and not os.access(tbz2path,os.W_OK):
 				writemsg("!!! Cannot update readonly binary: "+mycpv+"\n")
 				continue
-			
+
 			#print ">>> Updating data in:",mycpv
 			mytbz2=xpak.tbz2(tbz2path)
 			mytbz2.decompose(mytmpdir, cleanup=1)
@@ -5841,7 +5837,7 @@ class binarytree(packagetree):
 
 	def inject(self,cpv):
 		return self.dbapi.cpv_inject(cpv)
-	
+
 	def exists_specific(self,cpv):
 		if not self.populated:
 			self.populate()
@@ -5876,14 +5872,14 @@ class binarytree(packagetree):
 		mysplit=string.split(pkgname,"/")
 		remote = (not os.path.exists(self.getname(pkgname))) and self.remotepkgs.has_key(mysplit[1]+".tbz2")
 		return remote
-	
+
 	def get_use(self,pkgname):
 		mysplit=string.split(pkgname,"/")
 		if self.isremote(pkgname):
 			return string.split(self.remotepkgs[mysplit[1]+".tbz2"]["USE"][:])
 		tbz2=xpak.tbz2(self.getname(pkgname))
 		return string.split(tbz2.getfile("USE"))
-	
+
 	def gettbz2(self,pkgname):
 		"fetches the package from a remote site, if necessary."
 		print "Fetching '"+str(pkgname)+"'"
@@ -5923,21 +5919,21 @@ class dblink:
 		self.pkg     = pkg
 		self.mycpv   = self.cat+"/"+self.pkg
 		self.mysplit = pkgsplit(self.mycpv)
-	
+
 		self.dbroot   = os.path.normpath(myroot+VDB_PATH)
 		self.dbcatdir = self.dbroot+"/"+cat
 		self.dbpkgdir = self.dbcatdir+"/"+pkg
 		self.dbtmpdir = self.dbcatdir+"/-MERGING-"+pkg
 		self.dbdir    = self.dbpkgdir
-		
+
 		self.lock_pkg = None
 		self.lock_tmp = None
 		self.lock_num = 0    # Count of the held locks on the db.
-	
+
 		self.settings = mysettings
 		if self.settings==1:
 			raise ValueError
-	
+
 		self.myroot=myroot
 		self.updateprotect()
 		self.contentscache=[]
@@ -5947,7 +5943,7 @@ class dblink:
 			self.lock_pkg = portage_locks.lockdir(self.dbpkgdir)
 			self.lock_tmp = portage_locks.lockdir(self.dbtmpdir)
 		self.lock_num += 1
-		
+
 	def unlockdb(self):
 		self.lock_num -= 1
 		if self.lock_num == 0:
@@ -5957,18 +5953,18 @@ class dblink:
 	def getpath(self):
 		"return path to location of db information (for >>> informational display)"
 		return self.dbdir
-	
+
 	def exists(self):
 		"does the db entry exist?  boolean."
 		return os.path.exists(self.dbdir)
-	
+
 	def create(self):
 		"create the skeleton db directory structure.  No contents, virtuals, provides or anything.  Also will create /var/db/pkg if necessary."
 		# XXXXX Delete this eventually
 		raise Exception, "This is bad. Don't use it."
 		if not os.path.exists(self.dbdir):
 			os.makedirs(self.dbdir)
-	
+
 	def delete(self):
 		"erase this db entry completely"
 		if not os.path.exists(self.dbdir):
@@ -5985,11 +5981,11 @@ class dblink:
 			print "!!! "+str(e)
 			print
 			sys.exit(1)
-	
+
 	def clearcontents(self):
 		if os.path.exists(self.dbdir+"/CONTENTS"):
 			os.unlink(self.dbdir+"/CONTENTS")
-	
+
 	def getcontents(self):
 		if not os.path.exists(self.dbdir+"/CONTENTS"):
 			return None
@@ -6049,7 +6045,7 @@ class dblink:
 			ppath=normalize_path(self.myroot+x)+"/"
 			if os.path.isdir(ppath):
 				self.protect.append(ppath)
-			
+
 		self.protectmask=[]
 		for x in string.split(self.settings["CONFIG_PROTECT_MASK"]):
 			ppath=normalize_path(self.myroot+x)+"/"
@@ -6075,9 +6071,9 @@ class dblink:
 	def unmerge(self,pkgfiles=None,trimworld=1,cleanup=0):
 		global dircache
 		dircache={}
-		
+
 		self.lockdb()
-		
+
 		self.settings.load_infodir(self.dbdir)
 
 		if not pkgfiles:
@@ -6087,13 +6083,13 @@ class dblink:
 		# Now, don't assume that the name of the ebuild is the same as the
 		# name of the dir; the package may have been moved.
 		myebuildpath=None
-		
+
 		# We should use the environement file if possible,
 		# as it has all sourced files already included.
 		# XXX: Need to ensure it doesn't overwrite any important vars though.
 		if os.access(self.dbdir+"/environment.bz2", os.R_OK):
 			spawn("bzip2 -d "+self.dbdir+"/environment.bz2",self.settings,free=1)
-		
+
 		if not myebuildpath:
 			mystuff=listdir(self.dbdir,EmptyOnError=1)
 			for x in mystuff:
@@ -6170,7 +6166,7 @@ class dblink:
 					try:
 						os.unlink(obj)
 					except (OSError,IOError),e:
-						pass		
+						pass
 					print "<<<       ","obj",obj
 				elif pkgfiles[obj][0]=="fif":
 					if not stat.S_ISFIFO(lstatobj[stat.ST_MODE]):
@@ -6189,17 +6185,17 @@ class dblink:
 			#This is how we'll clean up directories containing symlinks pointing to
 			#directories that are now empty.  These cases will require several
 			#iterations through our two-stage symlink/directory cleaning loop.
-	
+
 			#main symlink and directory removal loop:
-	
+
 			#progress -- are we making progress?  Initialized to 1 so loop will start
 			progress=1
 			while progress:
 				#let's see if we're able to make progress this iteration...
 				progress=0
-	
+
 				#step 1: remove all the dead symlinks we can...
-	
+
 				pos = 0
 				while pos<len(mysyms):
 					obj=mysyms[pos]
@@ -6208,7 +6204,7 @@ class dblink:
 					else:
 						#we have a dead symlink; remove it from our list, then from existence
 						del mysyms[pos]
-						#we've made progress!	
+						#we've made progress!
 						progress = 1
 						try:
 							os.unlink(obj)
@@ -6217,9 +6213,9 @@ class dblink:
 							print "!!!       ","sym",obj
 							#immutable?
 							pass
-		
+
 				#step 2: remove all the empty directories we can...
-		
+
 				pos = 0
 				while pos<len(mydirs):
 					obj=mydirs[pos]
@@ -6251,15 +6247,15 @@ class dblink:
 					#else:
 					#	print "--- !empty","dir", obj
 					#	continue
-			
+
 				#step 3: if we've made progress, we'll give this another go...
-	
+
 			#step 4: otherwise, we'll print out the remaining stuff that we didn't unmerge (and rightly so!)
-	
+
 			#directories that aren't empty:
 			for x in mydirs:
 				print "--- !empty dir", x
-				
+
 			#symlinks whose target still exists:
 			for x in mysyms:
 				print "--- !targe sym", x
@@ -6325,7 +6321,7 @@ class dblink:
 			return True
 		if self.getcontents() and filename in self.getcontents().keys():
 			return True
-		
+
 		return False
 
 	def treewalk(self,srcroot,destroot,inforoot,myebuild,cleanup=0):
@@ -6415,7 +6411,7 @@ class dblink:
 				raise
 			except:
 				pass
-			
+
 
 		# get old contents info for later unmerging
 		oldcontents = self.getcontents()
@@ -6424,7 +6420,7 @@ class dblink:
 		self.delete()
 		if not os.path.exists(self.dbtmpdir):
 			os.makedirs(self.dbtmpdir)
-		
+
 		print ">>> Merging",self.mycpv,"to",destroot
 
 		# run preinst script
@@ -6490,7 +6486,7 @@ class dblink:
 
 			#swap hands
 			lastlen=len(secondhand)
-			
+
 			# our thirdhand now becomes our secondhand.  It's ok to throw
 			# away secondhand since thirdhand contains all the stuff that
 			# couldn't be merged.
@@ -6499,7 +6495,7 @@ class dblink:
 		if len(secondhand):
 			# force merge of remaining symlinks (broken or circular; oh well)
 			self.mergeme(srcroot,destroot,outfile,None,secondhand,cfgfiledict,mymtime)
-		
+
 		#restore umask
 		os.umask(prevmask)
 
@@ -6512,7 +6508,7 @@ class dblink:
 			self.dbdir = self.dbpkgdir
 			self.unmerge(oldcontents,trimworld=0)
 			self.dbdir = self.dbtmpdir
-			print ">>> original instance of package unmerged safely."	
+			print ">>> original instance of package unmerged safely."
 
 		# We hold both directory locks.
 		self.dbdir = self.dbpkgdir
@@ -6543,10 +6539,10 @@ class dblink:
 		mylock = portage_locks.lockfile(destroot+CONFIG_MEMORY_FILE)
 		writedict(cfgfiledict,destroot+CONFIG_MEMORY_FILE)
 		portage_locks.unlockfile(mylock)
-		
+
 		#do postinst script
 		if myebuild:
-			# if we are merging a new ebuild, use *its* pre/postinst rather than using the one in /var/db/pkg 
+			# if we are merging a new ebuild, use *its* pre/postinst rather than using the one in /var/db/pkg
 			# (if any).
 			a=doebuild(myebuild,"postinst",root,self.settings,use_cache=0)
 		else:
@@ -6615,11 +6611,11 @@ class dblink:
 				writemsg(    "!!!        File:  "+str(mysrc)+"\n")
 				writemsg(    "!!!        Error: "+str(e)+"\n")
 				sys.exit(1)
-				
-				
+
+
 			mymode=mystat[stat.ST_MODE]
 			# handy variables; mydest is the target object on the live filesystems;
-			# mysrc is the source object in the temporary install dir 
+			# mysrc is the source object in the temporary install dir
 			try:
 				mydmode=os.lstat(mydest)[stat.ST_MODE]
 			except SystemExit, e:
@@ -6627,7 +6623,7 @@ class dblink:
 			except:
 				#dest file doesn't exist
 				mydmode=None
-			
+
 			if stat.S_ISLNK(mymode):
 				# we are merging a symbolic link
 				myabsto=abssymlink(mysrc)
@@ -6652,10 +6648,23 @@ class dblink:
 						if self.isprotected(mydest):
 							# Use md5 of the target in ${D} if it exists...
 							if os.path.exists(os.path.normpath(srcroot+myabsto)):
-								mydest = new_protect_filename(myrealdest, newmd5=portage_checksum.perform_md5(srcroot+myabsto))
+								try:
+									mydest = new_protect_filename(myrealdest, newmd5=portage_checksum.perform_md5(srcroot+myabsto))
+								except IOError:
+									print "========================================"
+									print "mysrc",mysrc
+									print "mymode",mymode
+									print "myabsto",myabsto
+									print "myto",myto
+									print "myrealto",myrealto
+									print "mydest",mydest
+									print "mydmode",mydmode
+									print "========================================"
+									print "Please file the above in bug #71787"
+									sys.exit(1)
 							else:
 								mydest = new_protect_filename(myrealdest, newmd5=portage_checksum.perform_md5(myabsto))
-								
+
 				# if secondhand==None it means we're operating in "force" mode and should not create a second hand.
 				if (secondhand!=None) and (not os.path.exists(myrealto)):
 					# either the target directory doesn't exist yet or the target file doesn't exist -- or
@@ -6682,7 +6691,7 @@ class dblink:
 						dflags=bsd_chflags.lgetflags(mydest)
 						if(bsd_chflags.lchflags(mydest, 0)<0):
 							writemsg("!!! Couldn't clear flags on '"+mydest+"'.\n")
-					
+
 					if not os.access(mydest, os.W_OK):
 						pkgstuff = pkgsplit(self.pkg)
 						writemsg("\n!!! Cannot write to '"+mydest+"'.\n")
@@ -6733,7 +6742,7 @@ class dblink:
 				# we are merging a regular file
 				mymd5=portage_checksum.perform_md5(mysrc,calc_prelink=1)
 				# calculate config file protection stuff
-				mydestdir=os.path.dirname(mydest)	
+				mydestdir=os.path.dirname(mydest)
 				moveme=1
 				zing="!!!"
 				if mydmode!=None:
@@ -6769,11 +6778,11 @@ class dblink:
 								cfgfiledict[myrealdest]=[mymd5]
 								cfgprot=1
 							elif cfgfiledict.has_key(myrealdest) and (mymd5 in cfgfiledict[myrealdest]):
-								#myd5!=destmd5, we haven't cycled, and the file we're merging has been already merged previously 
+								#myd5!=destmd5, we haven't cycled, and the file we're merging has been already merged previously
 								zing="-o-"
 								moveme=cfgfiledict["IGNORE"]
 								cfgprot=cfgfiledict["IGNORE"]
-							else:	
+							else:
 								#mymd5!=destmd5, we haven't cycled, and the file we're merging hasn't been merged before
 								moveme=1
 								cfgprot=1
@@ -6784,7 +6793,7 @@ class dblink:
 								#don't record more than 16 md5sums
 								if len(cfgfiledict[myrealdest])>16:
 									del cfgfiledict[myrealdest][0]
-	
+
 						if cfgprot:
 							mydest = new_protect_filename(myrealdest, newmd5=mymd5)
 
@@ -6803,10 +6812,10 @@ class dblink:
 					zing="---"
 				if self.settings["USERLAND"] == "Darwin" and myrealdest[-2:] == ".a":
 
-					# XXX kludge, bug #58848; can be killed when portage stops relying on 
+					# XXX kludge, bug #58848; can be killed when portage stops relying on
 					# md5+mtime, and uses refcounts
 					# alright, we've fooled w/ mtime on the file; this pisses off static archives
-					# basically internal mtime != file's mtime, so the linker (falsely) thinks 
+					# basically internal mtime != file's mtime, so the linker (falsely) thinks
 					# the archive is stale, and needs to have it's toc rebuilt.
 
 					myf=open(myrealdest,"r+")
@@ -6823,20 +6832,20 @@ class dblink:
 						while myf.tell() < st.st_size - 12:
 							# skip object name
 							myf.seek(16,1)
-							
+
 							# update mtime
 							myf.write(lms)
-						
+
 							# skip uid/gid/mperm
 							myf.seek(20,1)
-								
+
 							# read the archive member's size
 							x=long(myf.read(10))
-							
-							# skip the trailing newlines, and add the potential 
+
+							# skip the trailing newlines, and add the potential
 							# extra padding byte if it's not an even size
 							myf.seek(x + 2 + (x % 2),1)
-							
+
 						# and now we're at the end. yay.
 						myf.close()
 						mymd5=portage_checksum.perform_md5(myrealdest,calc_prelink=1)
@@ -6860,7 +6869,7 @@ class dblink:
 					else:
 						sys.exit(1)
 				print zing+" "+mydest
-	
+
 	def merge(self,mergeroot,inforoot,myroot,myebuild=None,cleanup=0):
 		return self.treewalk(mergeroot,myroot,inforoot,myebuild,cleanup=cleanup)
 
@@ -6872,10 +6881,10 @@ class dblink:
 		mydata=string.split(myfile.read())
 		myfile.close()
 		return string.join(mydata," ")
-	
+
 	def copyfile(self,fname):
 		shutil.copyfile(fname,self.dbdir+"/"+os.path.basename(fname))
-	
+
 	def getfile(self,fname):
 		if not os.path.exists(self.dbdir+"/"+fname):
 			return ""
@@ -6888,10 +6897,10 @@ class dblink:
 		myfile=open(self.dbdir+"/"+fname,"w")
 		myfile.write(data)
 		myfile.close()
-		
+
 	def getelements(self,ename):
 		if not os.path.exists(self.dbdir+"/"+ename):
-			return [] 
+			return []
 		myelement=open(self.dbdir+"/"+ename,"r")
 		mylines=myelement.readlines()
 		myreturn=[]
@@ -6900,13 +6909,13 @@ class dblink:
 				myreturn.append(y)
 		myelement.close()
 		return myreturn
-	
+
 	def setelements(self,mylist,ename):
 		myelement=open(self.dbdir+"/"+ename,"w")
 		for x in mylist:
 			myelement.write(x+"\n")
 		myelement.close()
-	
+
 	def isregular(self):
 		"Is this a regular package (does it have a CATEGORY file?  A dblink can be virtual *and* regular)"
 		return os.path.exists(self.dbdir+"/CATEGORY")
@@ -7155,7 +7164,7 @@ if not os.environ.has_key("SANDBOX_ACTIVE"):
 				spawn("chmod -R u+rw,g+rw "+cachedir+"/dep",settings,free=1)
 		except OSError:
 			pass
-	
+
 def flushmtimedb(record):
 	if mtimedb:
 		if record in mtimedb.keys():
@@ -7204,7 +7213,7 @@ def do_upgrade(mykey):
 	writemsg("  "+bold(".")+"='update pass'  "+bold("*")+"='binary update'  "+bold("@")+"='/var/db move'\n"+"  "+bold("s")+"='/var/db SLOT move' "+bold("S")+"='binary SLOT move' "+bold("p")+"='update /etc/portage/package.*'\n")
 	processed=1
 	#remove stale virtual entries (mappings for packages that no longer exist)
-	
+
 	update_files={}
 	file_contents={}
 	myxfiles = ["package.mask","package.unmask","package.keywords","package.use"]
@@ -7248,7 +7257,7 @@ def do_upgrade(mykey):
 			for x in range(0,len(worldlist)):
 				#update world entries, if any.
 				worldlist[x]=dep_transform(worldlist[x],mysplit[1],mysplit[2])
-		
+
 			#update /etc/portage/packages.*
 			for x in file_contents:
 				for mypos in range(0,len(file_contents[x])):
@@ -7285,7 +7294,7 @@ def do_upgrade(mykey):
 		db["/"]["bintree"].update_ents(myupd,settings["PORTAGE_TMPDIR"]+"/tbz2")
 	else:
 		do_upgrade_packagesmessage = 1
-	
+
 	if processed:
 		#update our internal mtime since we processed all our directives.
 		mtimedb["updates"][mykey]=os.stat(mykey)[stat.ST_MTIME]
@@ -7363,7 +7372,7 @@ if (secpass==2) and (not os.environ.has_key("SANDBOX_ACTIVE")):
 				writemsg("\n\n\n ** Skipping packages. Run 'fixpackages' or set it in FEATURES to fix the")
 				writemsg("\n    tbz2's in the packages directory. "+bold("Note: This can take a very long time."))
 				writemsg("\n")
-		
+
 
 
 
