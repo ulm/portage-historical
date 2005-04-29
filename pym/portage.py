@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.65 2005/04/29 09:02:12 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.65 2005/04/29 09:02:12 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.66 2005/04/29 17:43:22 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.66 2005/04/29 17:43:22 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.65 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.66 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -4778,6 +4778,9 @@ class vardbapi(dbapi):
 			mymatch=match_from_list(mydep,self.cp_list(mykey,use_cache=use_cache))
 			self.matchcache[mycat][mydep]=mymatch
 		return self.matchcache[mycat][mydep][:]
+
+	def findname(self, mycpv):
+		return self.root+VDB_PATH+"/"+str(mycpv)+"/"+mycpv.split("/")[1]+".ebuild"
 
 	def aux_get(self, mycpv, wants):
 		global auxdbkeys
