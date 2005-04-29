@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.25 2005/04/29 03:37:30 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.26 2005/04/29 14:55:10 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2609,11 +2609,6 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 		if not os.path.exists(cachedir):
 			os.mkdir(cachedir)
 
-		if (os.path.exists(cachedir) and os.path.exists(cachedir+"/app-portage")):
-			# removed old style cache.
-			# XXX: Compat Code, and Potentially bad.
-			portage.spawn("rm -Rf "+cachedir+"/*",portage.settings,free=1)
-
 		# Potentially bad
 		#if os.path.exists(cachedir+"/"+myportdir):
 		#	portage.spawn("rm -Rf "+cachedir+"/"+myportdir+"/*",portage.settings,free=1)
@@ -2695,7 +2690,7 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 					found = True
 					break
 			if not found:
-				portage.spawn("rm -Rf "+cachedir+"/"+myportdir+"/"+x,portage.settings,free=1)
+				portage.spawn("rm -Rf "+cachedir+"/"+myportdir+"/"+x,portage.settings,free=1,droppriv=1)
 
 
 		portage.portdb.porttrees=backup_porttrees
