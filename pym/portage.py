@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.64 2005/04/29 04:56:35 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.64 2005/04/29 04:56:35 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.65 2005/04/29 09:02:12 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.65 2005/04/29 09:02:12 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.64 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.65 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -1584,11 +1584,15 @@ def spawn(mystring,mysettings,debug=0,free=0,droppriv=0,fd_pipes=None,**keywords
 		(("nouserpriv" in string.split(mysettings["RESTRICT"])) or \
 		 ("userpriv" in string.split(mysettings["RESTRICT"]))))
 
+	if droppriv and portage_gid and portage_uid:
+		keywords.update({"uid":portage_uid,"gid":portage_gid,"groups":[portage_gid],"umask":002})
 
-	if ("sandbox" in features) and (not free):
+	if not free:
+		free=((droppriv and "usersandbox" not in features) or \
+			(not droppriv and "sandbox" not in features and "usersandbox" not in features))
+
+	if not free:
 		keywords["opt_name"] += " sandbox"
-		if droppriv and portage_gid and portage_uid:
-			keywords.update({"uid":portage_uid,"gid":portage_gid,"groups":[portage_gid],"umask":002})
 		return portage_exec.spawn_sandbox(mystring,env=env,**keywords)
 	else:
 		keywords["opt_name"] += " bash"
@@ -2677,7 +2681,11 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 
 	#initial dep checks complete; time to process main commands
 
-	nosandbox=(("userpriv" in features) and ("usersandbox" not in features))
+	nosandbox=(("userpriv" in features) and ("usersandbox" not in features) and \
+		("userpriv" not in mysettings["RESTRICT"]) and ("nouserpriv" not in mysettings["RESTRICT"]))
+	if nosandbox and ("userpriv" not in features or "userpriv" in mysettings["RESTRICT"] or \
+		"nouserpriv" in mysettings["RESTRICT"]):
+		nosandbox = ("sandbox" not in features and "usersandbox" not in features)
 	actionmap={
 			  "depend": {                 "args":(0,1)},         # sandbox  / portage
 			  "setup":  {                 "args":(1,0)},         # without  / root
