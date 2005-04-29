@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.61 2005/04/29 03:37:30 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.61 2005/04/29 03:37:30 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.62 2005/04/29 03:51:00 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.62 2005/04/29 03:51:00 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.61 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.62 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -1203,7 +1203,7 @@ class config:
 		self["FEATURES"] = " ".join(["-*"]+self.features)
 		self.backup_changes("FEATURES")
 
-		if not len(self["CBUILD"]):
+		if not len(self["CBUILD"]) and len(self["CHOST"]):
 			self["CBUILD"] = self["CHOST"]
 			self.backup_changes("CBUILD")
 
