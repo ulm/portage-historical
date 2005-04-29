@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.956 2005/04/26 09:40:59 genone Exp $
+# $Id: ChangeLog,v 1.957 2005/04/29 04:43:19 vapier Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  29 Apr 2005; Mike Frysinger <vapier@gentoo.org> bin/env-update.sh 
+  pym/portage.py pym/portage_const.py:
+  Remove execution of depscan.sh #86523.
 
   26 Apr 2005; Marius Mauch <genone@gentoo.org> cnf/make.globals*:
   Add FEATURES=strict.

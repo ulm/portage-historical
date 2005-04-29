@@ -2,10 +2,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.588 2005/04/25 04:10:37 genone Exp $
-cvs_id_string="$Id: portage.py,v 1.588 2005/04/25 04:10:37 genone Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.589 2005/04/29 04:43:19 vapier Exp $
+cvs_id_string="$Id: portage.py,v 1.589 2005/04/29 04:43:19 vapier Exp $"[5:-2]
 
-VERSION="$Revision: 1.588 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.589 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -87,7 +87,7 @@ try:
 	from portage_const import VDB_PATH, PRIVATE_PATH, CACHE_PATH, DEPCACHE_PATH, \
 	  USER_CONFIG_PATH, MODULES_FILE_PATH, CUSTOM_PROFILE_PATH, PORTAGE_BASE_PATH, \
 	  PORTAGE_BIN_PATH, PORTAGE_PYM_PATH, PROFILE_PATH, LOCALE_DATA_PATH, \
-	  EBUILD_SH_BINARY, SANDBOX_BINARY, DEPSCAN_SH_BINARY, BASH_BINARY, \
+	  EBUILD_SH_BINARY, SANDBOX_BINARY, BASH_BINARY, \
 	  MOVE_BINARY, PRELINK_BINARY, WORLD_FILE, MAKE_CONF_FILE, MAKE_DEFAULTS_FILE, \
 	  DEPRECATED_PROFILE_FILE, USER_VIRTUALS_FILE, EBUILD_SH_ENV_FILE, \
 	  INVALID_ENV_FILE, CUSTOM_MIRRORS_FILE, SANDBOX_PIDS_FILE, CONFIG_MEMORY_FILE,\
@@ -482,8 +482,6 @@ def env_update(root,makelinks=1):
 			continue
 		outfile.write("setenv "+x+" '"+env[x]+"'\n")
 	outfile.close()
-	if os.path.exists(DEPSCAN_SH_BINARY):
-		spawn(DEPSCAN_SH_BINARY,settings,free=1)
 
 def new_protect_filename(mydest, newmd5=None):
 	"""Resolves a config-protect filename for merging, optionally

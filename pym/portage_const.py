@@ -1,8 +1,8 @@
 # portage: Constants
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_const.py,v 1.9 2005/03/22 19:29:57 genone Exp $
-cvs_id_string="$Id: portage_const.py,v 1.9 2005/03/22 19:29:57 genone Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_const.py,v 1.10 2005/04/29 04:43:19 vapier Exp $
+cvs_id_string="$Id: portage_const.py,v 1.10 2005/04/29 04:43:19 vapier Exp $"[5:-2]
 
 # ===========================================================================
 # START OF CONSTANTS -- START OF CONSTANTS -- START OF CONSTANTS -- START OF
@@ -33,7 +33,6 @@ if not os.path.exists(SANDBOX_BINARY):
 	if os.path.exists(PORTAGE_BIN_PATH+"/sandbox"):
 		SANDBOX_BINARY=PORTAGE_BIN_PATH+"/sandbox"
 
-DEPSCAN_SH_BINARY       = "/sbin/depscan.sh"
 BASH_BINARY             = "/bin/bash"
 MOVE_BINARY             = "/bin/mv"
 PRELINK_BINARY          = "/usr/sbin/prelink"
