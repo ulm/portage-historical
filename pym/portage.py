@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.67 2005/05/01 04:08:54 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.67 2005/05/01 04:08:54 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.68 2005/05/01 12:46:51 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.68 2005/05/01 12:46:51 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.67 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.68 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -1047,6 +1047,10 @@ class config:
 				self.punmaskdict = {}
 			else:
 				locations = [self["PORTDIR"] + "/profiles", USER_CONFIG_PATH]
+				for ov in self["PORTDIR_OVERLAY"].split():
+					ov = os.path.normpath(ov)
+					if os.path.isdir(ov+"/profiles"):
+						locations.append(ov+"/profiles")
 
 				pusedict=grabdict_package(USER_CONFIG_PATH+"/package.use")
 				self.pusedict = {}
