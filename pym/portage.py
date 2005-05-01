@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.66 2005/04/29 17:43:22 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.66 2005/04/29 17:43:22 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.67 2005/05/01 04:08:54 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.67 2005/05/01 04:08:54 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.66 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.67 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -6659,23 +6659,14 @@ class dblink:
 							# directory in the way: we can't merge a symlink over a directory
 							# we won't merge this, continue with next file...
 							continue
-						if self.isprotected(mydest):
+						srctarget = os.path.normpath(os.path.dirname(mysrc)+"/"+myto)
+						if os.path.exists(mysrc) and stat.S_ISDIR(os.stat(mysrc)[stat.ST_MODE]):
+							# Kill file blocking installation of symlink to dir #71787
+							pass
+						elif self.isprotected(mydest):
 							# Use md5 of the target in ${D} if it exists...
 							if os.path.exists(os.path.normpath(srcroot+myabsto)):
-								try:
-									mydest = new_protect_filename(myrealdest, newmd5=portage_checksum.perform_md5(srcroot+myabsto))
-								except IOError:
-									print "========================================"
-									print "mysrc",mysrc
-									print "mymode",mymode
-									print "myabsto",myabsto
-									print "myto",myto
-									print "myrealto",myrealto
-									print "mydest",mydest
-									print "mydmode",mydmode
-									print "========================================"
-									print "Please file the above in bug #71787"
-									sys.exit(1)
+								mydest = new_protect_filename(myrealdest, newmd5=portage_checksum.perform_md5(srcroot+myabsto))
 							else:
 								mydest = new_protect_filename(myrealdest, newmd5=portage_checksum.perform_md5(myabsto))
 

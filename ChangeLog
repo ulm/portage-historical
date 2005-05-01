@@ -1,11 +1,19 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.112 2005/04/30 04:42:44 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.113 2005/05/01 04:08:54 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  01 May 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Removed
+  debugging information and added a fix for merging a symlink to a
+  directory over a file.
+
+  01 May 2005; Jason Stubbs <jstubbs@gentoo.org> cnf/make.globals: Added
+  a basic CONFIG_PROTECT setting for those users who use only binary
+  packages and don't have a portage tree.
 
   29 Apr 2005; Jason Stubbs <jstubbs@gentoo.org> bin/doman: Added Mike's
   patch to broaden the accepted man pages from [1-8n] to [0-9n](|f|p|pm)
