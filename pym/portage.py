@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.69 2005/05/01 16:04:51 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.69 2005/05/01 16:04:51 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.70 2005/05/02 07:22:31 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.70 2005/05/02 07:22:31 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.69 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.70 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -5632,6 +5632,8 @@ class portdbapi(dbapi):
 				matches = match_to_list(mycpv, pkgdict[cp].keys())
 				for atom in matches:
 					pgroups.extend(pkgdict[cp][atom])
+			hasstable = False
+			hastesting = False
 			for gp in mygroups:
 				if gp=="*":
 					writemsg("--- WARNING: Package '%s' uses '*' keyword.\n" % mycpv)
@@ -5643,6 +5645,12 @@ class portdbapi(dbapi):
 				elif gp in pgroups:
 					match=1
 					break
+				elif gp[0] == "~":
+					hastesting = True
+				elif gp[0] != "-":
+					hasstable = True
+			if not match and ((hastesting and "~*" in pgroups) or (hasstable and "*" in pgroups)):
+				match=1
 			if match:
 				newlist.append(mycpv)
 		return newlist
