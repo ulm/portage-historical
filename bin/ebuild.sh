@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.28 2005/05/01 09:02:41 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.29 2005/05/02 03:16:42 jstubbs Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -1631,7 +1631,7 @@ if [ "$*" != "depend" ] && [ "$*" != "clean" ]; then
 		addread "${CCACHE_DIR}"
 		addwrite "${CCACHE_DIR}"
 
-		[ -z "${CCACHE_SIZE}" ] && ccache -M ${CCACHE_SIZE} &> /dev/null
+		[ -n "${CCACHE_SIZE}" ] && ccache -M ${CCACHE_SIZE} &> /dev/null
 	fi
 
 	# XXX: Load up the helper functions.

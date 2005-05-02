@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.117 2005/05/01 16:09:19 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.118 2005/05/02 03:16:42 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -8,6 +8,9 @@
     3. /etc/portage/profile/virtuals is _USER_ configs only.
 
 *portage-2.0.51.21 (01 May 2005): Maintainence Release
+
+  01 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/ebuild.sh: Fixed an
+  inverse logic bug in the setting of ccache size.
 
   01 May 2005; Jason Stubbs <jstubbs@gentoo.org>: Removed g-cpan.pl as it
   is now maintained externally. Removed other old and/or unmaintained
