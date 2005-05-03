@@ -1,8 +1,8 @@
 # deps.py -- Portage dependency resolution functions
 # Copyright 2003-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.29 2005/05/03 10:20:01 jstubbs Exp $
-cvs_id_string="$Id: portage_dep.py,v 1.29 2005/05/03 10:20:01 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.30 2005/05/03 13:49:35 jstubbs Exp $
+cvs_id_string="$Id: portage_dep.py,v 1.30 2005/05/03 13:49:35 jstubbs Exp $"[5:-2]
 
 # DEPEND SYNTAX:
 #
@@ -667,6 +667,49 @@ class GluePkg(portage_syntax.CPV):
 		self.use = use.split()
 		self.bdeps = portage_syntax.DependSpec(bdeps).resolve_conditions(self.use)
 		self.rdeps = portage_syntax.DependSpec(rdeps).resolve_conditions(self.use)
+
+
+def transform_dependspec(dependspec, preferences):
+	def dotransform(dependspec, preferences):
+		dependspec = copy.copy(dependspec)
+		elements = dependspec.elements
+		dependspec.elements = []
+		neworder = []
+		prio = len(preferences)+1
+		idx = -1
+		for element in elements[:]:
+			if isinstance(element, portage_syntax.DependSpec):
+				neworder.append(dotransform(element, preferences))
+				elements.remove(element)
+		for pref in preferences:
+			idx += 1
+			for element in elements[:]:
+				if pref.intersects(element):
+					if idx < prio:
+						prio = idx
+					if pref.encapsulates(element):
+						neworder.append((idx, element))
+						elements.remove(element)
+					else:
+						subdependspec = portage_syntax.DependSpec(element_class=portage_syntax.Atom)
+						if element.encapsulates(pref):
+							subsubdependspec = portage_syntax.DependSpec(element_class=portage_syntax.Atom)
+							subsubdependspec.add_element(pref)
+							subsubdependspec.add_element(element)
+							subdependspec.add_element(subsubdependspec)
+						else:
+							subdependspec.add_element(pref)
+						subdependspec.add_element(element)
+						subdependspec.preferential = True
+						neworder.append((idx, subdependspec))
+						elements.remove(element)
+		neworder.sort()
+		for element in neworder:
+			dependspec.add_element(element[1])
+		for element in elements:
+			dependspec.add_element(element)
+		return (prio, dependspec)
+	return dotransform(dependspec, preferences)[1]
 
 
 class TargetGraph(object):
