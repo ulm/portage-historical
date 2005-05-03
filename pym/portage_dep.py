@@ -1,8 +1,8 @@
 # deps.py -- Portage dependency resolution functions
 # Copyright 2003-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.28 2005/05/03 07:20:14 jstubbs Exp $
-cvs_id_string="$Id: portage_dep.py,v 1.28 2005/05/03 07:20:14 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.29 2005/05/03 10:20:01 jstubbs Exp $
+cvs_id_string="$Id: portage_dep.py,v 1.29 2005/05/03 10:20:01 jstubbs Exp $"[5:-2]
 
 # DEPEND SYNTAX:
 #
@@ -663,10 +663,10 @@ class GluePkg(portage_syntax.CPV):
 
 	def __init__(self, cpv, db, use, bdeps, rdeps):
 		portage_syntax.CPV.__init__(self, cpv)
-		self.__dict__["db"] = db
-		self.__dict__["use"] = use.split()
-		self.__dict__["bdeps"] = portage_syntax.DependSpec(bdeps).resolve_conditions(self.use)
-		self.__dict__["rdeps"] = portage_syntax.DependSpec(rdeps).resolve_conditions(self.use)
+		self.db = db
+		self.use = use.split()
+		self.bdeps = portage_syntax.DependSpec(bdeps).resolve_conditions(self.use)
+		self.rdeps = portage_syntax.DependSpec(rdeps).resolve_conditions(self.use)
 
 
 class TargetGraph(object):
@@ -677,3 +677,7 @@ class TargetGraph(object):
 
 		# key : ([Atom], [GLuePkg], [GluePkg])
 		self.pkgrec = {}
+
+	def add_package(self, pkg):
+		self.pkgrec[pkg.key][0].append(pkg)
+		self.graph.add_node(pkg.key)
