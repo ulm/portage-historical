@@ -1,15 +1,12 @@
 #!/bin/bash
-# Copyright 1999-2004 Gentoo Foundation
+# Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/doconfd,v 1.3 2005/02/26 04:14:19 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/doconfd,v 1.4 2005/05/04 23:14:40 vapier Exp $
 
-if [ ${#} -lt 1 ] ; then
-	echo "doconfd: at least one argument needed"
+if [ $# -lt 1 ] ; then
+	echo "$0: at least one argument needed" 1>&2
 	exit 1 	
 fi
 
-tmp_INSDESTTREE="${INSDESTTREE}"
-INSDESTTREE=/etc/conf.d/
-doins "$@"
-INSDESTTREE="${tmp_INSDESTTREE}"
-unset tmp_INSDESTTREE
+exec env INSDESTTREE=/etc/conf.d/ INSOPTIONS="-m0644" \
+	doins "$@"
