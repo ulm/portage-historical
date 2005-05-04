@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.969 2005/05/04 23:14:40 vapier Exp $
+# $Id: ChangeLog,v 1.970 2005/05/04 23:17:54 vapier Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  04 May 2005; Mike Frysinger <vapier@gentoo.org> bin/prepstrip bin/emake:
+  Only echo the strip banner once per dir and don't try to pass strip args 
+  to `false` if we aren't stripping.  Add a simple 'exec' to emake.
 
   04 May 2005; Mike Frysinger <vapier@gentoo.org> bin/{do,new}{env,conf,init}d:
   Touch up and simplify.
