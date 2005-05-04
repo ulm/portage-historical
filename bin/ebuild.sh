@@ -1,8 +1,8 @@
 #!/bin/bash
 # ebuild.sh; ebuild phase processing, env handling
-# Copyright 2004 Gentoo Foundation
+# Copyright 2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.211 2005/02/26 04:14:19 jstubbs Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.212 2005/05/04 01:07:04 vapier Exp $
 
 # general phase execution path-
 # execute_phases is called, which sets EBUILD_PHASE, and then depending on the phase, 
@@ -262,7 +262,7 @@ load_environ() {
 	if [ -n "$1" ]; then
 		src="$1"
 		local c=COMPLETED_EBUILD_PHASES
-		COMPLETED_EBUILD_PHASES="`cat ${BUILDDIR}/.completed_stages 2> /dev/null`"
+		COMPLETED_EBUILD_PHASES="`cat ${PORTAGE_BUILDDIR}/.completed_stages 2> /dev/null`"
 		[ -z "$COMPLETED_EBUILD_PHASES" ] && COMPLETED_EBUILD_PHASES="$c"
 	fi
 	[ ! -z $DEBUGGING ] && echo "loading environment from $src" >&2
@@ -287,8 +287,8 @@ load_environ() {
 		return 1
 	fi
 	unset declare
-	if [ -f "${BUILDDIR}/.completed_stages" ]; then
-		COMPLETED_EBUILD_PHASES=`cat ${BUILDDIR}/.completed_stages`
+	if [ -f "${PORTAGE_BUILDDIR}/.completed_stages" ]; then
+		COMPLETED_EBUILD_PHASES=`cat ${PORTAGE_BUILDDIR}/.completed_stages`
 	else
 		COMPLETED_EBUILD_PHASES=''
 	fi
@@ -513,7 +513,7 @@ execute_phases() {
 
 			export SANDBOX_ON="0"
 
-			temp_ebuild_phase=`cat "${BUILDDIR}/.completed_stages" 2> /dev/null`
+			temp_ebuild_phase=`cat "${PORTAGE_BUILDDIR}/.completed_stages" 2> /dev/null`
 #			echo "temp_ebuild_phase=$temp_ebuild_phase"
 			if hasq setup ${temp_ebuild_phase}; then
 				unset temp_ebuild_phase
@@ -652,7 +652,7 @@ execute_phases() {
 			;;
 		esac
 
-		cd ${BUILDDIR} &> /dev/null
+		cd ${PORTAGE_BUILDDIR} &> /dev/null
 		if [ "${MUST_EXPORT_ENV}" == "yes" ]; then
 #			echo "exporting environ ${EBUILD_PHASE} to ${T}/environment" >&2
 			export_environ "${T}/environment"
@@ -664,9 +664,9 @@ execute_phases() {
 			done
 			COMPLETED_EBUILD_PHASES="${list}"
 			unset list
-			echo "$COMPLETED_EBUILD_PHASES" > "${BUILDDIR}/.completed_stages"
-			chown portage:portage "${BUILDDIR}/.completed_stages" &> /dev/null
-			chmod g+w "${BUILDDIR}/.completed_stages" &> /dev/null
+			echo "$COMPLETED_EBUILD_PHASES" > "${PORTAGE_BUILDDIR}/.completed_stages"
+			chown portage:portage "${PORTAGE_BUILDDIR}/.completed_stages" &> /dev/null
+			chmod g+w "${PORTAGE_BUILDDIR}/.completed_stages" &> /dev/null
 			MUST_EXPORT_ENV="no"
 		fi
 	done
