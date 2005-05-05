@@ -2,7 +2,7 @@
 # ebuild.py; Ebuild classes/abstraction of phase processing, and communicating with a ebuild-daemon.sh instance
 # Copyright 2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.24 2005/05/04 01:07:04 vapier Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/ebuild.py,v 1.25 2005/05/05 02:12:06 vapier Exp $
 
 
 import os,sys,traceback
@@ -770,10 +770,11 @@ class ebuild_handler:
 				return (not digestgen(aalist,mysettings,overwrite=1,verbosity=verbosity))
 			if mydo=="manifest":
 				return (not digestgen(aalist,mysettings,overwrite=1,manifestonly=1,verbosity=verbosity))
-	
-			if not digestcheck(checkme, mysettings, ("strict" in features),verbosity=verbosity):
-				return 1
-		
+
+			if mydo=="fetch" or mydo=="unpack":
+				if not digestcheck(checkme, mysettings, ("strict" in features),verbosity=verbosity):
+					return 1
+
 			if mydo=="fetch":
 				return 0
 
