@@ -1,11 +1,14 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.121 2005/05/05 03:59:59 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.122 2005/05/05 04:07:02 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  05 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/etc-update: Fixed the
+  regex and added locale overrides to the use of cut as per bug #91159.
 
   05 May 2005; Jason Stubbs <jstubbs@gentoo.org> cnf/make.globals: Made
   CONFIG_PROTECT default to /etc only as packages are augmenting it via env.d
