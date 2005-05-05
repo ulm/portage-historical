@@ -1,11 +1,19 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.977 2005/05/05 03:34:02 jstubbs Exp $
+# $Id: ChangeLog,v 1.978 2005/05/05 05:08:26 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  05 May 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage_syntax.py: Added
+  with_key() method to Atom for creating a new atom of a different key with
+  the same constraints.
+
+  05 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/test_target_graph.py
+  pym/portage_dep.py: Added transform_virtuals() function to just that. Added
+  testing code to show how it is used. Renamed TargetGraph to StateGraph.
 
   05 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/test_target_graph.py
   pym/portage_dep.py: Added full support for OR-based dependencies. Still

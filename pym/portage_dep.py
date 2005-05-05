@@ -1,8 +1,8 @@
 # deps.py -- Portage dependency resolution functions
 # Copyright 2003-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.33 2005/05/05 03:34:02 jstubbs Exp $
-cvs_id_string="$Id: portage_dep.py,v 1.33 2005/05/05 03:34:02 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_dep.py,v 1.34 2005/05/05 05:08:26 jstubbs Exp $
+cvs_id_string="$Id: portage_dep.py,v 1.34 2005/05/05 05:08:26 jstubbs Exp $"[5:-2]
 
 # DEPEND SYNTAX:
 #
@@ -717,7 +717,27 @@ def transform_dependspec(dependspec, prefdict):
 	return dotransform(dependspec, prefdict)[1]
 
 
-class TargetGraph(object):
+def transform_virtuals(pkg, dependspec, virtuals):
+	dependspec = copy.copy(dependspec)
+	elements = dependspec.elements
+	dependspec.elements = []
+	for element in elements:
+		if isinstance(element, portage_syntax.DependSpec):
+			dependspec.elements.append(transform_virtuals(pkg, element, virtuals))
+		elif element.cpv.key not in virtuals:
+			dependspec.elements.append(element)
+		else:
+			subdepspec = portage_syntax.DependSpec(element_class=portage_syntax.Atom)
+			subdepspec.preferential = True
+			for virtual in virtuals[element.cpv.key]:
+				atom = element.with_key(virtual)
+				if not atom.match(pkg):
+					subdepspec.add_element(element.with_key(virtual))
+			dependspec.elements.append(subdepspec)
+	return dependspec
+
+
+class StateGraph(object):
 
 	def __init__(self):
 		# key : (bool, [GluePkg], [GluePkg], [Atom], [Atom])
@@ -898,7 +918,7 @@ class TargetGraph(object):
 				else:
 					checks[atom.cpv.key] = True
 		else:
-			for idx in range(self.preferential_atoms[key]):
+			for idx in range(len(self.preferential_atoms[key])):
 				if self.preferential_atoms[key][idx][0] == pkg:
 					for atomlist in self.preferential_atoms[key][idx][1]:
 						for atom in atomlist:
