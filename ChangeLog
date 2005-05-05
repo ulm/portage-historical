@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.976 2005/05/05 02:12:05 vapier Exp $
+# $Id: ChangeLog,v 1.977 2005/05/05 03:34:02 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  05 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/test_target_graph.py
+  pym/portage_dep.py: Added full support for OR-based dependencies. Still
+  need to sort out virtuals and provide a public interface for TargetGraph.
 
   04 May 2005; Mike Frysinger <vapier@gentoo.org> pym/ebuild.py:
   Do not check the digests of files except when unpacking/fetching #29333.
