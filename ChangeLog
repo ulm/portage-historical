@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.973 2005/05/05 00:08:20 vapier Exp $
+# $Id: ChangeLog,v 1.974 2005/05/05 00:10:22 vapier Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -8,7 +8,8 @@
     3. /etc/portage/profile/virtuals is _USER_ configs only.
 
   04 May 2005; Mike Frysinger <vapier@gentoo.org> bin/prepall:
-  Remove old unused aclocal code #81419.
+  Remove old unused aclocal code #81419.  Don't chmod +x files that are already 
+  +x #81427.
 
   04 May 2005; Mike Frysinger <vapier@gentoo.org> 
   bin/ebuild-default-functions.sh:
