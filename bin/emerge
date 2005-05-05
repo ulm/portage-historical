@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.27 2005/04/29 17:43:22 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.28 2005/05/05 03:59:59 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -1767,10 +1767,25 @@ class depgraph:
 				del portage.mtimedb["resume"]["mergelist"][0]
 				del mymergelist[0]
 		else:
+			myfavs=portage.grabfile(portage.root+portage.WORLD_FILE)
+			myfavdict=genericdict(myfavs)
 			for x in range(len(mylist)):
 				if mylist[x][3]!="nomerge":
 					# Add to the mergelist
 					mymergelist.append(mylist[x])
+				else:
+					myfavkey=portage.cpv_getkey(mylist[x][2])
+					if "--onlydeps" in myopts:
+						continue
+					# Add to the world file. Since we won't be able to later.
+					if (not "--fetchonly" in myopts) and (myfavkey in favorites):
+						#don't record if already in system profile or already recorded
+						if (not mysysdict.has_key(myfavkey)) and (not myfavdict.has_key(myfavkey)):
+							#we don't have a favorites entry for this package yet; add one
+							myfavdict[myfavkey]=myfavkey
+							print ">>> Recording",myfavkey,"in \"world\" favorites file..."
+			if not "--fetchonly" in myopts:
+				portage.writedict(myfavdict,portage.root+portage.WORLD_FILE,writekey=0)
 
 			portage.mtimedb["resume"]["mergelist"]=mymergelist[:]
 
