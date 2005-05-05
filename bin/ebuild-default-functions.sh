@@ -2,7 +2,7 @@
 # ebuild-default-functions.sh; default functions for ebuild env that aren't saved- specific to the portage instance.
 # Copyright 2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.20 2005/05/04 01:07:04 vapier Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.21 2005/05/05 00:03:14 vapier Exp $
 
 has_version() {
 	# if there is a predefined portageq call, use it.
@@ -89,50 +89,56 @@ addpredict()
 }
 
 unpack() {
-	local x
-	local y
+	local x y
 	local myfail
 	local tarvars
+	local srcdir
 
-	if [ "$USERLAND" == "BSD" ]; then
+	if [ "$USERLAND" == "BSD" ] ; then
 		tarvars=""
 	else
-		tarvars="--no-same-owner"	
-	fi	
+		tarvars="--no-same-owner"
+	fi
 
 	[ -z "$*" ] && die "Nothing passed to the 'unpack' command"
 
 	for x in "$@"; do
 		myfail="failure unpacking ${x}"
-		echo ">>> Unpacking ${x} to $(pwd)"
-		y="${x%.*}"
-		y="${y##*.}"
+		echo ">>> Unpacking ${x} to ${PWD}"
+		y=${x%.*}
+		y=${y##*.}
+
+		if [ "${x:0:2}" = "./" ] ; then
+			srcdir=""
+		else
+			srcdir="${DISTDIR}/"
+		fi
 
 		case "${x##*.}" in
-			tar) 
-				tar ${tarvars} -xf "${DISTDIR}/${x}" || die "$myfail"
+			tar)
+				tar ${tarvars} -xf "${srcdir}${x}" || die "$myfail"
 				;;
-			tgz) 
-				tar ${tarvars} -xzf "${DISTDIR}/${x}" || die "$myfail"
+			tgz)
+				tar ${tarvars} -xzf "${srcdir}${x}" || die "$myfail"
 				;;
-			tbz2) 
-				bzip2 -dc "${DISTDIR}/${x}" | tar ${tarvars} -xf - || die "$myfail"
+			tbz2)
+				bzip2 -dc "${srcdir}${x}" | tar ${tarvars} -xf - || die "$myfail"
 				;;
-			ZIP|zip) 
-				unzip -qo "${DISTDIR}/${x}" || die "$myfail"
+			ZIP|zip)
+				unzip -qo "${srcdir}${x}" || die "$myfail"
 				;;
-			gz|Z|z) 
-				if [ "${y}" == "tar" ]; then
-					tar ${tarvars} -xzf "${DISTDIR}/${x}" || die "$myfail"
+			gz|Z|z)
+				if [ "${y}" == "tar" ] ; then
+					tar ${tarvars} -xzf "${srcdir}${x}" || die "$myfail"
 				else
-					gzip -dc "${DISTDIR}/${x}" > ${x%.*} || die "$myfail"
+					gzip -dc "${srcdir}${x}" > ${x%.*} || die "$myfail"
 				fi
 				;;
-			bz2) 
-				if [ "${y}" == "tar" ]; then
-					bzip2 -dc "${DISTDIR}/${x}" | tar ${tarvars} -xf - || die "$myfail"
+			bz2)
+				if [ "${y}" == "tar" ] ; then
+					bzip2 -dc "${srcdir}${x}" | tar ${tarvars} -xf - || die "$myfail"
 				else
-					bzip2 -dc "${DISTDIR}/${x}" > ${x%.*} || die "$myfail"
+					bzip2 -dc "${srcdir}${x}" > ${x%.*} || die "$myfail"
 				fi
 				;;
 			*)

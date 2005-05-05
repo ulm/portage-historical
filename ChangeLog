@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.971 2005/05/04 23:50:33 vapier Exp $
+# $Id: ChangeLog,v 1.972 2005/05/05 00:03:14 vapier Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  04 May 2005; Mike Frysinger <vapier@gentoo.org> 
+  bin/ebuild-default-functions.sh:
+  Allow people to pass files in $PWD to unpack via ./FILE syntax #24637.
 
   04 May 2005; Mike Frysinger <vapier@gentoo.org> bin/do{doc,info,man} 
   bin/prepall{docs,info,man} bin/prep{info,man}:
