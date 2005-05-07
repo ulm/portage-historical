@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.979 2005/05/05 06:24:07 jstubbs Exp $
+# $Id: ChangeLog,v 1.980 2005/05/07 00:50:54 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  06 May 2005; Brian Harring <ferringb@gentoo.org> pym/config.py: Dsd supplied 
+  a tweak to the quote escaping; should solve the issues transferring from 
+  python side to bash.
 
   05 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/test_target_graph.py
   pym/portage_dep.py: Added some basic utility methods to StateGraph. Reworked
