@@ -1,10 +1,11 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild,v 1.21 2004/11/07 12:51:57 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild,v 1.22 2005/05/07 04:46:49 ferringb Exp $
 
-import os,sys,portage_util
+import os,sys
 sys.path = ["/usr/lib/portage/pym"]+sys.path
+import portage_util
 
 def getroot():
 	try:
