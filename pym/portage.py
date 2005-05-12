@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.70 2005/05/02 07:22:31 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.70 2005/05/02 07:22:31 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.71 2005/05/12 15:20:23 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.71 2005/05/12 15:20:23 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.70 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.71 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -287,7 +287,7 @@ def listdir(mypath, recursive=False, filesonly=False, ignorecvs=False, ignorelis
 	if recursive:
 		x=0
 		while x<len(ftype):
-			if ftype[x]==1 and not (ignorecvs and os.path.basename(list[x]) in ('CVS','.svn')):
+			if ftype[x]==1 and not (ignorecvs and os.path.basename(list[x]) in ('CVS','.svn','SCCS')):
 				l,f = cacheddir(mypath+"/"+list[x], ignorecvs, ignorelist, EmptyOnError,
 					followSymlinks)
 
@@ -1902,10 +1902,10 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 							con=selinux.getcontext()
 							con=string.replace(con,mysettings["PORTAGE_T"],mysettings["PORTAGE_FETCH_T"])
 							selinux.setexec(con)
-							myret=spawn(myfetch,mysettings,free=1)
+							myret=spawn(myfetch,mysettings,free=1, droppriv=("userpriv" in mysettings.features))
 							selinux.setexec(None)
 						else:
-							myret=spawn(myfetch,mysettings,free=1)
+							myret=spawn(myfetch,mysettings,free=1, droppriv=("userpriv" in mysettings.features))
 					finally:
 						#if root, -always- set the perms.
 						if os.path.exists(mysettings["DISTDIR"]+"/"+myfile) and (fetched != 1 or os.getuid() == 0) \
@@ -2525,12 +2525,14 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 				mystat = os.stat(mysettings["CCACHE_DIR"])
 				if ("userpriv" in features):
 					if mystat[stat.ST_UID] != portage_gid or ((mystat[stat.ST_MODE]&02070)!=02070):
+						writemsg("* Adjusting permissions on ccache in %s\n" % mysettings["CCACHE_DIR"])
 						spawn("chgrp -R "+str(portage_gid)+" "+mysettings["CCACHE_DIR"], mysettings, free=1)
 						spawn("chown "+str(portage_uid)+":"+str(portage_gid)+" "+mysettings["CCACHE_DIR"], mysettings, free=1)
 						spawn("chmod -R ug+rw "+mysettings["CCACHE_DIR"], mysettings, free=1)
 						spawn("find "+mysettings["CCACHE_DIR"]+" -type d -exec chmod g+s \{\} \;", mysettings, free=1)
 				else:
 					if mystat[stat.ST_UID] != 0 or ((mystat[stat.ST_MODE]&02070)!=02070):
+						writemsg("* Adjusting permissions on ccache in %s\n" % mysettings["CCACHE_DIR"])
 						spawn("chgrp -R "+str(portage_gid)+" "+mysettings["CCACHE_DIR"], mysettings, free=1)
 						spawn("chown 0:"+str(portage_gid)+" "+mysettings["CCACHE_DIR"], mysettings, free=1)
 						spawn("chmod -R ug+rw "+mysettings["CCACHE_DIR"], mysettings, free=1)

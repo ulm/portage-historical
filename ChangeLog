@@ -1,11 +1,32 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.123 2005/05/07 04:32:59 ferringb Exp $
+# $Id: ChangeLog,v 1.796.2.124 2005/05/12 15:20:22 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  13 May 2005; Jason Stubbs <jstubbs@gentoo.org> cnf/dispatch-conf.conf
+  bin/dispatch-conf: Removed the pager config option and made if part of the
+  diff command option.
+
+  13 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/dodoc: Backported vapier's
+  fix for 0-byte files causing a spurious "file not found" error.
+
+  13 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/emerge: Remove --verbose
+  and --tree from options when using --resume as the combination is currently
+  broken.
+
+  13 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/repoman: Added three new
+  checks on ebuild's PROVIDEs. Optimized out a lot of unnecessary aux_get()
+  calls. Modified to commit an unsigned Manifest before committing the signed
+  one to help ensure broken digests don't make it to rsync.
+
+  13 May 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Added SCCS to
+  the list of directories to ignore when ignorecvs is set in cacheddir. Drop
+  priveleges during fetch when userpriv is set. Added message display when
+  changing permissions on ccache dirs.
 
   06 May 2005; Brian Harring <ferringb@gentoo.org> bin/ebuild: fix portage_util 
   import on osx.

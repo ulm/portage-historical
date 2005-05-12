@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.28 2005/05/05 03:59:59 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.29 2005/05/12 15:20:22 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -395,6 +395,14 @@ if ("--debug" in myopts):
 	portage.settings.backup_changes("PORTAGE_DEBUG")
 	portage.debug=1
 	portage.settings.lock()
+
+if ("--resume" in myopts):
+	if "--verbose" in myopts:
+		print "* --verbose is currently broken with --resume. Disabling..."
+		myopts.remove("--verbose")
+	if "--tree" in myopts:
+		print "* --tree is currently broken with --resume. Disabling..."
+		myopts.remove("--tree")
 
 # Set color output
 if ("--nocolor" in myopts) and (sys.stdout.isatty()):

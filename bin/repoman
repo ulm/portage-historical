@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.19 2005/04/29 03:37:30 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.20 2005/05/12 15:20:23 jstubbs Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -118,7 +118,10 @@ qahelp={
 	"ebuild.minorsyn":"This ebuild has a minor syntax error that contravenes gentoo coding style",
 	"ebuild.badheader":"This ebuild has a malformed header",
 	"metadata.missing":"Missing metadata.xml files",
-	"metadata.bad":"Bad metadata.xml files"
+	"metadata.bad":"Bad metadata.xml files",
+	"virtual.versioned":"PROVIDE contains virtuals with versions",
+	"virtual.exists":"PROVIDE contains existing package names",
+	"virtual.unavailable":"PROVIDE contains a virtual which contains no profile default"
 }
 
 qacats = qahelp.keys()
@@ -144,7 +147,8 @@ qawarnings=[
 "ebuild.badheader",
 "file.size",
 "metadata.missing",
-"metadata.bad"
+"metadata.bad",
+"virtual.versioned"
 ]
 
 missingvars=["KEYWORDS","LICENSE","DESCRIPTION","SLOT"]
@@ -857,13 +861,33 @@ for x in scanlist:
 			fails["ebuild.output"].append(x+"/"+y+".ebuild")
 			continue
 
+		mynewaux = {}
+		for idx in range(len(allvars)):
+			if idx < len(myaux):
+				mynewaux[allvars[idx]] = myaux[idx]
+			else:
+				mynewaux[allvars[idx]] = ""
+		myaux = mynewaux
+
 		# Test for negative logic and bad words in the RESTRICT var.
 		#for x in myaux[allvars.index("RESTRICT")].split():
 		#	if x.startswith("no"):
 		#		print "Bad RESTRICT value: %s" % x
 
+		myaux["PROVIDE"] = portage_dep.use_reduce(portage_dep.paren_reduce(myaux["PROVIDE"]), matchall=1)
+		myaux["PROVIDE"] = " ".join(portage.flatten(myaux["PROVIDE"]))
+		for myprovide in myaux["PROVIDE"].split():
+			prov_cp = portage.dep_getkey(myprovide)
+			if prov_cp != myprovide:
+				stats["virtual.versioned"]+=1
+				fails["virtual.versioned"].append(x+"/"+y+".ebuild: "+myprovide)
+			prov_pkg = portage.dep_getkey(portage.best(portage.db["/"]["porttree"].dbapi.xmatch("match-all", prov_cp)))
+			if prov_cp == prov_pkg:
+				stats["virtual.exists"]+=1
+				fails["virtual.exists"].append(x+"/"+y+".ebuild: "+prov_cp)
+
 		for pos in range(0,len(missingvars)):
-			if portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y, [ missingvars[pos] ] )[0]=="":
+			if not myaux[missingvars[pos]]:
 				myqakey=missingvars[pos]+".missing"
 				stats[myqakey]=stats[myqakey]+1
 				fails[myqakey].append(x+"/"+y+".ebuild")
@@ -872,7 +896,7 @@ for x in scanlist:
 			arches=[[repoman_settings["ARCH"], repoman_settings["ARCH"], portage.groups]]
 		else:
 			arches=[]
-			for keyword in string.split(portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,["KEYWORDS"])[0]):
+			for keyword in myaux["KEYWORDS"].split():
 				if (keyword[0]=="-"):
 					continue
 				elif (keyword[0]=="~"):
@@ -885,7 +909,7 @@ for x in scanlist:
 		badlicsyntax = False
 		catpkg = catdir+"/"+y
 		for mytype in ["DEPEND","RDEPEND","PDEPEND","LICENSE"]:
-			mydepstr = string.join(portage.db["/"]["porttree"].dbapi.aux_get(catpkg, [mytype]))
+			mydepstr = myaux[mytype]
 			if (string.find(mydepstr, " ?") != -1):
 				stats[mytype+".syntax"] += 1
 				fails[mytype+".syntax"].append(catpkg+".ebuild "+mytype+": '?' preceded by space")
@@ -907,36 +931,36 @@ for x in scanlist:
 				else:
 					badlicsyntax = True
 
-		if not baddepsyntax:
-			for keyword,arch,groups in arches:
-				portage.groups=groups
+		for keyword,arch,groups in arches:
+			portage.groups=groups
 
-				if not profiles.has_key(arch):
-					# A missing profile will create an error further down
-					# during the KEYWORDS verification.
-					continue
+			if not profiles.has_key(arch):
+				# A missing profile will create an error further down
+				# during the KEYWORDS verification.
+				continue
 				
-				for prof in profiles[arch]:
-					
-					profdir = portdir+"/profiles/"+prof[0]
-	
-					portage.profiledir=profdir
-					os.environ["ACCEPT_KEYWORDS"]="-~"+arch
-	
-					if arch_caches.has_key(prof[0]):
-						dep_settings, portage.portdb, portage.db["/"]["porttree"] = arch_caches[prof[0]]
-						#portage.do_vartree(dep_settings)
-						#dep_settings.regenerate()
-					else:
-						dep_settings=portage.config(config_profile_path=profdir, config_incrementals=portage_const.INCREMENTALS)
-						#dep_settings["ARCH"]=arch
-						#portage.do_vartree(dep_settings)
-						#dep_settings.regenerate()
-						portage.portdb=portage.portdbapi(portdir, dep_settings)
-						portage.db["/"]["porttree"]=portage.portagetree("/",dep_settings.getvirtuals("/"))
-						arch_caches[prof[0]]=[dep_settings, portage.portdb, portage.db["/"]["porttree"]]
-	
+			for prof in profiles[arch]:
 
+				profdir = portdir+"/profiles/"+prof[0]
+	
+				portage.profiledir=profdir
+	
+				if arch_caches.has_key(prof[0]):
+					dep_settings, portage.portdb, portage.db["/"]["porttree"] = arch_caches[prof[0]]
+				else:
+					os.environ["ACCEPT_KEYWORDS"]="-~"+arch
+					dep_settings=portage.config(config_profile_path=profdir, config_incrementals=portage_const.INCREMENTALS)
+					portage.portdb=portage.portdbapi(portdir, dep_settings)
+					portage.db["/"]["porttree"]=portage.portagetree("/",dep_settings.getvirtuals("/"))
+					arch_caches[prof[0]]=[dep_settings, portage.portdb, portage.db["/"]["porttree"]]
+	
+				for myprovide in myaux["PROVIDE"].split():
+					prov_cp = portage.dep_getkey(myprovide)
+					if prov_cp not in dep_settings.virtuals:
+						stats["virtual.unavailable"]+=1
+						fails["virtual.unavailable"].append(x+"/"+y+".ebuild: "+keyword+"("+prof[0]+") "+prov_cp)
+
+				if not baddepsyntax:
 					ismasked = (catdir+"/"+y not in portage.db["/"]["porttree"].dbapi.xmatch("list-visible",x))
 					if ismasked:
 						if "--include-masked" not in myoptions:
@@ -954,7 +978,7 @@ for x in scanlist:
 					for mytype,mypos in [["DEPEND",len(missingvars)],["RDEPEND",len(missingvars)+1],["PDEPEND",len(missingvars)+2]]:
 						
 						mykey=mytype+".bad"+suffix
-						myvalue=string.join(portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,[ mytype ]))
+						myvalue = myaux[mytype]
 						if not myvalue:
 							continue
 						try:
@@ -988,7 +1012,7 @@ for x in scanlist:
 			stats["ebuild.nesteddie"]=stats["ebuild.nesteddie"]+1
 			fails["ebuild.nesteddie"].append(x+"/"+y+".ebuild")
 		# uselist checks - global
-		myuse=string.split(portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,["IUSE"])[0])
+		myuse = myaux["IUSE"].split()
 		for mypos in range(len(myuse)-1,-1,-1):
 			if myuse[mypos] and (myuse[mypos] in uselist):
 				del myuse[mypos]
@@ -1004,7 +1028,7 @@ for x in scanlist:
 
 		# license checks
 		if not badlicsyntax:
-			myuse=portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,["LICENSE"])[0]
+			myuse = myaux["LICENSE"]
 			# Parse the LICENSE variable, remove USE conditions and
 			# flatten it.
 			myuse=portage_dep.use_reduce(portage_dep.paren_reduce(myuse), matchall=1)
@@ -1019,7 +1043,7 @@ for x in scanlist:
 					fails["LICENSE.invalid"].append(x+"/"+y+".ebuild: %s" % myuse[mypos])
 
 		#keyword checks
-		myuse=string.split(portage.db["/"]["porttree"].dbapi.aux_get(catdir+"/"+y,["KEYWORDS"])[0])
+		myuse = myaux["KEYWORDS"].split()
 		for mykey in myuse:
 			myskey=mykey[:]
 			if myskey[0]=="-":
@@ -1344,6 +1368,11 @@ else:
 			commitmessage=raw_input(green("> "))
 		except KeyboardInterrupt: 
 			exithandler()
+		try:
+			commitmessage+="\n(Portage version: "+str(portage.VERSION)+")"
+		except:
+			print "Failed to insert portage version in message!"
+			commitmessage+="\n(Portage version: Unknown)"
 	if not commitmessagefile:
 		unlinkfile=1
 		commitmessagefile=tempfile.mktemp(".repoman.msg")
@@ -1351,23 +1380,8 @@ else:
 			os.unlink(commitmessagefile)
 		mymsg=open(commitmessagefile,"w")
 		mymsg.write(commitmessage)
-		try:
-			mymsg.write("\n(Portage version: "+str(portage.VERSION)+")")
-		except:
-			print "Failed to insert portage version in message!"
-			mymsg.write("\n(Portage version: Unknown)")
 		mymsg.close()
 
-		try:
-			mymsg=open(commitmessagefile,"r")
-			commitmessage=mymsg.read()
-			mymsg.close()
-		except SystemExit, e:
-			raise  # Need to propogate this
-		except Exception,e:
-			print "!!! Failed to open commit message file."
-			print "!!!",e
-			sys.exit(1)
 		print
 		print green("Using commit message:")
 		print green("------------------------------------------------------------------------------")
@@ -1395,8 +1409,6 @@ else:
 			os.rename(filename+".asc", filename)
 		return rValue
 
-	mychanges=[]
-	mysigs=[]
 	if myheaders or myupdates or myremoved or mynew:
 		myfiles=myheaders+myupdates+myremoved+mynew
 		for x in range(len(myfiles)-1, -1, -1):
@@ -1406,12 +1418,6 @@ else:
 		if repolevel==3:   # In a package dir
 			repoman_settings["O"]="./"
 			portage.digestgen([],repoman_settings,manifestonly=1)
-			if "sign" in portage.features:
-				while(gpgsign(repoman_settings["O"]+"/Manifest")):
-					portage.writemsg("!!! YOU MUST sign the Manifest.\n")
-					portage.writemsg("!!! You can also disable this for the time being by removing FEATURES='sign'")
-					time.sleep(3)
-				#mysigs+=[sigfile]
 		elif repolevel==2: # In a category dir
 			for x in myfiles:
 				xs=string.split(x,"/")
@@ -1422,12 +1428,6 @@ else:
 				mydone.append(xs[0])
 				repoman_settings["O"]="./"+xs[0]
 				portage.digestgen([],repoman_settings,manifestonly=1)
-				if "sign" in portage.features:
-					while(gpgsign(repoman_settings["O"]+"/Manifest")):
-						portage.writemsg("!!! YOU MUST sign the Manifest.\n")
-						portage.writemsg("!!! You can also disable this for the time being by removing FEATURES='sign'")
-						time.sleep(3)
-					#mysigs+=[sigfile]
 		elif repolevel==1: # repo-cvsroot
 			print green("RepoMan sez:"), "\"You're rather crazy... doing the entire repository.\"\n"
 			for x in myfiles:
@@ -1439,31 +1439,69 @@ else:
 				mydone.append(string.join(xs[:2],"/"))
 				repoman_settings["O"]="./"+string.join(xs[:2],"/")
 				portage.digestgen([],repoman_settings,manifestonly=1)
-				if "sign" in portage.features:
-					while(gpgsign(repoman_settings["O"]+"/Manifest")):
-						portage.writemsg("!!! YOU MUST sign the Manifest.\n")
-						portage.writemsg("!!! You can also disable this for the time being by removing FEATURES='sign'")
-						time.sleep(3)
-					#mysigs+=[sigfile]
 		else:
 			print red("I'm confused... I don't know where I am!")
 			sys.exit(1)
 
-	if "--pretend" in myoptions:
-		print "(/usr/bin/cvs -q commit -F "+commitmessagefile+")"
-	else:
-		mymsg=open(commitmessagefile,"a")
-		mymsg.write(" (Manifest recommit)")
-		try:
-			mymsg.write("\n(Portage version: "+str(portage.VERSION)+")")
-		except:
-			print "Failed to insert portage version in message!"
-			mymsg.write("\n(Portage version: Unknown)")
-		mymsg.close()
-		retval=os.system("/usr/bin/cvs -q commit -F "+commitmessagefile)
-		if retval:
-			print "!!! Exiting on cvs (shell) error code:",retval
-			sys.exit(retval)
+		if "--pretend" in myoptions:
+			print "(/usr/bin/cvs -q commit -F "+commitmessagefile+")"
+		else:
+			mymsg=open(commitmessagefile,"w")
+			mymsg.write(commitmessage)
+			mymsg.write("\n (Unsigned Manifest commit)")
+			mymsg.close()
+			retval=os.system("/usr/bin/cvs -q commit -F "+commitmessagefile)
+			if retval:
+				print "!!! Exiting on cvs (shell) error code:",retval
+				sys.exit(retval)
+	
+	if "sign" in portage.features:
+		mydone=[]
+		if repolevel==3:   # In a package dir
+			repoman_settings["O"]="./"
+			while(gpgsign(repoman_settings["O"]+"/Manifest")):
+				portage.writemsg("!!! YOU MUST sign the Manifest.\n")
+				portage.writemsg("!!! You can also disable this for the time being by removing FEATURES='sign'")
+				time.sleep(3)
+		elif repolevel==2: # In a category dir
+			for x in myfiles:
+				xs=string.split(x,"/")
+				if xs[0]==".":
+					xs=xs[1:]
+				if xs[0] in mydone:
+					continue
+				mydone.append(xs[0])
+				repoman_settings["O"]="./"+xs[0]
+				while(gpgsign(repoman_settings["O"]+"/Manifest")):
+					portage.writemsg("!!! YOU MUST sign the Manifest.\n")
+					portage.writemsg("!!! You can also disable this for the time being by removing FEATURES='sign'")
+					time.sleep(3)
+		elif repolevel==1: # repo-cvsroot
+			print green("RepoMan sez:"), "\"You're rather crazy... doing the entire repository.\"\n"
+			for x in myfiles:
+				xs=string.split(x,"/")
+				if xs[0]==".":
+					xs=xs[1:]
+				if string.join(xs[:2],"/") in mydone:
+					continue
+				mydone.append(string.join(xs[:2],"/"))
+				repoman_settings["O"]="./"+string.join(xs[:2],"/")
+				while(gpgsign(repoman_settings["O"]+"/Manifest")):
+					portage.writemsg("!!! YOU MUST sign the Manifest.\n")
+					portage.writemsg("!!! You can also disable this for the time being by removing FEATURES='sign'")
+					time.sleep(3)
+
+		if "--pretend" in myoptions:
+			print "(/usr/bin/cvs -q commit -F "+commitmessagefile+")"
+		else:
+			mymsg=open(commitmessagefile,"w")
+			mymsg.write(commitmessage)
+			mymsg.write("\n (Signed Manifest commit)")
+			mymsg.close()
+			retval=os.system("/usr/bin/cvs -q commit -F "+commitmessagefile)
+			if retval:
+				print "!!! Exiting on cvs (shell) error code:",retval
+				sys.exit(retval)
 	
 	if unlinkfile:
 		os.unlink(commitmessagefile)
