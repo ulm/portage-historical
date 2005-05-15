@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.20 2005/05/12 15:20:23 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.21 2005/05/15 09:37:49 jstubbs Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -89,6 +89,7 @@ qahelp={
 	"LICENSE.missing":"Ebuilds that have a missing LICENSE variable",
 	"DESCRIPTION.missing":"Ebuilds that have a missing DESCRIPTION variable",
 	"SLOT.missing":"Ebuilds that have a missing SLOT variable",
+	"HOMEPAGE.missing":"Ebuilds that have a missing HOMEPAGE variable",
 	"DEPEND.bad":"User-visible ebuilds with bad DEPEND settings (matched against *visible* ebuilds)",
 	"RDEPEND.bad":"User-visible ebuilds with bad RDEPEND settings (matched against *visible* ebuilds)",
 	"PDEPEND.bad":"User-visible ebuilds with bad PDEPEND settings (matched against *visible* ebuilds)",
@@ -151,7 +152,7 @@ qawarnings=[
 "virtual.versioned"
 ]
 
-missingvars=["KEYWORDS","LICENSE","DESCRIPTION","SLOT"]
+missingvars=["KEYWORDS","LICENSE","DESCRIPTION","HOMEPAGE","SLOT"]
 allvars=portage.auxdbkeys
 commitmessage=None
 commitmessagefile=None
@@ -766,6 +767,9 @@ for x in scanlist:
 								else:
 									eb_name,eb_location = portage.db["/"]["porttree"].dbapi.findname2(mykey)
 									portage.doebuild(eb_name, "digest", "/", uri_settings)
+							else:
+								stats["digest.partial"] += 1
+								fails["digest.partial"].append(y+"::"+myf)
 						else:
 							if os.path.exists(myff):
 								if not portage_checksum.verify_all(myff, mydigests[myf]):
@@ -1364,10 +1368,11 @@ else:
 	unlinkfile=0
 	if not (commitmessage or commitmessagefile):
 		print "Please enter a CVS commit message at the prompt:"
-		try:
-			commitmessage=raw_input(green("> "))
-		except KeyboardInterrupt: 
-			exithandler()
+		while not commitmessage:
+			try:
+				commitmessage=raw_input(green("> "))
+			except KeyboardInterrupt: 
+				exithandler()
 		try:
 			commitmessage+="\n(Portage version: "+str(portage.VERSION)+")"
 		except:

@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.71 2005/05/12 15:20:23 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.71 2005/05/12 15:20:23 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.72 2005/05/15 09:37:50 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.72 2005/05/15 09:37:50 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.71 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.72 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -489,7 +489,7 @@ def env_update(makelinks=1):
 		"ADA_INCLUDE_PATH",  "ADA_OBJECTS_PATH",
 		"LDPATH",            "MANPATH",
 		"PATH",              "PRELINK_PATH",
-		"PRELINK_PATH_MASK", "PYTHON_PATH"
+		"PRELINK_PATH_MASK", "PYTHONPATH"
 	]
 
 	env={}
@@ -507,13 +507,13 @@ def env_update(makelinks=1):
 		for myspec in specials.keys():
 			if myconfig.has_key(myspec):
 				if myspec in colon_separated:
-					specials[myspec].extend(string.split(varexpand(myconfig[myspec]),":"))
+					specials[myspec].extend(myconfig[myspec].split(":"))
 				else:
-					specials[myspec].append(varexpand(myconfig[myspec]))
+					specials[myspec].append(myconfig[myspec])
 				del myconfig[myspec]
 		# process all other variables
 		for myenv in myconfig.keys():
-			env[myenv]=varexpand(myconfig[myenv])
+			env[myenv]=myconfig[myenv]
 
 	if os.path.exists(root+"etc/ld.so.conf"):
 		myld=open(root+"etc/ld.so.conf")

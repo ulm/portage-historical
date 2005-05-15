@@ -1,11 +1,22 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.124 2005/05/12 15:20:22 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.125 2005/05/15 09:37:49 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  15 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/emerge: Made --newuse
+  take priority over --usepkg.
+
+  15 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/repoman: Added HOMEPAGE
+  to the list of vars that must be defined. Restored detection of the
+  digest.partial check. Made a commit message required.
+
+  15 May 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Fixed the
+  definition of PYTHONPATH in env_update(). Fixed the handling of quotes in
+  env_update().
 
   13 May 2005; Jason Stubbs <jstubbs@gentoo.org> cnf/dispatch-conf.conf
   bin/dispatch-conf: Removed the pager config option and made if part of the
