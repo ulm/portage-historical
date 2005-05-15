@@ -1,11 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.125 2005/05/15 09:37:49 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.126 2005/05/15 11:04:21 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+*portage-2.0.51.22 (15 May 2005): Maintainence Release
+
+  15 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/dodoc: Removed the dodoc
+  new testing features from head's version of dodoc.
 
   15 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/emerge: Made --newuse
   take priority over --usepkg.
