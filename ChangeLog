@@ -1,11 +1,14 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.126 2005/05/15 11:04:21 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.127 2005/05/17 13:47:30 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  17 May 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Stopped
+  attempting to fetch files when only the manifest is being generated.
 
 *portage-2.0.51.22 (15 May 2005): Maintainence Release
 

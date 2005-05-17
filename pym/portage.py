@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.72 2005/05/15 09:37:50 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.72 2005/05/15 09:37:50 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.73 2005/05/17 13:47:30 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.73 2005/05/17 13:47:30 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.72 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.73 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -2661,7 +2661,7 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 	except:
 		pass
 
-	if not fetch(fetchme, mysettings, listonly=listonly, fetchonly=fetchonly):
+	if mydo!="manifest" and not fetch(fetchme, mysettings, listonly=listonly, fetchonly=fetchonly):
 		return 1
 
 	if mydo=="fetch" and listonly:
