@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.73 2005/05/17 13:47:30 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.73 2005/05/17 13:47:30 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.74 2005/05/18 15:19:52 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.74 2005/05/18 15:19:52 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.73 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.74 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -1902,10 +1902,10 @@ def fetch(myuris, mysettings, listonly=0, fetchonly=0, locks_in_subdir=".locks",
 							con=selinux.getcontext()
 							con=string.replace(con,mysettings["PORTAGE_T"],mysettings["PORTAGE_FETCH_T"])
 							selinux.setexec(con)
-							myret=spawn(myfetch,mysettings,free=1, droppriv=("userpriv" in mysettings.features))
+							myret=spawn(myfetch,mysettings,free=1, droppriv=("userfetch" in mysettings.features and uid==0))
 							selinux.setexec(None)
 						else:
-							myret=spawn(myfetch,mysettings,free=1, droppriv=("userpriv" in mysettings.features))
+							myret=spawn(myfetch,mysettings,free=1, droppriv=("userfetch" in mysettings.features and uid==0))
 					finally:
 						#if root, -always- set the perms.
 						if os.path.exists(mysettings["DISTDIR"]+"/"+myfile) and (fetched != 1 or os.getuid() == 0) \

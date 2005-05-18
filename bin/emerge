@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.30 2005/05/15 09:37:49 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.31 2005/05/18 15:19:52 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -949,7 +949,7 @@ class depgraph:
 			elif ("selective" in myparams) and vardbapi.cpv_exists(mykey):
 				merging=0
 
-			if (merging==0 and "--newuse" in myopts and vardbapi.cpv_exists(mykey)):
+			if (merging==0 and mytype=="ebuild" and "--newuse" in myopts and vardbapi.cpv_exists(mykey)):
 				iuses=string.split(portage.portdb.aux_get(mykey, ["IUSE"])[0])
 				old_use=string.split(vardbapi.aux_get(mykey, ["USE"])[0])
 				now_use=string.split(self.pkgsettings["USE"])

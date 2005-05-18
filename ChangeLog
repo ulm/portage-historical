@@ -1,11 +1,28 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.127 2005/05/17 13:47:30 jstubbs Exp $
+# $Id: ChangeLog,v 1.796.2.128 2005/05/18 15:19:51 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  19 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/emake: Made the
+  make command configurable but defaulted to "make".
+
+  19 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/emerge: Fixed an
+  issue that would cause binary package reinstalls when IUSE disagreed.
+
+  19 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/repoman: Fixed an
+  issue where the portage version wasn't appended to the commit message
+  when specified on the command line. Fixed the detection of files above
+  the package level during Manifest generation.
+
+  19 May 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Renamed
+  the userpriv FEATURE to userfetch for the fetch() phase and fixed a bug
+  where privileges would try to be dropped even as non-root. Fixed a bug
+  where files were attempted to be fetched when only a manifest recreation
+  is requested.
 
   17 May 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Stopped
   attempting to fetch files when only the manifest is being generated.

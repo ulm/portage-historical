@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.21 2005/05/15 09:37:49 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.98.2.22 2005/05/18 15:19:52 jstubbs Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -1373,11 +1373,11 @@ else:
 				commitmessage=raw_input(green("> "))
 			except KeyboardInterrupt: 
 				exithandler()
-		try:
-			commitmessage+="\n(Portage version: "+str(portage.VERSION)+")"
-		except:
-			print "Failed to insert portage version in message!"
-			commitmessage+="\n(Portage version: Unknown)"
+	try:
+		commitmessage+="\n(Portage version: "+str(portage.VERSION)+")"
+	except:
+		print "Failed to insert portage version in message!"
+		commitmessage+="\n(Portage version: Unknown)"
 	if not commitmessagefile:
 		unlinkfile=1
 		commitmessagefile=tempfile.mktemp(".repoman.msg")
@@ -1417,7 +1417,7 @@ else:
 	if myheaders or myupdates or myremoved or mynew:
 		myfiles=myheaders+myupdates+myremoved+mynew
 		for x in range(len(myfiles)-1, -1, -1):
-			if not os.path.exists(myfiles[x]) or not os.path.isdir(myfiles[x]):
+			if myfiles[x].count("/") < 4-repolevel:
 				del myfiles[x]
 		mydone=[]
 		if repolevel==3:   # In a package dir
