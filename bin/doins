@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/doins,v 1.8 2004/11/05 13:51:09 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/doins,v 1.9 2005/05/24 04:12:29 vapier Exp $
 
 if [ $# -lt 1 ] ; then
 	echo "${0}: at least one argument needed"
@@ -20,7 +20,15 @@ if [ ${INSDEPTH} -gt 30 ] ; then
 	exit 1
 fi
 
-[ ! -d "${INSDESTTREE}" ] && dodir "${INSDESTTREE}"
+if [ "${INSDESTTREE%${D}*}" == "" ]; then
+	echo "-------------------------------------------------------" 1>&2
+	echo "You should not use \${D} with helpers." 1>&2
+	echo "  --> ${INSDESTTREE}" 1>&2
+	echo "-------------------------------------------------------" 1>&2
+	#exit 1
+fi
+
+[ ! -d "${D}${INSDESTTREE}" ] && dodir "${INSDESTTREE}"
 
 for x in "$@" ; do
 	if [ -L "$x" ] ; then
