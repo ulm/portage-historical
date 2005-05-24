@@ -1,11 +1,16 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.983 2005/05/24 02:05:52 vapier Exp $
+# $Id: ChangeLog,v 1.984 2005/05/24 21:59:25 vapier Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  24 May 2005; Mike Frysinger <vapier@gentoo.org>
+  bin/ebuild-default-functions.sh:
+  Allow src_install() to abort if scanelf locates questionable binaries and 
+  user has their FEATURES set (elf-xstack / elf-textrel / elf-bind-now).
 
   23 May 2005; Mike Frysinger <vapier@gentoo.org> 
   bin/ebuild-default-functions.sh:
