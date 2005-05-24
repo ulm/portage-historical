@@ -2,7 +2,7 @@
 # ebuild-default-functions.sh; default functions for ebuild env that aren't saved- specific to the portage instance.
 # Copyright 2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.23 2005/05/22 10:44:44 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.24 2005/05/24 02:05:52 vapier Exp $
 
 has_version() {
 	# if there is a predefined portageq call, use it.
@@ -97,17 +97,19 @@ unpack() {
 	[ -z "$*" ] && die "Nothing passed to the 'unpack' command"
 
 	for x in "$@"; do
-		myfail="failure unpacking ${x}"
 		echo ">>> Unpacking ${x} to ${PWD}"
 		y=${x%.*}
 		y=${y##*.}
 
+		myfail="${x} does not exist"
 		if [ "${x:0:2}" = "./" ] ; then
 			srcdir=""
 		else
 			srcdir="${DISTDIR}/"
 		fi
+		[ ! -s "${srcdir}${x}" ] && die "$myfail"
 
+		myfail="failure unpacking ${x}"
 		case "${x##*.}" in
 			tar)
 				tar ${tarvars} -xf "${srcdir}${x}" || die "$myfail"
