@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.31 2005/05/04 18:00:40 genone Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.32 2005/05/25 06:00:12 ferringb Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -463,8 +463,8 @@ econf() {
 			--datadir=/usr/share \
 			--sysconfdir=/etc \
 			--localstatedir=/var/lib \
-			${LOCAL_EXTRA_ECONF} \
-			"$@"
+			"$@" \
+			${LOCAL_EXTRA_ECONF}
 
 		if ! "${ECONF_SOURCE}/configure" \
 			--prefix=/usr \
@@ -474,8 +474,8 @@ econf() {
 			--datadir=/usr/share \
 			--sysconfdir=/etc \
 			--localstatedir=/var/lib \
-			${LOCAL_EXTRA_ECONF} \
-			"$@" ; then
+			"$@"  \
+			${LOCAL_EXTRA_ECONF}; then
 
 			if [ -s config.log ]; then
 				echo
@@ -1044,29 +1044,33 @@ dyn_install() {
 		die "There are ${UNSAFE} unsafe files. Portage will not install them."
 	fi
 	
+	# dumps perms to stdout.  if error, no perms dumped.
 	function stat_perms() {
 		local f
-		if ! type -p stat &>/dev/null; then
-			do_stat() {
-				# Generic version -- Octal result
-				python -c "import os,stat; print '%o' % os.stat('$1')[stat.ST_MODE]"
-			}
-		else
-			if [ "${USERLAND}" == "BSD" ] || [ "${USERLAND}" == "Darwin" ]; then
+		# only define do_stat if it hasn't been already
+		if ! type -p do_stat &> /dev/null; then
+			if ! type -p stat &>/dev/null; then
 				do_stat() {
-					# BSD version -- Octal result
-					$(type -p stat) -f '%p' "$1"
+					# Generic version -- Octal result
+					python -c "import os,stat; print '%o' % os.stat('$1')[stat.ST_MODE]"
 				}
 			else
-				do_stat() {
-					# Linux version -- Hex result converted to Octal
-					f=$($(type -p stat) -c '%f' "$1") || return $?
-					printf '%o' "0x$f"
-				}
+				if [ "${USERLAND}" == "BSD" ] || [ "${USERLAND}" == "Darwin" ]; then
+					do_stat() {
+						# BSD version -- Octal result
+						$(type -p stat) -f '%p' "$1"
+					}
+				else
+					do_stat() {
+						# Linux version -- Hex result converted to Octal
+						f=$($(type -p stat) -c '%f' "$1") || return $?
+						printf '%o' "0x$f"
+					}
+				fi
 			fi
 		fi
 
-		f=$(do_stat "$@") || die "Failed to perform stat operation on file: $1"
+		f=$(do_stat "$@") || return
 		f="${f:2:4}"
 		echo $f
 	}
@@ -1075,7 +1079,11 @@ dyn_install() {
 	local count=0
 	find "${D}/" -user  portage | while read file; do
 		count=$(( $count + 1 ))
-		s=$(stat_perms $file)
+		s=$(stat_perms "$file")
+		if [ -z "${s}" ]; then
+			ewarn "failed stat_perm'ing $file.  User intervention during install isn't wise..."
+			continue
+		fi
 		chown root "$file"
 		chmod "$s" "$file"
 	done
@@ -1087,6 +1095,10 @@ dyn_install() {
 	find "${D}/" -group portage | while read file; do
 		count=$(( $count + 1 ))
 		s=$(stat_perms "$file")
+		if [ -z "${s}" ]; then
+			echo "failed stat_perm'ing '$file' . User intervention during install isn't wise..."
+			continue
+		fi
 		if [ "$USERLAND" == "BSD" ] || [ "$USERLAND" == "Darwin" ];then
 			chgrp wheel "$file"
 		else
@@ -1721,9 +1733,10 @@ export TMPDIR="${T}"
 
 #turn off glob expansion from here on in to prevent *'s and ? in the DEPEND
 #syntax from getting expanded :)  Fixes bug #1473
+#check eclass rdepends also. bug #58819
 set -f
-if [ "${RDEPEND-unset}" == "unset" ]; then
-	export RDEPEND=${DEPEND}
+if [ "${RDEPEND-unset}" == "unset" ] && [ "${E_RDEPEND-unset}" == "unset"]; then
+	export RDEPEND="${DEPEND} ${E_DEPEND}"
 	debug-print "RDEPEND: not set... Setting to: ${DEPEND}"
 fi
 
