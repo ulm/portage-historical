@@ -337,12 +337,15 @@ for a single package.
 .I Format:
 \- comments begin with #
 \- one DEPEND atom per line followed by additional KEYWORDS
+\- blank lines imply unstable host arch
 
 .I Example:
 # always use unstable libgd
 media\-libs/libgd ~x86
 # only use stable mplayer
 media\-video/mplayer \-~x86
+# always use unstable netcat
+net-analyzer/netcat
 .fi
 .TP
 .BR package.use
@@ -612,4 +615,4 @@ Please report bugs via http://bugs.gentoo.org/
 .BR ebuild (5),
 .BR make.conf (5)
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/portage.5,v 1.17.2.9 2005/04/29 14:55:11 jstubbs Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/portage.5,v 1.17.2.10 2005/05/27 02:28:05 vapier Exp $
