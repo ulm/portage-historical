@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.33 2005/05/29 06:11:08 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.34 2005/05/29 12:40:08 jstubbs Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -40,9 +40,7 @@ alias restore_IFS='if [ "${old_IFS:-unset}" != "unset" ]; then IFS="${old_IFS}";
 
 OCC="$CC"
 OCXX="$CXX"
-if [ "$USERLAND" == "GNU" ]; then
-	source /etc/profile.env &>/dev/null
-fi
+source /etc/profile.env &>/dev/null
 if [ -f "${PORTAGE_BASHRC}" ]; then
 	source "${PORTAGE_BASHRC}"
 fi
@@ -410,7 +408,7 @@ econf() {
 			local x
 			for x in $(find ${WORKDIR} -type f -name config.guess -o -name config.sub) ; do
 				echo " * econf: updating ${x/${WORKDIR}\/} with /usr/share/gnuconfig/${x##*/}"
-				cp /usr/share/gnuconfig/${x##*/} ${x}
+				cp -f /usr/share/gnuconfig/${x##*/} ${x}
 			done
 		fi
 
@@ -1143,11 +1141,7 @@ dyn_install() {
 			echo "failed stat_perm'ing '$file' . User intervention during install isn't wise..."
 			continue
 		fi
-		if [ "$USERLAND" == "BSD" ] || [ "$USERLAND" == "Darwin" ];then
-			chgrp wheel "$file"
-		else
-			chgrp root "$file"
-		fi
+		chgrp 0 "${file}"
 		chmod "$s" "$file"
 	done
 	if (( $count > 0 )); then

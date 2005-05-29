@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.31 2005/05/18 15:19:52 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.32 2005/05/29 12:40:08 jstubbs Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2155,13 +2155,6 @@ def unmerge(unmerge_action, unmerge_files):
 					if y not in pkgmap[mykey]["selected"]:
 						pkgmap[mykey]["selected"].append(y)
 						numselected=numselected+len(mymatch)
-				if not (pkgmap[mykey]["protected"] or pkgmap[mykey]["omitted"]) and \
-				   (mykey in syslist+["sys-apps/portage"]):
-					print red("\a\n\n!!! Trying to unmerge package(s) in system profile. '%s'" % (mykey))
-					print yellow("\a!!! This could be damaging to your system.\n")
-					if "--pretend" not in myopts:
-						global EMERGE_WARNING_DELAY
-						countdown(EMERGE_WARNING_DELAY,red("Press Ctrl-C to Stop"))
 
 		else:
 			#unmerge_action in ["prune", clean"]
@@ -2205,6 +2198,12 @@ def unmerge(unmerge_action, unmerge_files):
 		if global_unmerge and not pkgmap[x]["selected"]:
 			#avoid cluttering the preview printout with stuff that isn't getting unmerged
 			continue
+		if not (pkgmap[x]["protected"] or pkgmap[x]["omitted"]) and (x in syslist):
+			print red("\a\n\n!!! '%s' is part of your system profile. '%s'" % (mykey))
+			print yellow("\a!!! Unmerging it may be damaging to your system.\n")
+			if "--pretend" not in myopts and "--ask" not in myopts:
+				global EMERGE_WARNING_DELAY
+				countdown(EMERGE_WARNING_DELAY,red("Press Ctrl-C to Stop"))
 		print "\n "+white(x)
 		for mytype in ["selected","protected","omitted"]:
 			print string.rjust(mytype,12)+":",
@@ -2735,7 +2734,7 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 					found = True
 					break
 			if not found:
-				portage.spawn("rm -Rf "+cachedir+"/"+myportdir+"/"+x,portage.settings,free=1,droppriv=1)
+				portage.spawn("cd /; rm -Rf "+cachedir+"/"+myportdir+"/"+x,portage.settings,free=1,droppriv=1)
 
 
 		portage.portdb.porttrees=backup_porttrees

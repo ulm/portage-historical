@@ -1,10 +1,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.75 2005/05/18 15:33:49 jstubbs Exp $
-cvs_id_string="$Id: portage.py,v 1.524.2.75 2005/05/18 15:33:49 jstubbs Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.524.2.76 2005/05/29 12:40:08 jstubbs Exp $
+cvs_id_string="$Id: portage.py,v 1.524.2.76 2005/05/29 12:40:08 jstubbs Exp $"[5:-2]
 
-VERSION="$Revision: 1.524.2.75 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.524.2.76 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -594,16 +594,22 @@ def env_update(makelinks=1):
 			mtimedb["ldpath"][x]=newldpathtime
 			ld_cache_update=True
 
-	if (ld_cache_update or makelinks):
-		# We can't update links if we haven't cleaned other versions first, as
-		# an older package installed ON TOP of a newer version will cause ldconfig
-		# to overwrite the symlinks we just made. -X means no links. After 'clean'
-		# we can safely create links.
-		writemsg(">>> Regenerating "+str(root)+"etc/ld.so.cache...\n")
-		if makelinks:
-			commands.getstatusoutput("cd / ; /sbin/ldconfig -r "+root)
-		else:
-			commands.getstatusoutput("cd / ; /sbin/ldconfig -X -r "+root)
+	# ldconfig has very different behaviour between FreeBSD and Linux
+	if ostype=="Linux" or ostype.lower().endswith("gnu"):
+		if (ld_cache_update or makelinks):
+			# We can't update links if we haven't cleaned other versions first, as
+			# an older package installed ON TOP of a newer version will cause ldconfig
+			# to overwrite the symlinks we just made. -X means no links. After 'clean'
+			# we can safely create links.
+			writemsg(">>> Regenerating "+str(root)+"etc/ld.so.cache...\n")
+			if makelinks:
+				commands.getstatusoutput("cd / ; /sbin/ldconfig -r "+root)
+			else:
+				commands.getstatusoutput("cd / ; /sbin/ldconfig -X -r "+root)
+	elif ostype == "FreeBSD":
+		if (ld_cache_update):
+			writemsg(">>> Regenerating "+str(root)+"var/run/ld-elf.so.hints...\n")
+			commands.getstatusoutput("cd / ; /sbin/ldconfig -elf -f "+str(root)+"var/run/ld-elf.so.hints "+str(root)+"etc/ld.so.conf")
 
 	del specials["LDPATH"]
 
@@ -2583,7 +2589,7 @@ def doebuild(myebuild,mydo,myroot,mysettings,debug=0,listonly=0,fetchonly=0,clea
 		if mysettings.has_key("PORT_LOGDIR"):
 			if os.access(mysettings["PORT_LOGDIR"]+"/",os.W_OK):
 				try:
-					os.chown(mysettings["BUILD_PREFIX"],portage_uid,portage_gid)
+					os.chown(mysettings["PORT_LOGDIR"],portage_uid,portage_gid)
 					os.chmod(mysettings["PORT_LOGDIR"],02770)
 					if not mysettings.has_key("LOG_PF") or (mysettings["LOG_PF"] != mysettings["PF"]):
 						mysettings["LOG_PF"]=mysettings["PF"]

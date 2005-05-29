@@ -1,11 +1,33 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.131 2005/05/29 06:11:07 vapier Exp $
+# $Id: ChangeLog,v 1.796.2.132 2005/05/29 12:40:07 jstubbs Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  29 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/ebuild.sh: Made
+  /etc/profile.env sourced regardless of USERLAND. Made copying of config.sub
+  and config.guess --force'd as they are sometimes u-w. Replaced a if/else of
+  chgrp root/wheel with chgrp 0.
+
+  29 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/emerge: Moved the system
+  package unmerge check after slots are checked and removed the countdown for
+  when --ask is specified. Added a chdir to the removal of old cache call so
+  that there are no errors due to userpriv and being in a non-portage-readable
+  directory.
+
+  29 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/etc-update: Moved the
+  temporary work dir from /tmp/$$ to ${PORTAGE_TMPDIR}/$$.
+
+  29 May 2005; Jason Stubbs <jstubbs@gentoo.org> bin/prepinfo bin/prepman:
+  Reordered the -{min,max}depth and -name arguments to find so that warnings
+  are not produced.
+
+  29 May 2005; Jason Stubbs <jstubbs@gentoo.org> pym/portage.py: Added support
+  for FreeBSD's ldconfig. Fixed an incorrect chown of BUILD_PREFIX instead of
+  PORT_LOGDIR.
 
   29 May 2005; Mike Frysinger <vapier@gentoo.org> bin/ebuild.sh bin/prepstrip:
   Backport scanelf QA checks from HEAD.
