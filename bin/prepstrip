@@ -1,19 +1,19 @@
 #!/bin/bash
-# Copyright 1999-2004 Gentoo Foundation
+# Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepstrip,v 1.23.2.1 2004/12/06 03:01:43 carpaski Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepstrip,v 1.23.2.2 2005/05/29 06:11:08 vapier Exp $
 
 if [ "${FEATURES//*nostrip*/true}" == "true" ] || [ "${RESTRICT//*nostrip*/true}" == "true" ] ; then
 	echo "nostrip"
 	STRIP="/bin/false"
+	PORTAGE_STRIP_FLAGS=""
 else
 	STRIP="${STRIP:-${CHOST}-strip}"
 	type -p ${STRIP} > /dev/null || STRIP=strip
+	PORTAGE_STRIP_FLAGS=${PORTAGE_STRIP_FLAGS:---strip-unneeded}
 fi
 
-PORTAGE_STRIP_FLAGS="${PORTAGE_STRIP_FLAGS:---strip-unneeded}"
-
-echo "strip: ${STRIP} ${PORTAGE_STRIP_FLAGS}"
+banner=1
 retval=0
 
 for x in "$@" ; do
@@ -22,6 +22,11 @@ for x in "$@" ; do
 		find "${x}" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 -or -name '*.so' -or -name '*.so.*' \) -print0 |
 				$XARGS -0 -n500 prepstrip
 	else
+		if [ ${banner} -eq 1 ] ; then
+			echo "strip: ${STRIP} ${PORTAGE_STRIP_FLAGS}"
+			banner=0
+		fi
+
 		f=$(file "${x}")
 		if [ -z "${f/*current ar archive*/}" ]; then
 			echo "   ${x:${#D}:${#x}}"
@@ -34,21 +39,6 @@ for x in "$@" ; do
 		if [ -z "${f/*SB shared object*/}" ]; then
 			echo "   ${x:${#D}:${#x}}"
 			${STRIP} ${PORTAGE_STRIP_FLAGS} "${x}"
-
-			if [ -x /usr/bin/readelf ] ; then
-				/usr/bin/readelf -d "${x}" | grep TEXTREL > /dev/null
-				if [ $? = 0 ]; then
-					echo "	${x:${#D}:${#x}} will contain runtime text relocations"
-					if [ "${FEATURES//*strict*/true}" == "true" ] ; then
-						echo -e "\aText relocations require a lot of extra work to be preformed by the"
-						echo -e "\adynamic linker which will cause serious performance impact on IA-32"
-						echo -e "\aand might not function properly on other architectures hppa for example."
-						echo -e "\aIf you are a programmer please take a closer look at this package and"
-						echo -e "\aconsider writing a patch which addresses this problem."
-						retval=1
-					fi >&2
-				fi
-			fi
 		fi
 	fi
 done

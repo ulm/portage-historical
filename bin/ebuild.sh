@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.32 2005/05/25 06:00:12 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.33 2005/05/29 06:11:08 vapier Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -1012,35 +1012,79 @@ dyn_install() {
 
 	declare -i UNSAFE=0
 	for i in $(find "${D}/" -type f -perm -2002); do
-		UNSAFE=$(($UNSAFE + 1))
+		((UNSAFE++))
 		echo "UNSAFE SetGID: $i"
 	done
 	for i in $(find "${D}/" -type f -perm -4002); do
-		UNSAFE=$(($UNSAFE + 1))
+		((UNSAFE++))
 		echo "UNSAFE SetUID: $i"
 	done
 	
-	if [ -x /usr/bin/readelf -a -x /usr/bin/file ]; then
-		for x in $(find "${D}/" -type f \( -perm -04000 -o -perm -02000 \) ); do
-			f=$(file "${x}")
-			if [ -z "${f/*SB executable*/}" -o -z "${f/*SB shared object*/}" ]; then
-				/usr/bin/readelf -d "${x}" | egrep '\(FLAGS(.*)NOW' > /dev/null
-				if [ $? != 0 ]; then
-					if [ ! -z "${f/*statically linked*/}" ]; then
-						#uncomment this line out after developers have had ample time to fix pkgs.
-						#UNSAFE=$(($UNSAFE + 1))
-						echo -ne '\a'
-						echo "QA Notice: ${x:${#D}:${#x}} is setXid, dynamically linked and using lazy bindings."
-						echo "This combination is generally discouraged. Try: CFLAGS='-Wl,-z,now' emerge ${PN}"
-						echo -ne '\a'
-						sleep 1
-					fi
-				fi
-			fi
-		done
+	if type -p scanelf > /dev/null ; then
+		# Make sure we disallow insecure RUNPATH/RPATH's
+		f=$(scanelf -qyRF '%r %F' "${D}" | grep "${BUILDDIR}")
+		if [[ -n ${f} ]] ; then
+			echo -ne '\a\n'
+			echo "QA Notice: the following files contain insecure RUNPATH's"
+			echo " Please file a bug about this at http://bugs.gentoo.org/"
+			echo " For more information on this issue, kindly review:"
+			echo " http://bugs.gentoo.org/81745"
+			echo "${f//${D}\/}"
+			echo -ne '\a\n'
+			die "Insecure binaries detected"
+		fi
+
+		# Check for setid binaries but are not built with BIND_NOW
+		f=$(scanelf -qyRF '%b %F' "${D}")
+		if [[ -n ${f} ]] ; then
+			echo -ne '\a\n'
+			echo "QA Notice: the following files are setXid, dyn linked, and using lazy bindings"
+			echo " This combination is generally discouraged.  Try re-emerging the package:"
+			echo " LDFLAGS='-Wl,-z,now' emerge ${PN}"
+			echo "${f//${D}\/}"
+			echo -ne '\a\n'
+			[[ ${FEATURES/stricter} != "${FEATURES}" ]] \
+				&& die "Aborting due to lazy bindings"
+			sleep 1
+		fi
+
+		# TEXTREL's are baaaaaaaad
+		f=$(scanelf -qyRF '%t %F' "${D}")
+		if [[ -n ${f} ]] ; then
+			echo -ne '\a\n'
+			echo "QA Notice: the following files contain runtime text relocations"
+			echo " Text relocations require a lot of extra work to be preformed by the"
+			echo " dynamic linker which will cause serious performance impact on IA-32"
+			echo " and might not function properly on other architectures hppa for example."
+			echo " If you are a programmer please take a closer look at this package and"
+			echo " consider writing a patch which addresses this problem."
+			echo "${f//${D}\/}"
+			echo -ne '\a\n'
+			[[ ${FEATURES/stricter} != "${FEATURES}" ]] \
+				&& die "Aborting due to textrels"
+			sleep 1
+		fi
+
+		# Check for files with executable stacks
+		f=$(scanelf -qyRF '%e %F' "${D}")
+		if [[ -n ${f} ]] ; then
+			echo -ne '\a\n'
+			echo "QA Notice: the following files contain executable stacks"
+			echo " Files with executable stacks will not work properly (or at all!)"
+			echo " on some architectures/operating systems.  A bug should be filed"
+			echo " at http://bugs.gentoo.org/ to make sure the file is fixed."
+			echo "${f//${D}\/}"
+			echo -ne '\a\n'
+			[[ ${FEATURES/stricter} != "${FEATURES}" ]] \
+				&& die "Aborting due to +x stack"
+			sleep 1
+		fi
+
+		# Save NEEDED information
+		scanelf -qyRF '%F %n' "${D}" | sed -e "s:${D}::g" > "${BUILDDIR}"/build-info/NEEDED
 	fi
 
-	if [[ $UNSAFE > 0 ]]; then
+	if [[ ${UNSAFE} > 0 ]] ; then
 		die "There are ${UNSAFE} unsafe files. Portage will not install them."
 	fi
 	
@@ -1735,7 +1779,7 @@ export TMPDIR="${T}"
 #syntax from getting expanded :)  Fixes bug #1473
 #check eclass rdepends also. bug #58819
 set -f
-if [ "${RDEPEND-unset}" == "unset" ] && [ "${E_RDEPEND-unset}" == "unset"]; then
+if [ "${RDEPEND-unset}" == "unset" ] && [ "${E_RDEPEND-unset}" == "unset" ] ; then
 	export RDEPEND="${DEPEND} ${E_DEPEND}"
 	debug-print "RDEPEND: not set... Setting to: ${DEPEND}"
 fi
