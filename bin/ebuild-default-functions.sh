@@ -2,7 +2,7 @@
 # ebuild-default-functions.sh; default functions for ebuild env that aren't saved- specific to the portage instance.
 # Copyright 2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.27 2005/05/29 05:59:37 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.28 2005/05/29 14:48:11 vapier Exp $
 
 has_version() {
 	# if there is a predefined portageq call, use it.
@@ -293,6 +293,8 @@ dyn_compile() {
 		sleep 3
 	fi
 
+	echo ">>> Compiling source ..."
+
 	cd "${PORTAGE_BUILDDIR}"
 	if [ ! -e "build-info" ];	then
 		mkdir build-info
@@ -345,10 +347,13 @@ dyn_compile() {
 		touch DEBUGBUILD
 	fi
 	trap SIGINT SIGQUIT
+
+	echo ">>> Finished compiling"
 }
 
 dyn_package() {
 	trap "abort_package" SIGINT SIGQUIT
+	echo ">>> Generating binary package ..."
 	cd "${PORTAGE_BUILDDIR}/image"
 	tar cpvf - ./ | bzip2 -f > ../bin.tar.bz2 || die "Failed to create tarball"
 	cd ..
