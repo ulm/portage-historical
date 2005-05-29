@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepall,v 1.13 2005/05/05 00:20:33 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepall,v 1.14 2005/05/29 05:33:08 vapier Exp $
 
 prepallman
 prepallinfo
@@ -35,5 +35,14 @@ for a in "${D}"/usr/lib/*.a ; do
 			echo -e "\aQA Notice: missing gen_usr_ldscript for ${s}\a"
 			sleep 1
 		fi
+	fi
+done
+
+# Verify that the libtool files don't contain bogus $D entries.
+for a in "${D}"/usr/lib/*.la ; do
+	s=${a##*/}
+	if grep -qs "${PORTAGE_TMPDIR}" "${a}" ; then
+		echo -e "\aQA Notice: ${s} appears to contain PORTAGE_TMPDIR paths\a"
+		sleep 1
 	fi
 done
