@@ -2,7 +2,7 @@
 # ebuild-default-functions.sh; default functions for ebuild env that aren't saved- specific to the portage instance.
 # Copyright 2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.26 2005/05/24 22:03:37 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.27 2005/05/29 05:59:37 vapier Exp $
 
 has_version() {
 	# if there is a predefined portageq call, use it.
@@ -448,7 +448,7 @@ dyn_install() {
 			echo " LDFLAGS='-Wl,-z,now' emerge ${PN}"
 			echo "${f//${D}\/}"
 			echo -ne '\a\n'
-			[[ ${FEATURES/stricter} != "${FEATURES}" ]] 
+			[[ ${FEATURES/stricter} != "${FEATURES}" ]] \
 				&& die "Aborting due to lazy bindings"
 			sleep 1
 		fi
@@ -465,7 +465,7 @@ dyn_install() {
 			echo " consider writing a patch which addresses this problem."
 			echo "${f//${D}\/}"
 			echo -ne '\a\n'
-			[[ ${FEATURES/stricter} != "${FEATURES}" ]] 
+			[[ ${FEATURES/stricter} != "${FEATURES}" ]] \
 				&& die "Aborting due to textrels"
 			sleep 1
 		fi
@@ -480,7 +480,7 @@ dyn_install() {
 			echo " at http://bugs.gentoo.org/ to make sure the file is fixed."
 			echo "${f//${D}\/}"
 			echo -ne '\a\n'
-			[[ ${FEATURES/stricter} != "${FEATURES}" ]] 
+			[[ ${FEATURES/stricter} != "${FEATURES}" ]] \
 				&& die "Aborting due to +x stack"
 			sleep 1
 		fi
