@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.34 2005/05/29 12:40:08 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.35 2005/05/31 22:44:50 vapier Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -1020,7 +1020,7 @@ dyn_install() {
 	
 	if type -p scanelf > /dev/null ; then
 		# Make sure we disallow insecure RUNPATH/RPATH's
-		f=$(scanelf -qyRF '%r %F' "${D}" | grep "${BUILDDIR}")
+		f=$(scanelf -qyRF '%r %F' "${D}" | sed -e "s:${D}::" | grep "${BUILDDIR}")
 		if [[ -n ${f} ]] ; then
 			echo -ne '\a\n'
 			echo "QA Notice: the following files contain insecure RUNPATH's"
