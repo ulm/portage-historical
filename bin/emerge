@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.32 2005/05/29 12:40:08 jstubbs Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.33 2005/06/02 00:57:52 vapier Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -298,7 +298,7 @@ if "moo" in myfiles:
  -----------------------
         \   ^__^
          \  (oo)\_______
-            (__)\       )\/\
+            (__)\       )\/\ 
                 ||----w |
                 ||     ||
 
