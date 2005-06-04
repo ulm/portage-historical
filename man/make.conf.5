@@ -302,18 +302,21 @@ This variable contains the command used for resuming package\-sources that
 have been partially downloaded by the \fBFETCHCOMMAND\fR.
 .TP
 \fBROOT\fR = \fI[path]\fR
-Use \fBROOT\fR to specify the target root filesystem to be used for
-merging packages or ebuilds.  Typically, you should set this setting
-in the environment rather than in \fI/etc/make.conf\fR itself.  It's
-typically used for creating new build images.
+Use \fBROOT\fR to specify the target root filesystem to be used for merging 
+packages or ebuilds.  All \fBRDEPEND\fR and \fBPDEPEND\fR will be installed 
+into \fBROOT\fR while all \fBDEPEND\fR will be still be installed into /.  
+Typically, you should set this setting in the environment rather than in 
+\fI/etc/make.conf\fR itself.  It's commonly used for creating new build 
+images.
 .br 
 Defaults to /.
 .TP
 \fBRSYNC_EXCLUDEFROM\fR = \fI"/etc/portage/rsync_excludes"\fR
-This is a file that portage will pass to rsync when it updates the portage tree.  
-Specific chucks of the tree may be excluded from the sync process.  This may cause 
-dependency failures if you are not careful.  The file format is pattern per line, 
-blanks and ';' or '#' lines are comments.  See \fBrsync\fR(1) for more details.
+This is a file that portage will pass to rsync when it updates the portage 
+tree.  Specific chucks of the tree may be excluded from the sync process.  
+This may cause dependency failures if you are not careful.  The file format 
+is pattern per line, blanks and ';' or '#' lines are comments.  See 
+\fBrsync\fR(1) for more details.
 .TP
 \fBRSYNC_RETRIES\fR = \fI[NUMBER]\fR
 The number of times rsync should retry on failed connections before
@@ -389,4 +392,4 @@ Nicholas Jones <carpaski@gentoo.org>
 .br 
 Mike Frysinger <vapier@gentoo.org>
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/make.conf.5,v 1.44.2.3 2005/01/16 18:29:28 vapier Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/make.conf.5,v 1.44.2.4 2005/06/04 04:53:13 vapier Exp $
