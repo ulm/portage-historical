@@ -1,20 +1,20 @@
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.21 2005/03/08 12:04:31 ferringb Exp $
-cvs_id_string="$Id: portage_util.py,v 1.21 2005/03/08 12:04:31 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_util.py,v 1.22 2005/06/11 09:20:36 ferringb Exp $
+cvs_id_string="$Id: portage_util.py,v 1.22 2005/06/11 09:20:36 ferringb Exp $"[5:-2]
 
 import sys,string,shlex,os.path,stat,types
 import shutil
 
 try:
-        #XXX: This should get renamed to bsd_chflags, I think.
-        import chflags
-        bsd_chflags = chflags
+	#XXX: This should get renamed to bsd_chflags, I think.
+	import chflags
+	bsd_chflags = chflags
 except SystemExit, e:
-        raise
+	raise
 except:
-        # XXX: This should get renamed to bsd_chflags, I think.
-        bsd_chflags = None
+	# XXX: This should get renamed to bsd_chflags, I think.
+	bsd_chflags = None
 
 noiselimit = 0
 def writemsg(mystr,noiselevel=0):
