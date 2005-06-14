@@ -59,7 +59,6 @@ profiles.desc
 thirdpartymirrors
 use.desc
 use.local.desc
-use.mask
 .fi
 .TP
 .BR /var/lib/portage/
@@ -437,7 +436,7 @@ virtual/aspell\-dict   app\-dicts/aspell\-en
 .TP
 .BR /usr/portage/profiles/
 Global Gentoo settings that are controlled by the developers.  To override 
-these settings, you can use the files in \fB/etc/portage/profile/\fR.
+these settings, you can use the files in \fB/etc/portage/\fR.
 .RS
 .TP
 .BR arch.list
@@ -571,10 +570,6 @@ app\-editors/nano:justify \- Toggles the justify option
 dev\-libs/DirectFB:fusion \- Adds Multi Application support
 games\-emulation/xmess:net \- Adds network support
 .fi
-.TP
-.BR use.mask
-Just like the \fBuse.mask\fR found in \fB/etc/make.profile/\fR.  See 
-above for more information.
 .RE
 .TP
 .BR /var/lib/portage/
@@ -615,4 +610,4 @@ Please report bugs via http://bugs.gentoo.org/
 .BR ebuild (5),
 .BR make.conf (5)
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/portage.5,v 1.17.2.10 2005/05/27 02:28:05 vapier Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/portage.5,v 1.17.2.11 2005/06/14 14:55:23 genone Exp $
