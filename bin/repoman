@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.111 2005/03/07 04:14:36 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/repoman,v 1.112 2005/06/18 01:01:35 vapier Exp $
 
 # Next to do: dep syntax checking in mask files
 # Then, check to make sure deps are satisfiable (to avoid "can't find match for" problems)
@@ -1388,6 +1388,8 @@ else:
 		rValue = os.system(gpgcmd+" "+filename)
 		if rValue == 0:
 			os.rename(filename+".asc", filename)
+		else:
+			print "!!! gpg exited with '" + str(rValue) + "' status"
 		return rValue
 
 	mychanges=[]
