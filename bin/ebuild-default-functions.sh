@@ -2,7 +2,7 @@
 # ebuild-default-functions.sh; default functions for ebuild env that aren't saved- specific to the portage instance.
 # Copyright 2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.30 2005/06/13 04:23:46 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.31 2005/06/19 21:12:11 vapier Exp $
 
 has_version() {
 	# if there is a predefined portageq call, use it.
@@ -432,7 +432,7 @@ dyn_install() {
 
 	if type -p scanelf > /dev/null ; then
 		# Make sure we disallow insecure RUNPATH/RPATH's
-		f=$(scanelf -qyRF '%r %p' "${D}" | grep "${BUILDDIR}")
+		f=$(scanelf -qyRF '%r %p' "${D}" | grep "${PORTAGE_BUILDDIR}")
 		if [[ -n ${f} ]] ; then
 			echo -ne '\a\n'
 			echo "QA Notice: the following files contain insecure RUNPATH's"
