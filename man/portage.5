@@ -409,31 +409,6 @@ app\-hackers
 media\-other
 .fi
 .TP
-.BR virtuals
-This controls what packages will provide a virtual by default.  For example, 
-if a package needs to send e\-mail, it will need virtual/mta.  In the absence 
-of a package that provides virtual/mta (like qmail, sendmail, postfix, etc...), 
-portage will look here to see what package to use.  In this case, Gentoo uses 
-net\-mail/ssmtp as the default (as defined in the virtuals file) because it's 
-the package that does the very bare minimum to send e\-mail.
-
-.I Format:
-.br
-\- comments begin with #
-.br
-\- one virtual and DEPEND atom base pair per line
-
-.I Example:
-.br
-# use net\-mail/ssmtp as the default mta
-.br
-virtual/mta           net\-mail/ssmtp
-.br
-# use app\-dicts/aspell\-en as the default dictionary
-.br
-virtual/aspell\-dict   app\-dicts/aspell\-en
-.RE
-.TP
 .BR /usr/portage/profiles/
 Global Gentoo settings that are controlled by the developers.  To override 
 these settings, you can use the files in \fB/etc/portage/\fR.
@@ -610,4 +585,4 @@ Please report bugs via http://bugs.gentoo.org/
 .BR ebuild (5),
 .BR make.conf (5)
 .SH "CVS HEADER"
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/portage.5,v 1.17.2.11 2005/06/14 14:55:23 genone Exp $
+$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/man/portage.5,v 1.17.2.12 2005/07/02 21:02:17 vapier Exp $
