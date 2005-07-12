@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/config/central.py,v 1.1 2005/07/10 09:21:05 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/config/central.py,v 1.2 2005/07/12 02:22:05 ferringb Exp $
 
 import errors
 from portage.const import CONF_DEFAULTS
@@ -16,7 +16,7 @@ class config:
 		self._cparser = cparser
 		self.type_handler = load_conf_definitions(conf_defaults)
 		self.type_conversions = {}
-		# add auto exec shit
+		# add auto exec stuff goes here
 		# weakref .instantiated?
 		self.instantiated = {}
 		for t in self.type_handler:
