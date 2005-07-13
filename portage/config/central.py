@@ -1,17 +1,21 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/config/central.py,v 1.3 2005/07/13 05:51:35 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/config/central.py,v 1.4 2005/07/13 07:18:46 ferringb Exp $
 
-import errors
+import errors, new
 from portage.const import CONF_DEFAULTS
 from portage.util.modules import load_attribute
 from ConfigParser import ConfigParser
-import new
 from portage.util.dicts import LazyValDict
 from portage.util.currying import curry
 
 class config:
+	"""Central configuration manager.
+	collapses configurations, instantiates objects dependant on section definitions (mislabled conf_defaults), and 
+	a ConfigParser (or object with such an api) that is passed in.
+
+	see conf_default_types for explanation of default sections and capabilities"""
 	def __init__(self, cparser, conf_defaults=CONF_DEFAULTS):
 		self._cparser = cparser
 		self.type_handler = load_conf_definitions(conf_defaults)
@@ -56,6 +60,7 @@ class config:
 		"""collapse a section's config down to a dict for use in instantiating that section.
 		verify controls whether sanity checks specified by the section type are enforced.
 		required and section_ref fex, are *not* verified if this is False."""
+
 		if not self._cparser.has_section(section):
 			raise KeyError("%s not a valid section" % section)
 		if not self._cparser.has_option(section, "type"):
