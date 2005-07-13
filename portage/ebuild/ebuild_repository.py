@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/ebuild_repository.py,v 1.1 2005/07/10 09:21:05 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/ebuild_repository.py,v 1.2 2005/07/13 05:51:34 ferringb Exp $
 
 import os, stat
 from portage.repository import prototype, errors
@@ -26,7 +26,8 @@ class tree(prototype.tree):
 		if eclass_cache == None:
 			import eclass_cache
 			eclass_cache = eclass_cache.cache(self.base)
-		self.metadata = ebuild_package.ebuild_factory(self, cache, eclass_cache)
+		self.package_class = ebuild_package.ebuild_factory(self, cache, eclass_cache).new_package
+
 
 	def _get_categories(self, *optionalCategory):
 		# why the auto return?  current porttrees don't allow/support categories deeper then one dir.
@@ -40,6 +41,7 @@ class tree(prototype.tree):
 		except (OSError, IOError), e:
 			raise KeyError("failed fetching categories: %s" % str(e))
 
+
 	def _get_packages(self, category):
 
 		cpath = os.path.join(self.base,category.lstrip(os.path.sep))
@@ -49,6 +51,7 @@ class tree(prototype.tree):
 		except (OSError, IOError), e:
 			raise KeyError("failed fetching packages for category %s: %s" % \
 			(os.path.join(self.base,category.lstrip(os.path.sep)), str(e)))
+
 
 	def _get_versions(self, catpkg):
 

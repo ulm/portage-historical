@@ -1,6 +1,6 @@
 # Copyright: 2004-2005 Gentoo Foundation
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/chksum/md5hash.py,v 1.1 2005/07/10 09:21:05 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/chksum/md5hash.py,v 1.2 2005/07/13 05:51:35 ferringb Exp $
 
 
 # We _try_ to load this module. If it fails we do the slow fallback.

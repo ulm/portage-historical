@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/ebuild_package.py,v 1.1 2005/07/10 09:21:05 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/ebuild_package.py,v 1.2 2005/07/13 05:51:34 ferringb Exp $
 
 import os
 from portage import package
@@ -44,11 +44,11 @@ class ebuild_package(package.metadata.package):
 			# ah hell.
 			data = self._parent._update_metadata(self)
 
-		for k,v in data.items():
-			self.__dict__[k] = v
+#		for k,v in data.items():
+#			self.__dict__[k] = v
 
-		self.__dict__["_finalized"] = True
-		return
+#		self.__dict__["_finalized"] = True
+		return data
 
 
 class ebuild_factory(package.metadata.factory):

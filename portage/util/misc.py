@@ -1,7 +1,7 @@
 # Copyright 1998-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/util/misc.py,v 1.1 2005/07/10 09:21:05 ferringb Exp $
-cvs_id_string="$Id: misc.py,v 1.1 2005/07/10 09:21:05 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/util/misc.py,v 1.2 2005/07/13 05:51:35 ferringb Exp $
+cvs_id_string="$Id: misc.py,v 1.2 2005/07/13 05:51:35 ferringb Exp $"[5:-2]
 
 #clean this up.
 import sys,string,shlex,os.path,stat,types
