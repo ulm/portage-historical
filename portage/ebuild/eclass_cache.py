@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/eclass_cache.py,v 1.2 2005/07/13 05:51:34 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/eclass_cache.py,v 1.3 2005/07/20 14:33:12 ferringb Exp $
 
 from portage.util.fs import normpath
 import os, sys
@@ -16,7 +16,8 @@ class cache:
 	get_eclass_path should be defined when local path is possible/preferable.
 	get_eclass_data should be defined when dumping the eclass down the pipe is preferable/required (think remote tree)
 
-	Base defaults to having both set (it's local, and i.  Override as needed.
+	Base defaults to having both set.  Override as needed.
+	Set to None if that method isn't possible.
 	"""
 	def __init__(self, porttree, *additional_porttrees):
 		self.eclasses = {} # {"Name": ("location","_mtime_")}

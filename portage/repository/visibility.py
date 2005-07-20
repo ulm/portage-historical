@@ -1,13 +1,13 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/repository/visibility.py,v 1.2 2005/07/13 05:51:35 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/repository/visibility.py,v 1.3 2005/07/20 14:33:12 ferringb Exp $
 
 # icky.
 # ~harring
 import prototype, errors
 
-class filterTreee(prototype.tree):
+class filterTree(prototype.tree):
 	"""wrap an existing repository filtering results based upon passed in restrictions."""
 	def __init__(self, repo, restrictions):
 		self.raw_repo = repo

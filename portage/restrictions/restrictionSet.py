@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/restrictions/Attic/restrictionSet.py,v 1.2 2005/07/13 05:51:35 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/restrictions/Attic/restrictionSet.py,v 1.3 2005/07/20 14:33:12 ferringb Exp $
 
 import restriction
 
@@ -14,18 +14,14 @@ class RestrictionSet(restriction.base):
 			if not isinstance(x, restriction.base):
 				#bad monkey.
 				raise TypeError, x
-		self.restrictions = restrictions
+		self.restrictions = list(restrictions)
 
 
-	def addRestriction(self, NewRestriction):
-		if not isinstance(NewRestriction, restriction.base):
+	def add_restriction(self, NewRestriction, strict=True):
+		if strict and not isinstance(NewRestriction, restriction.base):
 			raise TypeError, NewRestriction
 
 		self.restrictions.append(NewRestriction)
-
-
-	def pmatch(self, packagedataInstance):
-		raise NotImplementedError
 
 
 	def finalize(self):
