@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.993 2005/07/04 08:14:30 vapier Exp $
+# $Id: ChangeLog,v 1.994 2005/07/20 14:22:48 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  20 Jul 2005; Brian Harring <ferringb@gentoo.org> bin/ebuild*.{sh,lib}:
+  Harring broke cvs.  If people ignored the warnings, I'll fix it till the 
+  next time changes in rewrite cause it to break again.
 
   04 Jul 2005; Mike Frysinger <vapier@gentoo.org>
   bin/ebuild-default-functions.sh:
