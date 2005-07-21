@@ -1,14 +1,19 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/restrictions/Attic/restrictionSet.py,v 1.4 2005/07/21 19:50:17 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/restrictions/Attic/restrictionSet.py,v 1.5 2005/07/21 20:04:08 ferringb Exp $
 
 import restriction
 
 class RestrictionSet(restriction.base):
 	__slots__ = tuple(["restrictions"] + restriction.base.__slots__)
 
-	def __init__(self, *restrictions, finalize=False, **kwds):
+	def __init__(self, *restrictions, **kwds):
+		if "finalize" in kwds:
+			finalize = kdws["finalize"]
+			del kwds["finalize"]
+		else:
+			finalize = False
 		super(RestrictionSet, self).__init__(**kwds)
 		for x in restrictions:
 			if not isinstance(x, restriction.base):
