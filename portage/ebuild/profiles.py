@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/profiles.py,v 1.1 2005/07/20 14:33:12 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/profiles.py,v 1.2 2005/07/21 19:50:17 ferringb Exp $
 
 from portage.config import profiles
 import os, logging
@@ -82,6 +82,7 @@ class OnDiskProfile(profiles.base):
 				# system set.
 				sys.append(atom(p[1:]))
 			else:
+				# tweak this.
 				visibility.append(atom(p))
 		del pkgs
 		self.sys = sys

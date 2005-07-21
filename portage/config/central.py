@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/config/central.py,v 1.5 2005/07/20 14:33:12 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/config/central.py,v 1.6 2005/07/21 19:50:17 ferringb Exp $
 
 import errors, new
 from portage.const import CONF_DEFAULTS
@@ -24,9 +24,8 @@ class config:
 		# weakref .instantiated?
 		self.instantiated = {}
 		for t in self.type_handler:
-			from string import lower
 			for x in ("required", "incrementals", "defaults", "section_ref", "positional"):
-				self.type_handler[t][x] = tuple(map(lower, list_parser(self.type_handler[t].get(x,""))))
+				self.type_handler[t][x] = tuple(list_parser(self.type_handler[t].get(x,"")))
 				
 			conversions = {}
 			for x,f in (("list", list_parser), ("str", str_parser), ("bool", bool_parser)):

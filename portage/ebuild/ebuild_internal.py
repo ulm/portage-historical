@@ -2,8 +2,10 @@
 # ebuild.py; Ebuild classes/abstraction of phase processing, and communicating with a ebuild-daemon.sh instance
 # Copyright 2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/ebuild_internal.py,v 1.2 2005/07/13 05:51:34 ferringb Exp $
+#$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/ebuild_internal.py,v 1.3 2005/07/21 19:50:17 ferringb Exp $
 
+# this will die a horrible death soon.
+# held onto strictly for the doebuild type info.
 
 import os,sys,traceback
 import portage_const,types

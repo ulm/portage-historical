@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/restrictions/restriction.py,v 1.2 2005/07/13 05:51:35 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/restrictions/restriction.py,v 1.3 2005/07/21 19:50:17 ferringb Exp $
 
 import re, logging
 
@@ -24,6 +24,15 @@ class base(object):
 	def match(self, *arg, **kwargs):
 		raise NotImplementedError
 
+class AlwaysTrue(base):
+	__slots__ = ()
+	def match(self, *a, **kw):
+		return True
+
+class AlwaysFalse(base):
+	__slots__ = ()
+	def match(self, *a, **kw):
+		return False
 
 class VersionRestriction(base):
 	"""use this as base for version restrictions, gives a clue to what the restriction does"""

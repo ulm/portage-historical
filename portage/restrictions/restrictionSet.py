@@ -1,20 +1,24 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/restrictions/Attic/restrictionSet.py,v 1.3 2005/07/20 14:33:12 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/restrictions/Attic/restrictionSet.py,v 1.4 2005/07/21 19:50:17 ferringb Exp $
 
 import restriction
 
 class RestrictionSet(restriction.base):
 	__slots__ = tuple(["restrictions"] + restriction.base.__slots__)
 
-	def __init__(self, *restrictions, **kwds):
+	def __init__(self, *restrictions, finalize=False, **kwds):
 		super(RestrictionSet, self).__init__(**kwds)
 		for x in restrictions:
 			if not isinstance(x, restriction.base):
 				#bad monkey.
 				raise TypeError, x
-		self.restrictions = list(restrictions)
+
+		if finalize:
+			self.restrictions = tuple(restrictions)
+		else:
+			self.restrictions = list(restrictions)
 
 
 	def add_restriction(self, NewRestriction, strict=True):
@@ -47,4 +51,14 @@ class OrRestrictionSet(RestrictionSet):
 				return self.negate
 		return not self.negate
 
+class XorRestrictionSet(RestrictionSet):
+	__slots__ = tuple(RestrictionSet.__slots__)
 
+	def match(self, pkginst):
+		armed = False
+		for rest in self.restrictions:
+			if rest.match(pkginst):
+				if armed:
+					return self.negate
+				armed = True
+		return armed ^ self.negate
