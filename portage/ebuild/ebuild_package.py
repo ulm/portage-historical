@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/ebuild_package.py,v 1.3 2005/07/20 14:33:12 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/ebuild_package.py,v 1.4 2005/07/27 02:23:27 ferringb Exp $
 
 import os
 from portage import package
@@ -36,6 +36,8 @@ class EbuildPackage(package.metadata.package):
 			val = DepSet(self.data["SRC_URI"], str, operators={})
 		elif key == "license":
 			val = DepSet(self.data["LICENSE"], str)
+		elif key == "description":
+			val = self.data["DESCRIPTION"]
 		else:
 			return super(EbuildPackage, self).__getattr__(key)
 		self.__dict__[key] = val
