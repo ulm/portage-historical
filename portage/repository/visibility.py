@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/repository/visibility.py,v 1.4 2005/07/21 19:50:17 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/repository/visibility.py,v 1.5 2005/07/27 02:32:18 ferringb Exp $
 
 # icky.
 # ~harring
@@ -9,6 +9,7 @@ import prototype, errors
 
 class filterTree(prototype.tree):
 	"""wrap an existing repository filtering results based upon passed in restrictions."""
+
 	def __init__(self, repo, restrictions, sentinel_val=False):
 		self.raw_repo = repo
 		self.sentinel_val = sentinel_val
@@ -18,8 +19,13 @@ class filterTree(prototype.tree):
 			restrictions = [restrictions]
 		self._restrictions = restrictions
 
+
 	def itermatch(self, atom):
 		for cpv in self.raw_repo.itermatch(atom):
+			ret = True
 			for r in self._restrictions:
 				if r.match(cpv) == self.sentinel_val:
-					yield cpv
+					ret = False
+					break
+			if ret:
+				yield cpv

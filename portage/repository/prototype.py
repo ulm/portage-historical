@@ -1,10 +1,11 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/repository/prototype.py,v 1.2 2005/07/13 05:51:35 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/repository/prototype.py,v 1.3 2005/07/27 02:32:18 ferringb Exp $
 
 from portage.util.dicts import IndexableSequence
 from weakref import proxy
+from portage.package.atom import atom
 
 def ix_cat_callable(*cat):
 	return "/".join(cat)
@@ -61,30 +62,32 @@ class tree(object):
 		return list(self.itermatch(atom))
 
 
-	def itermatch(self, atom):
-		if atom.category == None:
-			candidates = self.packages
-		else:
-			if atom.package == None:
-				try:	candidates = self.packages[atom.category]
-				except KeyError:
-					# just stop now.  no category matches == no yielded cpvs.
-					return
+	def itermatch(self, restrict):
+		if isinstance(restrict, atom):
+			if restrict.category == None:
+				candidates = self.packages
 			else:
-				try:
-					if atom.package not in self.packages[atom.category]:
-						# no matches possible
+				if restrict.package == None:
+					try:	candidates = self.packages[restrict.category]
+					except KeyError:
+						# just stop now.  no category matches == no yielded cpvs.
 						return
-					candidates = [atom.key]
-
-				except KeyError:
-					# atom.category wasn't valid.  no matches possible.
-					return
+				else:
+					try:
+						if restrict.package not in self.packages[restrict.category]:
+							# no matches possible
+							return
+						candidates = [restrict.key]
+					except KeyError:
+						# restrict.category wasn't valid.  no matches possible.
+						return
+		else:
+			candidates = self.packages
 
 		#actual matching.
 		for catpkg in candidates:
 			for ver in self.versions[catpkg]:
-				if atom.match(self.package_class(catpkg+"-"+ver)):
+				if restrict.match(self.package_class(catpkg+"-"+ver)):
 					yield self[catpkg+"-"+ver]
 		return
 
