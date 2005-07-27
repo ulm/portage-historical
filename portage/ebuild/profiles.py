@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/profiles.py,v 1.2 2005/07/21 19:50:17 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/profiles.py,v 1.3 2005/07/27 02:30:16 ferringb Exp $
 
 from portage.config import profiles
 import os, logging
@@ -82,11 +82,12 @@ class OnDiskProfile(profiles.base):
 				# system set.
 				sys.append(atom(p[1:]))
 			else:
-				# tweak this.
-				visibility.append(atom(p))
+				# note the negation.  this means cat/pkg matchs, but ver must not, else it's masked.
+				visibility.append(atom(p, negate_vers=True))
 		del pkgs
 		self.sys = sys
 		self.visibility = visibility
+
 		fp = os.path.join(basepath, "thirdpartymirrors")
 		if os.path.isfile(fp):
 			mirrors = read_dict(fp, splitter='\t')
@@ -94,6 +95,7 @@ class OnDiskProfile(profiles.base):
 			mirrors = {}
 
 		maskers = []
+
 		for fp in [os.path.join(prof, "package.mask") for prof in stack + [basepath]]:
 			if os.path.exists(fp):
 				try:	maskers.extend(map(atom, iter_read_bash(fp)))
@@ -117,6 +119,7 @@ class OnDiskProfile(profiles.base):
 					if k in d:		d[k] += v
 					else:				d[k] = v
 				else:					d[k] = v
+
 		del confs
 		# use_expand
 		d["USE_EXPAND"] = d.get("USE_EXPAND",'').split()
@@ -127,5 +130,6 @@ class OnDiskProfile(profiles.base):
 				del d[u]
 
 		# collapsed make.defaults.  now chunkify the bugger.
-		self.d = d		
+		self.conf = d
 
+		
