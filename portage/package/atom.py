@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Jason Stubbs (jstubbs@gentoo.org), Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/package/atom.py,v 1.2 2005/07/20 14:33:12 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/package/atom.py,v 1.3 2005/07/27 02:26:49 ferringb Exp $
 
 from portage.restrictions import restriction 
 from cpv import ver_cmp, CPV
@@ -25,8 +25,9 @@ class VersionMatch(restriction.base):
 
 
 class atom(AndRestrictionSet):
+	__slots__ = ("glob","atom","blocks","op", "negate_vers","cpv","use","slot") + tuple(AndRestrictionSet.__slots__)
 
-	def __init__(self, atom, slot=None, use=[]):
+	def __init__(self, atom, slot=None, use=[], negate_vers=False):
 		super(self.__class__, self).__init__()
 
 		pos=0
@@ -45,6 +46,7 @@ class atom(AndRestrictionSet):
 			self.glob = False
 			self.atom = atom[pos:]
 
+		self.negate_vers = negate_vers
 		self.cpv = CPV(self.atom)
 		self.use, self.slot = use, slot
 		# force jitting of it.
@@ -54,25 +56,24 @@ class atom(AndRestrictionSet):
 	def __getattr__(self, attr):
 		if attr in ("category", "package", "version", "revision", "cpvstr", "fullver", "key"):
 			g = getattr(self.cpv, attr)
-			self.__dict__[attr] = g
+#			self.__dict__[attr] = g
 			return g
-			
 		elif attr == "restrictions":
-			r = []
+			r = [restriction.PackageRestriction("package", restriction.StrExactMatch(self.package))]
 			try:
 				cat = self.category
 				r.append(restriction.PackageRestriction("category", restriction.StrExactMatch(cat)))
 			except AttributeError:
 				pass
-			r.append(restriction.PackageRestriction("package", restriction.StrExactMatch(self.package)))
 			if self.version:
 				if self.glob:
 					r.append(restriction.PackageRestriction("fullver", restriction.StrGlobMatch(self.fullver)))
 				else:
-					r.append(VersionMatch(self.op, self.version, self.revision))
+					r.append(VersionMatch(self.op, self.version, self.revision, negate=self.negate_vers))
 			if self.use or self.slot:
 				raise Exception("yo.  I don't support use or slot yet, fix me pls kthnx")
-			self.__dict__["restrictions"] = r
+#			self.__dict__[attr] = r
+			setattr(self, attr, r)
 			return r
 
 		raise AttributeError(attr)

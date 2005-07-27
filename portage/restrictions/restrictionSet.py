@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/restrictions/Attic/restrictionSet.py,v 1.5 2005/07/21 20:04:08 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/restrictions/Attic/restrictionSet.py,v 1.6 2005/07/27 02:26:49 ferringb Exp $
 
 import restriction
 
@@ -45,6 +45,10 @@ class AndRestrictionSet(RestrictionSet):
 			if not rest.match(packagedataInstance):
 				return self.negate
 		return not self.negate
+
+
+	def intersect(self, other):
+		
 
 
 class OrRestrictionSet(RestrictionSet):
