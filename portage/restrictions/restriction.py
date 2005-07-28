@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/restrictions/restriction.py,v 1.5 2005/07/28 05:25:03 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/restrictions/restriction.py,v 1.6 2005/07/28 23:41:48 ferringb Exp $
 
 import re, logging
 
@@ -27,7 +27,7 @@ class base(object):
 		raise NotImplementedError
 
 	def intersect(self, other):
-		raise NotImplementedError
+		return None
 
 class AlwaysBoolMatch(base):
 	__slots__ = base.__slots__
