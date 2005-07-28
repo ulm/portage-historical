@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Jason Stubbs (jstubbs@gentoo.org), Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/package/atom.py,v 1.4 2005/07/28 23:20:45 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/package/atom.py,v 1.5 2005/07/28 23:39:12 ferringb Exp $
 
 from portage.restrictions import restriction 
 from cpv import ver_cmp, CPV
@@ -24,7 +24,7 @@ class VersionMatch(restriction.base):
 		self.vals = tuple(l)
 
 	def intersect(self, other, allow_hand_off=True):
-		if not isinstance(self.__class__, other):
+		if not isinstance(other, self.__class__):
 			if allow_hand_off:
 				return other.intersect(self, allow_hand_off=False)
 			return None
@@ -51,6 +51,8 @@ class VersionMatch(restriction.base):
 			# <, > ; disjoint.
 			return None
 
+		if vc < 0:	vc = -1
+		else:		vc = 1
 		# this handles a node already containing the intersection
 		for x in (-1, 1):
 			if x in self.vals and x in other.vals:
@@ -63,7 +65,11 @@ class VersionMatch(restriction.base):
 			needed = x * -1
 			if (x in self.vals and needed in other.vals) or (x in other.vals and needed in self.vals):
 				return AndRestrictionSet(self, other)
-				
+
+		if vc == -1 and 1 in self.vals and 0 in other.vals:
+				return self.__class__("=", other.ver, rev=other.rev)
+		elif vc == 1 and -1 in other.vals and 0 in self.vals:
+			return self.__class__("=", self.ver, rev=self.rev)
 		# disjoint.
 		return None
 
