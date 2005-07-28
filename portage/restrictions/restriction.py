@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/restrictions/restriction.py,v 1.4 2005/07/27 02:26:49 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/restrictions/restriction.py,v 1.5 2005/07/28 05:25:03 ferringb Exp $
 
 import re, logging
 
@@ -108,7 +108,7 @@ class StrSubstringMatch(StrMatch):
 	__slots__ = tuple(["substr"] + StrMatch.__slots__)
 
 	def __init__(self, substr, CaseSensitive=True, **kwds):
-		super(StrSubString, self).__init__(**kwds)
+		super(StrSubstringMatch, self).__init__(**kwds)
 		if not CaseSensitive:
 			self.flags = re.I
 			self.substr = str(substr).lower()
