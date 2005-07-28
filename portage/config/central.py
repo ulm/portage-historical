@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/config/central.py,v 1.6 2005/07/21 19:50:17 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/config/central.py,v 1.7 2005/07/28 18:54:15 ferringb Exp $
 
 import errors, new
 from portage.const import CONF_DEFAULTS
@@ -281,4 +281,7 @@ def str_parser(s):
 		return ''
 	
 def bool_parser(s):
-	return bool(str_parser(s))
+	s = str_parser(s).lower()
+	if s in ("", "no", "false", "0"):
+		return False
+	return True
