@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/cache/anydbm.py,v 1.2 2005/07/13 05:51:35 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/cache/anydbm.py,v 1.3 2005/07/28 18:51:41 ferringb Exp $
 
 anydbm_module = __import__("anydbm")
 import cPickle, os
@@ -21,26 +21,28 @@ class database(fs_template.FsBased):
 			default_db = '.' + default_db
 
 		self._db_path = os.path.join(self.location, fs_template.gen_label(self.location, self.label)+default_db)
-		print "opening self._db_path=",self._db_path
 		self.__db = None
 		try:
 			self.__db = anydbm_module.open(self._db_path, "w", self._perms)
+				
+		except anydbm_module.error:
+			# XXX handle this at some point
 			try:
 				self._ensure_dirs()
 				self._ensure_dirs(self._db_path)
 				self._ensure_access(self._db_path)
-				
 			except (OSError, IOError), e:
-				raise cache_errors.InitializationError(self.__clas__, e)
+				raise cache_errors.InitializationError(self.__class__, e)
+
 			# try again if failed
-			if self.__db == None:
-				self.__db = anydbm_module.open(self._db_path, "c", self._perms)
+			try:
+				if self.__db == None:
+					self.__db = anydbm_module.open(self._db_path, "c", self._perms)
+			except andbm_module.error, e:
+				raise cache_errors.InitializationError(self.__class__, e)
 
-
-		except anydbm_module.error, e:
-			# XXX handle this at some point
-			raise
-
+	def iteritems(self):
+		return self.__db.iteritems()
 
 	def __getitem__(self, cpv):
 		# we override getitem because it's just a cpickling of the data handed in.
@@ -61,9 +63,11 @@ class database(fs_template.FsBased):
 	def has_key(self, cpv):
 		return cpv in self.__db
 
+
 	def commit(self):	pass
 
+
 	def __del__(self):
-		print "keys=",self.__db.keys()
-		self.__db.sync()
-		self.__db.close()
+		if "__db" in self.__dict__ and self.__db != None:
+			self.__db.sync()
+			self.__db.close()

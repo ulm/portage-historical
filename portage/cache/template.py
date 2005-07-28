@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/cache/template.py,v 1.3 2005/07/28 05:44:42 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/cache/template.py,v 1.4 2005/07/28 18:51:41 ferringb Exp $
 
 import cache_errors, copy
 
@@ -90,6 +90,13 @@ class database(object):
 
 	def iterkeys(self):
 		raise NotImplementedError
+
+	def iteritems(self):
+		for x in self.iterkeys():
+			yield x, self[x]
+
+	def items(self):
+		return list(self.iteritems())
 
 	def sync(self, rate=0):
 		self.sync_rate = rate
