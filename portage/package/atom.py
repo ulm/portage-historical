@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Jason Stubbs (jstubbs@gentoo.org), Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/package/atom.py,v 1.5 2005/07/28 23:39:12 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/package/atom.py,v 1.6 2005/07/28 23:52:50 ferringb Exp $
 
 from portage.restrictions import restriction 
 from cpv import ver_cmp, CPV
@@ -17,6 +17,18 @@ class VersionMatch(restriction.base):
 		kwd["negate"] = False
 		super(self.__class__, self).__init__(**kwd)
 		self.ver, self.rev = ver, rev
+		if operator not in ("<=","<", "=", ">", ">="):
+			# XXX: hack
+			raise Exception("invalid operator, '%s'", operator)
+
+		if negate:
+			if "=" in operator:		operator = operator.strip("=")
+			else:					operator += "="
+			for x,v in (("<",">"),(">","<")):
+				if x in operator:
+					operator = operator.strip(x) + v
+					break
+			
 		l=[]
 		if "<" in operator:	l.append(-1)
 		if "=" in operator:	l.append(0)
