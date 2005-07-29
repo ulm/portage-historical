@@ -1,15 +1,20 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.996 2005/07/29 06:00:17 vapier Exp $
+# $Id: ChangeLog,v 1.997 2005/07/29 06:12:19 vapier Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
 
+  29 Jul 2005; Mike Frysinger <vapier@gentoo.org> bin/prepallman:
+  Rather than use a hardcoded list and bash expansion, let find locate man
+  directories for us.  This fixes the issues of running prepman on symlinks 
+  to paths outside of $D #98017 by Andrej Filipcic.
+
   29 Jul 2005; Mike Frysinger <vapier@gentoo.org> bin/fowners bin/fperms:
   Rewrite by Aron Griffis to use bash code so we don't have to parse arguments 
-  ourselves Bug 97324.
+  ourselves #97324.
 
   25 Jul 2005; Mike Frysinger <vapier@gentoo.org> 
   bin/ebuild-default-functions.sh:
