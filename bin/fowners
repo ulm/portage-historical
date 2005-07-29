@@ -1,22 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/fowners,v 1.7 2005/05/04 22:49:14 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/fowners,v 1.8 2005/07/29 06:00:17 vapier Exp $
 
-if [ $# -lt 2 ] ; then
-	echo "${0}: at least two arguments needed" 1>&2
-	exit 1
-fi
-
-OPTS=""
-while [ "${1:0:1}" = "-" ] ; do
-	OPTS="${OPTS} $1"
-	shift
-done
-
-OWNER="${1}"
-shift
-
-for FILE in "$@" ; do
-	chown ${OPTS} "${OWNER}" "${D}${FILE}"
-done
+slash=/
+exec chown "${@/#${slash}/${D}${slash}}"
