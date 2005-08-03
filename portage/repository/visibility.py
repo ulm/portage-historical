@@ -1,31 +1,27 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/repository/visibility.py,v 1.5 2005/07/27 02:32:18 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/repository/visibility.py,v 1.6 2005/08/03 00:19:18 ferringb Exp $
 
 # icky.
 # ~harring
 import prototype, errors
+from portage.restrictions.restriction import base
 
 class filterTree(prototype.tree):
 	"""wrap an existing repository filtering results based upon passed in restrictions."""
 
-	def __init__(self, repo, restrictions, sentinel_val=False):
+	def __init__(self, repo, restriction, sentinel_val=False):
 		self.raw_repo = repo
 		self.sentinel_val = sentinel_val
 		if not isinstance(self.raw_repo, prototype.tree):
 			raise errors.InitializationError("%s is not a repository tree derivative" % str(self.raw_repo))
-		if not isinstance(restrictions, list):
-			restrictions = [restrictions]
-		self._restrictions = restrictions
+		if not isinstance(restriction, base):
+			raise errors.InitializationError("%s is not a restriction" % str(restriction)) 
+		self.restriction = restriction
 
 
 	def itermatch(self, atom):
 		for cpv in self.raw_repo.itermatch(atom):
-			ret = True
-			for r in self._restrictions:
-				if r.match(cpv) == self.sentinel_val:
-					ret = False
-					break
-			if ret:
+			if self.restriction.match(cpv) == self.sentinel_val:
 				yield cpv
