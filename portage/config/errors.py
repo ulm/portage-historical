@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/config/errors.py,v 1.2 2005/07/13 05:51:35 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/config/errors.py,v 1.3 2005/08/03 00:29:17 ferringb Exp $
 
 # potentially use an intermediate base for user config errors, seperate base for instantiation?
 class BaseException(Exception):
@@ -70,3 +70,4 @@ class BrokenSectionDefinition(BaseException):
 		self.section, self.errmsg = section, errormsg
 	def __str__(self):
 		return "Section '%s' definition: error %s" % (self.section, self.errmsg)
+
