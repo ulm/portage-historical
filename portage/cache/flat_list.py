@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/cache/flat_list.py,v 1.2 2005/07/13 05:51:35 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/cache/flat_list.py,v 1.3 2005/08/03 00:17:55 ferringb Exp $
 
 import fs_template
 import cache_errors
@@ -110,5 +110,3 @@ class database(fs_template.FsBased):
 				yield p[len_base+1:]
 			dirs.pop(0)
 
-
-	def commit(self):	pass

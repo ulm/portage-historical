@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/cache/cache_errors.py,v 1.2 2005/07/13 05:51:35 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/cache/cache_errors.py,v 1.3 2005/08/03 00:17:55 ferringb Exp $
 
 class CacheError(Exception):	pass
 
@@ -15,6 +15,7 @@ class InitializationError(CacheError):
 
 class CacheCorruption(CacheError):
 	def __init__(self, key, ex):
+		import traceback;traceback.print_stack()
 		self.key, self.ex = key, ex
 	def __str__(self):
 		return "%s is corrupt: %s" % (self.key, str(self.ex))

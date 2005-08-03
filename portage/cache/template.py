@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/cache/template.py,v 1.4 2005/07/28 18:51:41 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/cache/template.py,v 1.5 2005/08/03 00:17:55 ferringb Exp $
 
 import cache_errors, copy
 
@@ -12,6 +12,7 @@ class database(object):
 
 	complete_eclass_entries_ = True
 	autocommits = False
+	cleanse_keys = False
 
 	def __init__(self, location, label, auxdbkeys, readonly=False):
 		""" initialize the derived class; specifically, store label/keys"""
@@ -46,9 +47,19 @@ class database(object):
 		This shouldn't be overriden in derived classes since it handles the readonly checks"""
 		if self.readonly:
 			raise cache_errors.ReadOnlyRestriction()
-		d=copy.copy(values)
-		if "_eclasses_" in d:
+		if self.cleanse_keys:
+			d=copy.copy(values)
+			for k in d.keys():
+				if d[k] == '':
+					del d[k]
+			if "_eclasses_" in values:
+				d = values.copy()
+				d["_eclasses_"] = serialize_eclasses(d["_eclasses_"])
+		elif "_eclasses_" in values:
+			d = values.copy()
 			d["_eclasses_"] = serialize_eclasses(d["_eclasses_"])
+		else:
+			d = values
 		self._setitem(cpv, d)
 		if not self.autocommits:
 			self.updates += 1
@@ -93,7 +104,7 @@ class database(object):
 
 	def iteritems(self):
 		for x in self.iterkeys():
-			yield x, self[x]
+			yield (x, self[x])
 
 	def items(self):
 		return list(self.iteritems())
@@ -104,6 +115,8 @@ class database(object):
 			self.commit()
 
 	def commit(self):
+		if self.autocommits:
+			pass
 		raise NotImplementedError
 
 	def get_matches(self, match_dict):
