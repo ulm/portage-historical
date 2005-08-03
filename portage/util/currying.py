@@ -1,9 +1,9 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): *_curry from python cookbook, Scott David Daniels, Ben Wolfson, Nick Perkins, Alex Martelli for curry routine.
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/util/currying.py,v 1.3 2005/07/20 14:33:12 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/util/currying.py,v 1.4 2005/08/03 00:22:52 ferringb Exp $
 
-def pref_curry(*args, **kwargs):
+def pre_curry(*args, **kwargs):
 	"""passed in args are prefixed, with further args appended"""
 	def callit(*moreargs, **morekwargs):
 		kw = kwargs.copy()
