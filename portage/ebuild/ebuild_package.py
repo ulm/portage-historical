@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/ebuild_package.py,v 1.4 2005/07/27 02:23:27 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/ebuild_package.py,v 1.5 2005/08/03 00:27:14 ferringb Exp $
 
 import os
 from portage import package
@@ -38,6 +38,8 @@ class EbuildPackage(package.metadata.package):
 			val = DepSet(self.data["LICENSE"], str)
 		elif key == "description":
 			val = self.data["DESCRIPTION"]
+		elif key == "keywords":
+			val = self.data["KEYWORDS"].split()
 		else:
 			return super(EbuildPackage, self).__getattr__(key)
 		self.__dict__[key] = val

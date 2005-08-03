@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Jason Stubbs (jstubbs@gentoo.org), Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/conditionals.py,v 1.2 2005/07/20 14:33:12 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/conditionals.py,v 1.3 2005/08/03 00:27:14 ferringb Exp $
 
 # TODO: move exceptions elsewhere, bind them to a base exception for portage
 
@@ -102,8 +102,6 @@ class DepSet(RestrictionSet):
 		self.has_conditionals = has_conditionals[0]
 
 	def __str__(self):	return ' '.join(map(str,self.restrictions))
-	def __iter__(self):	return iter(self.restrictions)
-
 
 	def evaluate_depset(self, cond_dict):
 		"""passed in a depset, does lookups of the node in cond_dict.

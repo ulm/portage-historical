@@ -1,7 +1,7 @@
 # Copyright: 2004-2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/processor.py,v 1.3 2005/07/20 14:33:12 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/processor.py,v 1.4 2005/08/03 00:27:14 ferringb Exp $
 
 # this needs work.  it's been pruned heavily from what ebd used originally, but it still isn't what 
 # I would define as 'right'
@@ -362,6 +362,7 @@ class ebuild_processor:
 
 		return metadata_keys
 
+
 	def _receive_key(self, line, keys_dict):
 		line=line.split("=",1)
 		l=len(line)
@@ -437,6 +438,7 @@ class ebuild_processor:
 		except FinishedProcessing, fp:
 			v = fp.val; del fp
 			return v
+
 
 def chuck_UnhandledCommand(processor, line):
 	print "chucking unhandled"
