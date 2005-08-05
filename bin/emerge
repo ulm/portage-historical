@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.34 2005/08/05 00:30:45 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.35 2005/08/05 01:24:44 ferringb Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2678,6 +2678,7 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 		except:
 			pass
 		# we don't make overlay trees cache here, plus we don't trust portage.settings.categories
+		porttree_root = portage.portdb.porttree_root
 		pdb = portage.portdbapi(porttree_root, portage.config(portage.settings.profile_path[:], portage.settings.incrementals[:]))
 		cp_list=portage.portdb.cp_all()
 		if len(cp_list) == 0:
@@ -2720,7 +2721,7 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 				cleanse_cache(pdb, oldcat, savelist)
 				savelist = []
 				oldcat = cat
-			mymatches = portage.db["/"]["porttree"].dbapi.xmatch("match-all", cp)
+			mymatches = pdb.xmatch("match-all", cp)
 			savelist.extend(mymatches)
 			for cpv in mymatches:
 				try: pdb.aux_get(cpv, ["IUSE"],metacachedir=myportdir+"/metadata/cache",debug=("cachedebug" in portage.features))
