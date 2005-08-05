@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.33 2005/06/02 00:57:52 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.34 2005/08/05 00:30:45 ferringb Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2677,28 +2677,31 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 			raise # Needed else can't exit
 		except:
 			pass
-		# we don't make overlay trees cache here.
-		backup_porttrees=portage.portdb.porttrees
-		porttree_root = portage.portdb.porttree_root
-		portage.portdb.porttrees=[porttree_root]
+		# we don't make overlay trees cache here, plus we don't trust portage.settings.categories
+		pdb = portage.portdbapi(porttree_root, portage.config(portage.settings.profile_path[:], portage.settings.incrementals[:]))
 		cp_list=portage.portdb.cp_all()
+		if len(cp_list) == 0:
+			print "no metadata to transfer, exiting"
+			sys.exit(0)
 		cp_list.sort()
 		pcnt=0
 		pcntstr=""
 		pcntcount=len(cp_list)/100.0
 		nextupdate=pcntcount
 		current=1
-		def cleanse_cache(cat, saves, porttree_root=porttree_root):
+
+		def cleanse_cache(pdb, cat, saves, porttree_root=porttree_root):
 			if len(saves):
 				d={}
 				for v in saves:
 					d[portage.catsplit(v)[1]] = True
-				for pv in portage.db["/"]["porttree"].dbapi.auxdb[porttree_root][cat].keys():
+				for pv in pdb.auxdb[porttree_root][cat].keys():
 					if pv not in d:
-						portage.db["/"]["porttree"].dbapi.auxdb[porttree_root][cat].del_key(pv)
+						pdb.auxdb[porttree_root][cat].del_key(pv)
 			else:
-				portage.db["/"]["porttree"].dbapi.auxdb[porttree_root][cat].clear()
-				del portage.db["/"]["porttree"].dbapi.auxdb[porttree_root][cat]
+				pdb.auxdb[porttree_root][cat].clear()
+				del pdb.auxdb[porttree_root][cat]
+
 		savelist = []
 		catlist = []
 		oldcat = portage.catsplit(cp_list[0])[0]
@@ -2714,18 +2717,18 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 			cat = portage.catsplit(cp)[0]
 			if cat != oldcat:
 				catlist.append(oldcat)
-				cleanse_cache(oldcat, savelist)
+				cleanse_cache(pdb, oldcat, savelist)
 				savelist = []
 				oldcat = cat
 			mymatches = portage.db["/"]["porttree"].dbapi.xmatch("match-all", cp)
 			savelist.extend(mymatches)
 			for cpv in mymatches:
-				try: portage.db["/"]["porttree"].dbapi.aux_get(cpv, ["IUSE"],metacachedir=myportdir+"/metadata/cache",debug=("cachedebug" in portage.features))
+				try: pdb.aux_get(cpv, ["IUSE"],metacachedir=myportdir+"/metadata/cache",debug=("cachedebug" in portage.features))
 				except SystemExit: raise
 				except Exception, e: print "\nFailed cache update:",cpv,e
 		catlist.append(oldcat)
 		catlist.append("local")
-		cleanse_cache(oldcat, savelist)
+		cleanse_cache(pdb, oldcat, savelist)
 		filelist = portage.listdir(cachedir+"/"+myportdir)
 		for x in filelist:
 			found = False
@@ -2737,7 +2740,6 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 				portage.spawn("cd /; rm -Rf "+cachedir+"/"+myportdir+"/"+x,portage.settings,free=1,droppriv=1)
 
 
-		portage.portdb.porttrees=backup_porttrees
 		sys.stdout.write("\n\n")
 		sys.stdout.flush()
 

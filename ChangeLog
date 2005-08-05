@@ -1,11 +1,15 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.138 2005/07/29 05:55:34 vapier Exp $
+# $Id: ChangeLog,v 1.796.2.139 2005/08/05 00:30:45 ferringb Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  04 Aug 2005: Brian Harring <ferringb@gentoo.org> bin/emerge:
+  It's not perfect, but a fix for bug #96410.  A better fix would be 
+  to get the categories limiter out of settings...
 
   29 Jul 2005; Mike Frysinger <vapier@gentoo.org> bin/doman:
   Back port from portage HEAD:
