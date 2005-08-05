@@ -1,8 +1,8 @@
 #!/bin/bash
 # ebuild-functions.sh; ebuild env functions, saved with the ebuild (not specific to the portage version).
-# Copyright 2004 Gentoo Foundation
+# Copyright 2004-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-$Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-functions.sh,v 1.13 2005/07/20 14:22:48 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-functions.sh,v 1.14 2005/08/05 02:36:39 vapier Exp $
 
 use() {
 	if useq ${1}; then
