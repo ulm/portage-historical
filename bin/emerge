@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.35 2005/08/05 01:24:44 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.36 2005/08/05 03:26:17 ferringb Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2679,8 +2679,9 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 			pass
 		# we don't make overlay trees cache here, plus we don't trust portage.settings.categories
 		porttree_root = portage.portdb.porttree_root
-		pdb = portage.portdbapi(porttree_root, portage.config(portage.settings.profile_path[:], portage.settings.incrementals[:]))
-		cp_list=portage.portdb.cp_all()
+		pdb = portage.portdbapi(porttree_root, portage.config(config_profile_path=portage.settings.profile_path[:], \
+			config_incrementals=portage.settings.incrementals[:]))
+		cp_list = pdb.cp_all()
 		if len(cp_list) == 0:
 			print "no metadata to transfer, exiting"
 			sys.exit(0)
