@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.36 2005/08/05 03:26:17 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.37 2005/08/05 04:15:00 ferringb Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -2701,8 +2701,11 @@ if myaction in ["sync","rsync","metadata"] and (not "--help" in myopts):
 					if pv not in d:
 						pdb.auxdb[porttree_root][cat].del_key(pv)
 			else:
-				pdb.auxdb[porttree_root][cat].clear()
-				del pdb.auxdb[porttree_root][cat]
+				try:
+					pdb.auxdb[porttree_root][cat].clear()
+					del pdb.auxdb[porttree_root][cat]
+				except KeyError:
+					pass
 
 		savelist = []
 		catlist = []
