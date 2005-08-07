@@ -1,11 +1,14 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.796.2.140 2005/08/05 04:15:00 ferringb Exp $
+# $Id: ChangeLog,v 1.796.2.141 2005/08/07 04:33:45 vapier Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
     2. /var/cache/edb/world is now /var/lib/portage/world.
     3. /etc/portage/profile/virtuals is _USER_ configs only.
+
+  07 Aug 2005; Mike Frysinger <vapier@gentoo.org> bin/ebuild.sh:
+  Add support for unpacking rar archives.
 
   04 Aug 2005; Brian Harring <ferringb@gentoo.org> bin/emerge: 
   bug 64585, sanity check on cache cleansing.

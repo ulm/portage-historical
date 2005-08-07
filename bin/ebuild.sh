@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.38 2005/07/04 08:15:24 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.39 2005/08/07 04:33:45 vapier Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -381,6 +381,9 @@ unpack() {
 				else
 					bzip2 -dc "${DISTDIR}/${x}" > ${x%.*} || die "$myfail"
 				fi
+				;;
+			RAR|rar)
+				unrar x -idq "${DISTDIR}/${x}" || die "$myfail"
 				;;
 			*)
 				echo "unpack ${x}: file format not recognized. Ignoring."
