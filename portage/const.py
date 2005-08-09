@@ -1,8 +1,7 @@
 # portage: Constants
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/const.py,v 1.4 2005/07/27 02:20:13 ferringb Exp $
-cvs_id_string="$Id: const.py,v 1.4 2005/07/27 02:20:13 ferringb Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/const.py,v 1.5 2005/08/09 08:03:55 ferringb Exp $
 
 # note this is lifted out of portage 2.  so... it's held onto for the sake of having stuff we still need,
 # but it does need cleanup.
