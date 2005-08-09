@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.39 2005/08/07 04:33:45 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.40 2005/08/09 11:25:44 ferringb Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -363,7 +363,8 @@ unpack() {
 				tar xzf "${DISTDIR}/${x}" ${tarvars} || die "$myfail"
 				;;
 			tbz2)
-				bzip2 -dc "${DISTDIR}/${x}" | tar xf - ${tarvars} || die "$myfail"
+				bzip2 -dc "${DISTDIR}/${x}" | tar xf - ${tarvars}
+				assert "$myfail"
 				;;
 			ZIP|zip)
 				unzip -qo "${DISTDIR}/${x}" || die "$myfail"
@@ -377,7 +378,8 @@ unpack() {
 				;;
 			bz2)
 				if [ "${y}" == "tar" ]; then
-					bzip2 -dc "${DISTDIR}/${x}" | tar xf - ${tarvars} || die "$myfail"
+					bzip2 -dc "${DISTDIR}/${x}" | tar xf - ${tarvars} 
+					assert "$myfail"
 				else
 					bzip2 -dc "${DISTDIR}/${x}" > ${x%.*} || die "$myfail"
 				fi
