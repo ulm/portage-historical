@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/profiles.py,v 1.4 2005/08/03 00:27:14 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/profiles.py,v 1.5 2005/08/09 07:56:38 ferringb Exp $
 
 from portage.config import profiles
 import os, logging
@@ -10,7 +10,7 @@ from portage.util.file import iter_read_bash, read_dict, read_bash_dict
 from portage.util.currying import pre_curry
 from portage.package.atom import atom
 from portage.config.central import list_parser
-from portage.util.dicts import ProtectedDict
+from portage.util.mappings import ProtectedDict
 
 class OnDiskProfile(profiles.base):
 	positional = ("base_repo","profile")
