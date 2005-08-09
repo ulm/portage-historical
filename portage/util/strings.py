@@ -1,9 +1,10 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/util/strings.py,v 1.1 2005/07/20 14:33:12 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/util/strings.py,v 1.2 2005/08/09 07:43:43 ferringb Exp $
 
 def iter_tokens(s, splitter=(" ")):
+	"""iterable yielding of splitting of a string"""
 	pos = 0
 	strlen = len(s)
 	while pos < strlen:

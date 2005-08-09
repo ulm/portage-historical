@@ -1,13 +1,14 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/util/modules.py,v 1.3 2005/08/03 00:22:52 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/util/modules.py,v 1.4 2005/08/09 07:43:43 ferringb Exp $
 
 class FailedImport(ImportError):
 	def __init__(self, trg, e):	self.trg, self.e = trg, e
 	def __str__(self):	return "Failed importing target '%s': '%s'" % (self.trg, self.e)
 
 def load_module(name):
+	"""load a module, throwing a FailedImport if __import__ fails"""
 	try:
 		m = __import__(name)
 		nl = name.split('.')
@@ -22,6 +23,7 @@ def load_module(name):
 	
 
 def load_attribute(name):
+	"""load a specific attribute, rather then a module"""
 	try:
 		i = name.rfind(".")
 		if i == -1:

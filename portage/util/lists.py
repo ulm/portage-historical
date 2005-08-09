@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): 
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/util/lists.py,v 1.1 2005/07/20 14:33:12 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/util/lists.py,v 1.2 2005/08/09 07:43:43 ferringb Exp $
 
 def unique(s):
 	"""lifted from python cookbook, credit: Tim Peters
@@ -54,3 +54,7 @@ def iterflatten(l):
 				yield x
 		except StopIteration:
 			iters.pop(-1)
+
+def flatten(l):
+	"""flatten, returning a list rather then an iterable"""
+	return list(iterflatten(l))
