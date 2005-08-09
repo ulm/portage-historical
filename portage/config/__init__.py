@@ -1,13 +1,18 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/config/__init__.py,v 1.3 2005/07/20 14:33:12 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/config/__init__.py,v 1.4 2005/08/09 07:47:34 ferringb Exp $
 
-from ConfigParser import ConfigParser
+from cparser import CaseSensitiveConfigParser
 import central, os
 from portage.const import DEFAULT_CONF_FILE
 
 def load_config(file=DEFAULT_CONF_FILE):
+	"""the entry point for any code looking to use portagelib.
+	if file exists, loads it up, else defaults to trying to load portage 2 style configs (/etc/make.conf, /etc/make.profile)
+
+	returns the generated configuration object representing the system config.
+	"""
 	c = CaseSensitiveConfigParser()
 	if os.path.isfile(file):
 		c.read(file)
@@ -18,6 +23,3 @@ def load_config(file=DEFAULT_CONF_FILE):
 			file)
 	return c
 
-class CaseSensitiveConfigParser(ConfigParser):
-	def optionxform(self, val):
-		return val

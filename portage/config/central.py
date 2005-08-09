@@ -1,13 +1,13 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/config/central.py,v 1.8 2005/08/03 00:29:17 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/config/central.py,v 1.9 2005/08/09 07:47:34 ferringb Exp $
 
 import errors, new
 from portage.const import CONF_DEFAULTS
 from portage.util.modules import load_attribute
-from ConfigParser import ConfigParser
-from portage.util.dicts import LazyValDict
+from cparser import CaseSensitiveConfigParser as ConfigParser
+from portage.util.mappings import LazyValDict
 from portage.util.currying import pre_curry
 
 class config:
