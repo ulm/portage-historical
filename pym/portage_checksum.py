@@ -1,8 +1,8 @@
 # portage_checksum.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_checksum.py,v 1.10.2.1 2005/01/16 02:35:33 carpaski Exp $
-cvs_id_string="$Id: portage_checksum.py,v 1.10.2.1 2005/01/16 02:35:33 carpaski Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage_checksum.py,v 1.10.2.2 2005/08/10 05:42:03 ferringb Exp $
+cvs_id_string="$Id: portage_checksum.py,v 1.10.2.2 2005/08/10 05:42:03 ferringb Exp $"[5:-2]
 
 from portage_const import PRIVATE_PATH,PRELINK_BINARY
 import os
@@ -121,7 +121,7 @@ def perform_checksum(filename, hash_function=md5hash, calc_prelink=0):
 		except Exception,e:
 			portage_util.writemsg("!!! Unable to copy file '"+str(filename)+"'.\n")
 			portage_util.writemsg("!!! "+str(e)+"\n")
-			sys.exit(1)
+			raise
 		portage_exec.spawn(PRELINK_BINARY+" --undo "+prelink_tmpfile,fd_pipes={})
 		myfilename=prelink_tmpfile
 
