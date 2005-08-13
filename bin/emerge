@@ -1,7 +1,7 @@
 #!/usr/bin/python -O
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.37 2005/08/05 04:15:00 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/emerge,v 1.345.2.38 2005/08/13 17:25:26 ferringb Exp $
 
 import os,sys
 os.environ["PORTAGE_CALLER"]="emerge"
@@ -92,7 +92,7 @@ def userquery(prompt, responses=None, colours=None):
 	colours: a List of Functions taking and returning a String, used to
 	process the responses for display. Typically these will be functions
 	like red() but could be e.g. lambda x: "DisplayString".
-	If responses is omitted, defaults to ["Yes, "No"], [green, red].
+	If responses is omitted, defaults to ["Yes", "No"], [green, red].
 	If only colours is omitted, defaults to [bold, ...].
 
 	Returns a member of the List responses. (If called without optional
