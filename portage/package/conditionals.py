@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/package/conditionals.py,v 1.1 2005/08/09 07:53:33 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/package/conditionals.py,v 1.2 2005/08/14 00:59:51 ferringb Exp $
 
 #from metadata import package as package_base
 from portage.util.mappings import LimitedChangeSet
@@ -40,6 +40,7 @@ class PackageWrapper(object):
 			raise ValueError("can only wrap first level attributes, 'obj.dar' fex, not '%s'" % (configurable_attribute_name))
 		setattr(self, configurable_attribute_name, LimitedChangeSet(initial_settings, unchangable_settings))
 		self.__configurable = getattr(self, configurable_attribute_name)
+		self.__configurable_name = configurable_attribute_name
 		self.__reuse_pt = 0
 		self.__cached_wrapped = {}		
 
@@ -77,3 +78,5 @@ class PackageWrapper(object):
 		else:
 			return getattr(self.__wrapped_pkg, attr)
 
+	def __str__(self):
+		return "config wrapper: %s, configurable('%s'):%s" % (self.__wrapped_pkg, self.__configurable_name, self.__configurable)
