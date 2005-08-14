@@ -2,10 +2,10 @@
 # portage.py -- core Portage functionality
 # Copyright 1998-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.589 2005/04/29 04:43:19 vapier Exp $
-cvs_id_string="$Id: portage.py,v 1.589 2005/04/29 04:43:19 vapier Exp $"[5:-2]
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/pym/portage.py,v 1.590 2005/08/14 16:49:41 genone Exp $
+cvs_id_string="$Id: portage.py,v 1.590 2005/08/14 16:49:41 genone Exp $"[5:-2]
 
-VERSION="$Revision: 1.589 $"[11:-2] + "-cvs"
+VERSION="$Revision: 1.590 $"[11:-2] + "-cvs"
 
 # ===========================================================================
 # START OF IMPORTS -- START OF IMPORTS -- START OF IMPORTS -- START OF IMPORT
@@ -5322,7 +5322,7 @@ for group in groups:
 # Clear the cache
 dircache={}
 
-if not "sandbox" in features or not "usersandbox" in features:
+if not "sandbox" in features and not "usersandbox" in features:
 	portage_exec.sandbox_capable = False
 
 fetcher=None
