@@ -1,12 +1,12 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Jason Stubbs (jstubbs@gentoo.org), Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/conditionals.py,v 1.4 2005/08/09 07:53:33 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/conditionals.py,v 1.5 2005/08/14 01:01:24 ferringb Exp $
 
 # TODO: move exceptions elsewhere, bind them to a base exception for portage
 
 import logging
-from portage.restrictions.restrictionSet import RestrictionSet, OrRestrictionSet
+from portage.restrictions.restriction_set import RestrictionSet, OrRestrictionSet
 from portage.util.strings import iter_tokens
 from portage.package.conditionals import base as Conditional
 

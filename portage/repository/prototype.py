@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/repository/prototype.py,v 1.4 2005/08/09 08:00:06 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/repository/prototype.py,v 1.5 2005/08/14 01:01:24 ferringb Exp $
 
 from portage.util.mappings import IndexableSequence
 from weakref import proxy
@@ -13,7 +13,8 @@ def ix_cat_callable(*cat):
 class tree(object):
 	package_class = None
 	configured = True
-
+	configure = ()
+	
 	def __init__(self, frozen=True):
 		self.categories = IndexableSequence(self._get_categories, self._get_categories, 
 			returnIterFunc=ix_cat_callable, returnEmpty=True, modifiable=(not frozen))

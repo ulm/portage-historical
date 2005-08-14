@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/ebuild_package.py,v 1.6 2005/08/09 07:56:38 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/ebuild_package.py,v 1.7 2005/08/14 01:01:24 ferringb Exp $
 
 import os
 from portage import package
@@ -11,7 +11,7 @@ from portage.package.atom import atom
 #from digest import parse_digest
 from portage.util.mappings import LazyValDict
 from portage.restrictions.restriction import PackageRestriction, StrExactMatch
-from portage.restrictions.restrictionSet import AndRestrictionSet, OrRestrictionSet
+from portage.restrictions.restriction_set import AndRestrictionSet, OrRestrictionSet
 
 class EbuildPackage(package.metadata.package):
 
