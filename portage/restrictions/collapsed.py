@@ -1,12 +1,12 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/restrictions/collapsed.py,v 1.3 2005/08/09 07:51:09 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/restrictions/collapsed.py,v 1.4 2005/08/14 00:58:05 ferringb Exp $
 
 __all__=("DictBased")
 from restriction import base, AlwaysTrue
 from inspect import isroutine
-from restrictionSet import bases, OrRestrictionSet
+from restriction_set import bases, OrRestrictionSet
 from portage.util.inheritance import check_for_base
 
 class DictBased(base):
