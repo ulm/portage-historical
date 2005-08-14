@@ -1,11 +1,11 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Jason Stubbs (jstubbs@gentoo.org), Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/package/atom.py,v 1.8 2005/08/09 07:58:58 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/package/atom.py,v 1.9 2005/08/14 00:57:17 ferringb Exp $
 
 from portage.restrictions import restriction 
 from cpv import ver_cmp, CPV
-from portage.restrictions.restrictionSet import AndRestrictionSet
+from portage.restrictions.restriction_set import AndRestrictionSet
 from portage.util.lists import unique
 
 class MalformedAtom(Exception):
@@ -197,11 +197,11 @@ class atom(AndRestrictionSet):
 
 		raise AttributeError(attr)
 
-#	def __str__(self):
-#		s=self.op+self.category+"/"+self.package
-#		if self.version:		s+="-"+self.fullver
-#		if self.glob:			s+="*"
-#		return s
+	def atom_str(self):
+			s=self.op+self.category+"/"+self.package
+			if self.version:		s+="-"+self.fullver
+			if self.glob:			s+="*"
+			return s
 
 	def __iter__(self):
 		return iter(self.restrictions)
