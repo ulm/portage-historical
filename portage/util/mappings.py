@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/util/mappings.py,v 1.1 2005/08/09 07:43:43 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/util/mappings.py,v 1.2 2005/08/16 00:29:45 ferringb Exp $
 
 from itertools import imap
 
@@ -257,9 +257,6 @@ class LimitedChangeSet(object):
 		self.__orig = frozenset(self.__new)
 
 	def add(self, key):
-		if key in self.__new:
-			return
-
 		if key in self.__changed or key in self.__blacklist:
 			# it's been del'd already once upon a time.
 			raise Unchangable(key)
@@ -272,7 +269,8 @@ class LimitedChangeSet(object):
 		if key in self.__changed or key in self.__blacklist:
 			raise Unchangable(key)
 		
-		self.__new.remove(key)
+		if key in self.__new:
+			self.__new.remove(key)
 		self.__changed.add(key)
 		self.__change_order.append((self._removed, key))
 
@@ -305,3 +303,6 @@ class LimitedChangeSet(object):
 
 	def __iter__(self):
 		return iter(self.__new)
+
+	def __len__(self):
+		return len(self.__new)
