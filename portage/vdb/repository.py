@@ -1,18 +1,17 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/vdb/repository.py,v 1.2 2005/07/13 05:51:35 ferringb Exp $
-
-# hack, remove when it's fixed
-raise Exception("sorry, this won't work with current portage namespace layout.  plsfix, kthnx")
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/vdb/repository.py,v 1.3 2005/08/16 00:30:53 ferringb Exp $
 
 import os,stat
-import prototype, errors
+from portage.repository import prototype, errors
 
 #needed to grab the PN
-import portage_versions
+from portage.package.cpv import CPV as cpv
+from portage.util.lists import unique
 
 class tree(prototype.tree):
+	package_class = str
 	def __init__(self, base):
 		super(tree,self).__init__()
 		self.base = base
@@ -40,11 +39,11 @@ class tree(prototype.tree):
 	
 	def _get_packages(self, category):
 		cpath = os.path.join(self.base,category.lstrip(os.path.sep))
-		l=[]
+		l=set()
 		try:    
 			for x in os.listdir(cpath):
 				if stat.S_ISDIR(os.stat(os.path.join(cpath,x)).st_mode) and not x.endswith(".lockfile"):
-					l.append(portage_versions.pkgsplit(x)[0])
+					l.add(cpv(x).package)
 			return tuple(l)
 
 		except (OSError, IOError), e:
@@ -54,21 +53,12 @@ class tree(prototype.tree):
 
 	def _get_versions(self, catpkg):
 		pkg = catpkg.split("/")[-1]
-		l=[]
+		l=set()
 		try:
 			cpath=os.path.join(self.base, os.path.dirname(catpkg.lstrip("/").rstrip("/")))
 			for x in os.listdir(cpath):
 				if x.startswith(pkg) and stat.S_ISDIR(os.stat(os.path.join(cpath,x)).st_mode) and not x.endswith(".lockfile"):
-					ver=portage_versions.pkgsplit(x)
-
-					#pkgsplit returns -r0, when it's not always there
-					if ver[2] == "r0":
-						if x.endswith(ver[2]):
-							l.append("%s-%s" % (ver[1], ver[2]))
-						else:
-							l.append(ver[1])
-					else:
-						l.append("%s-%s" % (ver[1], ver[2]))
+					l.add(cpv(x).fullver)
 			return tuple(l)
 		except (OSError, IOError), e:
 			raise KeyError("failed fetching packages for package %s: %s" % \
