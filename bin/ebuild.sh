@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.40 2005/08/09 11:25:44 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.41 2005/08/16 23:34:19 vapier Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -333,65 +333,6 @@ keepdir()
 			touch "${D}/${x}/.keep" || die "Failed to create .keep in ${D}/${x}"
 		done
 	fi
-}
-
-unpack() {
-	local x
-	local y
-	local myfail
-	local tarvars
-
-	if [ "$USERLAND" == "BSD" ]; then
-		tarvars=""
-	else
-		tarvars="--no-same-owner"	
-	fi	
-
-	[ -z "$*" ] && die "Nothing passed to the 'unpack' command"
-
-	for x in "$@"; do
-		myfail="failure unpacking ${x}"
-		echo ">>> Unpacking ${x} to $(pwd)"
-		y="${x%.*}"
-		y="${y##*.}"
-
-		case "${x##*.}" in
-			tar)
-				tar xf "${DISTDIR}/${x}" ${tarvars} || die "$myfail"
-				;;
-			tgz)
-				tar xzf "${DISTDIR}/${x}" ${tarvars} || die "$myfail"
-				;;
-			tbz2)
-				bzip2 -dc "${DISTDIR}/${x}" | tar xf - ${tarvars}
-				assert "$myfail"
-				;;
-			ZIP|zip)
-				unzip -qo "${DISTDIR}/${x}" || die "$myfail"
-				;;
-			gz|Z|z)
-				if [ "${y}" == "tar" ]; then
-					tar xzf "${DISTDIR}/${x}" ${tarvars} || die "$myfail"
-				else
-					gzip -dc "${DISTDIR}/${x}" > ${x%.*} || die "$myfail"
-				fi
-				;;
-			bz2)
-				if [ "${y}" == "tar" ]; then
-					bzip2 -dc "${DISTDIR}/${x}" | tar xf - ${tarvars} 
-					assert "$myfail"
-				else
-					bzip2 -dc "${DISTDIR}/${x}" > ${x%.*} || die "$myfail"
-				fi
-				;;
-			RAR|rar)
-				unrar x -idq "${DISTDIR}/${x}" || die "$myfail"
-				;;
-			*)
-				echo "unpack ${x}: file format not recognized. Ignoring."
-				;;
-		esac
-	done
 }
 
 strip_duplicate_slashes () { 
