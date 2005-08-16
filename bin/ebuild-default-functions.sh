@@ -2,7 +2,7 @@
 # ebuild-default-functions.sh; default functions for ebuild env that aren't saved- specific to the portage instance.
 # Copyright 2004-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.35 2005/08/13 23:00:32 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild-default-functions.sh,v 1.36 2005/08/16 23:36:17 vapier Exp $
 
 has_version()
 {
@@ -112,7 +112,8 @@ unpack()
 				tar ${tarvars} -xzf "${srcdir}${x}" || die "$myfail"
 				;;
 			tbz2)
-				bzip2 -dc "${srcdir}${x}" | tar ${tarvars} -xf - || die "$myfail"
+				bzip2 -dc "${srcdir}${x}" | tar ${tarvars} -xf -
+				assert "$myfail"
 				;;
 			ZIP|zip)
 				unzip -qo "${srcdir}${x}" || die "$myfail"
@@ -132,6 +133,9 @@ unpack()
 				else
 					bzip2 -dc "${srcdir}${x}" > ${x%.*} || die "$myfail"
 				fi
+				;;
+			RAR|rar)
+				unrar x -idq "${srcdir}/${x}" || die "$myfail"
 				;;
 			*)
 				echo "unpack ${x}: file format not recognized. Ignoring."

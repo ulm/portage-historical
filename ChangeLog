@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.1003 2005/08/16 23:21:47 vapier Exp $
+# $Id: ChangeLog,v 1.1004 2005/08/16 23:36:17 vapier Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -24,6 +24,9 @@
   10 Aug 2005; Mike Frysinger <vapier@gentoo.org> bin/quickpkg:
   Call gawk instead of awk so non-GNU systems work #102050 by Stephen Bennett.
   Also clean up the script a bit.
+
+  07 Aug 2005; Mike Frysinger <vapier@gentoo.org> bin/ebuild.sh:
+  Add support for unpacking rar archives.
 
   29 Jul 2005; Mike Frysinger <vapier@gentoo.org> bin/prepallman:
   Rather than use a hardcoded list and bash expansion, let find locate man
