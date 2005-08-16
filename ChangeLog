@@ -1,6 +1,6 @@
 # ChangeLog for Portage; the Gentoo Linux ports system 
 # Copyright 1999-2005 Gentoo Foundation; Distributed under the GPL v2
-# $Id: ChangeLog,v 1.1002 2005/08/14 16:49:41 genone Exp $
+# $Id: ChangeLog,v 1.1003 2005/08/16 23:21:47 vapier Exp $
 
   MAJOR CHANGES in 2.0.51:
     1. /var/cache/edb/virtuals is no longer used at all. It's calculated now.
@@ -9,6 +9,9 @@
 
   15 Aug 2005; Marius Mauch <genone@gentoo.org> pym/portage.py:
   Fix logic error with sandbox.
+
+  14 Aug 2005; Mike Frysinger <vapier@gentoo.org> bin/prepstrip:
+  Don't try to strip if `file` failed #102499 by Daniel Drake.
 
   13 Aug 2005; Brian Harring <ferringb@gentoo.org> bin/ebuild-default-functions.sh, 
   bin/ebuild-functions.sh: merging spankys original changes (which I stupidly stomped)

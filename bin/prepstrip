@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepstrip,v 1.28 2005/05/29 05:43:49 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/prepstrip,v 1.29 2005/08/16 23:21:47 vapier Exp $
 
 if [ "${FEATURES//*nostrip*/true}" == "true" ] || [ "${RESTRICT//*nostrip*/true}" == "true" ] ; then
 	echo "nostrip"
@@ -27,7 +27,9 @@ for x in "$@" ; do
 			banner=0
 		fi
 
-		f=$(file "${x}")
+		f=$(file "${x}") || continue
+		[ -z "${f}" ] && continue
+
 		if [ -z "${f/*current ar archive*/}" ]; then
 			echo "   ${x:${#D}:${#x}}"
 			${STRIP} -g "${x}"
