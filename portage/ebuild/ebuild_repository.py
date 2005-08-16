@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/ebuild_repository.py,v 1.5 2005/08/14 01:01:24 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/ebuild_repository.py,v 1.6 2005/08/16 00:26:43 ferringb Exp $
 
 import os, stat
 from portage.repository import prototype, errors
@@ -77,7 +77,7 @@ class UnconfiguredTree(prototype.tree):
 
 class ConfiguredTree(UnconfiguredTree):
 	configured = True
-	l=["license","depends","rdepends","bdepends", "fetchables"]
+	l=["license","depends","rdepends","bdepends", "fetchables", "license", "slot"]
 	wrappables = dict(zip(l, len(l)*[convert_depset]))
 
 	def __init__(self, raw_repo, domain_settings):

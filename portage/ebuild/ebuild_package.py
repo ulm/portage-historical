@@ -1,7 +1,7 @@
 # Copyright: 2005 Gentoo Foundation
 # Author(s): Brian Harring (ferringb@gentoo.org)
 # License: GPL2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/ebuild_package.py,v 1.7 2005/08/14 01:01:24 ferringb Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/portage/ebuild/ebuild_package.py,v 1.8 2005/08/16 00:26:43 ferringb Exp $
 
 import os
 from portage import package
@@ -10,8 +10,8 @@ from portage.package.atom import atom
 #from portage.fetch import fetchable
 #from digest import parse_digest
 from portage.util.mappings import LazyValDict
-from portage.restrictions.restriction import PackageRestriction, StrExactMatch
-from portage.restrictions.restriction_set import AndRestrictionSet, OrRestrictionSet
+from portage.restrictions.values import StrExactMatch
+from portage.restrictions.packages import PackageRestriction
 
 class EbuildPackage(package.metadata.package):
 
@@ -34,8 +34,8 @@ class EbuildPackage(package.metadata.package):
 			val = DepSet(self.data[key.upper()[:-1]], atom)
 		elif key == "fetchables":
 			val = DepSet(self.data["SRC_URI"], str, operators={})
-		elif key == "license":
-			val = DepSet(self.data["LICENSE"], str)
+		elif key in ("license", "slot"):
+			val = DepSet(self.data[key.upper()], str)
 		elif key == "description":
 			val = self.data["DESCRIPTION"]
 		elif key == "keywords":
