@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright 1999-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.41 2005/08/16 23:34:19 vapier Exp $
+# $Header: /local/data/ulm/cvs/history/var/cvsroot/gentoo-src/portage/bin/ebuild.sh,v 1.201.2.42 2005/08/20 17:24:30 jstubbs Exp $
 
 export SANDBOX_PREDICT="${SANDBOX_PREDICT}:/proc/self/maps:/dev/console:/usr/lib/portage/pym:/dev/random"
 export SANDBOX_WRITE="${SANDBOX_WRITE}:/dev/shm:${PORTAGE_TMPDIR}"
@@ -1070,13 +1070,13 @@ dyn_install() {
 	local count=0
 	find "${D}/" -user  portage | while read file; do
 		count=$(( $count + 1 ))
-		s=$(stat_perms "$file")
+		[[ ! -L "${file}" ]] && s=$(stat_perms "$file")
 		if [ -z "${s}" ]; then
 			ewarn "failed stat_perm'ing $file.  User intervention during install isn't wise..."
 			continue
 		fi
 		chown root "$file"
-		chmod "$s" "$file"
+		[[ ! -L "${file}" ]] && chmod "$s" "$file"
 	done
 	if (( $count > 0 )); then
 		ewarn "$count files were installed with user portage!"
@@ -1085,13 +1085,13 @@ dyn_install() {
 	count=0
 	find "${D}/" -group portage | while read file; do
 		count=$(( $count + 1 ))
-		s=$(stat_perms "$file")
+		[[ ! -L "${file}" ]] && s=$(stat_perms "$file")
 		if [ -z "${s}" ]; then
 			echo "failed stat_perm'ing '$file' . User intervention during install isn't wise..."
 			continue
 		fi
 		chgrp 0 "${file}"
-		chmod "$s" "$file"
+		[[ ! -L "${file}" ]] && chmod "$s" "$file"
 	done
 	if (( $count > 0 )); then
 		ewarn "$count files were installed with group portage!"
